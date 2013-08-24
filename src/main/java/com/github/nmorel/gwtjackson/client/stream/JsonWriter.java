@@ -510,7 +510,7 @@ public class JsonWriter {
   }
 
   /**
-   * Ensures all buffered data is written to the underlying {@link Writer}
+   * Ensures all buffered data is written to the underlying {@link StringBuilder}
    * and flushes that writer.
    */
   public void flush() throws IOException {
@@ -520,7 +520,7 @@ public class JsonWriter {
   }
 
   /**
-   * Flushes and closes this writer and the underlying {@link Writer}.
+   * Flushes and closes this writer and the underlying {@link StringBuilder}.
    *
    * @throws IOException if the JSON document is incomplete.
    */

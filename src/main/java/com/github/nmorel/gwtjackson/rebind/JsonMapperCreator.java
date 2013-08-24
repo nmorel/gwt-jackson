@@ -26,7 +26,8 @@ public class JsonMapperCreator extends AbstractSourceCreator
     private final String mapperClassSimpleName;
     private final JClassType mappedTypeClass;
 
-    public JsonMapperCreator( TreeLogger logger, GeneratorContext context, JClassType typeClass, TypeOracle typeOracle ) throws UnableToCompleteException
+    public JsonMapperCreator( TreeLogger logger, GeneratorContext context, JClassType typeClass,
+                              TypeOracle typeOracle ) throws UnableToCompleteException
     {
         this.logger = logger;
         this.context = context;
@@ -62,7 +63,8 @@ public class JsonMapperCreator extends AbstractSourceCreator
         source.indent();
 
         source.println( "@Override" );
-        source.println( "public " + mappedTypeClass.getQualifiedSourceName() + " decode(" + JsonReader.class.getName() + " reader) {" );
+        source.println( "public %s decode(%s reader) throws java.io.IOException {", mappedTypeClass
+            .getQualifiedSourceName(), JsonReader.class.getName() );
         source.indent();
         generateDecodeBody( source );
         source.outdent();
@@ -71,7 +73,8 @@ public class JsonMapperCreator extends AbstractSourceCreator
         source.println();
 
         source.println( "@Override" );
-        source.println( "public void encode(" + JsonWriter.class.getName() + " writer, " + mappedTypeClass.getQualifiedSourceName() + " value) {" );
+        source.println( "public void encode(%s writer, %s value) throws java.io.IOException {", JsonWriter.class.getName(), mappedTypeClass
+            .getQualifiedSourceName() );
         source.indent();
         generateEncodeBody( source );
         source.outdent();
@@ -91,8 +94,8 @@ public class JsonMapperCreator extends AbstractSourceCreator
 
     private void generateDecodeBody( SourceWriter source )
     {
-
-        source.println( "return null;" );
+        source.println(  "%s result = new %s();", mappedTypeClass.getQualifiedSourceName(), mappedTypeClass.getQualifiedSourceName() );
+        source.println( "return result;" );
     }
 
     private SourceWriter getSourceWriter( JClassType classType )
@@ -131,13 +134,15 @@ public class JsonMapperCreator extends AbstractSourceCreator
                 JParameterizedType genericType = t.isParameterized();
                 if ( genericType == null )
                 {
-                    logger.log( TreeLogger.Type.ERROR, "Expected the " + JsonMapper.class.getName() + " declaration to specify a parameterized type." );
+                    logger.log( TreeLogger.Type.ERROR, "Expected the " + JsonMapper.class.getName() + " declaration to specify a " +
+                        "parameterized type." );
                     throw new UnableToCompleteException();
                 }
                 JClassType[] typeParameters = genericType.getTypeArgs();
                 if ( typeParameters == null || typeParameters.length != 1 )
                 {
-                    logger.log( TreeLogger.Type.ERROR, "Expected the " + JsonMapper.class.getName() + " declaration to specify 1 parameterized type." );
+                    logger.log( TreeLogger.Type.ERROR, "Expected the " + JsonMapper.class.getName() + " declaration to specify 1 " +
+                        "parameterized type." );
                     throw new UnableToCompleteException();
                 }
                 return typeParameters[0].isClass();
