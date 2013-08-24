@@ -1,154 +1,147 @@
 package com.github.nmorel.gwtjackson.rebind;
 
-import java.io.PrintWriter;
-
-import com.github.nmorel.gwtjackson.client.AbstractJsonMapper;
 import com.github.nmorel.gwtjackson.client.JsonMapper;
-import com.github.nmorel.gwtjackson.client.stream.JsonReader;
-import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JParameterizedType;
-import com.google.gwt.core.ext.typeinfo.TypeOracle;
-import com.google.gwt.user.rebind.AbstractSourceCreator;
-import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
 
 /** @author Nicolas Morel */
-public class JsonMapperCreator extends AbstractSourceCreator
+public class JsonMapperCreator extends AbstractJsonMapperCreator
 {
-    private final TreeLogger logger;
-    private final GeneratorContext context;
-    private final JClassType typeClass;
-    private final TypeOracle typeOracle;
-    private final String mapperClassSimpleName;
-    private final JClassType mappedTypeClass;
 
-    public JsonMapperCreator( TreeLogger logger, GeneratorContext context, JClassType typeClass,
-                              TypeOracle typeOracle ) throws UnableToCompleteException
+    public JsonMapperCreator( TreeLogger logger, GeneratorContext context )
     {
-        this.logger = logger;
-        this.context = context;
-        this.typeClass = typeClass;
-        this.typeOracle = typeOracle;
+        super( logger, context );
+    }
 
-        StringBuilder builder = new StringBuilder( typeClass.getSimpleSourceName() + "Impl" );
-        JClassType enclosingType = typeClass.getEnclosingType();
+    /**
+     * Creates the implementation of the interface denoted by typeName and extending {@link JsonMapper}
+     *
+     * @param interfaceName name of the interface
+     * @return the fully qualified name of the created class
+     * @throws UnableToCompleteException
+     */
+    public String create( String interfaceName ) throws UnableToCompleteException
+    {
+        JClassType interfaceClass = typeOracle.getType( interfaceName );
+
+        // we concatenate the name of all the enclosing class
+        StringBuilder builder = new StringBuilder( interfaceClass.getSimpleSourceName() + "Impl" );
+        JClassType enclosingType = interfaceClass.getEnclosingType();
         while ( null != enclosingType )
         {
             builder.insert( 0, enclosingType.getSimpleSourceName() + "_" );
             enclosingType = enclosingType.getEnclosingType();
         }
 
-        mapperClassSimpleName = builder.toString();
+        String mapperClassSimpleName = builder.toString();
+        String packageName = interfaceClass.getPackage().getName();
+        String qualifiedMapperClassName = packageName + "." + mapperClassSimpleName;
 
-        mappedTypeClass = getMappedType();
-    }
+        // Extract the type of the object to map
+        JClassType mappedTypeClass = getMappedType( interfaceClass );
 
-    public String create() throws UnableToCompleteException
-    {
-        String qualifiedMapperClassName = typeClass.getPackage().getName() + "." + mapperClassSimpleName;
+        SourceWriter source = getSourceWriter( packageName, mapperClassSimpleName, ABSTRACT_JSON_MAPPER_CLASS + "<" +
+            mappedTypeClass.getParameterizedQualifiedSourceName() + ">", interfaceName );
 
-        SourceWriter source = getSourceWriter( typeClass );
-        // Si le wrapper existe déjà, getSourceWriter renvoie null
-        // Il n'est donc pas nécessaire de créer cette classe
+        // the class already exists, no need to continue
         if ( source == null )
         {
             return qualifiedMapperClassName;
         }
 
-        source.println();
-        source.indent();
-
-        source.println( "@Override" );
-        source.println( "public %s decode(%s reader) throws java.io.IOException {", mappedTypeClass
-            .getQualifiedSourceName(), JsonReader.class.getName() );
-        source.indent();
-        generateDecodeBody( source );
-        source.outdent();
-        source.println( "}" );
-
-        source.println();
-
-        source.println( "@Override" );
-        source.println( "public void encode(%s writer, %s value) throws java.io.IOException {", JsonWriter.class.getName(), mappedTypeClass
-            .getQualifiedSourceName() );
-        source.indent();
-        generateEncodeBody( source );
-        source.outdent();
-        source.println( "}" );
-
-        source.println();
-
-        source.commit( logger );
+        writeClassBody( source, mappedTypeClass );
 
         return qualifiedMapperClassName;
     }
 
-    private void generateEncodeBody( SourceWriter source )
+    private JClassType getMappedType( JClassType interfaceClass ) throws UnableToCompleteException
     {
-        source.println( "" );
-    }
-
-    private void generateDecodeBody( SourceWriter source )
-    {
-        source.println(  "%s result = new %s();", mappedTypeClass.getQualifiedSourceName(), mappedTypeClass.getQualifiedSourceName() );
-        source.println( "return result;" );
-    }
-
-    private SourceWriter getSourceWriter( JClassType classType )
-    {
-        String packageName = classType.getPackage().getName();
-
-        ClassSourceFileComposerFactory composer = new ClassSourceFileComposerFactory( packageName, mapperClassSimpleName );
-        composer.setSuperclass( AbstractJsonMapper.class.getName() + "<" + mappedTypeClass.getQualifiedSourceName() + ">" );
-        composer.addImplementedInterface( classType.getQualifiedSourceName() );
-
-        PrintWriter printWriter = context.tryCreate( logger, packageName, mapperClassSimpleName );
-        if ( printWriter == null )
-        {
-            return null;
-        }
-        else
-        {
-            return composer.createSourceWriter( context, printWriter );
-        }
-    }
-
-    private JClassType getMappedType() throws UnableToCompleteException
-    {
-        JClassType intf = typeClass.isInterface();
+        JClassType intf = interfaceClass.isInterface();
         if ( intf == null )
         {
-            logger.log( TreeLogger.Type.ERROR, "Expected " + typeClass + " to be an interface." );
+            logger.log( TreeLogger.Type.ERROR, "Expected " + interfaceClass + " to be an interface." );
             throw new UnableToCompleteException();
         }
 
         JClassType[] intfs = intf.getImplementedInterfaces();
         for ( JClassType t : intfs )
         {
-            if ( t.getQualifiedSourceName().equals( JsonMapper.class.getName() ) )
+            if ( t.getQualifiedSourceName().equals( JSON_MAPPER_CLASS ) )
             {
                 JParameterizedType genericType = t.isParameterized();
                 if ( genericType == null )
                 {
-                    logger.log( TreeLogger.Type.ERROR, "Expected the " + JsonMapper.class.getName() + " declaration to specify a " +
+                    logger.log( TreeLogger.Type.ERROR, "Expected the " + JSON_MAPPER_CLASS + " declaration to specify a " +
                         "parameterized type." );
                     throw new UnableToCompleteException();
                 }
                 JClassType[] typeParameters = genericType.getTypeArgs();
                 if ( typeParameters == null || typeParameters.length != 1 )
                 {
-                    logger.log( TreeLogger.Type.ERROR, "Expected the " + JsonMapper.class.getName() + " declaration to specify 1 " +
+                    logger.log( TreeLogger.Type.ERROR, "Expected the " + JSON_MAPPER_CLASS + " declaration to specify 1 " +
                         "parameterized type." );
                     throw new UnableToCompleteException();
                 }
-                return typeParameters[0].isClass();
+                return typeParameters[0];
             }
         }
-        logger.log( TreeLogger.Type.ERROR, "Expected  " + typeClass + " to extend the " + JsonMapper.class.getName() + " interface." );
+        logger.log( TreeLogger.Type.ERROR, "Expected  " + interfaceClass + " to extend the " + JSON_MAPPER_CLASS + " interface." );
         throw new UnableToCompleteException();
+    }
+
+    private void writeClassBody( SourceWriter source, JClassType mappedTypeClass ) throws UnableToCompleteException
+    {
+        source.println();
+        source.indent();
+
+        source.println( "@Override" );
+        source.println( "public %s decode(%s reader, %s ctx) throws java.io.IOException {", mappedTypeClass
+            .getParameterizedQualifiedSourceName(), JSON_READER_CLASS, JSON_DECODING_CONTEXT_CLASS );
+        source.indent();
+        generateDecodeBody( source, mappedTypeClass );
+        source.outdent();
+        source.println( "}" );
+
+        source.println();
+
+        source.println( "@Override" );
+        source.println( "public void encode(%s writer, %s value, %s ctx) throws java.io.IOException {", JSON_WRITER_CLASS, mappedTypeClass
+            .getParameterizedQualifiedSourceName(), JSON_ENCODING_CONTEXT_CLASS );
+        source.indent();
+        generateEncodeBody( source, mappedTypeClass );
+        source.outdent();
+        source.println( "}" );
+
+        source.println();
+
+        source.println( "private %s<%s> getMapper(%s ctx) throws java.io.IOException {", JSON_MAPPER_CLASS, mappedTypeClass
+            .getParameterizedQualifiedSourceName(), JSON_MAPPING_CONTEXT_CLASS );
+        source.indent();
+        generateGetMapperBody( source, mappedTypeClass );
+        source.outdent();
+        source.println( "}" );
+
+        source.println();
+
+        source.commit( logger );
+    }
+
+    private void generateEncodeBody( SourceWriter source, JClassType mappedTypeClass )
+    {
+        source.println( "getMapper(ctx).encode( writer, value, ctx );" );
+    }
+
+    private void generateDecodeBody( SourceWriter source, JClassType mappedTypeClass )
+    {
+        source.println( "return getMapper(ctx).decode( reader, ctx );" );
+    }
+
+    private void generateGetMapperBody( SourceWriter source, JClassType mappedTypeClass ) throws UnableToCompleteException
+    {
+        source.println( "return %s;", createMapperFromType( mappedTypeClass ) );
     }
 }

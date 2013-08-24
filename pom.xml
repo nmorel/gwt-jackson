@@ -56,19 +56,19 @@
               </modules>
             </configuration>
           </execution>
-          <!--<execution>-->
-            <!--<id>test-dev-mode</id>-->
-            <!--<goals>-->
-              <!--<goal>test</goal>-->
-            <!--</goals>-->
-            <!--<configuration>-->
-              <!--<mode>htmlunit</mode>-->
-              <!--<module>com.github.nmorel.gwtjackson.GwtJacksonTest</module>-->
-              <!--<out>${project.build.directory}/gwt-test</out>-->
-              <!--<userAgents>gecko1_8</userAgents>-->
-              <!--<testTimeOut>120</testTimeOut>-->
-            <!--</configuration>-->
-          <!--</execution>-->
+          <execution>
+            <id>test-dev-mode</id>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <configuration>
+              <mode>htmlunit</mode>
+              <module>com.github.nmorel.gwtjackson.GwtJacksonTest</module>
+              <out>${project.build.directory}/gwt-test</out>
+              <userAgents>gecko1_8</userAgents>
+              <testTimeOut>120</testTimeOut>
+            </configuration>
+          </execution>
           <execution>
             <id>test-prod</id>
             <goals>
