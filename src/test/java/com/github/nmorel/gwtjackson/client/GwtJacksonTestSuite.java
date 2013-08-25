@@ -1,5 +1,7 @@
 package com.github.nmorel.gwtjackson.client;
 
+import com.github.nmorel.gwtjackson.client.stream.JsonReaderTestGwt;
+import com.github.nmorel.gwtjackson.client.stream.JsonWriterTestGwt;
 import com.github.nmorel.gwtjackson.client.test.MapperTestGwt;
 import com.google.gwt.junit.tools.GWTTestSuite;
 import junit.framework.Test;
@@ -12,8 +14,12 @@ public class GwtJacksonTestSuite extends TestCase
     {
         GWTTestSuite suite = new GWTTestSuite();
 
-        // Codex
+        // Mappers
         suite.addTestSuite( MapperTestGwt.class );
+
+        // Stream - tests from gson
+        suite.addTestSuite( JsonReaderTestGwt.class );
+        suite.addTestSuite( JsonWriterTestGwt.class );
 
         return suite;
     }
