@@ -1,7 +1,7 @@
 package com.github.nmorel.gwtjackson.client;
 
-import java.io.IOException;
-
+import com.github.nmorel.gwtjackson.client.exception.JsonDecodingException;
+import com.github.nmorel.gwtjackson.client.exception.JsonEncodingException;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
@@ -18,9 +18,9 @@ public interface JsonMapper<T>
      *
      * @param input JSON input to decode
      * @return the decoded object
-     * @throws IOException if an exception occurs while parsing the input
+     * @throws JsonDecodingException if an exception occurs while decoding the input
      */
-    T decode( String input ) throws IOException;
+    T decode( String input ) throws JsonDecodingException;
 
     /**
      * Decodes a JSON input into an object.
@@ -28,18 +28,18 @@ public interface JsonMapper<T>
      * @param reader {@link JsonReader} used to read the JSON input
      * @param ctx Context for the full decoding process
      * @return the decoded object
-     * @throws IOException if an exception occurs while parsing the input
+     * @throws JsonDecodingException if an exception occurs while decoding the input
      */
-    T decode( JsonReader reader, JsonDecodingContext ctx ) throws IOException;
+    T decode( JsonReader reader, JsonDecodingContext ctx ) throws JsonDecodingException;
 
     /**
      * Encodes an object into JSON output.
      *
      * @param value Object to encode
      * @return the JSON output
-     * @throws IOException if an exception occurs while writing the output
+     * @throws JsonEncodingException if an exception occurs while encoding the output
      */
-    String encode( T value ) throws IOException;
+    String encode( T value ) throws JsonEncodingException;
 
     /**
      * Encodes an object into JSON output.
@@ -47,7 +47,7 @@ public interface JsonMapper<T>
      * @param writer {@link JsonWriter} used to write the JSON output
      * @param value Object to encode
      * @param ctx Context for the full encoding process
-     * @throws IOException if an exception occurs while writing the output
+     * @throws JsonEncodingException if an exception occurs while encoding the output
      */
-    void encode( JsonWriter writer, T value, JsonEncodingContext ctx ) throws IOException;
+    void encode( JsonWriter writer, T value, JsonEncodingContext ctx ) throws JsonEncodingException;
 }

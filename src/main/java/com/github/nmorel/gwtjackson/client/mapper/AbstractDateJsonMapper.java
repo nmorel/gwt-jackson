@@ -22,7 +22,7 @@ public abstract class AbstractDateJsonMapper<D extends Date> extends AbstractJso
     protected static final DateTimeFormat DATE_FORMAT = DateTimeFormat.getFormat( DateTimeFormat.PredefinedFormat.ISO_8601 );
 
     @Override
-    public D decode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
+    public D doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
     {
         if ( JsonToken.NUMBER.equals( reader.peek() ) )
         {
@@ -39,7 +39,7 @@ public abstract class AbstractDateJsonMapper<D extends Date> extends AbstractJso
     protected abstract D decodeString( String date );
 
     @Override
-    public void encode( JsonWriter writer, D value, JsonEncodingContext ctx ) throws IOException
+    public void doEncode( JsonWriter writer, D value, JsonEncodingContext ctx ) throws IOException
     {
         writer.value( DATE_FORMAT.format( value ) );
     }

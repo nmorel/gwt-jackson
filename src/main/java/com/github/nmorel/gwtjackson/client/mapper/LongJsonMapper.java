@@ -15,7 +15,7 @@ import com.github.nmorel.gwtjackson.client.JsonMapper;
 public class LongJsonMapper extends NumberJsonMapper<Long>
 {
     @Override
-    public Long decode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
+    public Long doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
     {
         return reader.nextLong();
     }

@@ -14,7 +14,7 @@ import com.github.nmorel.gwtjackson.client.JsonMapper;
 public class ShortJsonMapper extends NumberJsonMapper<Short>
 {
     @Override
-    public Short decode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
+    public Short doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
     {
         return (short) reader.nextInt();
     }

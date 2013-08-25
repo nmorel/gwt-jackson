@@ -5,6 +5,7 @@ import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JField;
+import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
 import com.google.gwt.user.rebind.SourceWriter;
 
 /** @author Nicolas Morel */
@@ -106,6 +107,10 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         {
             String name = field.getName().substring( 0, 1 ).toUpperCase() + field.getName().substring( 1 );
             String getterName = "get" + name;
+            if ( null != field.getType().isPrimitive() && JPrimitiveType.BOOLEAN.equals( field.getType() ) )
+            {
+                getterName = "is" + name;
+            }
             String setterName = "set" + name;
 
             source.println( "properties.put(\"%s\", new " + PROPERTY_BEAN_CLASS + "<%s>() {", field.getName(), beanType

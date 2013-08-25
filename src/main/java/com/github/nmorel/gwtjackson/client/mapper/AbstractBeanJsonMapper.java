@@ -1,7 +1,7 @@
 package com.github.nmorel.gwtjackson.client.mapper;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.github.nmorel.gwtjackson.client.AbstractJsonMapper;
@@ -32,7 +32,7 @@ public abstract class AbstractBeanJsonMapper<T> extends AbstractJsonMapper<T>
     {
         if ( null == properties )
         {
-            properties = new HashMap<String, Property<T>>();
+            properties = new LinkedHashMap<String, Property<T>>();
             initProperties( properties );
         }
     }
@@ -42,7 +42,7 @@ public abstract class AbstractBeanJsonMapper<T> extends AbstractJsonMapper<T>
     protected abstract T newInstance();
 
     @Override
-    public T decode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
+    public T doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
     {
         initProperties();
 
@@ -76,7 +76,7 @@ public abstract class AbstractBeanJsonMapper<T> extends AbstractJsonMapper<T>
     }
 
     @Override
-    public void encode( JsonWriter writer, T value, JsonEncodingContext ctx ) throws IOException
+    public void doEncode( JsonWriter writer, T value, JsonEncodingContext ctx ) throws IOException
     {
         initProperties();
 

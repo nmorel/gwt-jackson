@@ -17,13 +17,13 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 public class BigDecimalJsonMapper extends NumberJsonMapper<BigDecimal>
 {
     @Override
-    public BigDecimal decode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
+    public BigDecimal doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
     {
         return new BigDecimal( reader.nextString() );
     }
 
     @Override
-    public void encode( JsonWriter writer, BigDecimal value, JsonEncodingContext ctx ) throws IOException
+    public void doEncode( JsonWriter writer, BigDecimal value, JsonEncodingContext ctx ) throws IOException
     {
         writer.value( value.toString() );
     }

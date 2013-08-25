@@ -5,9 +5,10 @@ import java.io.IOException;
 import com.github.nmorel.gwtjackson.client.AbstractJsonMapper;
 import com.github.nmorel.gwtjackson.client.JsonDecodingContext;
 import com.github.nmorel.gwtjackson.client.JsonEncodingContext;
-import com.github.nmorel.gwtjackson.client.stream.JsonReader;
-import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 import com.github.nmorel.gwtjackson.client.JsonMapper;
+import com.github.nmorel.gwtjackson.client.stream.JsonReader;
+import com.github.nmorel.gwtjackson.client.stream.JsonToken;
+import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
 /**
  * Default {@link JsonMapper} implementation for {@link Boolean}.
@@ -17,13 +18,29 @@ import com.github.nmorel.gwtjackson.client.JsonMapper;
 public class BooleanJsonMapper extends AbstractJsonMapper<Boolean>
 {
     @Override
-    public Boolean decode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
+    public Boolean doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
     {
-        return reader.nextBoolean();
+        JsonToken token = reader.peek();
+        if ( JsonToken.BOOLEAN.equals( token ) )
+        {
+            return reader.nextBoolean();
+        }
+        else if ( JsonToken.STRING.equals( token ) )
+        {
+            return Boolean.valueOf( reader.nextString() );
+        }
+        else if ( JsonToken.NUMBER.equals( token ) )
+        {
+            return reader.nextInt() == 1;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     @Override
-    public void encode( JsonWriter writer, Boolean value, JsonEncodingContext ctx ) throws IOException
+    public void doEncode( JsonWriter writer, Boolean value, JsonEncodingContext ctx ) throws IOException
     {
         writer.value( value );
     }

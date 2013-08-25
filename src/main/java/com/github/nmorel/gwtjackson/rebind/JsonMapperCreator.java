@@ -99,8 +99,8 @@ public class JsonMapperCreator extends AbstractJsonMapperCreator
         source.indent();
 
         source.println( "@Override" );
-        source.println( "public %s decode(%s reader, %s ctx) throws java.io.IOException {", mappedTypeClass
-            .getParameterizedQualifiedSourceName(), JSON_READER_CLASS, JSON_DECODING_CONTEXT_CLASS );
+        source.println( "protected %s doDecode(%s reader, %s ctx) throws %s {", mappedTypeClass
+            .getParameterizedQualifiedSourceName(), JSON_READER_CLASS, JSON_DECODING_CONTEXT_CLASS, JSON_DECODING_EXCEPTION_CLASS );
         source.indent();
         generateDecodeBody( source, mappedTypeClass );
         source.outdent();
@@ -109,8 +109,8 @@ public class JsonMapperCreator extends AbstractJsonMapperCreator
         source.println();
 
         source.println( "@Override" );
-        source.println( "public void encode(%s writer, %s value, %s ctx) throws java.io.IOException {", JSON_WRITER_CLASS, mappedTypeClass
-            .getParameterizedQualifiedSourceName(), JSON_ENCODING_CONTEXT_CLASS );
+        source.println( "protected void doEncode(%s writer, %s value, %s ctx) throws %s {", JSON_WRITER_CLASS, mappedTypeClass
+            .getParameterizedQualifiedSourceName(), JSON_ENCODING_CONTEXT_CLASS, JSON_ENCODING_EXCEPTION_CLASS );
         source.indent();
         generateEncodeBody( source, mappedTypeClass );
         source.outdent();
@@ -118,7 +118,7 @@ public class JsonMapperCreator extends AbstractJsonMapperCreator
 
         source.println();
 
-        source.println( "private %s<%s> getMapper(%s ctx) throws java.io.IOException {", JSON_MAPPER_CLASS, mappedTypeClass
+        source.println( "private %s<%s> getMapper(%s ctx) {", JSON_MAPPER_CLASS, mappedTypeClass
             .getParameterizedQualifiedSourceName(), JSON_MAPPING_CONTEXT_CLASS );
         source.indent();
         generateGetMapperBody( source, mappedTypeClass );

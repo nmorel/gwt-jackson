@@ -14,7 +14,7 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 public abstract class NumberJsonMapper<N extends Number> extends AbstractJsonMapper<N>
 {
     @Override
-    public void encode( JsonWriter writer, N value, JsonEncodingContext ctx ) throws IOException
+    public void doEncode( JsonWriter writer, N value, JsonEncodingContext ctx ) throws IOException
     {
         writer.value( value );
     }

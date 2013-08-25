@@ -42,7 +42,7 @@ public class ArrayJsonMapper<T> extends AbstractJsonMapper<T[]>
     }
 
     @Override
-    public T[] decode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
+    public T[] doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
     {
         if ( null == arrayCreator )
         {
@@ -67,7 +67,7 @@ public class ArrayJsonMapper<T> extends AbstractJsonMapper<T[]>
     }
 
     @Override
-    public void encode( JsonWriter writer, T[] values, JsonEncodingContext ctx ) throws IOException
+    public void doEncode( JsonWriter writer, T[] values, JsonEncodingContext ctx ) throws IOException
     {
         writer.beginArray();
         for ( T value : values )

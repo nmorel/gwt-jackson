@@ -14,7 +14,7 @@ import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 public class FloatJsonMapper extends NumberJsonMapper<Float>
 {
     @Override
-    public Float decode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
+    public Float doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
     {
         return Float.parseFloat( reader.nextString() );
     }

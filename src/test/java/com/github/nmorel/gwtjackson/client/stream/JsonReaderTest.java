@@ -32,7 +32,7 @@ import static com.github.nmorel.gwtjackson.client.stream.JsonToken.NUMBER;
 import static com.github.nmorel.gwtjackson.client.stream.JsonToken.STRING;
 
 @SuppressWarnings("resource")
-public class JsonReaderTestGwt extends GwtJacksonTestCase
+public class JsonReaderTest extends GwtJacksonTestCase
 {
   public void testReadArray() throws IOException
   {

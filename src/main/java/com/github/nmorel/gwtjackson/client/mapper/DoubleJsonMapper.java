@@ -14,7 +14,7 @@ import com.github.nmorel.gwtjackson.client.JsonMapper;
 public class DoubleJsonMapper extends NumberJsonMapper<Double>
 {
     @Override
-    public Double decode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
+    public Double doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
     {
         return reader.nextDouble();
     }

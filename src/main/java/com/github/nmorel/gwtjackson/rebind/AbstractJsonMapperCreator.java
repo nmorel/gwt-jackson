@@ -20,8 +20,8 @@ import com.google.gwt.user.rebind.SourceWriter;
 public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
 {
     protected static final List<String> BASE_TYPES = Arrays
-        .asList( "java.math.BigDecimal", "java.math.BigInteger", "Boolean", "Byte", "Character", "java.util.Date", "Double", "Float",
-            "Integer", "Long", "Short", "java.sql.Date", "java.sql.Time", "java.sql.Timestamp", "java.lang.String" );
+        .asList( "java.math.BigDecimal", "java.math.BigInteger", "java.lang.Boolean", "java.lang.Byte", "java.lang.Character", "java.util.Date",
+            "java.lang.Double", "java.lang.Float", "java.lang.Integer", "java.lang.Long", "java.lang.Short", "java.sql.Date", "java.sql.Time", "java.sql.Timestamp", "java.lang.String" );
     protected static final String JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.JsonMapper";
     protected static final String ABSTRACT_JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.AbstractJsonMapper";
     protected static final String ABSTRACT_BEAN_JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper";
@@ -31,6 +31,8 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
     protected static final String JSON_MAPPING_CONTEXT_CLASS = "com.github.nmorel.gwtjackson.client.JsonMappingContext";
     protected static final String JSON_DECODING_CONTEXT_CLASS = "com.github.nmorel.gwtjackson.client.JsonDecodingContext";
     protected static final String JSON_ENCODING_CONTEXT_CLASS = "com.github.nmorel.gwtjackson.client.JsonEncodingContext";
+    protected static final String JSON_DECODING_EXCEPTION_CLASS = "com.github.nmorel.gwtjackson.client.exception.JsonDecodingException";
+    protected static final String JSON_ENCODING_EXCEPTION_CLASS = "com.github.nmorel.gwtjackson.client.exception.JsonEncodingException";
 
     /**
      * Returns the String represention of the java type for a primitive for example int/Integer, float/Float, char/Character.
@@ -165,7 +167,8 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
             }
 
             // it's a bean, we create the mapper
-            BeanJsonMapperCreator beanJsonMapperCreator = new BeanJsonMapperCreator( logger, context, typeOracle );
+            BeanJsonMapperCreator beanJsonMapperCreator = new BeanJsonMapperCreator( logger
+                .branch( TreeLogger.Type.INFO, "Creating mapper for " + classType.getQualifiedSourceName() ), context, typeOracle );
             String name = beanJsonMapperCreator.create( classType );
             return "new " + name + "()";
         }

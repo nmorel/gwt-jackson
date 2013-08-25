@@ -14,7 +14,7 @@ import com.github.nmorel.gwtjackson.client.JsonMapper;
 public class ByteJsonMapper extends NumberJsonMapper<Byte>
 {
     @Override
-    public Byte decode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
+    public Byte doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
     {
         return (byte) reader.nextDouble();
     }

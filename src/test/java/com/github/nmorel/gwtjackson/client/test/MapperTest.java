@@ -10,7 +10,7 @@ import com.github.nmorel.gwtjackson.client.model.Person;
 import com.google.gwt.core.client.GWT;
 
 /** @author Nicolas Morel */
-public class MapperTestGwt extends GwtJacksonTestCase
+public class MapperTest extends GwtJacksonTestCase
 {
     public interface PersonJsonMapper extends JsonMapper<Iterable<Person>>
     {

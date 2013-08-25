@@ -24,7 +24,7 @@ import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.google.gwt.core.client.GWT;
 
 @SuppressWarnings("resource")
-public class JsonWriterTestGwt extends GwtJacksonTestCase
+public class JsonWriterTest extends GwtJacksonTestCase
 {
 
   public void testWrongTopLevelType() throws IOException

@@ -29,13 +29,13 @@ public class EnumJsonMapper<E extends Enum<E>> extends AbstractJsonMapper<E>
     }
 
     @Override
-    public E decode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
+    public E doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
     {
         return Enum.valueOf( enumClass, reader.nextString() );
     }
 
     @Override
-    public void encode( JsonWriter writer, E value, JsonEncodingContext ctx ) throws IOException
+    public void doEncode( JsonWriter writer, E value, JsonEncodingContext ctx ) throws IOException
     {
         writer.value( value.name() );
     }

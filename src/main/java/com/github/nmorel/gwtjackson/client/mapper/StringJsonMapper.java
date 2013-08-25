@@ -17,13 +17,13 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 public class StringJsonMapper extends AbstractJsonMapper<String>
 {
     @Override
-    public String decode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
+    public String doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
     {
         return reader.nextString();
     }
 
     @Override
-    public void encode( JsonWriter writer, String value, JsonEncodingContext ctx ) throws IOException
+    public void doEncode( JsonWriter writer, String value, JsonEncodingContext ctx ) throws IOException
     {
         writer.value( value );
     }

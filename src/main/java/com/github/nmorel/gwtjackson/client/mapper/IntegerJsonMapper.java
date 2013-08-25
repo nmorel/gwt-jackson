@@ -15,7 +15,7 @@ import com.github.nmorel.gwtjackson.client.JsonMapper;
 public class IntegerJsonMapper extends NumberJsonMapper<Integer>
 {
     @Override
-    public Integer decode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
+    public Integer doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
     {
         return reader.nextInt();
     }

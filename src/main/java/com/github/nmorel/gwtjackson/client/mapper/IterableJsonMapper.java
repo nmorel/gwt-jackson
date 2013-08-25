@@ -32,7 +32,7 @@ public class IterableJsonMapper<I extends Iterable<T>, T> extends AbstractJsonMa
     }
 
     @Override
-    public I decode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
+    public I doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
     {
         Collection<T> result = newCollection();
 
@@ -47,7 +47,7 @@ public class IterableJsonMapper<I extends Iterable<T>, T> extends AbstractJsonMa
     }
 
     @Override
-    public void encode( JsonWriter writer, I values, JsonEncodingContext ctx ) throws IOException
+    public void doEncode( JsonWriter writer, I values, JsonEncodingContext ctx ) throws IOException
     {
         writer.beginArray();
         for ( T value : values )
