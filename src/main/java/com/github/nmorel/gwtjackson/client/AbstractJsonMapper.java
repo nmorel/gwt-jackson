@@ -47,7 +47,10 @@ public abstract class AbstractJsonMapper<T> implements JsonMapper<T>
     public String encode( T value ) throws JsonEncodingException
     {
         StringBuilder builder = new StringBuilder();
-        encode( new JsonWriter( builder ), value, new JsonEncodingContext() );
+        JsonWriter writer = new JsonWriter( builder );
+        writer.setLenient( true );
+        writer.setSerializeNulls( false );
+        encode( writer, value, new JsonEncodingContext() );
         return builder.toString();
     }
 
@@ -58,6 +61,7 @@ public abstract class AbstractJsonMapper<T> implements JsonMapper<T>
         {
             if ( null == value )
             {
+                writer.nullValue();
                 return;
             }
             doEncode( writer, value, ctx );

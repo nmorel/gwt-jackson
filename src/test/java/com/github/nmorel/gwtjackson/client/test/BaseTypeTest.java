@@ -1,6 +1,5 @@
 package com.github.nmorel.gwtjackson.client.test;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
@@ -291,7 +290,7 @@ public class BaseTypeTest extends GwtJacksonTestCase
         }
     }
 
-    public void testWriteBeanWithBaseType() throws IOException
+    public void testWriteBeanWithBaseType()
     {
         BaseTypeMapper mapper = GWT.create( BaseTypeMapper.class );
 
@@ -349,7 +348,7 @@ public class BaseTypeTest extends GwtJacksonTestCase
         assertEquals( expected, mapper.encode( bean ) );
     }
 
-    public void testReadBeanWithBaseType() throws IOException
+    public void testReadBeanWithBaseType()
     {
         BaseTypeMapper mapper = GWT.create( BaseTypeMapper.class );
 
@@ -405,5 +404,23 @@ public class BaseTypeTest extends GwtJacksonTestCase
         assertEquals( new java.sql.Date( getUTCTime( 2012, 8, 18, 15, 45, 56, 544 ) ), bean.getSqlDate() );
         assertEquals( new java.sql.Time( getUTCTime( 2012, 8, 18, 15, 45, 56, 545 ) ), bean.getSqlTime() );
         assertEquals( new java.sql.Timestamp( getUTCTime( 2012, 8, 18, 15, 45, 56, 546 ) ), bean.getSqlTimestamp() );
+    }
+
+    public void testWriteBeanWithNullProperties()
+    {
+        BaseTypeMapper mapper = GWT.create( BaseTypeMapper.class );
+
+        String doubleAndFloatZeroString = GWT.isProdMode() ? "0" : "0.0";
+
+        String expected = "{\"bytePrimitive\":0," +
+            "\"shortPrimitive\":0," +
+            "\"intPrimitive\":0," +
+            "\"longPrimitive\":0," +
+            "\"doublePrimitive\":" + doubleAndFloatZeroString + "," +
+            "\"floatPrimitive\":" + doubleAndFloatZeroString + "," +
+            "\"booleanPrimitive\":false," +
+            "\"charPrimitive\":0}";
+
+        assertEquals( expected, mapper.encode( new BeanWithBaseType() ) );
     }
 }
