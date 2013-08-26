@@ -10,7 +10,7 @@ import com.github.nmorel.gwtjackson.client.JsonMapper;
  *
  * @author Nicolas Morel
  */
-public class SetJsonMapper<T> extends CollectionJsonMapper<Set<T>, T>
+public class SetJsonMapper<T> extends AbstractCollectionJsonMapper<Set<T>, T>
 {
 
     /** @param mapper {@link JsonMapper} used to map the objects inside the set. */

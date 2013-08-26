@@ -1,7 +1,6 @@
 package com.github.nmorel.gwtjackson.client.mapper;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 
 import com.github.nmorel.gwtjackson.client.JsonDecodingContext;
@@ -10,22 +9,22 @@ import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 
 /**
- * Default {@link JsonMapper} implementation for {@link Iterable}. The decoding process returns an {@link ArrayList}.
+ * Base {@link JsonMapper} implementation for {@link Collection}.
  *
  * @author Nicolas Morel
  */
-public class IterableJsonMapper<T> extends AbstractIterableJsonMapper<Iterable<T>, T>
+public abstract class AbstractCollectionJsonMapper<C extends Collection<T>, T> extends AbstractIterableJsonMapper<C, T>
 {
     /** @param mapper {@link JsonMapper} used to map the objects inside the iterable. */
-    public IterableJsonMapper( JsonMapper<T> mapper )
+    public AbstractCollectionJsonMapper( JsonMapper<T> mapper )
     {
         super( mapper );
     }
 
     @Override
-    public Iterable<T> doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
+    public C doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
     {
-        Collection<T> result = new ArrayList<T>();
+        C result = newCollection();
 
         reader.beginArray();
         while ( JsonToken.END_ARRAY != reader.peek() )
@@ -36,4 +35,11 @@ public class IterableJsonMapper<T> extends AbstractIterableJsonMapper<Iterable<T
 
         return result;
     }
+
+    /**
+     * Instantiates a new collection for decoding process.
+     *
+     * @return the new collection
+     */
+    protected abstract C newCollection();
 }

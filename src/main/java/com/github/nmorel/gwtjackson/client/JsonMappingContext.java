@@ -132,12 +132,12 @@ public abstract class JsonMappingContext
 
     public <T> JsonMapper<Iterable<T>> createIterableJsonMapper( JsonMapper<T> mapper )
     {
-        return new IterableJsonMapper<Iterable<T>, T>( mapper );
+        return new IterableJsonMapper<T>( mapper );
     }
 
     public <T> JsonMapper<Collection<T>> createCollectionJsonMapper( JsonMapper<T> mapper )
     {
-        return new CollectionJsonMapper<Collection<T>, T>( mapper );
+        return new CollectionJsonMapper<T>( mapper );
     }
 
     public <T> JsonMapper<List<T>> createListJsonMapper( JsonMapper<T> mapper )

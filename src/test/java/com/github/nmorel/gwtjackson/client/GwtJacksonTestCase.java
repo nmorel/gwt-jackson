@@ -1,6 +1,6 @@
 package com.github.nmorel.gwtjackson.client;
 
-import java.sql.Date;
+import java.util.Date;
 
 import com.google.gwt.junit.client.GWTTestCase;
 
