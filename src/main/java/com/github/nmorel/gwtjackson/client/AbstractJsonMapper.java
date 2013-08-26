@@ -37,6 +37,17 @@ public abstract class AbstractJsonMapper<T> implements JsonMapper<T>
         }
         catch ( IOException e )
         {
+            // TODO log the error properly
+            throw new JsonDecodingException( e );
+        }
+        catch ( JsonDecodingException e )
+        {
+            // already logged, we just throw it
+            throw e;
+        }
+        catch ( Exception e )
+        {
+            // TODO log the error properly
             throw new JsonDecodingException( e );
         }
     }
@@ -68,6 +79,17 @@ public abstract class AbstractJsonMapper<T> implements JsonMapper<T>
         }
         catch ( IOException e )
         {
+            // TODO log the error properly
+            throw new JsonEncodingException( e );
+        }
+        catch ( JsonEncodingException e )
+        {
+            // already logged, we just throw it
+            throw e;
+        }
+        catch ( Exception e )
+        {
+            // TODO log the error properly
             throw new JsonEncodingException( e );
         }
     }

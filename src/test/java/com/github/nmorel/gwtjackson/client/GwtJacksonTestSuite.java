@@ -1,11 +1,13 @@
 package com.github.nmorel.gwtjackson.client;
 
+import com.github.nmorel.gwtjackson.client.mapper.ArrayJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.BigDecimalJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.BigIntegerJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.BooleanJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.ByteJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.CharacterJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.CollectionJsonMapperTest;
+import com.github.nmorel.gwtjackson.client.mapper.CommonJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.DateJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.DoubleJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.EnumJsonMapperTest;
@@ -16,14 +18,13 @@ import com.github.nmorel.gwtjackson.client.mapper.ListJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.LongJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.SetJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.ShortJsonMapperTest;
+import com.github.nmorel.gwtjackson.client.mapper.SimpleBeanJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.SqlDateJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.SqlTimeJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.SqlTimestampJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.StringJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.stream.JsonReaderTest;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriterTest;
-import com.github.nmorel.gwtjackson.client.test.BaseTypeTest;
-import com.github.nmorel.gwtjackson.client.test.MapperTest;
 import com.google.gwt.junit.tools.GWTTestSuite;
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -40,12 +41,14 @@ public class GwtJacksonTestSuite extends TestCase
         suite.addTestSuite( JsonWriterTest.class );
 
         // Default mappers
+        suite.addTestSuite( ArrayJsonMapperTest.class );
         suite.addTestSuite( BigDecimalJsonMapperTest.class );
         suite.addTestSuite( BigIntegerJsonMapperTest.class );
         suite.addTestSuite( BooleanJsonMapperTest.class );
         suite.addTestSuite( ByteJsonMapperTest.class );
         suite.addTestSuite( CharacterJsonMapperTest.class );
         suite.addTestSuite( CollectionJsonMapperTest.class );
+        suite.addTestSuite( CommonJsonMapperTest.class );
         suite.addTestSuite( DateJsonMapperTest.class );
         suite.addTestSuite( DoubleJsonMapperTest.class );
         suite.addTestSuite( EnumJsonMapperTest.class );
@@ -61,8 +64,7 @@ public class GwtJacksonTestSuite extends TestCase
         suite.addTestSuite( SqlTimestampJsonMapperTest.class );
         suite.addTestSuite( StringJsonMapperTest.class );
 
-        suite.addTestSuite( MapperTest.class );
-        suite.addTestSuite( BaseTypeTest.class );
+        suite.addTestSuite( SimpleBeanJsonMapperTest.class );
 
         return suite;
     }

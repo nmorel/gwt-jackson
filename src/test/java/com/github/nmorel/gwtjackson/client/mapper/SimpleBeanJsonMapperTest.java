@@ -1,4 +1,4 @@
-package com.github.nmorel.gwtjackson.client.test;
+package com.github.nmorel.gwtjackson.client.mapper;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -6,23 +6,22 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.github.nmorel.gwtjackson.client.JsonMapper;
 import com.google.gwt.core.client.GWT;
 
 /** @author Nicolas Morel */
-public class BaseTypeTest extends GwtJacksonTestCase
+public class SimpleBeanJsonMapperTest extends AbstractJsonMapperTest<SimpleBeanJsonMapperTest.SimpleBeanMapper>
 {
     public static enum TestEnum
     {
         A, B, C, D;
     }
 
-    public interface BaseTypeMapper extends JsonMapper<BeanWithBaseType>
+    public static interface SimpleBeanMapper extends JsonMapper<SimpleBean>
     {
     }
 
-    public static class BeanWithBaseType
+    public static class SimpleBean
     {
         private String string;
         private byte bytePrimitive;
@@ -290,11 +289,16 @@ public class BaseTypeTest extends GwtJacksonTestCase
         }
     }
 
-    public void testWriteBeanWithBaseType()
+    @Override
+    protected SimpleBeanMapper createMapper()
     {
-        BaseTypeMapper mapper = GWT.create( BaseTypeMapper.class );
+        return GWT.create( SimpleBeanMapper.class );
+    }
 
-        BeanWithBaseType bean = new BeanWithBaseType();
+    @Override
+    protected void testEncodeValue( SimpleBeanMapper mapper )
+    {
+        SimpleBean bean = new SimpleBean();
         bean.setString( "toto" );
         bean.setBytePrimitive( new Integer( 34 ).byteValue() );
         bean.setByteBoxed( new Integer( 87 ).byteValue() );
@@ -348,10 +352,9 @@ public class BaseTypeTest extends GwtJacksonTestCase
         assertEquals( expected, mapper.encode( bean ) );
     }
 
-    public void testReadBeanWithBaseType()
+    @Override
+    protected void testDecodeValue( SimpleBeanMapper mapper )
     {
-        BaseTypeMapper mapper = GWT.create( BaseTypeMapper.class );
-
         String input = "{\"string\":\"toto\"," +
             "\"bytePrimitive\":34," +
             "\"byteBoxed\":87," +
@@ -377,7 +380,7 @@ public class BaseTypeTest extends GwtJacksonTestCase
             "\"sqlTime\":\"2012-08-18T17:45:56.545+02:00\"," +
             "\"sqlTimestamp\":\"2012-08-18T17:45:56.546+02:00\"}";
 
-        BeanWithBaseType bean = mapper.decode( input );
+        SimpleBean bean = mapper.decode( input );
         assertNotNull( bean );
 
         assertEquals( "toto", bean.getString() );
@@ -408,7 +411,7 @@ public class BaseTypeTest extends GwtJacksonTestCase
 
     public void testWriteBeanWithNullProperties()
     {
-        BaseTypeMapper mapper = GWT.create( BaseTypeMapper.class );
+        SimpleBeanMapper mapper = GWT.create( SimpleBeanMapper.class );
 
         String doubleAndFloatZeroString = GWT.isProdMode() ? "0" : "0.0";
 
@@ -421,6 +424,6 @@ public class BaseTypeTest extends GwtJacksonTestCase
             "\"booleanPrimitive\":false," +
             "\"charPrimitive\":0}";
 
-        assertEquals( expected, mapper.encode( new BeanWithBaseType() ) );
+        assertEquals( expected, mapper.encode( new SimpleBean() ) );
     }
 }
