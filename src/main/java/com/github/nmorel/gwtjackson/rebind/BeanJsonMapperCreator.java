@@ -1,11 +1,16 @@
 package com.github.nmorel.gwtjackson.rebind;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JField;
+import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
+import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.user.rebind.SourceWriter;
 
 /** @author Nicolas Morel */
@@ -103,17 +108,15 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
 
     private void generateInitProperties( SourceWriter source, JClassType beanType ) throws UnableToCompleteException
     {
-        for ( JField field : beanType.getFields() )
-        {
-            String name = field.getName().substring( 0, 1 ).toUpperCase() + field.getName().substring( 1 );
-            String getterName = "get" + name;
-            if ( null != field.getType().isPrimitive() && JPrimitiveType.BOOLEAN.equals( field.getType() ) )
-            {
-                getterName = "is" + name;
-            }
-            String setterName = "set" + name;
+        Map<String, PropertyInfo> propertiesMap = new LinkedHashMap<String, PropertyInfo>();
+        parseFields( beanType, propertiesMap );
+        parseMethods( beanType, propertiesMap );
 
-            source.println( "properties.put(\"%s\", new " + PROPERTY_BEAN_CLASS + "<%s>() {", field.getName(), beanType
+        for ( PropertyInfo property : propertiesMap.values() )
+        {
+            property.process();
+
+            source.println( "properties.put(\"%s\", new " + PROPERTY_BEAN_CLASS + "<%s>() {", property.getPropertyName(), beanType
                 .getParameterizedQualifiedSourceName() );
             source.indent();
 
@@ -121,7 +124,8 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
             source.println( "public void decode(%s reader, %s bean, %s ctx) throws java.io.IOException {", JSON_READER_CLASS, beanType
                 .getParameterizedQualifiedSourceName(), JSON_DECODING_CONTEXT_CLASS );
             source.indent();
-            source.println( "bean.%s(%s.decode(reader, ctx));", setterName, createMapperFromType( field.getType() ) );
+            source.println( "bean." + property.getSetterAccessor() + ";", String
+                .format( "%s.decode(reader, ctx)", createMapperFromType( property.getType() ) ) );
             source.outdent();
             source.println( "}" );
 
@@ -131,12 +135,93 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
             source.println( "public void encode(%s writer, %s bean, %s ctx) throws java.io.IOException {", JSON_WRITER_CLASS, beanType
                 .getParameterizedQualifiedSourceName(), JSON_ENCODING_CONTEXT_CLASS );
             source.indent();
-            source.println( "%s.encode(writer, bean.%s(), ctx);", createMapperFromType( field.getType() ), getterName );
+            source.println( "%s.encode(writer, bean.%s, ctx);", createMapperFromType( property.getType() ), property.getGetterAccessor() );
             source.outdent();
             source.println( "}" );
 
             source.outdent();
             source.println( "} );" );
+        }
+    }
+
+    private void parseFields( JClassType beanType, Map<String, PropertyInfo> propertiesMap )
+    {
+        for ( JField field : beanType.getFields() )
+        {
+            String fieldName = field.getName();
+            PropertyInfo property = propertiesMap.get( fieldName );
+            if ( null == property )
+            {
+                property = new PropertyInfo( fieldName );
+                propertiesMap.put( fieldName, property );
+            }
+            property.setField( field );
+        }
+    }
+
+    private void parseMethods( JClassType beanType, Map<String, PropertyInfo> propertiesMap )
+    {
+        for ( JMethod method : beanType.getMethods() )
+        {
+            if ( null != method.isConstructor() || method.isStatic() )
+            {
+                continue;
+            }
+
+            JType returnType = method.getReturnType();
+            if ( null != returnType.isPrimitive() && JPrimitiveType.VOID.equals( returnType.isPrimitive() ) )
+            {
+                // might be a setter
+                if ( method.getParameters().length == 1 )
+                {
+                    String methodName = method.getName();
+                    if ( methodName.startsWith( "set" ) && methodName.length() > 3 )
+                    {
+                        // it's a setter method
+                        String fieldName = extractFieldNameFromGetterSetterMethodName( methodName );
+                        PropertyInfo property = propertiesMap.get( fieldName );
+                        if ( null == property )
+                        {
+                            property = new PropertyInfo( fieldName );
+                            propertiesMap.put( fieldName, property );
+                        }
+                        property.setSetter( method );
+                    }
+                }
+            }
+            else
+            {
+                // might be a getter
+                if ( method.getParameters().length == 0 )
+                {
+                    String methodName = method.getName();
+                    if ( (methodName.startsWith( "get" ) && methodName.length() > 3) || (methodName.startsWith( "is" ) && methodName
+                        .length() > 2 && null != returnType.isPrimitive() && JPrimitiveType.BOOLEAN.equals( returnType.isPrimitive() )) )
+                    {
+                        // it's a getter method
+                        String fieldName = extractFieldNameFromGetterSetterMethodName( methodName );
+                        PropertyInfo property = propertiesMap.get( fieldName );
+                        if ( null == property )
+                        {
+                            property = new PropertyInfo( fieldName );
+                            propertiesMap.put( fieldName, property );
+                        }
+                        property.setGetter( method );
+                    }
+                }
+            }
+        }
+    }
+
+    private String extractFieldNameFromGetterSetterMethodName( String methodName )
+    {
+        if ( methodName.startsWith( "is" ) )
+        {
+            return methodName.substring( 2, 3 ).toLowerCase() + methodName.substring( 3 );
+        }
+        else
+        {
+            return methodName.substring( 3, 4 ).toLowerCase() + methodName.substring( 4 );
         }
     }
 }
