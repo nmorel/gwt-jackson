@@ -5,12 +5,9 @@ import java.util.Date;
 
 import com.github.nmorel.gwtjackson.client.AbstractJsonMapper;
 import com.github.nmorel.gwtjackson.client.JsonDecodingContext;
-import com.github.nmorel.gwtjackson.client.JsonEncodingContext;
 import com.github.nmorel.gwtjackson.client.JsonMapper;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
-import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
-import com.google.gwt.i18n.client.DateTimeFormat;
 
 /**
  * Base implementation of {@link JsonMapper} for dates.
@@ -19,8 +16,6 @@ import com.google.gwt.i18n.client.DateTimeFormat;
  */
 public abstract class AbstractDateJsonMapper<D extends Date> extends AbstractJsonMapper<D>
 {
-    protected static final DateTimeFormat DATE_FORMAT = DateTimeFormat.getFormat( DateTimeFormat.PredefinedFormat.ISO_8601 );
-
     @Override
     public D doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
     {
@@ -37,10 +32,4 @@ public abstract class AbstractDateJsonMapper<D extends Date> extends AbstractJso
     protected abstract D decodeNumber( long millis );
 
     protected abstract D decodeString( String date );
-
-    @Override
-    public void doEncode( JsonWriter writer, D value, JsonEncodingContext ctx ) throws IOException
-    {
-        writer.value( DATE_FORMAT.format( value ) );
-    }
 }

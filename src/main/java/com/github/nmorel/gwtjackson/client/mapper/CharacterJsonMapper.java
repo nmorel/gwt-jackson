@@ -38,6 +38,6 @@ public class CharacterJsonMapper extends AbstractJsonMapper<Character>
     @Override
     public void doEncode( JsonWriter writer, Character value, JsonEncodingContext ctx ) throws IOException
     {
-        writer.value( value );
+        writer.value( value.toString() );
     }
 }

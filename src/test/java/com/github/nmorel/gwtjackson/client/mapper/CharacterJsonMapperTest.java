@@ -19,9 +19,7 @@ public class CharacterJsonMapperTest extends AbstractJsonMapperTest<CharacterJso
     @Override
     protected void testEncodeValue( CharacterJsonMapper mapper )
     {
-        // we convert character as number
-        assertEquals( "" + ((int) 'e'), mapper.encode( 'e' ) );
-        assertEquals( "0", mapper.encode( '\u0000' ) );
-        assertEquals( "65535", mapper.encode( '\uffff' ) );
+        assertEquals( "\"e\"", mapper.encode( 'e' ) );
+        assertEquals( "\"\\u0000\"", mapper.encode( '\u0000' ) );
     }
 }

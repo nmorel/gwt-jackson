@@ -14,4 +14,7 @@
   <set-property name="gwt.logging.simpleRemoteHandler" value="DISABLED" />
 
   <set-property name="user.agent" value="gecko1_8" />
+
+  <source path="client"/>
+  <source path="shared"/>
 </module>

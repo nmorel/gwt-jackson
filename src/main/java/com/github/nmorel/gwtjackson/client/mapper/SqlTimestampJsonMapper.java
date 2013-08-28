@@ -1,8 +1,11 @@
 package com.github.nmorel.gwtjackson.client.mapper;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 
+import com.github.nmorel.gwtjackson.client.JsonEncodingContext;
 import com.github.nmorel.gwtjackson.client.JsonMapper;
+import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
 /**
  * Base implementation of {@link JsonMapper} for {@link Timestamp}.
@@ -20,6 +23,12 @@ public class SqlTimestampJsonMapper extends AbstractDateJsonMapper<Timestamp>
     @Override
     protected Timestamp decodeString( String date )
     {
-        return new Timestamp( DATE_FORMAT.parseStrict( date ).getTime() );
+        return Timestamp.valueOf( date );
+    }
+
+    @Override
+    protected void doEncode( JsonWriter writer, Timestamp value, JsonEncodingContext ctx ) throws IOException
+    {
+        writer.value( value.getTime() );
     }
 }

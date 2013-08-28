@@ -4,10 +4,8 @@ import java.io.IOException;
 import java.math.BigInteger;
 
 import com.github.nmorel.gwtjackson.client.JsonDecodingContext;
-import com.github.nmorel.gwtjackson.client.JsonEncodingContext;
 import com.github.nmorel.gwtjackson.client.JsonMapper;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
-import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
 /**
  * Default {@link JsonMapper} implementation for {@link BigInteger}.
@@ -20,11 +18,5 @@ public class BigIntegerJsonMapper extends NumberJsonMapper<BigInteger>
     public BigInteger doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
     {
         return new BigInteger( reader.nextString() );
-    }
-
-    @Override
-    public void doEncode( JsonWriter writer, BigInteger value, JsonEncodingContext ctx ) throws IOException
-    {
-        writer.value( value.toString() );
     }
 }

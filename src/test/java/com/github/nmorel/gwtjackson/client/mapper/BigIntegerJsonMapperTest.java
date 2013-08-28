@@ -31,7 +31,7 @@ public class BigIntegerJsonMapperTest extends AbstractJsonMapperTest<BigIntegerJ
     protected void testEncodeValue( BigIntegerJsonMapper mapper )
     {
         BigInteger value = new BigInteger( "1548784651132124566543513203245448715154542123114001571970" );
-        assertEquals( "\"1548784651132124566543513203245448715154542123114001571970\"", mapper.encode( value ) );
+        assertEquals( "1548784651132124566543513203245448715154542123114001571970", mapper.encode( value ) );
     }
 
 }

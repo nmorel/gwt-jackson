@@ -30,7 +30,7 @@ public class BigDecimalJsonMapperTest extends AbstractJsonMapperTest<BigDecimalJ
     protected void testEncodeValue( BigDecimalJsonMapper mapper )
     {
         BigDecimal value = new BigDecimal( "15487846511321245665435132032454.1545815468465578451323888744" );
-        assertEquals( "\"15487846511321245665435132032454.1545815468465578451323888744\"", mapper.encode( value ) );
+        assertEquals( "15487846511321245665435132032454.1545815468465578451323888744", mapper.encode( value ) );
     }
 
 }

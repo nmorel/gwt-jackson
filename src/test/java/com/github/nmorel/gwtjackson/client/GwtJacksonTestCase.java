@@ -2,6 +2,7 @@ package com.github.nmorel.gwtjackson.client;
 
 import java.util.Date;
 
+import com.github.nmorel.gwtjackson.shared.AbstractTester;
 import com.google.gwt.junit.client.GWTTestCase;
 
 /** @author Nicolas Morel */
@@ -16,11 +17,11 @@ public abstract class GwtJacksonTestCase extends GWTTestCase
     @SuppressWarnings( "deprecation" )
     protected long getUTCTime( int year, int month, int day, int hour, int minute, int second, int milli )
     {
-        return Date.UTC( year - 1900, month - 1, day, hour, minute, second ) + milli;
+        return AbstractTester.getUTCTime( year, month, day, hour, minute, second, milli );
     }
 
     protected Date getUTCDate( int year, int month, int day, int hour, int minute, int second, int milli )
     {
-        return new Date( getUTCTime( year, month, day, hour, minute, second, milli ) );
+        return AbstractTester.getUTCDate( year, month, day, hour, minute, second, milli );
     }
 }

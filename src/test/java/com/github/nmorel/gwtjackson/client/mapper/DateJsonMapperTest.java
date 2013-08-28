@@ -2,8 +2,6 @@ package com.github.nmorel.gwtjackson.client.mapper;
 
 import java.util.Date;
 
-import com.google.gwt.i18n.client.DateTimeFormat;
-
 /** @author Nicolas Morel */
 public class DateJsonMapperTest extends AbstractJsonMapperTest<DateJsonMapper>
 {
@@ -23,9 +21,7 @@ public class DateJsonMapperTest extends AbstractJsonMapperTest<DateJsonMapper>
     @Override
     protected void testEncodeValue( DateJsonMapper mapper )
     {
-        // don't know how to deal with the timezone so we just use the same formatter
         Date date = getUTCDate( 2012, 8, 18, 12, 45, 56, 543 );
-        assertEquals( "\"" + DateTimeFormat.getFormat( DateTimeFormat.PredefinedFormat.ISO_8601 ).format( date ) + "\"", mapper
-            .encode( date ) );
+        assertEquals( "" + date.getTime(), mapper.encode( date ) );
     }
 }

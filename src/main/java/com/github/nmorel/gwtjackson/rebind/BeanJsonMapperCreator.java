@@ -3,6 +3,9 @@ package com.github.nmorel.gwtjackson.rebind;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
@@ -108,40 +111,66 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
 
     private void generateInitProperties( SourceWriter source, JClassType beanType ) throws UnableToCompleteException
     {
+        BeanInfo info = parseBean( beanType );
+        if ( info.isIgnoreAllProperties() )
+        {
+            logger.log( TreeLogger.Type.DEBUG, "Ignoring all properties of type " + beanType );
+            // no properties will be serialized/deserialized
+            return;
+        }
+
         Map<String, PropertyInfo> propertiesMap = new LinkedHashMap<String, PropertyInfo>();
         parseFields( beanType, propertiesMap );
         parseMethods( beanType, propertiesMap );
 
         for ( PropertyInfo property : propertiesMap.values() )
         {
-            property.process();
+            property.process( info );
+            if ( property.isIgnored() )
+            {
+                logger.log( TreeLogger.Type.DEBUG, "Ignoring field " + property.getFieldName() + " of type " + beanType );
+                continue;
+            }
 
             source.println( "properties.put(\"%s\", new " + PROPERTY_BEAN_CLASS + "<%s>() {", property.getPropertyName(), beanType
                 .getParameterizedQualifiedSourceName() );
             source.indent();
 
-            source.println( "@Override" );
-            source.println( "public void decode(%s reader, %s bean, %s ctx) throws java.io.IOException {", JSON_READER_CLASS, beanType
-                .getParameterizedQualifiedSourceName(), JSON_DECODING_CONTEXT_CLASS );
-            source.indent();
-            source.println( "bean." + property.getSetterAccessor() + ";", String
-                .format( "%s.decode(reader, ctx)", createMapperFromType( property.getType() ) ) );
-            source.outdent();
-            source.println( "}" );
+            writeDecodePropertyMethod( source, beanType, property );
 
             source.println();
 
-            source.println( "@Override" );
-            source.println( "public void encode(%s writer, %s bean, %s ctx) throws java.io.IOException {", JSON_WRITER_CLASS, beanType
-                .getParameterizedQualifiedSourceName(), JSON_ENCODING_CONTEXT_CLASS );
-            source.indent();
-            source.println( "%s.encode(writer, bean.%s, ctx);", createMapperFromType( property.getType() ), property.getGetterAccessor() );
-            source.outdent();
-            source.println( "}" );
+            writeEncodePropertyMethod( source, beanType, property );
 
             source.outdent();
             source.println( "} );" );
         }
+    }
+
+    private BeanInfo parseBean( JClassType beanType )
+    {
+        BeanInfo info = new BeanInfo();
+        if ( beanType.isAnnotationPresent( JsonIgnoreType.class ) )
+        {
+            info.setIgnoreAllProperties( true );
+        }
+        if ( beanType.isAnnotationPresent( JsonAutoDetect.class ) )
+        {
+            JsonAutoDetect autoDetect = beanType.getAnnotation( JsonAutoDetect.class );
+            info.setCreatorVisibility( autoDetect.creatorVisibility() );
+            info.setFieldVisibility( autoDetect.fieldVisibility() );
+            info.setGetterVisibility( autoDetect.getterVisibility() );
+            info.setIsGetterVisibility( autoDetect.isGetterVisibility() );
+        }
+        if ( beanType.isAnnotationPresent( JsonIgnoreProperties.class ) )
+        {
+            JsonIgnoreProperties ignoreProperties = beanType.getAnnotation( JsonIgnoreProperties.class );
+            for ( String ignoreProperty : ignoreProperties.value() )
+            {
+                info.addIgnoredField( ignoreProperty );
+            }
+        }
+        return info;
     }
 
     private void parseFields( JClassType beanType, Map<String, PropertyInfo> propertiesMap )
@@ -223,5 +252,52 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         {
             return methodName.substring( 3, 4 ).toLowerCase() + methodName.substring( 4 );
         }
+    }
+
+    private void writeDecodePropertyMethod( SourceWriter source, JClassType beanType,
+                                            PropertyInfo property ) throws UnableToCompleteException
+    {
+        source.println( "@Override" );
+        source.println( "public void decode(%s reader, %s bean, %s ctx) throws java.io.IOException {", JSON_READER_CLASS, beanType
+            .getParameterizedQualifiedSourceName(), JSON_DECODING_CONTEXT_CLASS );
+        source.indent();
+
+        String setterAccessor = property.getSetterAccessor();
+        if ( null == setterAccessor )
+        {
+            source.println( "throw new %s(\"No setter found for property %s on type %s\")", JSON_DECODING_EXCEPTION_CLASS, property
+                .getPropertyName(), beanType.getName() );
+        }
+        else
+        {
+            source.println( "bean." + setterAccessor + ";", String.format( "%s.decode(reader, ctx)", createMapperFromType( property
+                .getType() ) ) );
+        }
+
+        source.outdent();
+        source.println( "}" );
+    }
+
+    private void writeEncodePropertyMethod( SourceWriter source, JClassType beanType,
+                                            PropertyInfo property ) throws UnableToCompleteException
+    {
+        source.println( "@Override" );
+        source.println( "public void encode(%s writer, %s bean, %s ctx) throws java.io.IOException {", JSON_WRITER_CLASS, beanType
+            .getParameterizedQualifiedSourceName(), JSON_ENCODING_CONTEXT_CLASS );
+        source.indent();
+
+        String getterAccessor = property.getGetterAccessor();
+        if ( null == getterAccessor )
+        {
+            source.println( "throw new %s(\"No getter found for property %s on type %s\")", JSON_ENCODING_EXCEPTION_CLASS, property
+                .getPropertyName(), beanType.getName() );
+        }
+        else
+        {
+            source.println( "%s.encode(writer, bean.%s, ctx);", createMapperFromType( property.getType() ), getterAccessor );
+        }
+
+        source.outdent();
+        source.println( "}" );
     }
 }

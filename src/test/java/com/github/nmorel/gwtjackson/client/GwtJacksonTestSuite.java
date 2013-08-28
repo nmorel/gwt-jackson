@@ -63,8 +63,9 @@ public class GwtJacksonTestSuite extends TestCase
         suite.addTestSuite( SqlTimeJsonMapperTest.class );
         suite.addTestSuite( SqlTimestampJsonMapperTest.class );
         suite.addTestSuite( StringJsonMapperTest.class );
-
         suite.addTestSuite( SimpleBeanJsonMapperTest.class );
+
+        //
 
         return suite;
     }

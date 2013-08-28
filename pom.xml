@@ -40,7 +40,7 @@
         <version>${maven-surefire-plugin.version}</version>
         <configuration>
           <excludes>
-            <exclude>**/*Test.java</exclude>
+            <exclude>**/client/**/*Test.java</exclude>
           </excludes>
         </configuration>
       </plugin>
