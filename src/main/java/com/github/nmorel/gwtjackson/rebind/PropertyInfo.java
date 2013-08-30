@@ -1,216 +1,115 @@
 package com.github.nmorel.gwtjackson.rebind;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import  com.google.gwt.user.rebind.SourceWriter;
 import com.google.gwt.core.ext.typeinfo.JField;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JType;
 
-/**
- * Used to aggregate field, getter method and setter method of the same property
- *
- * @author Nicolas Morel
- */
-public class PropertyInfo
+/** @author Nicolas Morel */
+public final class PropertyInfo
 {
-    private String fieldName;
-    private JField field;
-    private JMethod getter;
-    private JMethod setter;
-    private boolean ignored;
-    private JType type;
-    private String propertyName;
-    private String getterAccessor;
-    private String setterAccessor;
-
-    public PropertyInfo( String fieldName )
+    public static interface AdditionalMethod
     {
-        this.fieldName = fieldName;
+        void write( SourceWriter writer );
     }
 
-    public String getFieldName()
+    public static PropertyInfo process( FieldAccessors fieldAccessors, BeanInfo beanInfo )
     {
-        return fieldName;
-    }
+        PropertyInfo result = new PropertyInfo();
 
-    public void setFieldName( String fieldName )
-    {
-        this.fieldName = fieldName;
-    }
-
-    public JField getField()
-    {
-        return field;
-    }
-
-    public void setField( JField field )
-    {
-        this.field = field;
-    }
-
-    public JMethod getGetter()
-    {
-        return getter;
-    }
-
-    public void setGetter( JMethod getter )
-    {
-        this.getter = getter;
-    }
-
-    public JMethod getSetter()
-    {
-        return setter;
-    }
-
-    public void setSetter( JMethod setter )
-    {
-        this.setter = setter;
-    }
-
-    /** Process annotations and determine property name, accessors methods, type... */
-    public void process( BeanInfo beanInfo )
-    {
         // we first check if the property is ignored
-        processIgnore( beanInfo );
+        boolean ignored = processIgnore( fieldAccessors, beanInfo );
         if ( ignored )
         {
-            return;
+            result.ignored = true;
+            return result;
         }
 
-        type = findType();
-        propertyName = field.getName();
+        result.type = findType( fieldAccessors );
+        result.propertyName = fieldAccessors.getFieldName();
 
-        JsonProperty jsonProperty = isAnnotationPresentOnAnyAccessor( JsonProperty.class );
-        if ( null == jsonProperty )
+        JsonProperty jsonProperty = isAnnotationPresentOnAnyAccessor( fieldAccessors, JsonProperty.class );
+
+        boolean getterAutoDetected = null != fieldAccessors.getGetter() && (null != jsonProperty || isGetterAutoDetected( fieldAccessors
+            .getGetter(), beanInfo ));
+        boolean setterAutoDetected = null != fieldAccessors.getSetter() && (null != jsonProperty || isSetterAutoDetected( fieldAccessors
+            .getSetter(), beanInfo ));
+        boolean fieldAutoDetected = null != fieldAccessors.getField() && (null != jsonProperty || isFieldAutoDetected( fieldAccessors
+            .getField(), beanInfo ));
+
+        if ( !getterAutoDetected && !setterAutoDetected && !fieldAutoDetected )
         {
-            boolean getterAutoDetect = isGetterAutoDetected( beanInfo );
-            boolean setterAutoDetect = isSetterAutoDetected( beanInfo );
-            boolean fieldAutoDetect = isFieldAutoDetected( beanInfo );
-            ignored = !getterAutoDetect && !setterAutoDetect && !fieldAutoDetect;
-            if ( ignored )
-            {
-                return;
-            }
+            // none of the field have been auto-detected, we ignore the field
+            result.ignored = true;
+            return result;
+        }
+
+        if ( null != jsonProperty && null != jsonProperty.value() && !JsonProperty.USE_DEFAULT_NAME.equals( jsonProperty.value() ) )
+        {
+            result.propertyName = jsonProperty.value();
+        }
+
+        determineGetter( fieldAccessors, getterAutoDetected, fieldAutoDetected, beanInfo, result );
+        determineSetter( fieldAccessors, setterAutoDetected, fieldAutoDetected, beanInfo, result );
+
+        return result;
+    }
+
+    private static boolean processIgnore( FieldAccessors fieldAccessors, BeanInfo beanInfo )
+    {
+        if ( beanInfo.getIgnoredFields().contains( fieldAccessors.getFieldName() ) )
+        {
+            return true;
+        }
+        else if ( null != isAnnotationPresentOnAnyAccessor( fieldAccessors, JsonIgnore.class ) )
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private static <T extends Annotation> T isAnnotationPresentOnAnyAccessor( FieldAccessors fieldAccessors, Class<T> annotation )
+    {
+        if ( null != fieldAccessors.getGetter() && fieldAccessors.getGetter().isAnnotationPresent( annotation ) )
+        {
+            return fieldAccessors.getGetter().getAnnotation( annotation );
+        }
+        if ( null != fieldAccessors.getField() && fieldAccessors.getField().isAnnotationPresent( annotation ) )
+        {
+            return fieldAccessors.getField().getAnnotation( annotation );
+        }
+        if ( null != fieldAccessors.getSetter() && fieldAccessors.getSetter().isAnnotationPresent( annotation ) )
+        {
+            return fieldAccessors.getSetter().getAnnotation( annotation );
+        }
+        return null;
+    }
+
+    private static JType findType( FieldAccessors fieldAccessors )
+    {
+        if ( null != fieldAccessors.getGetter() )
+        {
+            return fieldAccessors.getGetter().getReturnType();
+        }
+        else if ( null != fieldAccessors.getSetter() )
+        {
+            return fieldAccessors.getSetter().getParameters()[0].getType();
         }
         else
         {
-            if ( null != jsonProperty.value() && !JsonProperty.USE_DEFAULT_NAME.equals( jsonProperty.value() ) )
-            {
-                propertyName = jsonProperty.value();
-            }
-        }
-
-        getterAccessor = determineGetter();
-        setterAccessor = determineSetter();
-    }
-
-    private String determineGetter()
-    {
-        if ( null != getter && !getter.isPrivate() )
-        {
-            return getter.getName() + "()";
-        }
-        if ( null != field && !field.isPrivate() )
-        {
-            return field.getName();
-        }
-
-        // field and getter are null or private
-
-        if ( null != field )
-        {
-            // TODO use jsni to set the field
-        }
-        if ( null != getter )
-        {
-            // TODO use jsni to call the getter
-        }
-
-        // both null
-        return null;
-    }
-
-    private String determineSetter()
-    {
-        if ( null != setter && !setter.isPrivate() )
-        {
-            return setter.getName() + "(%s)";
-        }
-        if ( null != field && !field.isPrivate() )
-        {
-            return field.getName() + " = %s";
-        }
-
-        // field and setter are null or private
-
-        if ( null != field )
-        {
-            // TODO use jsni to set the field
-        }
-        if ( null != setter )
-        {
-            // TODO use jsni to call the setter
-        }
-
-        // both null
-        return null;
-    }
-
-    private void processIgnore( BeanInfo beanInfo )
-    {
-        if ( beanInfo.getIgnoredFields().contains( fieldName ) )
-        {
-            ignored = true;
-        }
-        else if ( null != isAnnotationPresentOnAnyAccessor( JsonIgnore.class ) )
-        {
-            ignored = true;
+            return fieldAccessors.getField().getType();
         }
     }
 
-    private <T extends Annotation> T isAnnotationPresentOnAnyAccessor( Class<T> annotation )
+    private static boolean isGetterAutoDetected( JMethod getter, BeanInfo info )
     {
-        if ( null != getter && getter.isAnnotationPresent( annotation ) )
-        {
-            return getter.getAnnotation( annotation );
-        }
-        if ( null != field && field.isAnnotationPresent( annotation ) )
-        {
-            return field.getAnnotation( annotation );
-        }
-        if ( null != setter && setter.isAnnotationPresent( annotation ) )
-        {
-            return setter.getAnnotation( annotation );
-        }
-        return null;
-    }
-
-    private JType findType()
-    {
-        if ( null != getter )
-        {
-            return getter.getReturnType();
-        }
-        else if ( null != setter )
-        {
-            return setter.getParameters()[0].getType();
-        }
-        else
-        {
-            return field.getType();
-        }
-    }
-
-    private boolean isGetterAutoDetected( BeanInfo info )
-    {
-        if ( null == getter )
-        {
-            return false;
-        }
         JsonAutoDetect.Visibility visibility;
         if ( getter.getName().startsWith( "is" ) )
         {
@@ -223,20 +122,20 @@ public class PropertyInfo
         return isAutoDetected( visibility, getter.isPrivate(), getter.isProtected(), getter.isPublic(), getter.isDefaultAccess() );
     }
 
-    private boolean isSetterAutoDetected( BeanInfo info )
+    private static boolean isSetterAutoDetected( JMethod setter, BeanInfo info )
     {
-        return null != setter && isAutoDetected( info.getSetterVisibility(), setter.isPrivate(), setter.isProtected(), setter
-            .isPublic(), setter.isDefaultAccess() );
-    }
-
-    private boolean isFieldAutoDetected( BeanInfo info )
-    {
-        return null != info && isAutoDetected( info.getFieldVisibility(), field.isPrivate(), field.isProtected(), field.isPublic(), field
+        return isAutoDetected( info.getSetterVisibility(), setter.isPrivate(), setter.isProtected(), setter.isPublic(), setter
             .isDefaultAccess() );
     }
 
-    private boolean isAutoDetected( JsonAutoDetect.Visibility visibility, boolean isPrivate, boolean isProtected, boolean isPublic,
-                                    boolean isDefaultAccess )
+    private static boolean isFieldAutoDetected( JField field, BeanInfo info )
+    {
+        return isAutoDetected( info.getFieldVisibility(), field.isPrivate(), field.isProtected(), field.isPublic(), field
+            .isDefaultAccess() );
+    }
+
+    private static boolean isAutoDetected( JsonAutoDetect.Visibility visibility, boolean isPrivate, boolean isProtected,
+                                           boolean isPublic, boolean isDefaultAccess )
     {
         switch ( visibility )
         {
@@ -255,6 +154,77 @@ public class PropertyInfo
             default:
                 return false;
         }
+    }
+
+    private static void determineGetter( FieldAccessors fieldAccessors, boolean getterAutoDetect, boolean fieldAutoDetect,
+                                         BeanInfo beanInfo, PropertyInfo result )
+    {
+        if ( !getterAutoDetect && !fieldAutoDetect )
+        {
+            // we can't get the value
+            return;
+        }
+
+        if ( getterAutoDetect && !fieldAccessors.getGetter().isPrivate() )
+        {
+            result.getterAccessor = fieldAccessors.getGetter().getName() + "()";
+        }
+        else if ( fieldAutoDetect && !fieldAccessors.getField().isPrivate() )
+        {
+            result.getterAccessor = fieldAccessors.getField().getName();
+        }
+
+        // field/getter has not been detected or is private
+
+        else if ( getterAutoDetect )
+        {
+            // TODO use jsni to call the getter
+        }
+        else
+        {
+            // TODO use jsni to get the field
+        }
+
+    }
+
+    private static void determineSetter( FieldAccessors fieldAccessors, boolean setterAutoDetect, boolean fieldAutoDetect,
+                                         BeanInfo beanInfo, PropertyInfo result )
+    {
+        if ( !setterAutoDetect && !fieldAutoDetect )
+        {
+            // we can't set the value
+        }
+
+        if ( setterAutoDetect && !fieldAccessors.getSetter().isPrivate() )
+        {
+            result.setterAccessor = fieldAccessors.getSetter().getName() + "(%s)";
+        }
+        else if ( fieldAutoDetect && !fieldAccessors.getField().isPrivate() )
+        {
+            result.setterAccessor = fieldAccessors.getField().getName() + " = %s";
+        }
+
+        // field/setter has not been detected or is private
+
+        else if ( setterAutoDetect )
+        {
+            // TODO use jsni to call the setter
+        }
+        else
+        {
+            // TODO use jsni to set the field
+        }
+    }
+
+    private boolean ignored;
+    private JType type;
+    private String propertyName;
+    private String getterAccessor;
+    private String setterAccessor;
+    private List<AdditionalMethod> additionalMethods = new ArrayList<AdditionalMethod>();
+
+    private PropertyInfo()
+    {
     }
 
     public boolean isIgnored()
@@ -280,5 +250,15 @@ public class PropertyInfo
     public String getSetterAccessor()
     {
         return setterAccessor;
+    }
+
+    private void addAdditionalMethod( AdditionalMethod method )
+    {
+        additionalMethods.add( method );
+    }
+
+    public List<AdditionalMethod> getAdditionalMethods()
+    {
+        return additionalMethods;
     }
 }

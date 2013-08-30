@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.nmorel.gwtjackson.shared.JsonDecoderTester;
 import com.github.nmorel.gwtjackson.shared.JsonEncoderTester;
@@ -18,10 +19,11 @@ public abstract class AbstractJacksonTest
     public void setUp()
     {
         objectMapper = new ObjectMapper();
-        objectMapper.setSerializationInclusion( JsonInclude.Include.NON_NULL);
+        objectMapper.setSerializationInclusion( JsonInclude.Include.NON_NULL );
+        objectMapper.configure( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false );
     }
 
-    protected <T> JsonEncoderTester<T> createEncoder(Class<T> clazz)
+    protected <T> JsonEncoderTester<T> createEncoder( Class<T> clazz )
     {
         return new JsonEncoderTester<T>()
         {

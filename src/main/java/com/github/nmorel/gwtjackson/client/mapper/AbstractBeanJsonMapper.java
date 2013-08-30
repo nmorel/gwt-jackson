@@ -19,32 +19,47 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  */
 public abstract class AbstractBeanJsonMapper<T> extends AbstractJsonMapper<T>
 {
-    public static interface Property<T>
+    public static interface DecoderProperty<T>
     {
         void decode( JsonReader reader, T bean, JsonDecodingContext ctx ) throws IOException;
+    }
 
+    public static interface EncoderProperty<T>
+    {
         void encode( JsonWriter writer, T bean, JsonEncodingContext ctx ) throws IOException;
     }
 
-    private Map<String, Property<T>> properties;
+    private Map<String, DecoderProperty<T>> decoders;
+    private Map<String, EncoderProperty<T>> encoders;
 
-    protected void initProperties()
+    protected void initDecoders()
     {
-        if ( null == properties )
+        if ( null == decoders )
         {
-            properties = new LinkedHashMap<String, Property<T>>();
-            initProperties( properties );
+            decoders = new LinkedHashMap<String, DecoderProperty<T>>();
+            initDecoders( decoders );
         }
     }
 
-    protected abstract void initProperties( Map<String, Property<T>> properties );
+    protected abstract void initDecoders( Map<String, DecoderProperty<T>> decoders );
+
+    protected void initEncoders()
+    {
+        if ( null == encoders )
+        {
+            encoders = new LinkedHashMap<String, EncoderProperty<T>>();
+            initEncoders( encoders );
+        }
+    }
+
+    protected abstract void initEncoders( Map<String, EncoderProperty<T>> encoders );
 
     protected abstract T newInstance();
 
     @Override
     public T doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
     {
-        initProperties();
+        initDecoders();
 
         T result = newInstance();
 
@@ -59,9 +74,10 @@ public abstract class AbstractBeanJsonMapper<T> extends AbstractJsonMapper<T>
                 continue;
             }
 
-            Property<T> property = properties.get( name );
+            DecoderProperty<T> property = decoders.get( name );
             if ( null == property )
             {
+                // TODO add a configuration to tell if we skip or throw an unknown property
                 reader.skipValue();
             }
             else
@@ -78,10 +94,10 @@ public abstract class AbstractBeanJsonMapper<T> extends AbstractJsonMapper<T>
     @Override
     public void doEncode( JsonWriter writer, T value, JsonEncodingContext ctx ) throws IOException
     {
-        initProperties();
+        initEncoders();
 
         writer.beginObject();
-        for ( Map.Entry<String, Property<T>> entry : properties.entrySet() )
+        for ( Map.Entry<String, EncoderProperty<T>> entry : encoders.entrySet() )
         {
             writer.name( entry.getKey() );
             entry.getValue().encode( writer, value, ctx );

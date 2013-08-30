@@ -3,7 +3,7 @@ package com.github.nmorel.gwtjackson.client.mapper;
 import com.github.nmorel.gwtjackson.client.JsonMapper;
 import com.github.nmorel.gwtjackson.shared.JsonDecoderTester;
 import com.github.nmorel.gwtjackson.shared.JsonEncoderTester;
-import com.github.nmorel.gwtjackson.shared.SimpleBean;
+import com.github.nmorel.gwtjackson.shared.model.SimpleBean;
 import com.github.nmorel.gwtjackson.shared.mapper.SimpleBeanJsonMapperTester;
 import com.google.gwt.core.client.GWT;
 

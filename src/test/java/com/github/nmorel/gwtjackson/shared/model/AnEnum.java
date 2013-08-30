@@ -1,4 +1,4 @@
-package com.github.nmorel.gwtjackson.shared;
+package com.github.nmorel.gwtjackson.shared.model;
 
 /** @author Nicolas Morel */
 public enum AnEnum

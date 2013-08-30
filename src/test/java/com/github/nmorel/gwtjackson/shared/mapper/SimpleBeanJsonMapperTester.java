@@ -4,10 +4,10 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
-import com.github.nmorel.gwtjackson.shared.AnEnum;
+import com.github.nmorel.gwtjackson.shared.model.AnEnum;
 import com.github.nmorel.gwtjackson.shared.JsonDecoderTester;
 import com.github.nmorel.gwtjackson.shared.JsonEncoderTester;
-import com.github.nmorel.gwtjackson.shared.SimpleBean;
+import com.github.nmorel.gwtjackson.shared.model.SimpleBean;
 import com.google.gwt.core.client.GWT;
 
 import static junit.framework.Assert.assertEquals;

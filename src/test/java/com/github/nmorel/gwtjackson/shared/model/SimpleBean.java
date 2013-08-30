@@ -1,4 +1,4 @@
-package com.github.nmorel.gwtjackson.shared;
+package com.github.nmorel.gwtjackson.shared.model;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
