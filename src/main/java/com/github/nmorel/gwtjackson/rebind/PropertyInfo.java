@@ -7,17 +7,17 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import  com.google.gwt.user.rebind.SourceWriter;
 import com.google.gwt.core.ext.typeinfo.JField;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JType;
+import com.google.gwt.user.rebind.SourceWriter;
 
 /** @author Nicolas Morel */
 public final class PropertyInfo
 {
     public static interface AdditionalMethod
     {
-        void write( SourceWriter writer );
+        void write( SourceWriter source );
     }
 
     public static PropertyInfo process( FieldAccessors fieldAccessors, BeanInfo beanInfo )
@@ -156,8 +156,8 @@ public final class PropertyInfo
         }
     }
 
-    private static void determineGetter( FieldAccessors fieldAccessors, boolean getterAutoDetect, boolean fieldAutoDetect,
-                                         BeanInfo beanInfo, PropertyInfo result )
+    private static void determineGetter( final FieldAccessors fieldAccessors, final boolean getterAutoDetect, boolean fieldAutoDetect,
+                                         final BeanInfo beanInfo, final PropertyInfo result )
     {
         if ( !getterAutoDetect && !fieldAutoDetect )
         {
@@ -167,28 +167,45 @@ public final class PropertyInfo
 
         if ( getterAutoDetect && !fieldAccessors.getGetter().isPrivate() )
         {
-            result.getterAccessor = fieldAccessors.getGetter().getName() + "()";
+            result.getterAccessor = "bean." + fieldAccessors.getGetter().getName() + "()";
         }
         else if ( fieldAutoDetect && !fieldAccessors.getField().isPrivate() )
         {
-            result.getterAccessor = fieldAccessors.getField().getName();
-        }
-
-        // field/getter has not been detected or is private
-
-        else if ( getterAutoDetect )
-        {
-            // TODO use jsni to call the getter
+            result.getterAccessor = "bean." + fieldAccessors.getField().getName();
         }
         else
         {
-            // TODO use jsni to get the field
-        }
+            // field/getter has not been detected or is private. We use JSNI to access private getter/field.
+            final String methodName = "get" + result.propertyName.substring( 0, 1 ).toUpperCase() + result.propertyName.substring( 1 );
+            result.getterAccessor = methodName + "(bean)";
 
+            result.addAdditionalMethod( new AdditionalMethod()
+            {
+                @Override
+                public void write( SourceWriter source )
+                {
+                    source.println( "private native %s %s(%s bean) /*-{", result.type
+                        .getParameterizedQualifiedSourceName(), methodName, beanInfo.getType().getParameterizedQualifiedSourceName() );
+                    source.indent();
+                    if ( getterAutoDetect )
+                    {
+                        source.println( "return bean.@%s::%s()();", beanInfo.getType().getQualifiedSourceName(), fieldAccessors.getGetter()
+                            .getName() );
+                    }
+                    else
+                    {
+                        source.println( "return bean.@%s::%s;", beanInfo.getType().getQualifiedSourceName(), fieldAccessors.getField()
+                            .getName() );
+                    }
+                    source.outdent();
+                    source.println( "}-*/;" );
+                }
+            } );
+        }
     }
 
-    private static void determineSetter( FieldAccessors fieldAccessors, boolean setterAutoDetect, boolean fieldAutoDetect,
-                                         BeanInfo beanInfo, PropertyInfo result )
+    private static void determineSetter( final FieldAccessors fieldAccessors, final boolean setterAutoDetect,
+                                         final boolean fieldAutoDetect, final BeanInfo beanInfo, final PropertyInfo result )
     {
         if ( !setterAutoDetect && !fieldAutoDetect )
         {
@@ -197,22 +214,40 @@ public final class PropertyInfo
 
         if ( setterAutoDetect && !fieldAccessors.getSetter().isPrivate() )
         {
-            result.setterAccessor = fieldAccessors.getSetter().getName() + "(%s)";
+            result.setterAccessor = "bean." + fieldAccessors.getSetter().getName() + "(%s)";
         }
         else if ( fieldAutoDetect && !fieldAccessors.getField().isPrivate() )
         {
-            result.setterAccessor = fieldAccessors.getField().getName() + " = %s";
-        }
-
-        // field/setter has not been detected or is private
-
-        else if ( setterAutoDetect )
-        {
-            // TODO use jsni to call the setter
+            result.setterAccessor = "bean." + fieldAccessors.getField().getName() + " = %s";
         }
         else
         {
-            // TODO use jsni to set the field
+            // field/setter has not been detected or is private. We use JSNI to access private setter/field.
+            final String methodName = "set" + result.propertyName.substring( 0, 1 ).toUpperCase() + result.propertyName.substring( 1 );
+            result.setterAccessor = methodName + "(bean, %s)";
+
+            result.addAdditionalMethod( new AdditionalMethod()
+            {
+                @Override
+                public void write( SourceWriter source )
+                {
+                    source.println( "private native void %s(%s bean, %s value) /*-{", methodName, beanInfo.getType()
+                        .getParameterizedQualifiedSourceName(), result.type.getParameterizedQualifiedSourceName() );
+                    source.indent();
+                    if ( setterAutoDetect )
+                    {
+                        source.println( "bean.@%s::%s(%s)(value);", beanInfo.getType().getQualifiedSourceName(), fieldAccessors
+                            .getSetter().getName(), result.type.getJNISignature() );
+                    }
+                    else
+                    {
+                        source.println( "bean.@%s::%s = value;", beanInfo.getType().getQualifiedSourceName(), fieldAccessors.getField()
+                            .getName() );
+                    }
+                    source.outdent();
+                    source.println( "}-*/;" );
+                }
+            } );
         }
     }
 
