@@ -1,12 +1,16 @@
 package com.github.nmorel.gwtjackson.rebind;
 
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 
 /** @author Nicolas Morel */
@@ -38,6 +42,17 @@ public final class BeanInfo
                 result.addIgnoredField( ignoreProperty );
             }
             result.ignoreUnknown = jsonIgnoreProperties.ignoreUnknown();
+        }
+
+        JsonPropertyOrder jsonPropertyOrder = findFirstEncounteredAnnotationsOnAllHierarchy( beanType, JsonPropertyOrder.class );
+        if ( null == jsonPropertyOrder )
+        {
+            result.propertyOrderList = Collections.emptyList();
+        }
+        else
+        {
+            result.propertyOrderList = Arrays.asList( jsonPropertyOrder.value() );
+            result.propertyOrderAlphabetic = jsonPropertyOrder.alphabetic();
         }
         return result;
     }
@@ -73,6 +88,8 @@ public final class BeanInfo
     private JsonAutoDetect.Visibility setterVisibility = JsonAutoDetect.Visibility.DEFAULT;
     private JsonAutoDetect.Visibility creatorVisibility = JsonAutoDetect.Visibility.DEFAULT;
     private boolean ignoreUnknown;
+    private List<String> propertyOrderList;
+    private boolean propertyOrderAlphabetic;
 
     private BeanInfo()
     {
@@ -127,5 +144,15 @@ public final class BeanInfo
     public boolean isIgnoreUnknown()
     {
         return ignoreUnknown;
+    }
+
+    public List<String> getPropertyOrderList()
+    {
+        return propertyOrderList;
+    }
+
+    public boolean isPropertyOrderAlphabetic()
+    {
+        return propertyOrderAlphabetic;
     }
 }

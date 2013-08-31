@@ -2,6 +2,7 @@ package com.github.nmorel.gwtjackson.client;
 
 import com.github.nmorel.gwtjackson.client.annotations.InheritanceGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonAutoDetectGwtTest;
+import com.github.nmorel.gwtjackson.client.annotations.JsonPropertyOrderGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.PrivateAccessGwtTest;
 import com.github.nmorel.gwtjackson.client.mapper.ArrayJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.BigDecimalJsonMapperTest;
@@ -70,8 +71,9 @@ public class GwtJacksonTestSuite extends TestCase
 
         // Annotations test
         suite.addTestSuite( JsonAutoDetectGwtTest.class );
-        suite.addTestSuite( PrivateAccessGwtTest.class );
+        suite.addTestSuite( JsonPropertyOrderGwtTest.class );
 
+        suite.addTestSuite( PrivateAccessGwtTest.class );
         suite.addTestSuite( InheritanceGwtTest.class );
 
         return suite;

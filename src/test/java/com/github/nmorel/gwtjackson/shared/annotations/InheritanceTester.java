@@ -37,7 +37,7 @@ public final class InheritanceTester extends AbstractTester
     @JsonAutoDetect( fieldVisibility = JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC, getterVisibility = JsonAutoDetect.Visibility
         .PUBLIC_ONLY,
         setterVisibility = JsonAutoDetect.Visibility.PUBLIC_ONLY )
-    @JsonPropertyOrder( value = {"parentProperty", "propertyOnInterface", "protectedField", "defaultButAnnotated"} )
+    @JsonPropertyOrder( value = {"parentProperty", "protectedField", "propertyOnInterface", "defaultButAnnotated"} )
     public static class ChildBean extends ParentBean
     {
         private String property;
@@ -83,8 +83,8 @@ public final class InheritanceTester extends AbstractTester
         bean.interfaceProperty = "propertyOnInterface";
 
         String expected = "{\"parentProperty\":\"propertyOnChild\"," +
-            "\"propertyOnInterface\":\"propertyOnInterface\"," +
             "\"protectedField\":\"protectedOnParent\"," +
+            "\"propertyOnInterface\":\"propertyOnInterface\"," +
             "\"defaultButAnnotated\":\"defaultOnParent\"}";
         String result = encoder.encode( bean );
 

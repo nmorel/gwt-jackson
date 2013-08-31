@@ -1,6 +1,8 @@
 package com.github.nmorel.gwtjackson.rebind;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -223,7 +225,7 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         parseFields( info.getType(), fieldsMap );
         parseMethods( info.getType(), fieldsMap );
 
-        List<PropertyInfo> properties = new ArrayList<PropertyInfo>();
+        Map<String, PropertyInfo> propertiesMap = new LinkedHashMap<String, PropertyInfo>();
         for ( FieldAccessors field : fieldsMap.values() )
         {
             PropertyInfo property = PropertyInfo.process( field, info );
@@ -233,8 +235,42 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
             }
             else
             {
+                propertiesMap.put( property.getPropertyName(), property );
+            }
+        }
+
+        List<PropertyInfo> properties = new ArrayList<PropertyInfo>();
+
+        // we first add the properties defined in order
+        for ( String orderedProperty : info.getPropertyOrderList() )
+        {
+            // we remove the entry to have the map with only properties with natural or alphabetic order
+            PropertyInfo property = propertiesMap.remove( orderedProperty );
+            if ( null != property )
+            {
                 properties.add( property );
             }
+        }
+
+        // if the user asked for an alphbetic order, we sort the rest of the properties
+        if ( info.isPropertyOrderAlphabetic() )
+        {
+            List<Map.Entry<String, PropertyInfo>> entries = new ArrayList<Map.Entry<String, PropertyInfo>>( propertiesMap.entrySet() );
+            Collections.sort( entries, new Comparator<Map.Entry<String, PropertyInfo>>()
+            {
+                public int compare( Map.Entry<String, PropertyInfo> a, Map.Entry<String, PropertyInfo> b )
+                {
+                    return a.getKey().compareTo( b.getKey() );
+                }
+            } );
+            for ( Map.Entry<String, PropertyInfo> entry : entries )
+            {
+                properties.add( entry.getValue() );
+            }
+        }
+        else
+        {
+            properties.addAll( propertiesMap.values() );
         }
 
         return properties;
