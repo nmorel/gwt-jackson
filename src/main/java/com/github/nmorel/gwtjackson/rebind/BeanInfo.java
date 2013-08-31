@@ -1,5 +1,6 @@
 package com.github.nmorel.gwtjackson.rebind;
 
+import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,38 +16,63 @@ public final class BeanInfo
     {
         BeanInfo result = new BeanInfo();
         result.type = beanType;
-        if ( beanType.isAnnotationPresent( JsonIgnoreType.class ) )
+
+        JsonIgnoreType jsonIgnoreType = findFirstEncounteredAnnotationsOnAllHierarchy( beanType, JsonIgnoreType.class );
+        result.ignoreAllProperties = null != jsonIgnoreType && jsonIgnoreType.value();
+
+        JsonAutoDetect jsonAutoDetect = findFirstEncounteredAnnotationsOnAllHierarchy( beanType, JsonAutoDetect.class );
+        if ( null != jsonAutoDetect )
         {
-            result.ignoreAllProperties = true;
+            result.creatorVisibility = jsonAutoDetect.creatorVisibility();
+            result.fieldVisibility = jsonAutoDetect.fieldVisibility();
+            result.getterVisibility = jsonAutoDetect.getterVisibility();
+            result.isGetterVisibility = jsonAutoDetect.isGetterVisibility();
+            result.setterVisibility = jsonAutoDetect.setterVisibility();
         }
-        if ( beanType.isAnnotationPresent( JsonAutoDetect.class ) )
+
+        JsonIgnoreProperties jsonIgnoreProperties = findFirstEncounteredAnnotationsOnAllHierarchy( beanType, JsonIgnoreProperties.class );
+        if ( null != jsonIgnoreProperties )
         {
-            JsonAutoDetect autoDetect = beanType.getAnnotation( JsonAutoDetect.class );
-            result.creatorVisibility = autoDetect.creatorVisibility();
-            result.fieldVisibility = autoDetect.fieldVisibility();
-            result.getterVisibility = autoDetect.getterVisibility();
-            result.isGetterVisibility = autoDetect.isGetterVisibility();
-            result.setterVisibility = autoDetect.setterVisibility();
-        }
-        if ( beanType.isAnnotationPresent( JsonIgnoreProperties.class ) )
-        {
-            JsonIgnoreProperties ignoreProperties = beanType.getAnnotation( JsonIgnoreProperties.class );
-            for ( String ignoreProperty : ignoreProperties.value() )
+            for ( String ignoreProperty : jsonIgnoreProperties.value() )
             {
                 result.addIgnoredField( ignoreProperty );
             }
+            result.ignoreUnknown = jsonIgnoreProperties.ignoreUnknown();
         }
         return result;
+    }
+
+    private static <T extends Annotation> T findFirstEncounteredAnnotationsOnAllHierarchy( JClassType type, Class<T> annotation )
+    {
+        JClassType currentType = type;
+        while ( null != currentType && !currentType.getQualifiedSourceName().equals( "java.lang.Object" ) )
+        {
+            if ( currentType.isAnnotationPresent( annotation ) )
+            {
+                return currentType.getAnnotation( annotation );
+            }
+            for ( JClassType interf : currentType.getImplementedInterfaces() )
+            {
+                T annot = findFirstEncounteredAnnotationsOnAllHierarchy( interf, annotation );
+                if ( null != annot )
+                {
+                    return annot;
+                }
+            }
+            currentType = currentType.getSuperclass();
+        }
+        return null;
     }
 
     private JClassType type;
     private boolean ignoreAllProperties;
     private Set<String> ignoredFields = new HashSet<String>();
-    private JsonAutoDetect.Visibility fieldVisibility = JsonAutoDetect.Visibility.PUBLIC_ONLY;
-    private JsonAutoDetect.Visibility getterVisibility = JsonAutoDetect.Visibility.PUBLIC_ONLY;
-    private JsonAutoDetect.Visibility isGetterVisibility = JsonAutoDetect.Visibility.PUBLIC_ONLY;
-    private JsonAutoDetect.Visibility setterVisibility = JsonAutoDetect.Visibility.PUBLIC_ONLY;
-    private JsonAutoDetect.Visibility creatorVisibility = JsonAutoDetect.Visibility.PUBLIC_ONLY;
+    private JsonAutoDetect.Visibility fieldVisibility = JsonAutoDetect.Visibility.DEFAULT;
+    private JsonAutoDetect.Visibility getterVisibility = JsonAutoDetect.Visibility.DEFAULT;
+    private JsonAutoDetect.Visibility isGetterVisibility = JsonAutoDetect.Visibility.DEFAULT;
+    private JsonAutoDetect.Visibility setterVisibility = JsonAutoDetect.Visibility.DEFAULT;
+    private JsonAutoDetect.Visibility creatorVisibility = JsonAutoDetect.Visibility.DEFAULT;
+    private boolean ignoreUnknown;
 
     private BeanInfo()
     {
@@ -96,5 +122,10 @@ public final class BeanInfo
     public JsonAutoDetect.Visibility getCreatorVisibility()
     {
         return creatorVisibility;
+    }
+
+    public boolean isIgnoreUnknown()
+    {
+        return ignoreUnknown;
     }
 }

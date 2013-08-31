@@ -143,6 +143,7 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
 
     private void generateNewInstanceBody( SourceWriter source, BeanInfo info )
     {
+        // TODO handle the case where constructor is private or annotated with @JsonCreator
         source.println( "return new %s();", info.getType().getParameterizedQualifiedSourceName() );
     }
 
@@ -219,8 +220,8 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
     private List<PropertyInfo> findAllProperties( BeanInfo info )
     {
         Map<String, FieldAccessors> fieldsMap = new LinkedHashMap<String, FieldAccessors>();
-        parseFields( info, fieldsMap );
-        parseMethods( info, fieldsMap );
+        parseFields( info.getType(), fieldsMap );
+        parseMethods( info.getType(), fieldsMap );
 
         List<PropertyInfo> properties = new ArrayList<PropertyInfo>();
         for ( FieldAccessors field : fieldsMap.values() )
@@ -239,9 +240,14 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         return properties;
     }
 
-    private void parseFields( BeanInfo info, Map<String, FieldAccessors> propertiesMap )
+    private void parseFields( JClassType type, Map<String, FieldAccessors> propertiesMap )
     {
-        for ( JField field : info.getType().getFields() )
+        if ( null == type || type.getQualifiedSourceName().equals( "java.lang.Object" ) )
+        {
+            return;
+        }
+
+        for ( JField field : type.getFields() )
         {
             String fieldName = field.getName();
             FieldAccessors property = propertiesMap.get( fieldName );
@@ -250,13 +256,28 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
                 property = new FieldAccessors( fieldName );
                 propertiesMap.put( fieldName, property );
             }
-            property.setField( field );
+            if ( null == property.getField() )
+            {
+                property.setField( field );
+            }
+            else
+            {
+                // we found an other field with the same name on a superclass. we ignore it
+                logger.log( TreeLogger.Type.WARN, "A field with the same name as " + field
+                    .getName() + " has already been found on child class" );
+            }
         }
+        parseFields( type.getSuperclass(), propertiesMap );
     }
 
-    private void parseMethods( BeanInfo info, Map<String, FieldAccessors> propertiesMap )
+    private void parseMethods( JClassType type, Map<String, FieldAccessors> propertiesMap )
     {
-        for ( JMethod method : info.getType().getMethods() )
+        if ( null == type || type.getQualifiedSourceName().equals( "java.lang.Object" ) )
+        {
+            return;
+        }
+
+        for ( JMethod method : type.getMethods() )
         {
             if ( null != method.isConstructor() || method.isStatic() )
             {
@@ -280,7 +301,7 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
                             property = new FieldAccessors( fieldName );
                             propertiesMap.put( fieldName, property );
                         }
-                        property.setSetter( method );
+                        property.addSetter( method );
                     }
                 }
             }
@@ -301,11 +322,18 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
                             property = new FieldAccessors( fieldName );
                             propertiesMap.put( fieldName, property );
                         }
-                        property.setGetter( method );
+                        property.addGetter( method );
                     }
                 }
             }
         }
+
+        for ( JClassType interf : type.getImplementedInterfaces() )
+        {
+            parseMethods( interf, propertiesMap );
+        }
+
+        parseMethods( type.getSuperclass(), propertiesMap );
     }
 
     private String extractFieldNameFromGetterSetterMethodName( String methodName )

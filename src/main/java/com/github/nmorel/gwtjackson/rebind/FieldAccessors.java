@@ -1,5 +1,8 @@
 package com.github.nmorel.gwtjackson.rebind;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gwt.core.ext.typeinfo.JField;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 
@@ -10,10 +13,18 @@ import com.google.gwt.core.ext.typeinfo.JMethod;
  */
 public class FieldAccessors
 {
+    // name fo the field
     private String fieldName;
+    // field
     private JField field;
+    // getter method that will be called
     private JMethod getter;
+    // additionnal getters found on superclass or interfaces that may contains annotations
+    private List<JMethod> getters = new ArrayList<JMethod>();
+    // setter method that will be called
     private JMethod setter;
+    // additionnal setters found on superclass or interfaces that may contains annotations
+    private List<JMethod> setters = new ArrayList<JMethod>();
 
     public FieldAccessors( String fieldName )
     {
@@ -45,9 +56,16 @@ public class FieldAccessors
         return getter;
     }
 
-    public void setGetter( JMethod getter )
+    public void addGetter( JMethod getter )
     {
-        this.getter = getter;
+        if ( null == this.getter && !getter.isAbstract() )
+        {
+            this.getter = getter;
+        }
+        else
+        {
+            this.getters.add( getter );
+        }
     }
 
     public JMethod getSetter()
@@ -55,8 +73,25 @@ public class FieldAccessors
         return setter;
     }
 
-    public void setSetter( JMethod setter )
+    public void addSetter( JMethod setter )
     {
-        this.setter = setter;
+        if ( null == this.setter && !setter.isAbstract() )
+        {
+            this.setter = setter;
+        }
+        else
+        {
+            this.setters.add( setter );
+        }
+    }
+
+    public List<JMethod> getGetters()
+    {
+        return getters;
+    }
+
+    public List<JMethod> getSetters()
+    {
+        return setters;
     }
 }
