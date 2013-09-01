@@ -1,7 +1,7 @@
-package com.github.nmorel.gwtjackson.jackson.annotations;
+package com.github.nmorel.gwtjackson.jackson.advanced;
 
 import com.github.nmorel.gwtjackson.jackson.AbstractJacksonTest;
-import com.github.nmorel.gwtjackson.shared.annotations.PrivateAccessTester;
+import com.github.nmorel.gwtjackson.shared.advanced.PrivateAccessTester;
 import org.junit.Test;
 
 /** @author Nicolas Morel */

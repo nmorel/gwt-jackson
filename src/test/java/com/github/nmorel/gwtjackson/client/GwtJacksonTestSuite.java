@@ -1,10 +1,10 @@
 package com.github.nmorel.gwtjackson.client;
 
-import com.github.nmorel.gwtjackson.client.annotations.InheritanceGwtTest;
+import com.github.nmorel.gwtjackson.client.advanced.InheritanceGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonAutoDetectGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonIgnoreGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonPropertyOrderGwtTest;
-import com.github.nmorel.gwtjackson.client.annotations.PrivateAccessGwtTest;
+import com.github.nmorel.gwtjackson.client.advanced.PrivateAccessGwtTest;
 import com.github.nmorel.gwtjackson.client.mapper.ArrayJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.BigDecimalJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.BigIntegerJsonMapperTest;
@@ -75,6 +75,7 @@ public class GwtJacksonTestSuite extends TestCase
         suite.addTestSuite( JsonPropertyOrderGwtTest.class );
         suite.addTestSuite( JsonIgnoreGwtTest.class );
 
+        // Advanced use cases
         suite.addTestSuite( PrivateAccessGwtTest.class );
         suite.addTestSuite( InheritanceGwtTest.class );
 

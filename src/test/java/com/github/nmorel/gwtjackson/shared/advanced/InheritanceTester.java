@@ -1,4 +1,4 @@
-package com.github.nmorel.gwtjackson.shared.annotations;
+package com.github.nmorel.gwtjackson.shared.advanced;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;

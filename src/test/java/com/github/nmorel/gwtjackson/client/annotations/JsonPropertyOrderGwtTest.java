@@ -2,7 +2,6 @@ package com.github.nmorel.gwtjackson.client.annotations;
 
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.github.nmorel.gwtjackson.client.JsonMapper;
-import com.github.nmorel.gwtjackson.shared.JsonEncoderTester;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonPropertyOrderTester;
 import com.google.gwt.core.client.GWT;
 
@@ -11,90 +10,57 @@ public class JsonPropertyOrderGwtTest extends GwtJacksonTestCase
 {
     public interface BeanWithPropertiesNotOrderedMapper extends JsonMapper<JsonPropertyOrderTester.BeanWithPropertiesNotOrdered>
     {
+        static BeanWithPropertiesNotOrderedMapper INSTANCE = GWT.create( BeanWithPropertiesNotOrderedMapper.class );
     }
 
     public interface BeanWithDefinedOrderMapper extends JsonMapper<JsonPropertyOrderTester.BeanWithDefinedOrder>
     {
+        static BeanWithDefinedOrderMapper INSTANCE = GWT.create( BeanWithDefinedOrderMapper.class );
     }
 
     public interface BeanWithSomeDefinedOrderMapper extends JsonMapper<JsonPropertyOrderTester.BeanWithSomeDefinedOrder>
     {
+        static BeanWithSomeDefinedOrderMapper INSTANCE = GWT.create( BeanWithSomeDefinedOrderMapper.class );
     }
 
     public interface BeanWithAlphabeticOrderMapper extends JsonMapper<JsonPropertyOrderTester.BeanWithAlphabeticOrder>
     {
+        static BeanWithAlphabeticOrderMapper INSTANCE = GWT.create( BeanWithAlphabeticOrderMapper.class );
     }
 
     public interface BeanWithSomeDefinedAndRestAlphabeticOrderMapper extends JsonMapper<JsonPropertyOrderTester
         .BeanWithSomeDefinedAndRestAlphabeticOrder>
     {
+        static BeanWithSomeDefinedAndRestAlphabeticOrderMapper INSTANCE = GWT
+            .create( BeanWithSomeDefinedAndRestAlphabeticOrderMapper.class );
     }
+
+    private JsonPropertyOrderTester tester = JsonPropertyOrderTester.INSTANCE;
 
     public void testEncodingBeanWithPropertiesNotOrdered()
     {
-        JsonPropertyOrderTester.INSTANCE
-            .testEncodingBeanWithPropertiesNotOrdered( new JsonEncoderTester<JsonPropertyOrderTester.BeanWithPropertiesNotOrdered>()
-            {
-                @Override
-                public String encode( JsonPropertyOrderTester.BeanWithPropertiesNotOrdered input )
-                {
-                    return GWT.<BeanWithPropertiesNotOrderedMapper>create( BeanWithPropertiesNotOrderedMapper.class ).encode( input );
-                }
-            } );
+        tester.testEncodingBeanWithPropertiesNotOrdered( createEncoder( BeanWithPropertiesNotOrderedMapper.INSTANCE ) );
     }
 
     public void testEncodingBeanWithDefinedOrder()
     {
-        JsonPropertyOrderTester.INSTANCE
-            .testEncodingBeanWithDefinedOrder( new JsonEncoderTester<JsonPropertyOrderTester.BeanWithDefinedOrder>()
-            {
-                @Override
-                public String encode( JsonPropertyOrderTester.BeanWithDefinedOrder input )
-                {
-                    return GWT.<BeanWithDefinedOrderMapper>create( BeanWithDefinedOrderMapper.class ).encode( input );
-                }
-            } );
+        tester.testEncodingBeanWithDefinedOrder( createEncoder( BeanWithDefinedOrderMapper.INSTANCE ) );
     }
 
     public void testEncodingBeanWithSomeDefinedOrder()
     {
-        JsonPropertyOrderTester.INSTANCE
-            .testEncodingBeanWithSomeDefinedOrder( new JsonEncoderTester<JsonPropertyOrderTester.BeanWithSomeDefinedOrder>()
-            {
-                @Override
-                public String encode( JsonPropertyOrderTester.BeanWithSomeDefinedOrder input )
-                {
-                    return GWT.<BeanWithSomeDefinedOrderMapper>create( BeanWithSomeDefinedOrderMapper.class ).encode( input );
-                }
-            } );
+        tester.testEncodingBeanWithSomeDefinedOrder( createEncoder( BeanWithSomeDefinedOrderMapper.INSTANCE ) );
     }
 
     public void testEncodingBeanWithAlphabeticOrder()
     {
-        JsonPropertyOrderTester.INSTANCE
-            .testEncodingBeanWithAlphabeticOrder( new JsonEncoderTester<JsonPropertyOrderTester.BeanWithAlphabeticOrder>()
-            {
-                @Override
-                public String encode( JsonPropertyOrderTester.BeanWithAlphabeticOrder input )
-                {
-                    return GWT.<BeanWithAlphabeticOrderMapper>create( BeanWithAlphabeticOrderMapper.class ).encode( input );
-                }
-            } );
+        tester.testEncodingBeanWithAlphabeticOrder( createEncoder( BeanWithAlphabeticOrderMapper.INSTANCE ) );
     }
 
     public void testEncodingBeanWithSomeDefinedAndRestAlphabeticOrder()
     {
-        JsonPropertyOrderTester.INSTANCE
-            .testEncodingBeanWithSomeDefinedAndRestAlphabeticOrder( new JsonEncoderTester<JsonPropertyOrderTester
-                .BeanWithSomeDefinedAndRestAlphabeticOrder>()
-            {
-                @Override
-                public String encode( JsonPropertyOrderTester.BeanWithSomeDefinedAndRestAlphabeticOrder input )
-                {
-                    return GWT
-                        .<BeanWithSomeDefinedAndRestAlphabeticOrderMapper>create( BeanWithSomeDefinedAndRestAlphabeticOrderMapper.class )
-                        .encode( input );
-                }
-            } );
+        tester
+            .testEncodingBeanWithSomeDefinedAndRestAlphabeticOrder( createEncoder( BeanWithSomeDefinedAndRestAlphabeticOrderMapper
+                .INSTANCE ) );
     }
 }
