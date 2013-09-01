@@ -39,6 +39,10 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
     protected static final String JSON_DECODING_EXCEPTION_CLASS = "com.github.nmorel.gwtjackson.client.exception.JsonDecodingException";
     protected static final String JSON_ENCODING_EXCEPTION_CLASS = "com.github.nmorel.gwtjackson.client.exception.JsonEncodingException";
     protected static final String ARRAY_CREATOR_CLASS = "com.github.nmorel.gwtjackson.client.mapper.ArrayJsonMapper.ArrayCreator";
+    protected static final String ABSTRACT_SUPERCLASS_JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.mapper" + "" +
+        ".AbstractSuperclassJsonMapper";
+    protected static final String SUBTYPE_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractSuperclassJsonMapper" + "" +
+        ".SubtypeMapper";
 
     /**
      * Returns the String represention of the java type for a primitive for example int/Integer, float/Float, char/Character.
@@ -121,7 +125,8 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
         if ( null != arrayType )
         {
             String method = "ctx.createArrayJsonMapper(%s, %s)";
-            String arrayCreator = "new " + ARRAY_CREATOR_CLASS + "<" + arrayType.getComponentType().getParameterizedQualifiedSourceName() + ">(){\n" +
+            String arrayCreator = "new " + ARRAY_CREATOR_CLASS + "<" + arrayType.getComponentType()
+                .getParameterizedQualifiedSourceName() + ">(){\n" +
                 "  @Override\n" +
                 "  public " + arrayType.getParameterizedQualifiedSourceName() + " create( int length ) {\n" +
                 "    return new " + arrayType.getComponentType().getParameterizedQualifiedSourceName() + "[length];\n" +

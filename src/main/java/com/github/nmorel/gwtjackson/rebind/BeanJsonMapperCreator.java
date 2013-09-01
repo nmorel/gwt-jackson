@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
@@ -63,7 +64,8 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         String packageName = beanType.getPackage().getName();
         String qualifiedMapperClassName = packageName + "." + mapperClassSimpleName;
 
-        SourceWriter source = getSourceWriter( packageName, mapperClassSimpleName, ABSTRACT_BEAN_JSON_MAPPER_CLASS + "<" +
+        String superclass = beanType.getSubtypes().length == 0 ? ABSTRACT_BEAN_JSON_MAPPER_CLASS : ABSTRACT_SUPERCLASS_JSON_MAPPER_CLASS;
+        SourceWriter source = getSourceWriter( packageName, mapperClassSimpleName, superclass + "<" +
             beanType.getParameterizedQualifiedSourceName() + ">" );
 
         // the class already exists, no need to continue
@@ -72,20 +74,25 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
             return qualifiedMapperClassName;
         }
 
-        writeClassBody( source, beanType );
+        BeanInfo info = BeanInfo.process( beanType, qualifiedMapperClassName, mapperClassSimpleName );
+        writeClassBody( source, info );
 
         return qualifiedMapperClassName;
     }
 
-    private void writeClassBody( SourceWriter source, JClassType beanType ) throws UnableToCompleteException
+    private void writeClassBody( SourceWriter source, BeanInfo info ) throws UnableToCompleteException
     {
-        BeanInfo info = BeanInfo.process( beanType );
 
         source.println();
         source.indent();
 
+        if ( info.isHasSubtypes() )
+        {
+            generateSubtypesMethods( source, info );
+        }
+
         source.println( "@Override" );
-        source.println( "protected %s newInstance() {", beanType.getParameterizedQualifiedSourceName() );
+        source.println( "protected %s newInstance() {", info.getType().getParameterizedQualifiedSourceName() );
         source.indent();
         generateNewInstanceBody( source, info );
         source.outdent();
@@ -96,7 +103,7 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         List<PropertyInfo> properties;
         if ( info.isIgnoreAllProperties() )
         {
-            logger.log( TreeLogger.Type.DEBUG, "Ignoring all properties of type " + beanType );
+            logger.log( TreeLogger.Type.DEBUG, "Ignoring all properties of type " + info.getType() );
             properties = null;
         }
         else
@@ -105,11 +112,9 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         }
 
         source.println( "@Override" );
-        source
-            .println( "protected void initDecoders(java.util.Map<java.lang.String, %s<%s>> decoders) {", DECODER_PROPERTY_BEAN_CLASS,
-                beanType
-                .getParameterizedQualifiedSourceName() );
-        if ( !info.isIgnoreAllProperties() )
+        source.println( "protected void initDecoders(java.util.Map<java.lang.String, %s<%s>> decoders) {", DECODER_PROPERTY_BEAN_CLASS, info
+            .getType().getParameterizedQualifiedSourceName() );
+        if ( !info.isIgnoreAllProperties() && info.isInstantiable() )
         {
             source.indent();
             generateInitDecoders( source, info, properties );
@@ -120,10 +125,8 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         source.println();
 
         source.println( "@Override" );
-        source
-            .println( "protected void initEncoders(java.util.Map<java.lang.String, %s<%s>> encoders) {", ENCODER_PROPERTY_BEAN_CLASS,
-                beanType
-                .getParameterizedQualifiedSourceName() );
+        source.println( "protected void initEncoders(java.util.Map<java.lang.String, %s<%s>> encoders) {", ENCODER_PROPERTY_BEAN_CLASS, info
+            .getType().getParameterizedQualifiedSourceName() );
         if ( !info.isIgnoreAllProperties() )
         {
             source.indent();
@@ -143,10 +146,99 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         source.commit( logger );
     }
 
+    private void generateSubtypesMethods( SourceWriter source, BeanInfo info ) throws UnableToCompleteException
+    {
+        // gives the property name
+        if ( null != info.getTypeInfo() && JsonTypeInfo.As.PROPERTY.equals( info.getTypeInfo().include() ) )
+        {
+            String typeInfoProperty = info.getTypeInfo().property().isEmpty() ? info.getTypeInfo().use().getDefaultPropertyName() : info
+                .getTypeInfo().property();
+            source.println( "public %s() {", info.getMapperClassSimpleName() );
+            source.indent();
+            source.println( "super(\"%s\");", typeInfoProperty );
+            source.outdent();
+            source.println( "}" );
+            source.println();
+        }
+
+        // tell if the class is instantiable
+        source.println( "@Override" );
+        source.println( "protected boolean isInstantiable() {" );
+        source.indent();
+        source.println( "return %s;", info.isInstantiable() );
+        source.outdent();
+        source.println( "}" );
+        source.println();
+
+        // generate the subtype mappers
+        source.println( "@Override" );
+        source.println( "protected void initSubtypeMappers() {" );
+        source.indent();
+
+        generateSubtypeMappers( source, info );
+
+        source.outdent();
+        source.println( "}" );
+        source.println();
+    }
+
+    private void generateSubtypeMappers( SourceWriter source, BeanInfo info ) throws UnableToCompleteException
+    {
+        if ( info.isInstantiable() )
+        {
+            generateSubtypeMapper( source, info, info.getType() );
+        }
+        for ( JClassType subtype : info.getType().getSubtypes() )
+        {
+            generateSubtypeMapper( source, info, subtype );
+        }
+    }
+
+    private void generateSubtypeMapper( SourceWriter source, BeanInfo info, JClassType subtype ) throws
+        UnableToCompleteException
+    {
+        // TODO depends on annotation
+        String typeInfo = subtype.getQualifiedBinaryName();
+        String mapper = info.getType() == subtype ? info.getQualifiedMapperClassName() + ".this" : createMapperFromType( subtype );
+
+        source.println( "addSubtypeMapper( new %s<%s>() {", SUBTYPE_MAPPER_CLASS, subtype.getQualifiedSourceName() );
+        source.indent();
+
+        source.println( "@Override" );
+        source.println( "public %s decodeObject( %s reader, %s ctx ) throws java.io.IOException {", subtype
+            .getQualifiedSourceName(), JSON_READER_CLASS, JSON_DECODING_CONTEXT_CLASS );
+        source.indent();
+        source.println( "return %s.decodeObject( reader, ctx );", mapper );
+        source.outdent();
+        source.println( "}" );
+
+        source.println();
+
+        source.println( "@Override" );
+        source.println( "public void encodeObject( %s writer, %s bean, %s ctx ) throws java.io.IOException {", JSON_WRITER_CLASS, subtype
+            .getParameterizedQualifiedSourceName(), JSON_ENCODING_CONTEXT_CLASS );
+        source.indent();
+        source.println( "%s.encodeObject( writer, bean, ctx );", mapper );
+        source.outdent();
+        source.println( "}" );
+
+        source.outdent();
+        source.println( "}, \"%s\", %s.class );", typeInfo, subtype.getQualifiedSourceName() );
+        source.println();
+    }
+
     private void generateNewInstanceBody( SourceWriter source, BeanInfo info )
     {
         // TODO handle the case where constructor is private or annotated with @JsonCreator
-        source.println( "return new %s();", info.getType().getParameterizedQualifiedSourceName() );
+        if ( info.isInstantiable() )
+        {
+            source.println( "return new %s();", info.getType().getParameterizedQualifiedSourceName() );
+        }
+        else
+        {
+            source.println( "throw new %s(\"Cannot instantiate the type \" + %s.class.getName());", JSON_DECODING_EXCEPTION_CLASS, info
+                .getType().getQualifiedSourceName() );
+        }
     }
 
     private void generateInitDecoders( SourceWriter source, BeanInfo info, List<PropertyInfo> properties ) throws UnableToCompleteException

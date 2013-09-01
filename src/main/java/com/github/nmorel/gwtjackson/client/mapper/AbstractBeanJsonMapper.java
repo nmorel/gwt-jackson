@@ -59,11 +59,17 @@ public abstract class AbstractBeanJsonMapper<T> extends AbstractJsonMapper<T>
     @Override
     public T doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
     {
+        reader.beginObject();
+        T result = decodeObject( reader, ctx );
+        reader.endObject();
+        return result;
+    }
+
+    public final T decodeObject( JsonReader reader, JsonDecodingContext ctx ) throws IOException
+    {
         initDecoders();
 
         T result = newInstance();
-
-        reader.beginObject();
 
         while ( JsonToken.NAME.equals( reader.peek() ) )
         {
@@ -86,22 +92,25 @@ public abstract class AbstractBeanJsonMapper<T> extends AbstractJsonMapper<T>
             }
         }
 
-        reader.endObject();
-
         return result;
     }
 
     @Override
     public void doEncode( JsonWriter writer, T value, JsonEncodingContext ctx ) throws IOException
     {
+        writer.beginObject();
+        encodeObject( writer, value, ctx );
+        writer.endObject();
+    }
+
+    public final void encodeObject( JsonWriter writer, T value, JsonEncodingContext ctx ) throws IOException
+    {
         initEncoders();
 
-        writer.beginObject();
         for ( Map.Entry<String, EncoderProperty<T>> entry : encoders.entrySet() )
         {
             writer.name( entry.getKey() );
             entry.getValue().encode( writer, value, ctx );
         }
-        writer.endObject();
     }
 }

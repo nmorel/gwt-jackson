@@ -11,15 +11,22 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 
 /** @author Nicolas Morel */
 public final class BeanInfo
 {
-    public static BeanInfo process( JClassType beanType )
+    public static BeanInfo process( JClassType beanType, String qualifiedMapperClassName, String mapperClassSimpleName )
     {
         BeanInfo result = new BeanInfo();
         result.type = beanType;
+        result.qualifiedMapperClassName = qualifiedMapperClassName;
+        result.mapperClassSimpleName = mapperClassSimpleName;
+        result.hasSubtypes = beanType.getSubtypes().length > 0;
+        result.instantiable = beanType.isDefaultInstantiable();
+
+        result.typeInfo = findFirstEncounteredAnnotationsOnAllHierarchy( beanType, JsonTypeInfo.class );
 
         JsonIgnoreType jsonIgnoreType = findFirstEncounteredAnnotationsOnAllHierarchy( beanType, JsonIgnoreType.class );
         result.ignoreAllProperties = null != jsonIgnoreType && jsonIgnoreType.value();
@@ -80,6 +87,11 @@ public final class BeanInfo
     }
 
     private JClassType type;
+    private String qualifiedMapperClassName;
+    private String mapperClassSimpleName;
+    private boolean hasSubtypes;
+    private boolean instantiable;
+    private JsonTypeInfo typeInfo;
     private boolean ignoreAllProperties;
     private Set<String> ignoredFields = new HashSet<String>();
     private JsonAutoDetect.Visibility fieldVisibility = JsonAutoDetect.Visibility.DEFAULT;
@@ -99,6 +111,31 @@ public final class BeanInfo
     public JClassType getType()
     {
         return type;
+    }
+
+    public String getQualifiedMapperClassName()
+    {
+        return qualifiedMapperClassName;
+    }
+
+    public String getMapperClassSimpleName()
+    {
+        return mapperClassSimpleName;
+    }
+
+    public boolean isHasSubtypes()
+    {
+        return hasSubtypes;
+    }
+
+    public boolean isInstantiable()
+    {
+        return instantiable;
+    }
+
+    public JsonTypeInfo getTypeInfo()
+    {
+        return typeInfo;
     }
 
     public boolean isIgnoreAllProperties()

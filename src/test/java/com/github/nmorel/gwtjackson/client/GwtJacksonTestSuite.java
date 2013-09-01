@@ -1,6 +1,7 @@
 package com.github.nmorel.gwtjackson.client;
 
 import com.github.nmorel.gwtjackson.client.advanced.InheritanceGwtTest;
+import com.github.nmorel.gwtjackson.client.advanced.PolymorphismGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonAutoDetectGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonIgnoreGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonPropertyOrderGwtTest;
@@ -78,6 +79,7 @@ public class GwtJacksonTestSuite extends TestCase
         // Advanced use cases
         suite.addTestSuite( PrivateAccessGwtTest.class );
         suite.addTestSuite( InheritanceGwtTest.class );
+        suite.addTestSuite( PolymorphismGwtTest.class );
 
         return suite;
     }
