@@ -26,17 +26,33 @@ public final class PropertyInfo
         PropertyInfo result = new PropertyInfo();
 
         // we first check if the property is ignored
-        boolean ignored = processIgnore( fieldAccessors, beanInfo );
-        if ( ignored )
+        JsonIgnore jsonIgnore = findAnnotationOnAnyAccessor( fieldAccessors, JsonIgnore.class );
+        result.ignored = null != jsonIgnore && jsonIgnore.value();
+        if ( result.ignored )
         {
-            result.ignored = true;
             return result;
         }
 
+        // find the type of the property
         result.type = findType( fieldAccessors );
-        result.propertyName = fieldAccessors.getFieldName();
 
+        // determine the property name
         JsonProperty jsonProperty = findAnnotationOnAnyAccessor( fieldAccessors, JsonProperty.class );
+        if ( null != jsonProperty && null != jsonProperty.value() && !JsonProperty.USE_DEFAULT_NAME.equals( jsonProperty.value() ) )
+        {
+            result.propertyName = jsonProperty.value();
+        }
+        else
+        {
+            result.propertyName = fieldAccessors.getFieldName();
+        }
+
+        // now that we have the property name, we check if it's not in the ignored properties
+        result.ignored = beanInfo.getIgnoredFields().contains( result.propertyName );
+        if ( result.ignored )
+        {
+            return result;
+        }
 
         boolean getterAutoDetected = null != fieldAccessors.getGetter() && (null != jsonProperty || isGetterAutoDetected( fieldAccessors
             .getGetter(), beanInfo ));
@@ -52,26 +68,10 @@ public final class PropertyInfo
             return result;
         }
 
-        if ( null != jsonProperty && null != jsonProperty.value() && !JsonProperty.USE_DEFAULT_NAME.equals( jsonProperty.value() ) )
-        {
-            result.propertyName = jsonProperty.value();
-        }
-
         determineGetter( fieldAccessors, getterAutoDetected, fieldAutoDetected, beanInfo, result );
         determineSetter( fieldAccessors, setterAutoDetected, fieldAutoDetected, beanInfo, result );
 
         return result;
-    }
-
-    private static boolean processIgnore( FieldAccessors fieldAccessors, BeanInfo beanInfo )
-    {
-        if ( beanInfo.getIgnoredFields().contains( fieldAccessors.getFieldName() ) )
-        {
-            return true;
-        }
-
-        JsonIgnore jsonIgnore = findAnnotationOnAnyAccessor( fieldAccessors, JsonIgnore.class );
-        return null != jsonIgnore && jsonIgnore.value();
     }
 
     private static <T extends Annotation> T findAnnotationOnAnyAccessor( FieldAccessors fieldAccessors, Class<T> annotation )
