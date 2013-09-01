@@ -2,11 +2,12 @@ package com.github.nmorel.gwtjackson.shared.mapper;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Arrays;
 
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
-import com.github.nmorel.gwtjackson.shared.model.AnEnum;
 import com.github.nmorel.gwtjackson.shared.JsonDecoderTester;
 import com.github.nmorel.gwtjackson.shared.JsonEncoderTester;
+import com.github.nmorel.gwtjackson.shared.model.AnEnum;
 import com.github.nmorel.gwtjackson.shared.model.SimpleBean;
 import com.google.gwt.core.client.GWT;
 
@@ -49,7 +50,8 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester
             "\"date\":1345304756543," +
             "\"sqlDate\":\"2012-08-18\"," +
             "\"sqlTime\":\"17:45:56\"," +
-            "\"sqlTimestamp\":1345304756546}";
+            "\"sqlTimestamp\":1345304756546," +
+            "\"integerArray\":[1,2,3,4]}";
 
         SimpleBean bean = decoder.decode( input );
         assertNotNull( bean );
@@ -78,6 +80,7 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester
         assertEquals( new java.sql.Date( getUTCTime( 2012, 8, 18, 15, 45, 56, 544 ) ).toString(), bean.getSqlDate().toString() );
         assertEquals( new java.sql.Time( getUTCTime( 2012, 8, 18, 15, 45, 56, 545 ) ).toString(), bean.getSqlTime().toString() );
         assertEquals( new java.sql.Timestamp( getUTCTime( 2012, 8, 18, 15, 45, 56, 546 ) ), bean.getSqlTimestamp() );
+        assertTrue( Arrays.deepEquals( new Integer[]{1, 2, 3, 4}, bean.getIntegerArray() ) );
     }
 
     public void testEncodeValue( JsonEncoderTester<SimpleBean> encoder )
@@ -107,6 +110,7 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester
         bean.setSqlDate( new java.sql.Date( getUTCTime( 2012, 8, 18, 15, 45, 56, 544 ) ) );
         bean.setSqlTime( new java.sql.Time( getUTCTime( 2012, 8, 18, 15, 45, 56, 545 ) ) );
         bean.setSqlTimestamp( new java.sql.Timestamp( getUTCTime( 2012, 8, 18, 15, 45, 56, 546 ) ) );
+        bean.setIntegerArray( new Integer[]{1, 2, 3, 4} );
 
         String expected = "{\"string\":\"toto\"," +
             "\"bytePrimitive\":34," +
@@ -131,7 +135,8 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester
             "\"date\":1345304756543," +
             "\"sqlDate\":\"2012-08-18\"," +
             "\"sqlTime\":\"17:45:56\"," +
-            "\"sqlTimestamp\":1345304756546}";
+            "\"sqlTimestamp\":1345304756546," +
+            "\"integerArray\":[1,2,3,4]}";
 
         assertEquals( expected, encoder.encode( bean ) );
     }

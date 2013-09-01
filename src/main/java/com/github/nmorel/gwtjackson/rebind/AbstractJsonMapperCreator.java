@@ -7,6 +7,7 @@ import java.util.List;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
+import com.google.gwt.core.ext.typeinfo.JArrayType;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JEnumType;
 import com.google.gwt.core.ext.typeinfo.JParameterizedType;
@@ -26,8 +27,10 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
     protected static final String JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.JsonMapper";
     protected static final String ABSTRACT_JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.AbstractJsonMapper";
     protected static final String ABSTRACT_BEAN_JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper";
-    protected static final String DECODER_PROPERTY_BEAN_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper.DecoderProperty";
-    protected static final String ENCODER_PROPERTY_BEAN_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper.EncoderProperty";
+    protected static final String DECODER_PROPERTY_BEAN_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper" + "" +
+        ".DecoderProperty";
+    protected static final String ENCODER_PROPERTY_BEAN_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper" + "" +
+        ".EncoderProperty";
     protected static final String JSON_READER_CLASS = "com.github.nmorel.gwtjackson.client.stream.JsonReader";
     protected static final String JSON_WRITER_CLASS = "com.github.nmorel.gwtjackson.client.stream.JsonWriter";
     protected static final String JSON_MAPPING_CONTEXT_CLASS = "com.github.nmorel.gwtjackson.client.JsonMappingContext";
@@ -35,6 +38,7 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
     protected static final String JSON_ENCODING_CONTEXT_CLASS = "com.github.nmorel.gwtjackson.client.JsonEncodingContext";
     protected static final String JSON_DECODING_EXCEPTION_CLASS = "com.github.nmorel.gwtjackson.client.exception.JsonDecodingException";
     protected static final String JSON_ENCODING_EXCEPTION_CLASS = "com.github.nmorel.gwtjackson.client.exception.JsonEncodingException";
+    protected static final String ARRAY_CREATOR_CLASS = "com.github.nmorel.gwtjackson.client.mapper.ArrayJsonMapper.ArrayCreator";
 
     /**
      * Returns the String represention of the java type for a primitive for example int/Integer, float/Float, char/Character.
@@ -111,6 +115,19 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
         if ( null != enumType )
         {
             return "ctx.createEnumJsonMapper(" + enumType.getQualifiedSourceName() + ".class)";
+        }
+
+        JArrayType arrayType = type.isArray();
+        if ( null != arrayType )
+        {
+            String method = "ctx.createArrayJsonMapper(%s, %s)";
+            String arrayCreator = "new " + ARRAY_CREATOR_CLASS + "<" + arrayType.getComponentType().getParameterizedQualifiedSourceName() + ">(){\n" +
+                "  @Override\n" +
+                "  public " + arrayType.getParameterizedQualifiedSourceName() + " create( int length ) {\n" +
+                "    return new " + arrayType.getComponentType().getParameterizedQualifiedSourceName() + "[length];\n" +
+                "  }\n" +
+                "}";
+            return String.format( method, createMapperFromType( arrayType.getComponentType() ), arrayCreator );
         }
 
         JParameterizedType parameterizedType = type.isParameterized();

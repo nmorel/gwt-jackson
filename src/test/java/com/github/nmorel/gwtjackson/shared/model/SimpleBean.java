@@ -32,6 +32,7 @@ public class SimpleBean
     private java.sql.Date sqlDate;
     private Time sqlTime;
     private Timestamp sqlTimestamp;
+    private Integer[] integerArray;
 
     public String getString()
     {
@@ -271,5 +272,15 @@ public class SimpleBean
     public void setSqlTimestamp( Timestamp sqlTimestamp )
     {
         this.sqlTimestamp = sqlTimestamp;
+    }
+
+    public Integer[] getIntegerArray()
+    {
+        return integerArray;
+    }
+
+    public void setIntegerArray( Integer[] integerArray )
+    {
+        this.integerArray = integerArray;
     }
 }
