@@ -12,10 +12,10 @@ import com.github.nmorel.gwtjackson.shared.JsonEncoderTester;
 import static junit.framework.Assert.assertEquals;
 
 /** @author Nicolas Morel */
-public final class PolymorphismTester extends AbstractTester
+public final class PolymorphismIdNameAsWrapperObjectTester extends AbstractTester
 {
 
-    @JsonTypeInfo( use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY )
+    @JsonTypeInfo( use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT )
     @JsonPropertyOrder( alphabetic = true )
     public static abstract class Person
     {
@@ -38,9 +38,9 @@ public final class PolymorphismTester extends AbstractTester
         public int satisfaction;
     }
 
-    public static final PolymorphismTester INSTANCE = new PolymorphismTester();
+    public static final PolymorphismIdNameAsWrapperObjectTester INSTANCE = new PolymorphismIdNameAsWrapperObjectTester();
 
-    private PolymorphismTester()
+    private PolymorphismIdNameAsWrapperObjectTester()
     {
     }
 
@@ -76,42 +76,54 @@ public final class PolymorphismTester extends AbstractTester
 
         String expected = "[" +
             "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismTester$Employee\"," +
+            "\"PolymorphismIdNameAsWrapperObjectTester$Employee\":" +
+            "{" +
             "\"id\":2," +
             "\"name\":\"Thomas\"," +
             "\"title\":\"Waiter\"" +
+            "}" +
             "}," +
             "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismTester$Employee\"," +
-            "\"id\":3," +
-            "\"name\":\"Patricia\"," +
-            "\"title\":\"Cook\"" +
-            "}," +
+            "\"PolymorphismIdNameAsWrapperObjectTester$Employee\":" +
             "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismTester$Manager\"," +
-            "\"id\":1," +
-            "\"managedEmployees\":" +
-            "[" +
-            "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismTester$Employee\"," +
-            "\"id\":2," +
-            "\"name\":\"Thomas\"," +
-            "\"title\":\"Waiter\"" +
-            "}," +
-            "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismTester$Employee\"," +
             "\"id\":3," +
             "\"name\":\"Patricia\"," +
             "\"title\":\"Cook\"" +
             "}" +
+            "}," +
+            "{" +
+            "\"PolymorphismIdNameAsWrapperObjectTester$Manager\":" +
+            "{" +
+            "\"id\":1," +
+            "\"managedEmployees\":" +
+            "[" +
+            "{" +
+            "\"PolymorphismIdNameAsWrapperObjectTester$Employee\":" +
+            "{" +
+            "\"id\":2," +
+            "\"name\":\"Thomas\"," +
+            "\"title\":\"Waiter\"" +
+            "}" +
+            "}," +
+            "{" +
+            "\"PolymorphismIdNameAsWrapperObjectTester$Employee\":" +
+            "{" +
+            "\"id\":3," +
+            "\"name\":\"Patricia\"," +
+            "\"title\":\"Cook\"" +
+            "}" +
+            "}" +
             "]," +
             "\"name\":\"Bob\"," +
             "\"title\":\"Boss\"" +
+            "}" +
             "}," +
             "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismTester$Customer\"," +
+            "\"PolymorphismIdNameAsWrapperObjectTester$Customer\":" +
+            "{" +
             "\"name\":\"Brad\"," +
             "\"satisfaction\":90" +
+            "}" +
             "}" +
             "]";
 
@@ -122,42 +134,54 @@ public final class PolymorphismTester extends AbstractTester
     {
         String input = "[" +
             "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismTester$Employee\"," +
+            "\"PolymorphismIdNameAsWrapperObjectTester$Employee\":" +
+            "{" +
             "\"id\":2," +
             "\"name\":\"Thomas\"," +
             "\"title\":\"Waiter\"" +
+            "}" +
             "}," +
             "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismTester$Employee\"," +
-            "\"id\":3," +
-            "\"name\":\"Patricia\"," +
-            "\"title\":\"Cook\"" +
-            "}," +
+            "\"PolymorphismIdNameAsWrapperObjectTester$Employee\":" +
             "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismTester$Manager\"," +
-            "\"id\":1," +
-            "\"managedEmployees\":" +
-            "[" +
-            "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismTester$Employee\"," +
-            "\"id\":2," +
-            "\"name\":\"Thomas\"," +
-            "\"title\":\"Waiter\"" +
-            "}," +
-            "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismTester$Employee\"," +
             "\"id\":3," +
             "\"name\":\"Patricia\"," +
             "\"title\":\"Cook\"" +
             "}" +
+            "}," +
+            "{" +
+            "\"PolymorphismIdNameAsWrapperObjectTester$Manager\":" +
+            "{" +
+            "\"id\":1," +
+            "\"managedEmployees\":" +
+            "[" +
+            "{" +
+            "\"PolymorphismIdNameAsWrapperObjectTester$Employee\":" +
+            "{" +
+            "\"id\":2," +
+            "\"name\":\"Thomas\"," +
+            "\"title\":\"Waiter\"" +
+            "}" +
+            "}," +
+            "{" +
+            "\"PolymorphismIdNameAsWrapperObjectTester$Employee\":" +
+            "{" +
+            "\"id\":3," +
+            "\"name\":\"Patricia\"," +
+            "\"title\":\"Cook\"" +
+            "}" +
+            "}" +
             "]," +
             "\"name\":\"Bob\"," +
             "\"title\":\"Boss\"" +
+            "}" +
             "}," +
             "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismTester$Customer\"," +
+            "\"PolymorphismIdNameAsWrapperObjectTester$Customer\":" +
+            "{" +
             "\"name\":\"Brad\"," +
             "\"satisfaction\":90" +
+            "}" +
             "}" +
             "]";
 

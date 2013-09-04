@@ -148,14 +148,20 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
 
     private void generateSubtypesMethods( SourceWriter source, BeanInfo info ) throws UnableToCompleteException
     {
-        // gives the property name
-        if ( null != info.getTypeInfo() && JsonTypeInfo.As.PROPERTY.equals( info.getTypeInfo().include() ) )
+        // gives the information about how to read and write the type info
+        if ( null != info.getTypeInfo() )
         {
-            String typeInfoProperty = info.getTypeInfo().property().isEmpty() ? info.getTypeInfo().use().getDefaultPropertyName() : info
-                .getTypeInfo().property();
+            String typeInfoProperty = null;
+            if ( JsonTypeInfo.As.PROPERTY.equals( info.getTypeInfo().include() ) )
+            {
+                typeInfoProperty = "\"" + (info.getTypeInfo().property().isEmpty() ? info.getTypeInfo().use()
+                    .getDefaultPropertyName() : info.getTypeInfo().property()) + "\"";
+            }
+
             source.println( "public %s() {", info.getMapperClassSimpleName() );
             source.indent();
-            source.println( "super(\"%s\");", typeInfoProperty );
+            source.println( "super(com.fasterxml.jackson.annotation.JsonTypeInfo.As.%s, %s);", info.getTypeInfo()
+                .include(), typeInfoProperty );
             source.outdent();
             source.println( "}" );
             source.println();
@@ -194,11 +200,35 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         }
     }
 
-    private void generateSubtypeMapper( SourceWriter source, BeanInfo info, JClassType subtype ) throws
-        UnableToCompleteException
+    private void generateSubtypeMapper( SourceWriter source, BeanInfo info, JClassType subtype ) throws UnableToCompleteException
     {
-        // TODO depends on annotation
-        String typeInfo = subtype.getQualifiedBinaryName();
+        String typeInfo;
+        if ( null == info.getTypeInfo() )
+        {
+            typeInfo = null;
+        }
+        else
+        {
+            switch ( info.getTypeInfo().use() )
+            {
+                case CLASS:
+                    typeInfo = "\"" + subtype.getQualifiedBinaryName() + "\"";
+                    break;
+                case NAME:
+                    String simpleBinaryName = subtype.getQualifiedBinaryName();
+                    int indexLastDot = simpleBinaryName.lastIndexOf( '.' );
+                    if ( indexLastDot != -1 )
+                    {
+                        simpleBinaryName = simpleBinaryName.substring( indexLastDot + 1 );
+                    }
+                    typeInfo = "\"" + simpleBinaryName + "\"";
+                    break;
+                default:
+                    logger.log( TreeLogger.Type.ERROR, "JsonTypeInfo.Id." + info.getTypeInfo().use() + " is not supported" );
+                    throw new UnableToCompleteException();
+            }
+        }
+
         String mapper = info.getType() == subtype ? info.getQualifiedMapperClassName() + ".this" : createMapperFromType( subtype );
 
         source.println( "addSubtypeMapper( new %s<%s>() {", SUBTYPE_MAPPER_CLASS, subtype.getQualifiedSourceName() );
@@ -223,7 +253,7 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         source.println( "}" );
 
         source.outdent();
-        source.println( "}, \"%s\", %s.class );", typeInfo, subtype.getQualifiedSourceName() );
+        source.println( "}, %s.class, %s );", subtype.getQualifiedSourceName(), typeInfo );
         source.println();
     }
 

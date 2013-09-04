@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.github.nmorel.gwtjackson.client.JsonDecodingContext;
 import com.github.nmorel.gwtjackson.client.JsonEncodingContext;
 import com.github.nmorel.gwtjackson.client.exception.JsonDecodingException;
 import com.github.nmorel.gwtjackson.client.exception.JsonEncodingException;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
-import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
 /**
@@ -27,29 +27,52 @@ public abstract class AbstractSuperclassJsonMapper<T> extends AbstractBeanJsonMa
     }
 
     /** Name of the property containing information about the subtype */
+    private final boolean includeTypeInfo;
+    private final JsonTypeInfo.As include;
     private final String propertyName;
-    private Map<String, SubtypeMapper<? extends T>> subtypeMappers;
-    private Map<Class<? extends T>, String> subtypeInfos;
+    private final Map<String, SubtypeMapper<? extends T>> subtypeInfoToMapper;
+    private final Map<Class<? extends T>, String> subtypeClassToInfo;
+    private final Map<Class<? extends T>, SubtypeMapper<? extends T>> subtypeClassToMapper;
 
     protected AbstractSuperclassJsonMapper()
     {
-        this( null );
+        this( null, null, false );
     }
 
-    protected AbstractSuperclassJsonMapper( String propertyName )
+    protected AbstractSuperclassJsonMapper( JsonTypeInfo.As include, String propertyName )
     {
+        this( include, propertyName, true );
+    }
+
+    private AbstractSuperclassJsonMapper( JsonTypeInfo.As include, String propertyName, boolean includeTypeInfo )
+    {
+        this.includeTypeInfo = includeTypeInfo;
+        this.include = include;
         this.propertyName = propertyName;
-        this.subtypeMappers = new HashMap<String, SubtypeMapper<? extends T>>();
-        this.subtypeInfos = new HashMap<Class<? extends T>, String>();
+        if ( includeTypeInfo )
+        {
+            this.subtypeInfoToMapper = new HashMap<String, SubtypeMapper<? extends T>>();
+            this.subtypeClassToInfo = new HashMap<Class<? extends T>, String>();
+        }
+        else
+        {
+            this.subtypeInfoToMapper = null;
+            this.subtypeClassToInfo = null;
+        }
+        this.subtypeClassToMapper = new HashMap<Class<? extends T>, SubtypeMapper<? extends T>>();
         initSubtypeMappers();
     }
 
     protected abstract void initSubtypeMappers();
 
-    protected <S extends T> void addSubtypeMapper( SubtypeMapper<S> subtypeMapper, String typeInfo, Class<S> clazz )
+    protected <S extends T> void addSubtypeMapper( SubtypeMapper<S> subtypeMapper, Class<S> clazz, String typeInfo )
     {
-        subtypeMappers.put( typeInfo, subtypeMapper );
-        subtypeInfos.put( clazz, typeInfo );
+        if ( includeTypeInfo )
+        {
+            subtypeInfoToMapper.put( typeInfo, subtypeMapper );
+            subtypeClassToInfo.put( clazz, typeInfo );
+        }
+        subtypeClassToMapper.put( clazz, subtypeMapper );
     }
 
     protected abstract boolean isInstantiable();
@@ -57,74 +80,145 @@ public abstract class AbstractSuperclassJsonMapper<T> extends AbstractBeanJsonMa
     @Override
     public T doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
     {
-        reader.beginObject();
-
         T result;
-
-        if ( null == propertyName || !JsonToken.NAME.equals( reader.peek() ) )
+        if ( !includeTypeInfo )
         {
-            // no @JsonTypeInfo on type or the object is empty. If this class is instantiable, we decode it.
-            if ( isInstantiable() )
-            {
-                result = decodeObject( reader, ctx );
-            }
-            else
-            {
-                throw new JsonDecodingException( "Cannot instantiate the type" );
-            }
+            reader.beginObject();
+            result = doDecode( reader, ctx, null );
+            reader.endObject();
         }
         else
         {
-            String name = reader.nextName();
-            if ( !propertyName.equals( name ) )
+            switch ( include )
             {
-                // the type info is always the first value. If we don't find it, we throw an error
-                throw new JsonDecodingException( "Cannot find the type info" );
+                case PROPERTY:
+                    // the type info is the first property of the object
+                    reader.beginObject();
+                    String name = reader.nextName();
+                    if ( !propertyName.equals( name ) )
+                    {
+                        // the type info is always the first value. If we don't find it, we throw an error
+                        throw new JsonDecodingException( "Cannot find the type info" );
+                    }
+                    String typeInfoProperty = reader.nextString();
+
+                    result = doDecode( reader, ctx, typeInfoProperty );
+                    reader.endObject();
+                    break;
+
+                case WRAPPER_OBJECT:
+                    // type info is included in a wrapper object that contains only one property. The name of this property is the type
+                    // info and the value the object
+                    reader.beginObject();
+                    String typeInfoWrapObj = reader.nextName();
+                    reader.beginObject();
+                    result = doDecode( reader, ctx, typeInfoWrapObj );
+                    reader.endObject();
+                    reader.endObject();
+                    break;
+
+                case WRAPPER_ARRAY:
+                    // type info is included in a wrapper array that contains two elements. First one is the type
+                    // info and the second one the object
+                    reader.beginArray();
+                    String typeInfoWrapArray = reader.nextString();
+                    reader.beginObject();
+                    result = doDecode( reader, ctx, typeInfoWrapArray );
+                    reader.endObject();
+                    reader.endArray();
+                    break;
+
+                default:
+                    throw new JsonEncodingException( "JsonTypeInfo.As." + include + " is not supported" );
             }
-
-            String typeInfo = reader.nextString();
-
-            SubtypeMapper<? extends T> mapper = subtypeMappers.get( typeInfo );
-            if ( null == mapper )
-            {
-                throw new JsonDecodingException( "No mapper found for the type " + typeInfo );
-            }
-
-            result = mapper.decodeObject( reader, ctx );
         }
 
-        reader.endObject();
-
         return result;
+    }
+
+    private T doDecode( JsonReader reader, JsonDecodingContext ctx, String typeInfo ) throws IOException
+    {
+        if ( null == typeInfo )
+        {
+            if ( isInstantiable() )
+            {
+                return decodeObject( reader, ctx );
+            }
+            else
+            {
+                throw new JsonDecodingException( "Cannot decode the object. There is no type info and the type is not instantiable." );
+            }
+        }
+
+        SubtypeMapper<? extends T> mapper = subtypeInfoToMapper.get( typeInfo );
+        if ( null == mapper )
+        {
+            throw new JsonDecodingException( "No mapper found for the type " + typeInfo );
+        }
+
+        return mapper.decodeObject( reader, ctx );
     }
 
     @Override
     public void doEncode( JsonWriter writer, T value, JsonEncodingContext ctx ) throws IOException
     {
-        writer.beginObject();
-        String typeInfo = subtypeInfos.get( value.getClass() );
-        if ( null == typeInfo )
+        SubtypeMapper mapper = subtypeClassToMapper.get( value.getClass() );
+        if ( null == mapper )
         {
-            encodeObject( writer, value, ctx );
+            throw new JsonEncodingException( "Cannot find mapper for class " + value.getClass() );
+        }
+
+        if ( !includeTypeInfo )
+        {
+            // we don't include type info so we just encode the properties
+            writer.beginObject();
+            mapper.encodeObject( writer, value, ctx );
+            writer.endObject();
         }
         else
         {
-            SubtypeMapper mapper = subtypeMappers.get( typeInfo );
-            if ( null == mapper )
+            String typeInfo = subtypeClassToInfo.get( value.getClass() );
+            if ( null == typeInfo )
             {
-                throw new JsonEncodingException( "No mapper found for the type " + typeInfo );
+                throw new JsonEncodingException( "Cannot find type info for class " + value.getClass() );
             }
 
-            if ( null != propertyName )
+            switch ( include )
             {
-                // we write the type info
-                writer.name( propertyName );
-                writer.value( typeInfo );
-            }
+                case PROPERTY:
+                    // type info is included as a property of the object
+                    writer.beginObject();
+                    writer.name( propertyName );
+                    writer.value( typeInfo );
+                    mapper.encodeObject( writer, value, ctx );
+                    writer.endObject();
+                    break;
 
-            // we write the rest of the properties
-            mapper.encodeObject( writer, value, ctx );
+                case WRAPPER_OBJECT:
+                    // type info is included in a wrapper object that contains only one property. The name of this property is the type
+                    // info and the value the object
+                    writer.beginObject();
+                    writer.name( typeInfo );
+                    writer.beginObject();
+                    mapper.encodeObject( writer, value, ctx );
+                    writer.endObject();
+                    writer.endObject();
+                    break;
+
+                case WRAPPER_ARRAY:
+                    // type info is included in a wrapper array that contains two elements. First one is the type
+                    // info and the second one the object
+                    writer.beginArray();
+                    writer.value( typeInfo );
+                    writer.beginObject();
+                    mapper.encodeObject( writer, value, ctx );
+                    writer.endObject();
+                    writer.endArray();
+                    break;
+
+                default:
+                    throw new JsonEncodingException( "JsonTypeInfo.As." + include + " is not supported" );
+            }
         }
-        writer.endObject();
     }
 }

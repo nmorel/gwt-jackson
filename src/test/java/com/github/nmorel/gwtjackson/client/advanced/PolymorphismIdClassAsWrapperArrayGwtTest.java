@@ -2,18 +2,18 @@ package com.github.nmorel.gwtjackson.client.advanced;
 
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.github.nmorel.gwtjackson.client.JsonMapper;
-import com.github.nmorel.gwtjackson.shared.advanced.PolymorphismTester;
+import com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdClassAsWrapperArrayTester;
 import com.google.gwt.core.client.GWT;
 
 /** @author Nicolas Morel */
-public class PolymorphismGwtTest extends GwtJacksonTestCase
+public class PolymorphismIdClassAsWrapperArrayGwtTest extends GwtJacksonTestCase
 {
-    public interface PolymorphismMapper extends JsonMapper<PolymorphismTester.Person[]>
+    public interface PolymorphismMapper extends JsonMapper<PolymorphismIdClassAsWrapperArrayTester.Person[]>
     {
         static PolymorphismMapper INSTANCE = GWT.create( PolymorphismMapper.class );
     }
 
-    private PolymorphismTester tester = PolymorphismTester.INSTANCE;
+    private PolymorphismIdClassAsWrapperArrayTester tester = PolymorphismIdClassAsWrapperArrayTester.INSTANCE;
 
     public void testEncoding()
     {
