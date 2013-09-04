@@ -115,9 +115,12 @@ public abstract class AbstractSuperclassJsonMapper<T> extends AbstractBeanJsonMa
                 throw new JsonEncodingException( "No mapper found for the type " + typeInfo );
             }
 
-            // we write the type info
-            writer.name( propertyName );
-            writer.value( typeInfo );
+            if ( null != propertyName )
+            {
+                // we write the type info
+                writer.name( propertyName );
+                writer.value( typeInfo );
+            }
 
             // we write the rest of the properties
             mapper.encodeObject( writer, value, ctx );

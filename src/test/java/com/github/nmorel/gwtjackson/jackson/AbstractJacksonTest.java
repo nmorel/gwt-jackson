@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.nmorel.gwtjackson.client.exception.JsonDecodingException;
+import com.github.nmorel.gwtjackson.client.exception.JsonEncodingException;
 import com.github.nmorel.gwtjackson.shared.JsonDecoderTester;
 import com.github.nmorel.gwtjackson.shared.JsonEncoderTester;
 import org.junit.Before;
@@ -36,7 +38,7 @@ public abstract class AbstractJacksonTest
                 }
                 catch ( JsonProcessingException e )
                 {
-                    throw new RuntimeException( e );
+                    throw new JsonEncodingException( e );
                 }
             }
         };
@@ -55,7 +57,7 @@ public abstract class AbstractJacksonTest
                 }
                 catch ( IOException e )
                 {
-                    throw new RuntimeException( e );
+                    throw new JsonDecodingException( e );
                 }
             }
         };
