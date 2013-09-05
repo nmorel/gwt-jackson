@@ -23,8 +23,21 @@ public final class BeanInfo
         result.type = beanType;
         result.qualifiedMapperClassName = qualifiedMapperClassName;
         result.mapperClassSimpleName = mapperClassSimpleName;
+        result.superclass = beanType
+            .getSubtypes().length == 0 ? AbstractJsonMapperCreator.ABSTRACT_BEAN_JSON_MAPPER_CLASS : AbstractJsonMapperCreator
+            .ABSTRACT_SUPERCLASS_JSON_MAPPER_CLASS;
         result.hasSubtypes = beanType.getSubtypes().length > 0;
         result.instantiable = beanType.isDefaultInstantiable();
+        if ( result.instantiable )
+        {
+            result.instanceBuilderSimpleName = beanType.getSimpleSourceName() + "InstanceBuilder";
+            result.instanceBuilderQualifiedName = qualifiedMapperClassName + "." + result.instanceBuilderSimpleName;
+        }
+        else
+        {
+            result.instanceBuilderQualifiedName = AbstractJsonMapperCreator.INSTANCE_BUILDER_CLASS + "<" + beanType
+                .getParameterizedQualifiedSourceName() + ">";
+        }
 
         result.typeInfo = findFirstEncounteredAnnotationsOnAllHierarchy( beanType, JsonTypeInfo.class );
 
@@ -89,6 +102,9 @@ public final class BeanInfo
     private JClassType type;
     private String qualifiedMapperClassName;
     private String mapperClassSimpleName;
+    private String superclass;
+    private String instanceBuilderQualifiedName;
+    private String instanceBuilderSimpleName;
     private boolean hasSubtypes;
     private boolean instantiable;
     private JsonTypeInfo typeInfo;
@@ -121,6 +137,21 @@ public final class BeanInfo
     public String getMapperClassSimpleName()
     {
         return mapperClassSimpleName;
+    }
+
+    public String getSuperclass()
+    {
+        return superclass;
+    }
+
+    public String getInstanceBuilderQualifiedName()
+    {
+        return instanceBuilderQualifiedName;
+    }
+
+    public String getInstanceBuilderSimpleName()
+    {
+        return instanceBuilderSimpleName;
     }
 
     public boolean isHasSubtypes()

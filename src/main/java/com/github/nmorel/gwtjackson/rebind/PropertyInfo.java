@@ -212,14 +212,14 @@ public final class PropertyInfo
         // field/getter has not been detected or is private or is in a different package. We use JSNI to access private getter/field.
 
         final String methodName = "get" + result.propertyName.substring( 0, 1 ).toUpperCase() + result.propertyName.substring( 1 );
-        result.getterAccessor = methodName + "(bean)";
+        result.getterAccessor = beanInfo.getMapperClassSimpleName() + "." + methodName + "(bean)";
 
         result.addAdditionalMethod( new AdditionalMethod()
         {
             @Override
             public void write( SourceWriter source )
             {
-                source.println( "private native %s %s(%s bean) /*-{", result.type
+                source.println( "private static native %s %s(%s bean) /*-{", result.type
                     .getParameterizedQualifiedSourceName(), methodName, beanInfo.getType().getParameterizedQualifiedSourceName() );
                 source.indent();
                 if ( getterAutoDetect )
@@ -255,7 +255,7 @@ public final class PropertyInfo
 
         if ( setterAutoDetect && ((setterInSamePackage && !setter.isPrivate()) || (!setterInSamePackage && setter.isPublic())) )
         {
-            result.setterAccessor = "bean." + fieldAccessors.getSetter().getName() + "(%s)";
+            result.setterAccessor = AbstractJsonMapperCreator.BEAN_INSTANCE_NAME + "." + fieldAccessors.getSetter().getName() + "(%s)";
             return;
         }
 
@@ -266,21 +266,22 @@ public final class PropertyInfo
 
         if ( fieldAutoDetect && ((fieldInSamePackage && !field.isPrivate()) || (fieldInSamePackage && field.isPublic())) )
         {
-            result.setterAccessor = "bean." + fieldAccessors.getField().getName() + " = %s";
+            result.setterAccessor = AbstractJsonMapperCreator.BEAN_INSTANCE_NAME + "." + fieldAccessors.getField().getName() + " = %s";
             return;
         }
 
         // field/setter has not been detected or is private or is in a different package. We use JSNI to access private setter/field.
 
         final String methodName = "set" + result.propertyName.substring( 0, 1 ).toUpperCase() + result.propertyName.substring( 1 );
-        result.setterAccessor = methodName + "(bean, %s)";
+        result.setterAccessor = beanInfo
+            .getMapperClassSimpleName() + "." + methodName + "(" + AbstractJsonMapperCreator.BEAN_INSTANCE_NAME + ", %s)";
 
         result.addAdditionalMethod( new AdditionalMethod()
         {
             @Override
             public void write( SourceWriter source )
             {
-                source.println( "private native void %s(%s bean, %s value) /*-{", methodName, beanInfo.getType()
+                source.println( "private static native void %s(%s bean, %s value) /*-{", methodName, beanInfo.getType()
                     .getParameterizedQualifiedSourceName(), result.type.getParameterizedQualifiedSourceName() );
                 source.indent();
                 if ( setterAutoDetect )

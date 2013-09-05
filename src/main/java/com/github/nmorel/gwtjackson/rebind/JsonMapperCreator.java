@@ -1,5 +1,7 @@
 package com.github.nmorel.gwtjackson.rebind;
 
+import java.io.PrintWriter;
+
 import com.github.nmorel.gwtjackson.client.JsonMapper;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
@@ -44,14 +46,15 @@ public class JsonMapperCreator extends AbstractJsonMapperCreator
         // Extract the type of the object to map
         JClassType mappedTypeClass = getMappedType( interfaceClass );
 
-        SourceWriter source = getSourceWriter( packageName, mapperClassSimpleName, ABSTRACT_JSON_MAPPER_CLASS + "<" +
-            mappedTypeClass.getParameterizedQualifiedSourceName() + ">", interfaceName );
-
+        PrintWriter printWriter = getPrintWriter( packageName, mapperClassSimpleName );
         // the class already exists, no need to continue
-        if ( source == null )
+        if ( printWriter == null )
         {
             return qualifiedMapperClassName;
         }
+
+        SourceWriter source = getSourceWriter( printWriter, packageName, mapperClassSimpleName, ABSTRACT_JSON_MAPPER_CLASS + "<" +
+            mappedTypeClass.getParameterizedQualifiedSourceName() + ">", interfaceName );
 
         writeClassBody( source, mappedTypeClass );
 

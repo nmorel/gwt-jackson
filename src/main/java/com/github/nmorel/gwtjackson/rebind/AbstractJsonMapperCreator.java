@@ -20,28 +20,33 @@ import com.google.gwt.user.rebind.SourceWriter;
 /** @author Nicolas Morel */
 public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
 {
-    protected static final List<String> BASE_TYPES = Arrays
+    public static final List<String> BASE_TYPES = Arrays
         .asList( "java.math.BigDecimal", "java.math.BigInteger", "java.lang.Boolean", "java.lang.Byte", "java.lang.Character",
             "java.util.Date", "java.lang.Double", "java.lang.Float", "java.lang.Integer", "java.lang.Long", "java.lang.Short",
             "java.sql.Date", "java.sql.Time", "java.sql.Timestamp", "java.lang.String" );
-    protected static final String JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.JsonMapper";
-    protected static final String ABSTRACT_JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.AbstractJsonMapper";
-    protected static final String ABSTRACT_BEAN_JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper";
-    protected static final String DECODER_PROPERTY_BEAN_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper" + "" +
+
+    public static final String BEAN_INSTANCE_NAME = "$$instance$$";
+
+    public static final String JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.JsonMapper";
+    public static final String ABSTRACT_JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.AbstractJsonMapper";
+    public static final String ABSTRACT_BEAN_JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper";
+    public static final String INSTANCE_BUILDER_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper" + "" +
+        ".InstanceBuilder";
+    public static final String DECODER_PROPERTY_BEAN_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper" + "" +
         ".DecoderProperty";
-    protected static final String ENCODER_PROPERTY_BEAN_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper" + "" +
+    public static final String ENCODER_PROPERTY_BEAN_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper" + "" +
         ".EncoderProperty";
-    protected static final String JSON_READER_CLASS = "com.github.nmorel.gwtjackson.client.stream.JsonReader";
-    protected static final String JSON_WRITER_CLASS = "com.github.nmorel.gwtjackson.client.stream.JsonWriter";
-    protected static final String JSON_MAPPING_CONTEXT_CLASS = "com.github.nmorel.gwtjackson.client.JsonMappingContext";
-    protected static final String JSON_DECODING_CONTEXT_CLASS = "com.github.nmorel.gwtjackson.client.JsonDecodingContext";
-    protected static final String JSON_ENCODING_CONTEXT_CLASS = "com.github.nmorel.gwtjackson.client.JsonEncodingContext";
-    protected static final String JSON_DECODING_EXCEPTION_CLASS = "com.github.nmorel.gwtjackson.client.exception.JsonDecodingException";
-    protected static final String JSON_ENCODING_EXCEPTION_CLASS = "com.github.nmorel.gwtjackson.client.exception.JsonEncodingException";
-    protected static final String ARRAY_CREATOR_CLASS = "com.github.nmorel.gwtjackson.client.mapper.ArrayJsonMapper.ArrayCreator";
-    protected static final String ABSTRACT_SUPERCLASS_JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.mapper" + "" +
+    public static final String JSON_READER_CLASS = "com.github.nmorel.gwtjackson.client.stream.JsonReader";
+    public static final String JSON_WRITER_CLASS = "com.github.nmorel.gwtjackson.client.stream.JsonWriter";
+    public static final String JSON_MAPPING_CONTEXT_CLASS = "com.github.nmorel.gwtjackson.client.JsonMappingContext";
+    public static final String JSON_DECODING_CONTEXT_CLASS = "com.github.nmorel.gwtjackson.client.JsonDecodingContext";
+    public static final String JSON_ENCODING_CONTEXT_CLASS = "com.github.nmorel.gwtjackson.client.JsonEncodingContext";
+    public static final String JSON_DECODING_EXCEPTION_CLASS = "com.github.nmorel.gwtjackson.client.exception.JsonDecodingException";
+    public static final String JSON_ENCODING_EXCEPTION_CLASS = "com.github.nmorel.gwtjackson.client.exception.JsonEncodingException";
+    public static final String ARRAY_CREATOR_CLASS = "com.github.nmorel.gwtjackson.client.mapper.ArrayJsonMapper.ArrayCreator";
+    public static final String ABSTRACT_SUPERCLASS_JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.mapper" + "" +
         ".AbstractSuperclassJsonMapper";
-    protected static final String SUBTYPE_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractSuperclassJsonMapper" + "" +
+    public static final String SUBTYPE_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractSuperclassJsonMapper" + "" +
         ".SubtypeMapper";
 
     /**
@@ -83,7 +88,13 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
         this.typeOracle = typeOracle;
     }
 
-    protected SourceWriter getSourceWriter( String packageName, String className, String superClass, String... interfaces )
+    protected PrintWriter getPrintWriter( String packageName, String className )
+    {
+        return context.tryCreate( logger, packageName, className );
+    }
+
+    protected SourceWriter getSourceWriter( PrintWriter printWriter, String packageName, String className, String superClass,
+                                            String... interfaces )
     {
         ClassSourceFileComposerFactory composer = new ClassSourceFileComposerFactory( packageName, className );
         if ( null != superClass )
@@ -94,16 +105,7 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
         {
             composer.addImplementedInterface( interfaceName );
         }
-
-        PrintWriter printWriter = context.tryCreate( logger, packageName, className );
-        if ( printWriter == null )
-        {
-            return null;
-        }
-        else
-        {
-            return composer.createSourceWriter( context, printWriter );
-        }
+        return composer.createSourceWriter( context, printWriter );
     }
 
     protected String createMapperFromType( JType type ) throws UnableToCompleteException

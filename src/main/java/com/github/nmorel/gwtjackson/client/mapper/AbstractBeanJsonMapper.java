@@ -17,11 +17,16 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  *
  * @author Nicolas Morel
  */
-public abstract class AbstractBeanJsonMapper<T> extends AbstractJsonMapper<T>
+public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper.InstanceBuilder<T>> extends AbstractJsonMapper<T>
 {
-    public static interface DecoderProperty<T>
+    public static interface InstanceBuilder<T>
     {
-        void decode( JsonReader reader, T bean, JsonDecodingContext ctx ) throws IOException;
+        T build();
+    }
+
+    public static interface DecoderProperty<T, B extends AbstractBeanJsonMapper.InstanceBuilder<T>>
+    {
+        void decode( JsonReader reader, B builder, JsonDecodingContext ctx ) throws IOException;
     }
 
     public static interface EncoderProperty<T>
@@ -29,19 +34,19 @@ public abstract class AbstractBeanJsonMapper<T> extends AbstractJsonMapper<T>
         void encode( JsonWriter writer, T bean, JsonEncodingContext ctx ) throws IOException;
     }
 
-    private Map<String, DecoderProperty<T>> decoders;
+    private Map<String, DecoderProperty<T, B>> decoders;
     private Map<String, EncoderProperty<T>> encoders;
 
     protected void initDecoders()
     {
         if ( null == decoders )
         {
-            decoders = new LinkedHashMap<String, DecoderProperty<T>>();
+            decoders = new LinkedHashMap<String, DecoderProperty<T, B>>();
             initDecoders( decoders );
         }
     }
 
-    protected abstract void initDecoders( Map<String, DecoderProperty<T>> decoders );
+    protected abstract void initDecoders( Map<String, DecoderProperty<T, B>> decoders );
 
     protected void initEncoders()
     {
@@ -54,7 +59,7 @@ public abstract class AbstractBeanJsonMapper<T> extends AbstractJsonMapper<T>
 
     protected abstract void initEncoders( Map<String, EncoderProperty<T>> encoders );
 
-    protected abstract T newInstance();
+    protected abstract B newInstanceBuilder();
 
     @Override
     public T doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
@@ -69,7 +74,7 @@ public abstract class AbstractBeanJsonMapper<T> extends AbstractJsonMapper<T>
     {
         initDecoders();
 
-        T result = newInstance();
+        B builder = newInstanceBuilder();
 
         while ( JsonToken.NAME.equals( reader.peek() ) )
         {
@@ -80,7 +85,7 @@ public abstract class AbstractBeanJsonMapper<T> extends AbstractJsonMapper<T>
                 continue;
             }
 
-            DecoderProperty<T> property = decoders.get( name );
+            DecoderProperty<T, B> property = decoders.get( name );
             if ( null == property )
             {
                 // TODO add a configuration to tell if we skip or throw an unknown property
@@ -88,11 +93,11 @@ public abstract class AbstractBeanJsonMapper<T> extends AbstractJsonMapper<T>
             }
             else
             {
-                property.decode( reader, result, ctx );
+                property.decode( reader, builder, ctx );
             }
         }
 
-        return result;
+        return builder.build();
     }
 
     @Override

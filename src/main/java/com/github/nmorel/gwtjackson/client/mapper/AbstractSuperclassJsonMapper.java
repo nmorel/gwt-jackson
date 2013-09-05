@@ -17,7 +17,8 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  *
  * @author Nicolas Morel
  */
-public abstract class AbstractSuperclassJsonMapper<T> extends AbstractBeanJsonMapper<T>
+public abstract class AbstractSuperclassJsonMapper<T, B extends AbstractBeanJsonMapper.InstanceBuilder<T>> extends
+    AbstractBeanJsonMapper<T, B>
 {
     public static interface SubtypeMapper<T>
     {

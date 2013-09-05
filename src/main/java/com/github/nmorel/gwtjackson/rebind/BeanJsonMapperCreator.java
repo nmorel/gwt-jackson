@@ -1,5 +1,6 @@
 package com.github.nmorel.gwtjackson.rebind;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -64,17 +65,18 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         String packageName = beanType.getPackage().getName();
         String qualifiedMapperClassName = packageName + "." + mapperClassSimpleName;
 
-        String superclass = beanType.getSubtypes().length == 0 ? ABSTRACT_BEAN_JSON_MAPPER_CLASS : ABSTRACT_SUPERCLASS_JSON_MAPPER_CLASS;
-        SourceWriter source = getSourceWriter( packageName, mapperClassSimpleName, superclass + "<" +
-            beanType.getParameterizedQualifiedSourceName() + ">" );
-
+        PrintWriter printWriter = getPrintWriter( packageName, mapperClassSimpleName );
         // the class already exists, no need to continue
-        if ( source == null )
+        if ( printWriter == null )
         {
             return qualifiedMapperClassName;
         }
 
         BeanInfo info = BeanInfo.process( beanType, qualifiedMapperClassName, mapperClassSimpleName );
+
+        SourceWriter source = getSourceWriter( printWriter, packageName, mapperClassSimpleName, info.getSuperclass() + "<" +
+            beanType.getParameterizedQualifiedSourceName() + ", " + info.getInstanceBuilderQualifiedName() + ">" );
+
         writeClassBody( source, info );
 
         return qualifiedMapperClassName;
@@ -86,34 +88,44 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         source.println();
         source.indent();
 
-        if ( info.isHasSubtypes() )
-        {
-            generateSubtypesMethods( source, info );
-        }
-
-        source.println( "@Override" );
-        source.println( "protected %s newInstance() {", info.getType().getParameterizedQualifiedSourceName() );
-        source.indent();
-        generateNewInstanceBody( source, info );
-        source.outdent();
-        source.println( "}" );
-
-        source.println();
-
         List<PropertyInfo> properties;
         if ( info.isIgnoreAllProperties() )
         {
             logger.log( TreeLogger.Type.DEBUG, "Ignoring all properties of type " + info.getType() );
-            properties = null;
+            properties = Collections.emptyList();
         }
         else
         {
             properties = findAllProperties( info );
         }
 
+        if ( info.isInstantiable() )
+        {
+            generateInstanceBuilderClass( source, info, properties );
+        }
+
+        source.println();
+
+        if ( info.isHasSubtypes() )
+        {
+            generateSubtypesMethods( source, info );
+            source.println();
+        }
+
         source.println( "@Override" );
-        source.println( "protected void initDecoders(java.util.Map<java.lang.String, %s<%s>> decoders) {", DECODER_PROPERTY_BEAN_CLASS, info
-            .getType().getParameterizedQualifiedSourceName() );
+        source.println( "protected %s newInstanceBuilder() {", info.getInstanceBuilderQualifiedName() );
+        source.indent();
+        generateNewInstanceBuilderBody( source, info );
+        source.outdent();
+        source.println( "}" );
+
+        source.println();
+
+        source.println( "@Override" );
+        source
+            .println( "protected void initDecoders(java.util.Map<java.lang.String, %s<%s, %s>> decoders) {", DECODER_PROPERTY_BEAN_CLASS,
+                info
+                .getType().getParameterizedQualifiedSourceName(), info.getInstanceBuilderQualifiedName() );
         if ( !info.isIgnoreAllProperties() && info.isInstantiable() )
         {
             source.indent();
@@ -144,6 +156,39 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
 
         source.outdent();
         source.commit( logger );
+    }
+
+    private void generateInstanceBuilderClass( SourceWriter source, BeanInfo info, List<PropertyInfo> properties )
+    {
+        source.println( "public static class %s implements %s<%s> {", info.getInstanceBuilderSimpleName(), INSTANCE_BUILDER_CLASS, info
+            .getType().getParameterizedQualifiedSourceName() );
+        source.indent();
+
+        source.println();
+        source.println( "private %s %s = new %s();", info.getType().getParameterizedQualifiedSourceName(), BEAN_INSTANCE_NAME, info
+            .getType().getParameterizedQualifiedSourceName() );
+        source.println();
+
+        for ( PropertyInfo property : properties )
+        {
+            source.println( "private void _%s(%s value) {", property.getPropertyName(), property.getType()
+                .getParameterizedQualifiedSourceName() );
+            source.indent();
+            source.println( property.getSetterAccessor() + ";", "value" );
+            source.outdent();
+            source.println( "}" );
+            source.println();
+        }
+
+        source.println( "@Override" );
+        source.println( "public %s build() {", info.getType().getParameterizedQualifiedSourceName() );
+        source.indent();
+        source.println( "return %s;", BEAN_INSTANCE_NAME );
+        source.outdent();
+        source.println( "}" );
+
+        source.outdent();
+        source.println( "}" );
     }
 
     private void generateSubtypesMethods( SourceWriter source, BeanInfo info ) throws UnableToCompleteException
@@ -185,7 +230,6 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
 
         source.outdent();
         source.println( "}" );
-        source.println();
     }
 
     private void generateSubtypeMappers( SourceWriter source, BeanInfo info ) throws UnableToCompleteException
@@ -257,12 +301,11 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         source.println();
     }
 
-    private void generateNewInstanceBody( SourceWriter source, BeanInfo info )
+    private void generateNewInstanceBuilderBody( SourceWriter source, BeanInfo info )
     {
-        // TODO handle the case where constructor is private or annotated with @JsonCreator
         if ( info.isInstantiable() )
         {
-            source.println( "return new %s();", info.getType().getParameterizedQualifiedSourceName() );
+            source.println( "return new %s();", info.getInstanceBuilderQualifiedName() );
         }
         else
         {
@@ -281,16 +324,17 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
                 continue;
             }
 
-            source.println( "decoders.put(\"%s\", new " + DECODER_PROPERTY_BEAN_CLASS + "<%s>() {", property.getPropertyName(), info
-                .getType().getParameterizedQualifiedSourceName() );
+            source.println( "decoders.put(\"%s\", new " + DECODER_PROPERTY_BEAN_CLASS + "<%s, %s>() {", property.getPropertyName(), info
+                .getType().getParameterizedQualifiedSourceName(), info.getInstanceBuilderQualifiedName() );
 
             source.indent();
             source.println( "@Override" );
-            source.println( "public void decode(%s reader, %s bean, %s ctx) throws java.io.IOException {", JSON_READER_CLASS, info.getType()
-                .getParameterizedQualifiedSourceName(), JSON_DECODING_CONTEXT_CLASS );
+            source.println( "public void decode(%s reader, %s builder, %s ctx) throws java.io.IOException {", JSON_READER_CLASS, info
+                .getInstanceBuilderQualifiedName(), JSON_DECODING_CONTEXT_CLASS );
             source.indent();
 
-            source.println( setterAccessor + ";", String.format( "%s.decode(reader, ctx)", createMapperFromType( property.getType() ) ) );
+            source.println( "builder._%s(%s);", property.getPropertyName(), String
+                .format( "%s.decode(reader, ctx)", createMapperFromType( property.getType() ) ) );
 
             source.outdent();
             source.println( "}" );
