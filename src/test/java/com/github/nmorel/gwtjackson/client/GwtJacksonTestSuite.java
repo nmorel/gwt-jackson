@@ -6,6 +6,7 @@ import com.github.nmorel.gwtjackson.client.advanced.PolymorphismIdClassAsWrapper
 import com.github.nmorel.gwtjackson.client.advanced.PolymorphismIdClassAsWrapperObjectGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.PolymorphismNoTypeInfoGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonAutoDetectGwtTest;
+import com.github.nmorel.gwtjackson.client.annotations.JsonCreatorGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonIgnoreGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonPropertyOrderGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.PrivateAccessGwtTest;
@@ -78,6 +79,7 @@ public class GwtJacksonTestSuite extends TestCase
         suite.addTestSuite( JsonAutoDetectGwtTest.class );
         suite.addTestSuite( JsonPropertyOrderGwtTest.class );
         suite.addTestSuite( JsonIgnoreGwtTest.class );
+        suite.addTestSuite( JsonCreatorGwtTest.class );
 
         // Advanced use cases
         suite.addTestSuite( PrivateAccessGwtTest.class );

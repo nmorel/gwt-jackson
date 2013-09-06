@@ -8,16 +8,23 @@ import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.google.gwt.core.ext.TreeLogger;
+import com.google.gwt.core.ext.typeinfo.JAbstractMethod;
 import com.google.gwt.core.ext.typeinfo.JClassType;
+import com.google.gwt.core.ext.typeinfo.JConstructor;
+import com.google.gwt.core.ext.typeinfo.JMethod;
+import com.google.gwt.core.ext.typeinfo.JParameter;
 
 /** @author Nicolas Morel */
 public final class BeanInfo
 {
-    public static BeanInfo process( JClassType beanType, String qualifiedMapperClassName, String mapperClassSimpleName )
+    public static BeanInfo process( TreeLogger logger, JClassType beanType, String qualifiedMapperClassName, String mapperClassSimpleName )
     {
         BeanInfo result = new BeanInfo();
         result.type = beanType;
@@ -27,17 +34,7 @@ public final class BeanInfo
             .getSubtypes().length == 0 ? AbstractJsonMapperCreator.ABSTRACT_BEAN_JSON_MAPPER_CLASS : AbstractJsonMapperCreator
             .ABSTRACT_SUPERCLASS_JSON_MAPPER_CLASS;
         result.hasSubtypes = beanType.getSubtypes().length > 0;
-        result.instantiable = beanType.isDefaultInstantiable();
-        if ( result.instantiable )
-        {
-            result.instanceBuilderSimpleName = beanType.getSimpleSourceName() + "InstanceBuilder";
-            result.instanceBuilderQualifiedName = qualifiedMapperClassName + "." + result.instanceBuilderSimpleName;
-        }
-        else
-        {
-            result.instanceBuilderQualifiedName = AbstractJsonMapperCreator.INSTANCE_BUILDER_CLASS + "<" + beanType
-                .getParameterizedQualifiedSourceName() + ">";
-        }
+        determineInstanceCreator( logger, result );
 
         result.typeInfo = findFirstEncounteredAnnotationsOnAllHierarchy( beanType, JsonTypeInfo.class );
 
@@ -77,6 +74,123 @@ public final class BeanInfo
         return result;
     }
 
+    /**
+     * Look for the method to create a new instance of the bean. If none are found or the bean is abstract or an interface, we considered it
+     * as non instantiable.
+     *
+     * @param logger logger
+     * @param info current bean info
+     */
+    private static void determineInstanceCreator( TreeLogger logger, BeanInfo info )
+    {
+        if ( null != info.getType().isInterface() || info.getType().isAbstract() )
+        {
+            info.instantiable = false;
+        }
+        else
+        {
+            // we search for @JsonCreator annotation
+            JConstructor creatorDefaultConstructor = null;
+            JConstructor creatorConstructor = null;
+            for ( JConstructor constructor : info.getType().getConstructors() )
+            {
+                if ( constructor.getParameters().length == 0 )
+                {
+                    creatorDefaultConstructor = constructor;
+                }
+
+                // A constructor is considered as a creator if
+                // - he is annotated with JsonCreator and
+                //   * all its parameters are annotated with JsonProperty
+                //   * or it has only one parameter
+                // - or all its parameters are annotated with JsonProperty
+                boolean isAllParametersAnnotatedWithJsonProperty = isAllParametersAnnotatedWith( constructor, JsonProperty.class );
+                if ( (constructor.isAnnotationPresent( JsonCreator.class ) && ((isAllParametersAnnotatedWithJsonProperty) || (constructor
+                    .getParameters().length == 1))) || isAllParametersAnnotatedWithJsonProperty )
+                {
+                    if ( null != creatorConstructor )
+                    {
+                        // Jackson fails with an ArrayIndexOutOfBoundsException when it's the case, let's be more flexible
+                        logger.log( TreeLogger.Type.WARN, "More than one constructor annotated with @JsonCreator, " +
+                            "we use " + creatorConstructor );
+                        break;
+                    }
+                    else
+                    {
+                        creatorConstructor = constructor;
+                    }
+                }
+            }
+
+            JMethod creatorFactory = null;
+            if ( null == creatorConstructor )
+            {
+                // searching for factory method
+                for ( JMethod method : info.getType().getMethods() )
+                {
+                    if ( method.isStatic() && method.isAnnotationPresent( JsonCreator.class ) && (method
+                        .getParameters().length == 1 || isAllParametersAnnotatedWith( method, JsonProperty.class )) )
+                    {
+                        if ( null != creatorFactory )
+                        {
+
+                            // Jackson fails with an ArrayIndexOutOfBoundsException when it's the case, let's be more flexible
+                            logger.log( TreeLogger.Type.WARN, "More than one factory method annotated with @JsonCreator, " +
+                                "we use " + creatorFactory );
+                            break;
+                        }
+                        else
+                        {
+                            creatorFactory = method;
+                        }
+                    }
+                }
+            }
+
+            info.instantiable = true;
+            if ( null != creatorConstructor )
+            {
+                info.creatorConstructor = creatorConstructor;
+            }
+            else if ( null != creatorFactory )
+            {
+                info.creatorFactory = creatorFactory;
+            }
+            else if ( null != creatorDefaultConstructor )
+            {
+                info.creatorDefaultConstructor = creatorDefaultConstructor;
+            }
+            else
+            {
+                info.instantiable = false;
+            }
+        }
+
+        if ( info.instantiable )
+        {
+            info.instanceBuilderSimpleName = info.getType().getSimpleSourceName() + "InstanceBuilder";
+            info.instanceBuilderQualifiedName = info.qualifiedMapperClassName + "." + info.instanceBuilderSimpleName;
+        }
+        else
+        {
+            info.instanceBuilderQualifiedName = AbstractJsonMapperCreator.INSTANCE_BUILDER_CLASS + "<" + info.getType()
+                .getParameterizedQualifiedSourceName() + ">";
+        }
+    }
+
+    private static <T extends Annotation> boolean isAllParametersAnnotatedWith( JAbstractMethod method, Class<T> annotation )
+    {
+        for ( JParameter parameter : method.getParameters() )
+        {
+            if ( !parameter.isAnnotationPresent( annotation ) )
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private static <T extends Annotation> T findFirstEncounteredAnnotationsOnAllHierarchy( JClassType type, Class<T> annotation )
     {
         JClassType currentType = type;
@@ -107,6 +221,9 @@ public final class BeanInfo
     private String instanceBuilderSimpleName;
     private boolean hasSubtypes;
     private boolean instantiable;
+    private JConstructor creatorConstructor;
+    private JMethod creatorFactory;
+    private JConstructor creatorDefaultConstructor;
     private JsonTypeInfo typeInfo;
     private boolean ignoreAllProperties;
     private Set<String> ignoredFields = new HashSet<String>();
@@ -162,6 +279,21 @@ public final class BeanInfo
     public boolean isInstantiable()
     {
         return instantiable;
+    }
+
+    public JConstructor getCreatorConstructor()
+    {
+        return creatorConstructor;
+    }
+
+    public JMethod getCreatorFactory()
+    {
+        return creatorFactory;
+    }
+
+    public JConstructor getCreatorDefaultConstructor()
+    {
+        return creatorDefaultConstructor;
     }
 
     public JsonTypeInfo getTypeInfo()

@@ -8,11 +8,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
+import com.google.gwt.core.ext.typeinfo.JAbstractMethod;
 import com.google.gwt.core.ext.typeinfo.JClassType;
+import com.google.gwt.core.ext.typeinfo.JConstructor;
 import com.google.gwt.core.ext.typeinfo.JField;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
@@ -72,7 +75,7 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
             return qualifiedMapperClassName;
         }
 
-        BeanInfo info = BeanInfo.process( beanType, qualifiedMapperClassName, mapperClassSimpleName );
+        BeanInfo info = BeanInfo.process( logger, beanType, qualifiedMapperClassName, mapperClassSimpleName );
 
         SourceWriter source = getSourceWriter( printWriter, packageName, mapperClassSimpleName, info.getSuperclass() + "<" +
             beanType.getParameterizedQualifiedSourceName() + ", " + info.getInstanceBuilderQualifiedName() + ">" );
@@ -84,7 +87,6 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
 
     private void writeClassBody( SourceWriter source, BeanInfo info ) throws UnableToCompleteException
     {
-
         source.println();
         source.indent();
 
@@ -147,10 +149,15 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         }
         source.println( "}" );
 
-        source.println();
+        if ( info.isInstantiable() )
+        {
+            source.println();
+            generateNewInstanceMethod( source, info, properties );
+        }
 
         if ( !info.isIgnoreAllProperties() )
         {
+            source.println();
             generateAdditionalMethods( source, properties );
         }
 
@@ -158,15 +165,47 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         source.commit( logger );
     }
 
-    private void generateInstanceBuilderClass( SourceWriter source, BeanInfo info, List<PropertyInfo> properties )
+    private void generateInstanceBuilderClass( SourceWriter source, BeanInfo info, List<PropertyInfo> properties ) throws
+        UnableToCompleteException
     {
         source.println( "public static class %s implements %s<%s> {", info.getInstanceBuilderSimpleName(), INSTANCE_BUILDER_CLASS, info
             .getType().getParameterizedQualifiedSourceName() );
         source.indent();
 
+        if ( null != info.getCreatorDefaultConstructor() )
+        {
+            generateInstanceBuilderClassBodyForDefaultConstructor( source, info, properties );
+        }
+        else
+        {
+            JAbstractMethod method = null != info.getCreatorConstructor() ? info.getCreatorConstructor() : info.getCreatorFactory();
+            if ( method.getParameters().length == 1 && !method.getParameters()[0].isAnnotationPresent( JsonProperty.class ) )
+            {
+                generateInstanceBuilderClassBodyForConstructorOrFactoryMethodDelegation( source, info, properties, method );
+            }
+            else
+            {
+                generateInstanceBuilderClassBodyForConstructorOrFactoryMethod( source, info, properties, method );
+            }
+        }
+
+        source.outdent();
+        source.println( "}" );
+    }
+
+    /**
+     * Generate the instance builder class body for a default constructor. We directly instantiate the bean at the builder creation and we
+     * set the properties to it
+     *
+     * @param source writer
+     * @param info info on bean
+     * @param properties list of properties
+     */
+    private void generateInstanceBuilderClassBodyForDefaultConstructor( SourceWriter source, BeanInfo info, List<PropertyInfo> properties )
+    {
         source.println();
-        source.println( "private %s %s = new %s();", info.getType().getParameterizedQualifiedSourceName(), BEAN_INSTANCE_NAME, info
-            .getType().getParameterizedQualifiedSourceName() );
+        source.println( "private %s %s = %s.newInstance();", info.getType().getParameterizedQualifiedSourceName(), BEAN_INSTANCE_NAME, info
+            .getQualifiedMapperClassName() );
         source.println();
 
         for ( PropertyInfo property : properties )
@@ -189,6 +228,80 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
 
         source.outdent();
         source.println( "}" );
+    }
+
+    /**
+     * Generate the instance builder class body for a constructor with parameters or factory method. We will declare all the fields and
+     * instanciate the bean only on build() method when all properties have been decoded
+     *
+     * @param source writer
+     * @param info info on bean
+     * @param properties list of properties
+     * @param method constructor or factory method
+     */
+    private void generateInstanceBuilderClassBodyForConstructorOrFactoryMethod( SourceWriter source, BeanInfo info,
+                                                                                List<PropertyInfo> properties, JAbstractMethod method )
+    {
+        for ( PropertyInfo property : properties )
+        {
+            source.println( "private %s _%s;", property.getType().getParameterizedQualifiedSourceName(), property.getPropertyName() );
+        }
+
+        source.println();
+
+        for ( PropertyInfo property : properties )
+        {
+            source.println( "private void _%s(%s value) {", property.getPropertyName(), property.getType()
+                .getParameterizedQualifiedSourceName() );
+            source.indent();
+            source.println( "this._%s = value;", property.getPropertyName() );
+            source.outdent();
+            source.println( "}" );
+            source.println();
+        }
+
+        source.println( "@Override" );
+        source.println( "public %s build() {", info.getType().getParameterizedQualifiedSourceName() );
+        source.indent();
+
+        StringBuilder parametersBuilder = new StringBuilder();
+        for ( int i = 0; i < method.getParameters().length; i++ )
+        {
+            if ( i > 0 )
+            {
+                parametersBuilder.append( ", " );
+            }
+            parametersBuilder.append( "_" ).append( properties.get( i ).getPropertyName() );
+        }
+        source.println( "%s %s = %s.newInstance(%s);", info.getType().getParameterizedQualifiedSourceName(), BEAN_INSTANCE_NAME, info
+            .getQualifiedMapperClassName(), parametersBuilder.toString() );
+        for ( int i = method.getParameters().length; i < properties.size(); i++ )
+        {
+            PropertyInfo property = properties.get( i );
+            source.println( property.getSetterAccessor() + ";", "this._" + property.getPropertyName() );
+        }
+        source.println( "return %s;", BEAN_INSTANCE_NAME );
+
+        source.outdent();
+        source.println( "}" );
+    }
+
+    /**
+     * Generate the instance builder class body for a constructor or factory method with delegation.
+     *
+     * @param source writer
+     * @param info info on bean
+     * @param properties list of properties
+     * @param method constructor or factory method
+     */
+    private void generateInstanceBuilderClassBodyForConstructorOrFactoryMethodDelegation( SourceWriter source, BeanInfo info,
+                                                                                          List<PropertyInfo> properties,
+                                                                                          JAbstractMethod method ) throws
+        UnableToCompleteException
+    {
+        // FIXME @JsonCreator with delegation
+        logger.log( TreeLogger.Type.ERROR, "The delegation is not supported yet" );
+        throw new UnableToCompleteException();
     }
 
     private void generateSubtypesMethods( SourceWriter source, BeanInfo info ) throws UnableToCompleteException
@@ -547,6 +660,86 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         else
         {
             return methodName.substring( 3, 4 ).toLowerCase() + methodName.substring( 4 );
+        }
+    }
+
+    private void generateNewInstanceMethod( SourceWriter source, BeanInfo info, List<PropertyInfo> properties )
+    {
+        JAbstractMethod method;
+        if ( null != info.getCreatorConstructor() )
+        {
+            method = info.getCreatorConstructor();
+        }
+        else if ( null != info.getCreatorFactory() )
+        {
+            method = info.getCreatorFactory();
+        }
+        else if ( null != info.getCreatorDefaultConstructor() )
+        {
+            method = info.getCreatorDefaultConstructor();
+        }
+        else
+        {
+            // should not happen
+            return;
+        }
+
+        StringBuilder parametersBuilder = new StringBuilder();
+        StringBuilder parametersNameBuilder = new StringBuilder();
+        for ( int i = 0; i < method.getParameters().length; i++ )
+        {
+            if ( i > 0 )
+            {
+                parametersBuilder.append( ", " );
+                parametersNameBuilder.append( ", " );
+            }
+            PropertyInfo property = properties.get( i );
+
+            parametersBuilder.append( property.getType().getParameterizedQualifiedSourceName() ).append( " " ).append( property
+                .getPropertyName() );
+            parametersNameBuilder.append( property.getPropertyName() );
+        }
+
+        if ( method.isPrivate() )
+        {
+            // private method, we use jsni
+            source.println( "private static native %s newInstance(%s) /*-{", info.getType()
+                .getParameterizedQualifiedSourceName(), parametersBuilder.toString() );
+            source.indent();
+
+            if ( null != method.isConstructor() )
+            {
+                JConstructor constructor = method.isConstructor();
+                source.println( "return %s(%s);", constructor.getJsniSignature(), parametersNameBuilder.toString() );
+            }
+            else
+            {
+                JMethod factory = method.isMethod();
+                source.println( "return %s(%s);", factory.getJsniSignature(), parametersNameBuilder.toString() );
+            }
+
+            source.outdent();
+            source.println( "}-*/;" );
+        }
+        else
+        {
+            source.println( "private static %s newInstance(%s) {", info.getType().getParameterizedQualifiedSourceName(), parametersBuilder
+                .toString() );
+            source.indent();
+
+            if ( null != method.isConstructor() )
+            {
+                source.println( "return new %s(%s);", info.getType().getParameterizedQualifiedSourceName(), parametersNameBuilder
+                    .toString() );
+            }
+            else
+            {
+                source.println( "return %s.%s(%s);", info.getType().getQualifiedSourceName(), method.getName(), parametersNameBuilder
+                    .toString() );
+            }
+
+            source.outdent();
+            source.println( "}" );
         }
     }
 }
