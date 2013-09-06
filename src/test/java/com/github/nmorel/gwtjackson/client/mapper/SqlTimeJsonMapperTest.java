@@ -15,7 +15,8 @@ public class SqlTimeJsonMapperTest extends AbstractJsonMapperTest<SqlTimeJsonMap
     protected void testDecodeValue( SqlTimeJsonMapper mapper )
     {
         assertEquals( new Time( 1377543971773l ), mapper.decode( "1377543971773" ) );
-        assertEquals( new Time( getUTCTime( 2012, 8, 18, 15, 45, 56, 543 ) ).toString(), mapper.decode( "\"17:45:56\"" ).toString() );
+        Time time = new Time( getUTCTime( 2012, 8, 18, 15, 45, 56, 543 ) );
+        assertEquals( time.toString(), mapper.decode( "\"" + time.toString() + "\"" ).toString() );
     }
 
     @Override

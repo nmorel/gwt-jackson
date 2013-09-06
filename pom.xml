@@ -93,7 +93,7 @@
               <out>${project.build.directory}/gwt/test/prod</out>
               <productionMode>true</productionMode>
               <userAgents>gecko1_8</userAgents>
-              <testTimeOut>120</testTimeOut>
+              <testTimeOut>300</testTimeOut>
             </configuration>
           </execution>
         </executions>
