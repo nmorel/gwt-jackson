@@ -78,7 +78,7 @@
               <module>com.github.nmorel.gwtjackson.GwtJacksonTest</module>
               <out>${project.build.directory}/gwt/test/dev</out>
               <userAgents>gecko1_8</userAgents>
-              <testTimeOut>120</testTimeOut>
+              <testTimeOut>300</testTimeOut>
             </configuration>
           </execution>
           <execution>

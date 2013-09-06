@@ -22,6 +22,8 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester
 
     public void testDecodeValue( JsonDecoderTester<SimpleBean> decoder )
     {
+        java.sql.Time time = new java.sql.Time( getUTCTime( 2012, 8, 18, 15, 45, 56, 545 ) );
+
         String input = "{\"string\":\"toto\"," +
             "\"bytePrimitive\":34," +
             "\"byteBoxed\":87," +
@@ -44,7 +46,7 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester
             "\"enumProperty\":\"B\"," +
             "\"date\":1345304756543," +
             "\"sqlDate\":\"2012-08-18\"," +
-            "\"sqlTime\":\"17:45:56\"," +
+            "\"sqlTime\":\"" + time.toString() + "\"," +
             "\"sqlTimestamp\":1345304756546," +
             "\"integerArray\":[1,2,3,4]}";
 
@@ -73,7 +75,7 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester
         assertEquals( new Character( '\u00e8' ), bean.getCharBoxed() );
         assertEquals( getUTCDate( 2012, 8, 18, 15, 45, 56, 543 ), bean.getDate() );
         assertEquals( new java.sql.Date( getUTCTime( 2012, 8, 18, 15, 45, 56, 544 ) ).toString(), bean.getSqlDate().toString() );
-        assertEquals( new java.sql.Time( getUTCTime( 2012, 8, 18, 15, 45, 56, 545 ) ).toString(), bean.getSqlTime().toString() );
+        assertEquals( time.toString(), bean.getSqlTime().toString() );
         assertEquals( new java.sql.Timestamp( getUTCTime( 2012, 8, 18, 15, 45, 56, 546 ) ), bean.getSqlTimestamp() );
         assertTrue( Arrays.deepEquals( new Integer[]{1, 2, 3, 4}, bean.getIntegerArray() ) );
     }
@@ -129,7 +131,7 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester
             "\"enumProperty\":\"A\"," +
             "\"date\":1345304756543," +
             "\"sqlDate\":\"2012-08-18\"," +
-            "\"sqlTime\":\"17:45:56\"," +
+            "\"sqlTime\":\"" + bean.getSqlTime().toString() + "\"," +
             "\"sqlTimestamp\":1345304756546," +
             "\"integerArray\":[1,2,3,4]}";
 
