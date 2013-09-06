@@ -69,6 +69,7 @@
           </execution>
           <execution>
             <id>test-dev-mode</id>
+            <phase>test</phase>
             <goals>
               <goal>test</goal>
             </goals>
@@ -82,6 +83,7 @@
           </execution>
           <execution>
             <id>test-prod</id>
+            <phase>test</phase>
             <goals>
               <goal>test</goal>
             </goals>
