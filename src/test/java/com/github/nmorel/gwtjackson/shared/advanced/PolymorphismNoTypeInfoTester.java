@@ -9,10 +9,6 @@ import com.github.nmorel.gwtjackson.shared.AbstractTester;
 import com.github.nmorel.gwtjackson.shared.JsonDecoderTester;
 import com.github.nmorel.gwtjackson.shared.JsonEncoderTester;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.fail;
-
 /** @author Nicolas Morel */
 public final class PolymorphismNoTypeInfoTester extends AbstractTester
 {

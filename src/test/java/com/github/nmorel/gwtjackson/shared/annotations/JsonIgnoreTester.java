@@ -8,9 +8,6 @@ import com.github.nmorel.gwtjackson.shared.AbstractTester;
 import com.github.nmorel.gwtjackson.shared.JsonDecoderTester;
 import com.github.nmorel.gwtjackson.shared.JsonEncoderTester;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
-
 /** @author Nicolas Morel */
 public final class JsonIgnoreTester extends AbstractTester
 {

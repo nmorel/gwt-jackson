@@ -6,8 +6,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
 import com.github.nmorel.gwtjackson.shared.JsonEncoderTester;
 
-import static junit.framework.Assert.assertEquals;
-
 /** @author Nicolas Morel */
 public final class JsonPropertyOrderTester extends AbstractTester
 {

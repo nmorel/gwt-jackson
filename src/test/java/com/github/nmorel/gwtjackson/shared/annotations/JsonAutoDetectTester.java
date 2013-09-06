@@ -6,9 +6,6 @@ import com.github.nmorel.gwtjackson.shared.AbstractTester;
 import com.github.nmorel.gwtjackson.shared.JsonDecoderTester;
 import com.github.nmorel.gwtjackson.shared.JsonEncoderTester;
 
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertEquals;
-
 /** @author Nicolas Morel */
 public final class JsonAutoDetectTester extends AbstractTester
 {

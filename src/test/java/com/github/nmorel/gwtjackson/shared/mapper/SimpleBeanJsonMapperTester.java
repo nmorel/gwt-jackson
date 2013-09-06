@@ -11,11 +11,6 @@ import com.github.nmorel.gwtjackson.shared.model.AnEnum;
 import com.github.nmorel.gwtjackson.shared.model.SimpleBean;
 import com.google.gwt.core.client.GWT;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-
 /** @author Nicolas Morel */
 public final class SimpleBeanJsonMapperTester extends AbstractTester
 {

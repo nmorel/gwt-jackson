@@ -4,7 +4,6 @@ import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.github.nmorel.gwtjackson.client.JsonMapper;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester;
 import com.google.gwt.core.client.GWT;
-import org.junit.Test;
 
 /** @author Nicolas Morel */
 public class JsonCreatorGwtTest extends GwtJacksonTestCase
@@ -57,13 +56,11 @@ public class JsonCreatorGwtTest extends GwtJacksonTestCase
         tester.testEncodingBeanWithDefaultConstructorPrivate( createEncoder( BeanWithDefaultConstructorPrivateMapper.INSTANCE ) );
     }
 
-    @Test
     public void testDecodingBeanWithDefaultConstructorPrivate()
     {
         tester.testDecodingBeanWithDefaultConstructorPrivate( createDecoder( BeanWithDefaultConstructorPrivateMapper.INSTANCE ) );
     }
 
-    @Test
     public void testEncodingBeanWithoutDefaultConstructorAndNoAnnotation()
     {
         tester
@@ -71,7 +68,6 @@ public class JsonCreatorGwtTest extends GwtJacksonTestCase
                 .INSTANCE ) );
     }
 
-    @Test
     public void testDecodingBeanWithoutDefaultConstructorAndNoAnnotation()
     {
         tester
@@ -79,7 +75,6 @@ public class JsonCreatorGwtTest extends GwtJacksonTestCase
                 .INSTANCE ) );
     }
 
-    @Test
     public void testEncodingBeanWithoutDefaultConstructorAndPropertiesAnnotation()
     {
         tester
@@ -87,7 +82,6 @@ public class JsonCreatorGwtTest extends GwtJacksonTestCase
                 BeanWithoutDefaultConstructorAndPropertiesAnnotationMapper.INSTANCE ) );
     }
 
-    @Test
     public void testDecodingBeanWithoutDefaultConstructorAndPropertiesAnnotation()
     {
         tester
@@ -95,43 +89,36 @@ public class JsonCreatorGwtTest extends GwtJacksonTestCase
                 BeanWithoutDefaultConstructorAndPropertiesAnnotationMapper.INSTANCE ) );
     }
 
-    @Test
     public void testEncodingBeanWithConstructorAnnotated()
     {
         tester.testEncodingBeanWithConstructorAnnotated( createEncoder( BeanWithConstructorAnnotatedMapper.INSTANCE ) );
     }
 
-    @Test
     public void testDecodingBeanWithConstructorAnnotated()
     {
         tester.testDecodingBeanWithConstructorAnnotated( createDecoder( BeanWithConstructorAnnotatedMapper.INSTANCE ) );
     }
 
-    @Test
     public void testEncodingBeanWithFactoryMethod()
     {
         tester.testEncodingBeanWithFactoryMethod( createEncoder( BeanWithFactoryMethodMapper.INSTANCE ) );
     }
 
-    @Test
     public void testDecodingBeanWithFactoryMethod()
     {
         tester.testDecodingBeanWithFactoryMethod( createDecoder( BeanWithFactoryMethodMapper.INSTANCE ) );
     }
 
-    @Test
     public void testEncodingBeanWithPrivateFactoryMethod()
     {
         tester.testEncodingBeanWithPrivateFactoryMethod( createEncoder( BeanWithPrivateFactoryMethodMapper.INSTANCE ) );
     }
 
-    @Test
     public void testDecodingBeanWithPrivateFactoryMethod()
     {
         tester.testDecodingBeanWithPrivateFactoryMethod( createDecoder( BeanWithPrivateFactoryMethodMapper.INSTANCE ) );
     }
 
-    @Test
     public void testEncodingBeanWithPropertiesOnlyPresentOnConstructor()
     {
         JsonCreatorTester.INSTANCE
@@ -139,7 +126,6 @@ public class JsonCreatorGwtTest extends GwtJacksonTestCase
                 .INSTANCE ) );
     }
 
-    @Test
     public void testDecodingBeanWithPropertiesOnlyPresentOnConstructor()
     {
         JsonCreatorTester.INSTANCE
