@@ -59,7 +59,7 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
 
     protected abstract void initEncoders( Map<String, EncoderProperty<T>> encoders );
 
-    protected abstract B newInstanceBuilder();
+    protected abstract B newInstanceBuilder( JsonReader reader, JsonDecodingContext ctx );
 
     @Override
     public T doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
@@ -74,7 +74,7 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
     {
         initDecoders();
 
-        B builder = newInstanceBuilder();
+        B builder = newInstanceBuilder( reader, ctx );
 
         while ( JsonToken.NAME.equals( reader.peek() ) )
         {

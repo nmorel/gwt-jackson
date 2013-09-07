@@ -1299,11 +1299,11 @@ public class JsonReader
     return false;
   }
 
-  private int getLineNumber() {
+  public int getLineNumber() {
     return lineNumber + 1;
   }
 
-  private int getColumnNumber() {
+  public int getColumnNumber() {
     return pos - lineStart + 1;
   }
 
@@ -1582,5 +1582,9 @@ public class JsonReader
         in.getChars(next, next + n, cbuf, off);
         next += n;
         return n;
+    }
+
+    public String getInput(){
+      return in;
     }
 }

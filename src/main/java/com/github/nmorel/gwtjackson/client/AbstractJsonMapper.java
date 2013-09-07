@@ -37,8 +37,7 @@ public abstract class AbstractJsonMapper<T> implements JsonMapper<T>
         }
         catch ( IOException e )
         {
-            // TODO log the error properly
-            throw new JsonDecodingException( e );
+            throw ctx.traceError( reader, e );
         }
         catch ( JsonDecodingException e )
         {
@@ -47,8 +46,7 @@ public abstract class AbstractJsonMapper<T> implements JsonMapper<T>
         }
         catch ( Exception e )
         {
-            // TODO log the error properly
-            throw new JsonDecodingException( e );
+           throw ctx.traceError( reader, e );
         }
     }
 
@@ -79,8 +77,7 @@ public abstract class AbstractJsonMapper<T> implements JsonMapper<T>
         }
         catch ( IOException e )
         {
-            // TODO log the error properly
-            throw new JsonEncodingException( e );
+            throw ctx.traceError( writer, value, e );
         }
         catch ( JsonEncodingException e )
         {
@@ -89,8 +86,7 @@ public abstract class AbstractJsonMapper<T> implements JsonMapper<T>
         }
         catch ( Exception e )
         {
-            // TODO log the error properly
-            throw new JsonEncodingException( e );
+            throw ctx.traceError( writer, value, e );
         }
     }
 

@@ -634,4 +634,8 @@ public class JsonWriter {
       throw new IllegalStateException("Nesting problem.");
     }
   }
+
+  public String getCurrentString() {
+    return out.toString();
+  }
 }

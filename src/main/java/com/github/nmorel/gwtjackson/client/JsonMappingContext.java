@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import com.github.nmorel.gwtjackson.client.mapper.ArrayJsonMapper;
 import com.github.nmorel.gwtjackson.client.mapper.BigDecimalJsonMapper;
@@ -49,6 +50,8 @@ public abstract class JsonMappingContext
     protected static final JsonMapper<Time> DEFAULT_SQL_TIME_MAPPER = new SqlTimeJsonMapper();
     protected static final JsonMapper<Timestamp> DEFAULT_SQL_TIMESTAMP_MAPPER = new SqlTimestampJsonMapper();
     protected static final JsonMapper<String> DEFAULT_STRING_MAPPER = new StringJsonMapper();
+
+    public abstract Logger getLogger();
 
     public JsonMapper<BigDecimal> getBigDecimalJsonMapper()
     {
