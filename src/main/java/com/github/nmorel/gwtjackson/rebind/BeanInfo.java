@@ -1,10 +1,13 @@
 package com.github.nmorel.gwtjackson.rebind;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -62,15 +65,19 @@ public final class BeanInfo
         }
 
         JsonPropertyOrder jsonPropertyOrder = findFirstEncounteredAnnotationsOnAllHierarchy( beanType, JsonPropertyOrder.class );
-        if ( null == jsonPropertyOrder )
+        if ( null != jsonPropertyOrder && jsonPropertyOrder.value().length > 0 )
         {
-            result.propertyOrderList = Collections.emptyList();
+            result.propertyOrderList = Arrays.asList( jsonPropertyOrder.value() );
+        }
+        else if ( !result.creatorParameters.isEmpty() )
+        {
+            result.propertyOrderList = new ArrayList<String>( result.creatorParameters.keySet() );
         }
         else
         {
-            result.propertyOrderList = Arrays.asList( jsonPropertyOrder.value() );
-            result.propertyOrderAlphabetic = jsonPropertyOrder.alphabetic();
+            result.propertyOrderList = Collections.emptyList();
         }
+        result.propertyOrderAlphabetic = null != jsonPropertyOrder && jsonPropertyOrder.alphabetic();
         return result;
     }
 
@@ -147,29 +154,46 @@ public final class BeanInfo
                 }
             }
 
-            info.instantiable = true;
             if ( null != creatorConstructor )
             {
-                info.creatorConstructor = creatorConstructor;
+                info.creatorMethod = creatorConstructor;
             }
             else if ( null != creatorFactory )
             {
-                info.creatorFactory = creatorFactory;
+                info.creatorMethod = creatorFactory;
             }
             else if ( null != creatorDefaultConstructor )
             {
-                info.creatorDefaultConstructor = creatorDefaultConstructor;
+                info.creatorDefaultConstructor = true;
+                info.creatorMethod = creatorDefaultConstructor;
             }
-            else
-            {
-                info.instantiable = false;
-            }
+
+            info.instantiable = null != info.creatorMethod;
         }
+
+        info.creatorParameters = new LinkedHashMap<String, JParameter>();
 
         if ( info.instantiable )
         {
             info.instanceBuilderSimpleName = info.getType().getSimpleSourceName() + "InstanceBuilder";
             info.instanceBuilderQualifiedName = info.qualifiedMapperClassName + "." + info.instanceBuilderSimpleName;
+
+            if ( !info.isCreatorDefaultConstructor() )
+            {
+                if ( info.creatorMethod
+                    .getParameters().length == 1 && !isAllParametersAnnotatedWith( info.creatorMethod, JsonProperty.class ) )
+                {
+                    // delegation constructor
+                    info.creatorDelegation = true;
+                }
+                else
+                {
+                    for ( JParameter parameter : info.creatorMethod.getParameters() )
+                    {
+                        info.creatorParameters.put( parameter.getAnnotation( JsonProperty.class ).value(), parameter );
+                    }
+                }
+            }
         }
         else
         {
@@ -219,12 +243,15 @@ public final class BeanInfo
     private String superclass;
     private String instanceBuilderQualifiedName;
     private String instanceBuilderSimpleName;
-    private boolean hasSubtypes;
+    /*####  Instantiation properties  ####*/
     private boolean instantiable;
-    private JConstructor creatorConstructor;
-    private JMethod creatorFactory;
-    private JConstructor creatorDefaultConstructor;
+    private JAbstractMethod creatorMethod;
+    private Map<String, JParameter> creatorParameters;
+    private boolean creatorDefaultConstructor;
+    private boolean creatorDelegation;
     private JsonTypeInfo typeInfo;
+    private boolean hasSubtypes;
+    /*####  Visibility properties  ####*/
     private boolean ignoreAllProperties;
     private Set<String> ignoredFields = new HashSet<String>();
     private JsonAutoDetect.Visibility fieldVisibility = JsonAutoDetect.Visibility.DEFAULT;
@@ -233,6 +260,7 @@ public final class BeanInfo
     private JsonAutoDetect.Visibility setterVisibility = JsonAutoDetect.Visibility.DEFAULT;
     private JsonAutoDetect.Visibility creatorVisibility = JsonAutoDetect.Visibility.DEFAULT;
     private boolean ignoreUnknown;
+    /*####  Ordering properties  ####*/
     private List<String> propertyOrderList;
     private boolean propertyOrderAlphabetic;
 
@@ -271,34 +299,39 @@ public final class BeanInfo
         return instanceBuilderSimpleName;
     }
 
-    public boolean isHasSubtypes()
-    {
-        return hasSubtypes;
-    }
-
     public boolean isInstantiable()
     {
         return instantiable;
     }
 
-    public JConstructor getCreatorConstructor()
-    {
-        return creatorConstructor;
-    }
-
-    public JMethod getCreatorFactory()
-    {
-        return creatorFactory;
-    }
-
-    public JConstructor getCreatorDefaultConstructor()
+    public boolean isCreatorDefaultConstructor()
     {
         return creatorDefaultConstructor;
+    }
+
+    public JAbstractMethod getCreatorMethod()
+    {
+        return creatorMethod;
+    }
+
+    public Map<String, JParameter> getCreatorParameters()
+    {
+        return creatorParameters;
+    }
+
+    public boolean isCreatorDelegation()
+    {
+        return creatorDelegation;
     }
 
     public JsonTypeInfo getTypeInfo()
     {
         return typeInfo;
+    }
+
+    public boolean isHasSubtypes()
+    {
+        return hasSubtypes;
     }
 
     public boolean isIgnoreAllProperties()

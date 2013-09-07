@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gwt.core.ext.typeinfo.JField;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JPackage;
+import com.google.gwt.core.ext.typeinfo.JParameter;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.user.rebind.SourceWriter;
 
@@ -71,6 +72,17 @@ public final class PropertyInfo
         determineGetter( fieldAccessors, getterAutoDetected, fieldAutoDetected, beanInfo, result );
         determineSetter( fieldAccessors, setterAutoDetected, fieldAutoDetected, beanInfo, result );
 
+        return result;
+    }
+
+    /** Processes and construct a {@link PropertyInfo} for a constructor parameter. */
+    public static PropertyInfo process( String propertyName, JParameter constructorParameter, BeanInfo beanInfo )
+    {
+        PropertyInfo result = new PropertyInfo();
+        result.type = constructorParameter.getType();
+        result.propertyName = propertyName;
+        // TODO find a better way. If we let null, the decoder won't be added. But the setterAccessor is never used for constructor fields.
+        result.setterAccessor = "";
         return result;
     }
 

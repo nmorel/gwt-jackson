@@ -8,7 +8,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
@@ -18,6 +17,7 @@ import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JConstructor;
 import com.google.gwt.core.ext.typeinfo.JField;
 import com.google.gwt.core.ext.typeinfo.JMethod;
+import com.google.gwt.core.ext.typeinfo.JParameter;
 import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.user.rebind.SourceWriter;
@@ -90,11 +90,11 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         source.println();
         source.indent();
 
-        List<PropertyInfo> properties;
+        Map<String, PropertyInfo> properties;
         if ( info.isIgnoreAllProperties() )
         {
             logger.log( TreeLogger.Type.DEBUG, "Ignoring all properties of type " + info.getType() );
-            properties = Collections.emptyList();
+            properties = Collections.emptyMap();
         }
         else
         {
@@ -165,28 +165,24 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         source.commit( logger );
     }
 
-    private void generateInstanceBuilderClass( SourceWriter source, BeanInfo info, List<PropertyInfo> properties ) throws
-        UnableToCompleteException
+    private void generateInstanceBuilderClass( SourceWriter source, BeanInfo info, Map<String,
+        PropertyInfo> properties ) throws UnableToCompleteException
     {
         source.println( "public static class %s implements %s<%s> {", info.getInstanceBuilderSimpleName(), INSTANCE_BUILDER_CLASS, info
             .getType().getParameterizedQualifiedSourceName() );
         source.indent();
 
-        if ( null != info.getCreatorDefaultConstructor() )
+        if ( info.isCreatorDefaultConstructor() )
         {
             generateInstanceBuilderClassBodyForDefaultConstructor( source, info, properties );
         }
+        else if ( info.isCreatorDelegation() )
+        {
+            generateInstanceBuilderClassBodyForConstructorOrFactoryMethodDelegation( source, info, properties );
+        }
         else
         {
-            JAbstractMethod method = null != info.getCreatorConstructor() ? info.getCreatorConstructor() : info.getCreatorFactory();
-            if ( method.getParameters().length == 1 && !method.getParameters()[0].isAnnotationPresent( JsonProperty.class ) )
-            {
-                generateInstanceBuilderClassBodyForConstructorOrFactoryMethodDelegation( source, info, properties, method );
-            }
-            else
-            {
-                generateInstanceBuilderClassBodyForConstructorOrFactoryMethod( source, info, properties, method );
-            }
+            generateInstanceBuilderClassBodyForConstructorOrFactoryMethod( source, info, properties );
         }
 
         source.outdent();
@@ -201,14 +197,15 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
      * @param info info on bean
      * @param properties list of properties
      */
-    private void generateInstanceBuilderClassBodyForDefaultConstructor( SourceWriter source, BeanInfo info, List<PropertyInfo> properties )
+    private void generateInstanceBuilderClassBodyForDefaultConstructor( SourceWriter source, BeanInfo info, Map<String,
+        PropertyInfo> properties )
     {
         source.println();
         source.println( "private %s %s = %s.newInstance();", info.getType().getParameterizedQualifiedSourceName(), BEAN_INSTANCE_NAME, info
             .getQualifiedMapperClassName() );
         source.println();
 
-        for ( PropertyInfo property : properties )
+        for ( PropertyInfo property : properties.values() )
         {
             source.println( "private void _%s(%s value) {", property.getPropertyName(), property.getType()
                 .getParameterizedQualifiedSourceName() );
@@ -237,24 +234,26 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
      * @param source writer
      * @param info info on bean
      * @param properties list of properties
-     * @param method constructor or factory method
      */
-    private void generateInstanceBuilderClassBodyForConstructorOrFactoryMethod( SourceWriter source, BeanInfo info,
-                                                                                List<PropertyInfo> properties, JAbstractMethod method )
+    private void generateInstanceBuilderClassBodyForConstructorOrFactoryMethod( SourceWriter source, BeanInfo info, Map<String,
+        PropertyInfo> properties )
     {
-        for ( PropertyInfo property : properties )
+        for ( PropertyInfo property : properties.values() )
         {
+            source.println();
             source.println( "private %s _%s;", property.getType().getParameterizedQualifiedSourceName(), property.getPropertyName() );
+            source.println( "private boolean is_%s_set;", property.getPropertyName() );
         }
 
         source.println();
 
-        for ( PropertyInfo property : properties )
+        for ( PropertyInfo property : properties.values() )
         {
             source.println( "private void _%s(%s value) {", property.getPropertyName(), property.getType()
                 .getParameterizedQualifiedSourceName() );
             source.indent();
             source.println( "this._%s = value;", property.getPropertyName() );
+            source.println( "this.is_%s_set = true;", property.getPropertyName() );
             source.outdent();
             source.println( "}" );
             source.println();
@@ -265,20 +264,28 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         source.indent();
 
         StringBuilder parametersBuilder = new StringBuilder();
-        for ( int i = 0; i < method.getParameters().length; i++ )
+        for ( Map.Entry<String, JParameter> parameterEntry : info.getCreatorParameters().entrySet() )
         {
-            if ( i > 0 )
+            if ( parametersBuilder.length() > 0 )
             {
                 parametersBuilder.append( ", " );
             }
-            parametersBuilder.append( "_" ).append( properties.get( i ).getPropertyName() );
+            parametersBuilder.append( "_" ).append( parameterEntry.getKey() );
         }
         source.println( "%s %s = %s.newInstance(%s);", info.getType().getParameterizedQualifiedSourceName(), BEAN_INSTANCE_NAME, info
             .getQualifiedMapperClassName(), parametersBuilder.toString() );
-        for ( int i = method.getParameters().length; i < properties.size(); i++ )
+
+        // Writing the rest of the properties
+        for ( Map.Entry<String, PropertyInfo> propertyEntry : properties.entrySet() )
         {
-            PropertyInfo property = properties.get( i );
-            source.println( property.getSetterAccessor() + ";", "this._" + property.getPropertyName() );
+            if ( !info.getCreatorParameters().containsKey( propertyEntry.getKey() ) )
+            {
+                source.println( "if (this.is_%s_set) {", propertyEntry.getKey() );
+                source.indent();
+                source.println( propertyEntry.getValue().getSetterAccessor() + ";", "this._" + propertyEntry.getKey() );
+                source.outdent();
+                source.println( "}" );
+            }
         }
         source.println( "return %s;", BEAN_INSTANCE_NAME );
 
@@ -292,12 +299,9 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
      * @param source writer
      * @param info info on bean
      * @param properties list of properties
-     * @param method constructor or factory method
      */
-    private void generateInstanceBuilderClassBodyForConstructorOrFactoryMethodDelegation( SourceWriter source, BeanInfo info,
-                                                                                          List<PropertyInfo> properties,
-                                                                                          JAbstractMethod method ) throws
-        UnableToCompleteException
+    private void generateInstanceBuilderClassBodyForConstructorOrFactoryMethodDelegation( SourceWriter source, BeanInfo info, Map<String,
+        PropertyInfo> properties ) throws UnableToCompleteException
     {
         // FIXME @JsonCreator with delegation
         logger.log( TreeLogger.Type.ERROR, "The delegation is not supported yet" );
@@ -427,9 +431,10 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         }
     }
 
-    private void generateInitDecoders( SourceWriter source, BeanInfo info, List<PropertyInfo> properties ) throws UnableToCompleteException
+    private void generateInitDecoders( SourceWriter source, BeanInfo info, Map<String,
+        PropertyInfo> properties ) throws UnableToCompleteException
     {
-        for ( PropertyInfo property : properties )
+        for ( PropertyInfo property : properties.values() )
         {
             String setterAccessor = property.getSetterAccessor();
             if ( null == setterAccessor )
@@ -457,9 +462,10 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         }
     }
 
-    private void generateInitEncoders( SourceWriter source, BeanInfo info, List<PropertyInfo> properties ) throws UnableToCompleteException
+    private void generateInitEncoders( SourceWriter source, BeanInfo info, Map<String,
+        PropertyInfo> properties ) throws UnableToCompleteException
     {
-        for ( PropertyInfo property : properties )
+        for ( PropertyInfo property : properties.values() )
         {
             String getterAccessor = property.getGetterAccessor();
             if ( null == getterAccessor )
@@ -486,9 +492,9 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         }
     }
 
-    private void generateAdditionalMethods( SourceWriter source, List<PropertyInfo> properties )
+    private void generateAdditionalMethods( SourceWriter source, Map<String, PropertyInfo> properties )
     {
-        for ( PropertyInfo property : properties )
+        for ( PropertyInfo property : properties.values() )
         {
             for ( PropertyInfo.AdditionalMethod method : property.getAdditionalMethods() )
             {
@@ -498,12 +504,13 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         }
     }
 
-    private List<PropertyInfo> findAllProperties( BeanInfo info )
+    private Map<String, PropertyInfo> findAllProperties( BeanInfo info )
     {
         Map<String, FieldAccessors> fieldsMap = new LinkedHashMap<String, FieldAccessors>();
         parseFields( info.getType(), fieldsMap );
         parseMethods( info.getType(), fieldsMap );
 
+        // Processing all the properties accessible via field, getter or setter
         Map<String, PropertyInfo> propertiesMap = new LinkedHashMap<String, PropertyInfo>();
         for ( FieldAccessors field : fieldsMap.values() )
         {
@@ -518,7 +525,19 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
             }
         }
 
-        List<PropertyInfo> properties = new ArrayList<PropertyInfo>();
+        // We look if there is any constructor parameters not found yet
+        if ( !info.getCreatorParameters().isEmpty() )
+        {
+            for ( Map.Entry<String, JParameter> entry : info.getCreatorParameters().entrySet() )
+            {
+                if ( !propertiesMap.containsKey( entry.getKey() ) )
+                {
+                    propertiesMap.put( entry.getKey(), PropertyInfo.process( entry.getKey(), entry.getValue(), info ) );
+                }
+            }
+        }
+
+        Map<String, PropertyInfo> result = new LinkedHashMap<String, PropertyInfo>();
 
         // we first add the properties defined in order
         for ( String orderedProperty : info.getPropertyOrderList() )
@@ -527,7 +546,7 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
             PropertyInfo property = propertiesMap.remove( orderedProperty );
             if ( null != property )
             {
-                properties.add( property );
+                result.put( property.getPropertyName(), property );
             }
         }
 
@@ -544,15 +563,18 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
             } );
             for ( Map.Entry<String, PropertyInfo> entry : entries )
             {
-                properties.add( entry.getValue() );
+                result.put( entry.getKey(), entry.getValue() );
             }
         }
         else
         {
-            properties.addAll( propertiesMap.values() );
+            for ( Map.Entry<String, PropertyInfo> entry : propertiesMap.entrySet() )
+            {
+                result.put( entry.getKey(), entry.getValue() );
+            }
         }
 
-        return properties;
+        return result;
     }
 
     private void parseFields( JClassType type, Map<String, FieldAccessors> propertiesMap )
@@ -663,37 +685,20 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         }
     }
 
-    private void generateNewInstanceMethod( SourceWriter source, BeanInfo info, List<PropertyInfo> properties )
+    private void generateNewInstanceMethod( SourceWriter source, BeanInfo info, Map<String, PropertyInfo> properties )
     {
-        JAbstractMethod method;
-        if ( null != info.getCreatorConstructor() )
-        {
-            method = info.getCreatorConstructor();
-        }
-        else if ( null != info.getCreatorFactory() )
-        {
-            method = info.getCreatorFactory();
-        }
-        else if ( null != info.getCreatorDefaultConstructor() )
-        {
-            method = info.getCreatorDefaultConstructor();
-        }
-        else
-        {
-            // should not happen
-            return;
-        }
+        JAbstractMethod method = info.getCreatorMethod();
 
         StringBuilder parametersBuilder = new StringBuilder();
         StringBuilder parametersNameBuilder = new StringBuilder();
-        for ( int i = 0; i < method.getParameters().length; i++ )
+        for ( Map.Entry<String, JParameter> parameterEntry : info.getCreatorParameters().entrySet() )
         {
-            if ( i > 0 )
+            if ( parametersBuilder.length() > 0 )
             {
                 parametersBuilder.append( ", " );
                 parametersNameBuilder.append( ", " );
             }
-            PropertyInfo property = properties.get( i );
+            PropertyInfo property = properties.get( parameterEntry.getKey() );
 
             parametersBuilder.append( property.getType().getParameterizedQualifiedSourceName() ).append( " " ).append( property
                 .getPropertyName() );
