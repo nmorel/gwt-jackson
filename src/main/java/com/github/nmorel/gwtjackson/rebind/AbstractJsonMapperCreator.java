@@ -24,9 +24,7 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
         .asList( "java.math.BigDecimal", "java.math.BigInteger", "java.lang.Boolean", "java.lang.Byte", "java.lang.Character",
             "java.util.Date", "java.lang.Double", "java.lang.Float", "java.lang.Integer", "java.lang.Long", "java.lang.Short",
             "java.sql.Date", "java.sql.Time", "java.sql.Timestamp", "java.lang.String" );
-
     public static final String BEAN_INSTANCE_NAME = "$$instance$$";
-
     public static final String JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.JsonMapper";
     public static final String ABSTRACT_JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.AbstractJsonMapper";
     public static final String ABSTRACT_BEAN_JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper";
@@ -43,7 +41,7 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
     public static final String JSON_ENCODING_CONTEXT_CLASS = "com.github.nmorel.gwtjackson.client.JsonEncodingContext";
     public static final String JSON_DECODING_EXCEPTION_CLASS = "com.github.nmorel.gwtjackson.client.exception.JsonDecodingException";
     public static final String JSON_ENCODING_EXCEPTION_CLASS = "com.github.nmorel.gwtjackson.client.exception.JsonEncodingException";
-    public static final String ARRAY_CREATOR_CLASS = "com.github.nmorel.gwtjackson.client.mapper.ArrayJsonMapper.ArrayCreator";
+    public static final String ARRAY_CREATOR_CLASS = "com.github.nmorel.gwtjackson.client.mapper.array.ArrayJsonMapper.ArrayCreator";
     public static final String ABSTRACT_SUPERCLASS_JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.mapper" + "" +
         ".AbstractSuperclassJsonMapper";
     public static final String SUBTYPE_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractSuperclassJsonMapper" + "" +
@@ -126,15 +124,23 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
         JArrayType arrayType = type.isArray();
         if ( null != arrayType )
         {
-            String method = "ctx.createArrayJsonMapper(%s, %s)";
-            String arrayCreator = "new " + ARRAY_CREATOR_CLASS + "<" + arrayType.getComponentType()
-                .getParameterizedQualifiedSourceName() + ">(){\n" +
-                "  @Override\n" +
-                "  public " + arrayType.getParameterizedQualifiedSourceName() + " create( int length ) {\n" +
-                "    return new " + arrayType.getComponentType().getParameterizedQualifiedSourceName() + "[length];\n" +
-                "  }\n" +
-                "}";
-            return String.format( method, createMapperFromType( arrayType.getComponentType() ), arrayCreator );
+            if ( null != arrayType.getComponentType().isPrimitive() )
+            {
+                String boxedName = getJavaObjectTypeFor( arrayType.getComponentType().isPrimitive() );
+                return "ctx.getPrimitive" + boxedName + "ArrayJsonMapper()";
+            }
+            else
+            {
+                String method = "ctx.createArrayJsonMapper(%s, %s)";
+                String arrayCreator = "new " + ARRAY_CREATOR_CLASS + "<" + arrayType.getComponentType()
+                    .getParameterizedQualifiedSourceName() + ">(){\n" +
+                    "  @Override\n" +
+                    "  public " + arrayType.getParameterizedQualifiedSourceName() + " create( int length ) {\n" +
+                    "    return new " + arrayType.getComponentType().getParameterizedQualifiedSourceName() + "[length];\n" +
+                    "  }\n" +
+                    "}";
+                return String.format( method, createMapperFromType( arrayType.getComponentType() ), arrayCreator );
+            }
         }
 
         JParameterizedType parameterizedType = type.isParameterized();

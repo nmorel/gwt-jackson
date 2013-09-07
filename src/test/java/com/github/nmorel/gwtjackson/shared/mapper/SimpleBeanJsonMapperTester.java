@@ -24,7 +24,8 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester
     {
         java.sql.Time time = new java.sql.Time( getUTCTime( 2012, 8, 18, 15, 45, 56, 545 ) );
 
-        String input = "{\"string\":\"toto\"," +
+        String input = "{" +
+            "\"string\":\"toto\"," +
             "\"bytePrimitive\":34," +
             "\"byteBoxed\":87," +
             "\"shortPrimitive\":12," +
@@ -48,7 +49,16 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester
             "\"sqlDate\":\"2012-08-18\"," +
             "\"sqlTime\":\"" + time.toString() + "\"," +
             "\"sqlTimestamp\":1345304756546," +
-            "\"integerArray\":[1,2,3,4]}";
+            "\"stringArray\":[\"Hello\",\"World\",\"!\"]," +
+            "\"booleanPrimitiveArray\":[true, false, 1, 0]," +
+            "\"bytePrimitiveArray\":\"SGVsbG8=\"," +
+            "\"characterPrimitiveArray\":\"çou\"," +
+            "\"doublePrimitiveArray\":[45.789,5.1024]," +
+            "\"floatPrimitiveArray\":[]," +
+            "\"integerPrimitiveArray\":[4,5,6,7,8]," +
+            "\"longPrimitiveArray\":[9223372036854775807,-9223372036854775808]," +
+            "\"shortPrimitiveArray\":[9,7,8,15]" +
+            "}";
 
         SimpleBean bean = decoder.decode( input );
         assertNotNull( bean );
@@ -77,7 +87,15 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester
         assertEquals( new java.sql.Date( getUTCTime( 2012, 8, 18, 15, 45, 56, 544 ) ).toString(), bean.getSqlDate().toString() );
         assertEquals( time.toString(), bean.getSqlTime().toString() );
         assertEquals( new java.sql.Timestamp( getUTCTime( 2012, 8, 18, 15, 45, 56, 546 ) ), bean.getSqlTimestamp() );
-        assertTrue( Arrays.deepEquals( new Integer[]{1, 2, 3, 4}, bean.getIntegerArray() ) );
+        assertTrue( Arrays.deepEquals( new String[]{"Hello", "World", "!"}, bean.getStringArray() ) );
+        assertTrue( Arrays.equals( new boolean[]{true, false, true, false}, bean.getBooleanPrimitiveArray() ) );
+        assertTrue( Arrays.equals( "Hello".getBytes(), bean.getBytePrimitiveArray() ) );
+        assertTrue( Arrays.equals( new char[]{'\u00e7', 'o', 'u'}, bean.getCharacterPrimitiveArray() ) );
+        assertTrue( Arrays.equals( new double[]{45.789, 5.1024}, bean.getDoublePrimitiveArray() ) );
+        assertTrue( Arrays.equals( new float[]{}, bean.getFloatPrimitiveArray() ) );
+        assertTrue( Arrays.equals( new int[]{4, 5, 6, 7, 8}, bean.getIntegerPrimitiveArray() ) );
+        assertTrue( Arrays.equals( new long[]{Long.MAX_VALUE, Long.MIN_VALUE}, bean.getLongPrimitiveArray() ) );
+        assertTrue( Arrays.equals( new short[]{9, 7, 8, 15}, bean.getShortPrimitiveArray() ) );
     }
 
     public void testEncodeValue( JsonEncoderTester<SimpleBean> encoder )
@@ -107,9 +125,18 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester
         bean.setSqlDate( new java.sql.Date( getUTCTime( 2012, 8, 18, 15, 45, 56, 544 ) ) );
         bean.setSqlTime( new java.sql.Time( getUTCTime( 2012, 8, 18, 15, 45, 56, 545 ) ) );
         bean.setSqlTimestamp( new java.sql.Timestamp( getUTCTime( 2012, 8, 18, 15, 45, 56, 546 ) ) );
-        bean.setIntegerArray( new Integer[]{1, 2, 3, 4} );
+        bean.setStringArray( new String[]{"Hello", "World", "!"} );
+        bean.setBooleanPrimitiveArray( new boolean[]{true, false, true, false} );
+        bean.setBytePrimitiveArray( "Hello".getBytes() );
+        bean.setCharacterPrimitiveArray( new char[]{'\u00e7', 'o', 'u'} );
+        bean.setDoublePrimitiveArray( new double[]{45.789, 5.1024} );
+        bean.setFloatPrimitiveArray( new float[]{} );
+        bean.setIntegerPrimitiveArray( new int[]{4, 5, 6, 7, 8} );
+        bean.setLongPrimitiveArray( new long[]{Long.MAX_VALUE, Long.MIN_VALUE} );
+        bean.setShortPrimitiveArray( new short[]{9, 7, 8, 15} );
 
-        String expected = "{\"string\":\"toto\"," +
+        String expected = "{" +
+            "\"string\":\"toto\"," +
             "\"bytePrimitive\":34," +
             "\"byteBoxed\":87," +
             "\"shortPrimitive\":12," +
@@ -133,7 +160,16 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester
             "\"sqlDate\":\"2012-08-18\"," +
             "\"sqlTime\":\"" + bean.getSqlTime().toString() + "\"," +
             "\"sqlTimestamp\":1345304756546," +
-            "\"integerArray\":[1,2,3,4]}";
+            "\"stringArray\":[\"Hello\",\"World\",\"!\"]," +
+            "\"booleanPrimitiveArray\":[true,false,true,false]," +
+            "\"bytePrimitiveArray\":\"SGVsbG8=\"," +
+            "\"characterPrimitiveArray\":\"çou\"," +
+            "\"doublePrimitiveArray\":[45.789,5.1024]," +
+            "\"floatPrimitiveArray\":[]," +
+            "\"integerPrimitiveArray\":[4,5,6,7,8]," +
+            "\"longPrimitiveArray\":[9223372036854775807,-9223372036854775808]," +
+            "\"shortPrimitiveArray\":[9,7,8,15]" +
+            "}";
 
         assertEquals( expected, encoder.encode( bean ) );
     }

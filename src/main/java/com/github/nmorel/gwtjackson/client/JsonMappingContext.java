@@ -10,27 +10,35 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import com.github.nmorel.gwtjackson.client.mapper.ArrayJsonMapper;
-import com.github.nmorel.gwtjackson.client.mapper.BigDecimalJsonMapper;
-import com.github.nmorel.gwtjackson.client.mapper.BigIntegerJsonMapper;
 import com.github.nmorel.gwtjackson.client.mapper.BooleanJsonMapper;
-import com.github.nmorel.gwtjackson.client.mapper.ByteJsonMapper;
 import com.github.nmorel.gwtjackson.client.mapper.CharacterJsonMapper;
-import com.github.nmorel.gwtjackson.client.mapper.CollectionJsonMapper;
-import com.github.nmorel.gwtjackson.client.mapper.DateJsonMapper;
-import com.github.nmorel.gwtjackson.client.mapper.DoubleJsonMapper;
 import com.github.nmorel.gwtjackson.client.mapper.EnumJsonMapper;
-import com.github.nmorel.gwtjackson.client.mapper.FloatJsonMapper;
-import com.github.nmorel.gwtjackson.client.mapper.IntegerJsonMapper;
-import com.github.nmorel.gwtjackson.client.mapper.IterableJsonMapper;
-import com.github.nmorel.gwtjackson.client.mapper.ListJsonMapper;
-import com.github.nmorel.gwtjackson.client.mapper.LongJsonMapper;
-import com.github.nmorel.gwtjackson.client.mapper.SetJsonMapper;
-import com.github.nmorel.gwtjackson.client.mapper.ShortJsonMapper;
-import com.github.nmorel.gwtjackson.client.mapper.SqlDateJsonMapper;
-import com.github.nmorel.gwtjackson.client.mapper.SqlTimeJsonMapper;
-import com.github.nmorel.gwtjackson.client.mapper.SqlTimestampJsonMapper;
 import com.github.nmorel.gwtjackson.client.mapper.StringJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.array.ArrayJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.array.PrimitiveBooleanArrayJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.array.PrimitiveByteArrayJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.array.PrimitiveCharacterArrayJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.array.PrimitiveDoubleArrayJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.array.PrimitiveFloatArrayJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.array.PrimitiveIntegerArrayJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.array.PrimitiveLongArrayJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.array.PrimitiveShortArrayJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.collection.CollectionJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.collection.IterableJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.collection.ListJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.collection.SetJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.date.DateJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.date.SqlDateJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.date.SqlTimeJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.date.SqlTimestampJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.number.BigDecimalJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.number.BigIntegerJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.number.ByteJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.number.DoubleJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.number.FloatJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.number.IntegerJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.number.LongJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.number.ShortJsonMapper;
 
 /** @author Nicolas Morel */
 public abstract class JsonMappingContext
@@ -50,6 +58,59 @@ public abstract class JsonMappingContext
     protected static final JsonMapper<Time> DEFAULT_SQL_TIME_MAPPER = new SqlTimeJsonMapper();
     protected static final JsonMapper<Timestamp> DEFAULT_SQL_TIMESTAMP_MAPPER = new SqlTimestampJsonMapper();
     protected static final JsonMapper<String> DEFAULT_STRING_MAPPER = new StringJsonMapper();
+    protected static final JsonMapper<boolean[]> DEFAULT_PRIMITIVE_BOOLEAN_ARRAY_MAPPER = new PrimitiveBooleanArrayJsonMapper(
+        DEFAULT_BOOLEAN_MAPPER );
+    protected static final JsonMapper<byte[]> DEFAULT_PRIMITIVE_BYTE_ARRAY_MAPPER = new PrimitiveByteArrayJsonMapper();
+    protected static final JsonMapper<char[]> DEFAULT_PRIMITIVE_CHARACTER_ARRAY_MAPPER = new PrimitiveCharacterArrayJsonMapper();
+    protected static final JsonMapper<double[]> DEFAULT_PRIMITIVE_DOUBLE_ARRAY_MAPPER = new PrimitiveDoubleArrayJsonMapper(
+        DEFAULT_DOUBLE_MAPPER );
+    protected static final JsonMapper<float[]> DEFAULT_PRIMITIVE_FLOAT_ARRAY_MAPPER = new PrimitiveFloatArrayJsonMapper(
+        DEFAULT_FLOAT_MAPPER );
+    protected static final JsonMapper<int[]> DEFAULT_PRIMITIVE_INTEGER_ARRAY_MAPPER = new PrimitiveIntegerArrayJsonMapper(
+        DEFAULT_INTEGER_MAPPER );
+    protected static final JsonMapper<long[]> DEFAULT_PRIMITIVE_LONG_ARRAY_MAPPER = new PrimitiveLongArrayJsonMapper( DEFAULT_LONG_MAPPER );
+    protected static final JsonMapper<short[]> DEFAULT_PRIMITIVE_SHORT_ARRAY_MAPPER = new PrimitiveShortArrayJsonMapper(
+        DEFAULT_SHORT_MAPPER );
+
+    public static JsonMapper<boolean[]> getPrimitiveBooleanArrayJsonMapper()
+    {
+        return DEFAULT_PRIMITIVE_BOOLEAN_ARRAY_MAPPER;
+    }
+
+    public static JsonMapper<byte[]> getPrimitiveByteArrayJsonMapper()
+    {
+        return DEFAULT_PRIMITIVE_BYTE_ARRAY_MAPPER;
+    }
+
+    public static JsonMapper<char[]> getPrimitiveCharacterArrayJsonMapper()
+    {
+        return DEFAULT_PRIMITIVE_CHARACTER_ARRAY_MAPPER;
+    }
+
+    public static JsonMapper<double[]> getPrimitiveDoubleArrayJsonMapper()
+    {
+        return DEFAULT_PRIMITIVE_DOUBLE_ARRAY_MAPPER;
+    }
+
+    public static JsonMapper<float[]> getPrimitiveFloatArrayJsonMapper()
+    {
+        return DEFAULT_PRIMITIVE_FLOAT_ARRAY_MAPPER;
+    }
+
+    public static JsonMapper<int[]> getPrimitiveIntegerArrayJsonMapper()
+    {
+        return DEFAULT_PRIMITIVE_INTEGER_ARRAY_MAPPER;
+    }
+
+    public static JsonMapper<long[]> getPrimitiveLongArrayJsonMapper()
+    {
+        return DEFAULT_PRIMITIVE_LONG_ARRAY_MAPPER;
+    }
+
+    public static JsonMapper<short[]> getPrimitiveShortArrayJsonMapper()
+    {
+        return DEFAULT_PRIMITIVE_SHORT_ARRAY_MAPPER;
+    }
 
     public abstract Logger getLogger();
 

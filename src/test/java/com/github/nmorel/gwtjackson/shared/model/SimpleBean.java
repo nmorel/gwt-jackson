@@ -32,7 +32,15 @@ public class SimpleBean
     private java.sql.Date sqlDate;
     private Time sqlTime;
     private Timestamp sqlTimestamp;
-    private Integer[] integerArray;
+    private String[] stringArray;
+    private boolean[] booleanPrimitiveArray;
+    private byte[] bytePrimitiveArray;
+    private char[] characterPrimitiveArray;
+    private double[] doublePrimitiveArray;
+    private float[] floatPrimitiveArray;
+    private int[] integerPrimitiveArray;
+    private long[] longPrimitiveArray;
+    private short[] shortPrimitiveArray;
 
     public String getString()
     {
@@ -274,13 +282,93 @@ public class SimpleBean
         this.sqlTimestamp = sqlTimestamp;
     }
 
-    public Integer[] getIntegerArray()
+    public String[] getStringArray()
     {
-        return integerArray;
+        return stringArray;
     }
 
-    public void setIntegerArray( Integer[] integerArray )
+    public void setStringArray( String[] stringArray )
     {
-        this.integerArray = integerArray;
+        this.stringArray = stringArray;
+    }
+
+    public boolean[] getBooleanPrimitiveArray()
+    {
+        return booleanPrimitiveArray;
+    }
+
+    public void setBooleanPrimitiveArray( boolean[] booleanPrimitiveArray )
+    {
+        this.booleanPrimitiveArray = booleanPrimitiveArray;
+    }
+
+    public byte[] getBytePrimitiveArray()
+    {
+        return bytePrimitiveArray;
+    }
+
+    public void setBytePrimitiveArray( byte[] bytePrimitiveArray )
+    {
+        this.bytePrimitiveArray = bytePrimitiveArray;
+    }
+
+    public char[] getCharacterPrimitiveArray()
+    {
+        return characterPrimitiveArray;
+    }
+
+    public void setCharacterPrimitiveArray( char[] characterPrimitiveArray )
+    {
+        this.characterPrimitiveArray = characterPrimitiveArray;
+    }
+
+    public double[] getDoublePrimitiveArray()
+    {
+        return doublePrimitiveArray;
+    }
+
+    public void setDoublePrimitiveArray( double[] doublePrimitiveArray )
+    {
+        this.doublePrimitiveArray = doublePrimitiveArray;
+    }
+
+    public float[] getFloatPrimitiveArray()
+    {
+        return floatPrimitiveArray;
+    }
+
+    public void setFloatPrimitiveArray( float[] floatPrimitiveArray )
+    {
+        this.floatPrimitiveArray = floatPrimitiveArray;
+    }
+
+    public int[] getIntegerPrimitiveArray()
+    {
+        return integerPrimitiveArray;
+    }
+
+    public void setIntegerPrimitiveArray( int[] integerPrimitiveArray )
+    {
+        this.integerPrimitiveArray = integerPrimitiveArray;
+    }
+
+    public long[] getLongPrimitiveArray()
+    {
+        return longPrimitiveArray;
+    }
+
+    public void setLongPrimitiveArray( long[] longPrimitiveArray )
+    {
+        this.longPrimitiveArray = longPrimitiveArray;
+    }
+
+    public short[] getShortPrimitiveArray()
+    {
+        return shortPrimitiveArray;
+    }
+
+    public void setShortPrimitiveArray( short[] shortPrimitiveArray )
+    {
+        this.shortPrimitiveArray = shortPrimitiveArray;
     }
 }
