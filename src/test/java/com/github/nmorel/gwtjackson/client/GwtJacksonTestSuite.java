@@ -11,6 +11,7 @@ import com.github.nmorel.gwtjackson.client.annotations.JsonIgnoreGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonPropertyOrderGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.PrivateAccessGwtTest;
 import com.github.nmorel.gwtjackson.client.mapper.array.ArrayJsonMapperTest;
+import com.github.nmorel.gwtjackson.client.mapper.collection.AllCollectionsJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.number.BigDecimalJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.number.BigIntegerJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.BooleanJsonMapperTest;
@@ -74,6 +75,7 @@ public class GwtJacksonTestSuite extends TestCase
         suite.addTestSuite( SqlTimestampJsonMapperTest.class );
         suite.addTestSuite( StringJsonMapperTest.class );
         suite.addTestSuite( SimpleBeanJsonMapperTest.class );
+        suite.addTestSuite( AllCollectionsJsonMapperTest.class );
 
         // Annotations test
         suite.addTestSuite( JsonAutoDetectGwtTest.class );

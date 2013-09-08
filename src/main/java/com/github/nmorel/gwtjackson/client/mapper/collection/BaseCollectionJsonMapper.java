@@ -31,7 +31,11 @@ public abstract class BaseCollectionJsonMapper<C extends Collection<T>, T> exten
         reader.beginArray();
         while ( JsonToken.END_ARRAY != reader.peek() )
         {
-            result.add( mapper.decode( reader, ctx ) );
+            T element = mapper.decode( reader, ctx );
+            if ( isNullValueAllowed() || null != element )
+            {
+                result.add( element );
+            }
         }
         reader.endArray();
 
@@ -44,4 +48,10 @@ public abstract class BaseCollectionJsonMapper<C extends Collection<T>, T> exten
      * @return the new collection
      */
     protected abstract C newCollection();
+
+    /** @return true if the collection accepts null value */
+    protected boolean isNullValueAllowed()
+    {
+        return true;
+    }
 }

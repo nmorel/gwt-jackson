@@ -19,4 +19,10 @@ public abstract class BaseQueueJsonMapper<Q extends Queue<T>, T> extends BaseCol
     {
         super( mapper );
     }
+
+    @Override
+    protected boolean isNullValueAllowed()
+    {
+        return false;
+    }
 }

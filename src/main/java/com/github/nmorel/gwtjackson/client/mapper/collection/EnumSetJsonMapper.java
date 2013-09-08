@@ -29,4 +29,10 @@ public class EnumSetJsonMapper<E extends Enum<E>> extends BaseSetJsonMapper<Enum
     {
         return EnumSet.noneOf( enumClass );
     }
+
+    @Override
+    protected boolean isNullValueAllowed()
+    {
+        return false;
+    }
 }

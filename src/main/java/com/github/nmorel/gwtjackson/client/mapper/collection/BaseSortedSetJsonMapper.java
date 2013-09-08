@@ -19,4 +19,10 @@ public abstract class BaseSortedSetJsonMapper<S extends SortedSet<T>, T> extends
     {
         super( mapper );
     }
+
+    @Override
+    protected boolean isNullValueAllowed()
+    {
+        return false;
+    }
 }
