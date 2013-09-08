@@ -4,10 +4,26 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.AbstractCollection;
+import java.util.AbstractList;
+import java.util.AbstractQueue;
+import java.util.AbstractSequentialList;
+import java.util.AbstractSet;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.Stack;
+import java.util.TreeSet;
+import java.util.Vector;
 import java.util.logging.Logger;
 
 import com.github.nmorel.gwtjackson.client.mapper.BooleanJsonMapper;
@@ -23,10 +39,26 @@ import com.github.nmorel.gwtjackson.client.mapper.array.PrimitiveFloatArrayJsonM
 import com.github.nmorel.gwtjackson.client.mapper.array.PrimitiveIntegerArrayJsonMapper;
 import com.github.nmorel.gwtjackson.client.mapper.array.PrimitiveLongArrayJsonMapper;
 import com.github.nmorel.gwtjackson.client.mapper.array.PrimitiveShortArrayJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.collection.AbstractCollectionJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.collection.AbstractListJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.collection.AbstractQueueJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.collection.AbstractSequentialListJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.collection.AbstractSetJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.collection.ArrayListJsonMapper;
 import com.github.nmorel.gwtjackson.client.mapper.collection.CollectionJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.collection.EnumSetJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.collection.HashSetJsonMapper;
 import com.github.nmorel.gwtjackson.client.mapper.collection.IterableJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.collection.LinkedHashSetJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.collection.LinkedListJsonMapper;
 import com.github.nmorel.gwtjackson.client.mapper.collection.ListJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.collection.PriorityQueueJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.collection.QueueJsonMapper;
 import com.github.nmorel.gwtjackson.client.mapper.collection.SetJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.collection.SortedSetJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.collection.StackJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.collection.TreeSetJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.collection.VectorJsonMapper;
 import com.github.nmorel.gwtjackson.client.mapper.date.DateJsonMapper;
 import com.github.nmorel.gwtjackson.client.mapper.date.SqlDateJsonMapper;
 import com.github.nmorel.gwtjackson.client.mapper.date.SqlTimeJsonMapper;
@@ -204,14 +236,94 @@ public abstract class JsonMappingContext
         return new CollectionJsonMapper<T>( mapper );
     }
 
+    public <T> JsonMapper<AbstractCollection<T>> createAbstractCollectionJsonMapper( JsonMapper<T> mapper )
+    {
+        return new AbstractCollectionJsonMapper<T>( mapper );
+    }
+
     public <T> JsonMapper<List<T>> createListJsonMapper( JsonMapper<T> mapper )
     {
         return new ListJsonMapper<T>( mapper );
     }
 
+    public <T> JsonMapper<AbstractList<T>> createAbstractListJsonMapper( JsonMapper<T> mapper )
+    {
+        return new AbstractListJsonMapper<T>( mapper );
+    }
+
+    public <T> JsonMapper<ArrayList<T>> createArrayListJsonMapper( JsonMapper<T> mapper )
+    {
+        return new ArrayListJsonMapper<T>( mapper );
+    }
+
+    public <T> JsonMapper<AbstractSequentialList<T>> createAbstractSequentialListJsonMapper( JsonMapper<T> mapper )
+    {
+        return new AbstractSequentialListJsonMapper<T>( mapper );
+    }
+
+    public <T> JsonMapper<LinkedList<T>> createLinkedListJsonMapper( JsonMapper<T> mapper )
+    {
+        return new LinkedListJsonMapper<T>( mapper );
+    }
+
+    public <T> JsonMapper<Vector<T>> createVectorJsonMapper( JsonMapper<T> mapper )
+    {
+        return new VectorJsonMapper<T>( mapper );
+    }
+
+    public <T> JsonMapper<Stack<T>> createStackJsonMapper( JsonMapper<T> mapper )
+    {
+        return new StackJsonMapper<T>( mapper );
+    }
+
     public <T> JsonMapper<Set<T>> createSetJsonMapper( JsonMapper<T> mapper )
     {
         return new SetJsonMapper<T>( mapper );
+    }
+
+    public <T> JsonMapper<AbstractSet<T>> createAbstractSetJsonMapper( JsonMapper<T> mapper )
+    {
+        return new AbstractSetJsonMapper<T>( mapper );
+    }
+
+    public <T> JsonMapper<HashSet<T>> createHashSetJsonMapper( JsonMapper<T> mapper )
+    {
+        return new HashSetJsonMapper<T>( mapper );
+    }
+
+    public <T> JsonMapper<LinkedHashSet<T>> createLinkedHashSetJsonMapper( JsonMapper<T> mapper )
+    {
+        return new LinkedHashSetJsonMapper<T>( mapper );
+    }
+
+    public <T> JsonMapper<SortedSet<T>> createSortedSetJsonMapper( JsonMapper<T> mapper )
+    {
+        return new SortedSetJsonMapper<T>( mapper );
+    }
+
+    public <T> JsonMapper<TreeSet<T>> createTreeSetJsonMapper( JsonMapper<T> mapper )
+    {
+        return new TreeSetJsonMapper<T>( mapper );
+    }
+
+    public <T extends Enum<T>> JsonMapper<EnumSet<T>> createEnumSetJsonMapper( Class<T> enumClass, JsonMapper<T> mapper )
+    {
+        return new EnumSetJsonMapper<T>( enumClass, mapper );
+    }
+
+    public <T> JsonMapper<Queue<T>> createQueueJsonMapper( JsonMapper<T> mapper )
+    {
+        return new QueueJsonMapper<T>( mapper );
+    }
+
+    public <T> JsonMapper<AbstractQueue<T>> createAbstractQueueJsonMapper( JsonMapper<T> mapper )
+    {
+        return new AbstractQueueJsonMapper<T>( mapper );
+    }
+
+    public <T> JsonMapper<PriorityQueue<T>> createPriorityQueueJsonMapper( JsonMapper<T> mapper )
+    {
+        return new PriorityQueueJsonMapper<T>( mapper );
     }
 
     public <T extends Enum<T>> JsonMapper<T> createEnumJsonMapper( Class<T> enumClass )

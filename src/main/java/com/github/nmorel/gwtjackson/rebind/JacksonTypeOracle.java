@@ -12,19 +12,17 @@ public class JacksonTypeOracle
 {
     private final TreeLogger logger;
     private final TypeOracle typeOracle;
-    private final JClassType jSetType;
-    private final JClassType jListType;
-    private final JClassType jCollectionType;
+    private final JClassType jMapType;
     private final JClassType jIterableType;
+    private final JClassType jEnumSetType;
 
     public JacksonTypeOracle( TreeLogger logger, TypeOracle typeOracle )
     {
         this.logger = logger;
         this.typeOracle = typeOracle;
 
-        this.jSetType = typeOracle.findType( "java.util.Set" );
-        this.jListType = typeOracle.findType( "java.util.List" );
-        this.jCollectionType = typeOracle.findType( "java.util.Collection" );
+        this.jEnumSetType = typeOracle.findType( "java.util.EnumSet" );
+        this.jMapType = typeOracle.findType( "java.util.Map" );
         this.jIterableType = typeOracle.findType( "java.lang.Iterable" );
     }
 
@@ -41,19 +39,14 @@ public class JacksonTypeOracle
         }
     }
 
-    public boolean isSet( JParameterizedType parameterizedType )
+    public boolean isEnumSet(JParameterizedType parameterizedType )
     {
-        return parameterizedType.isAssignableTo( jSetType );
+        return parameterizedType.isAssignableTo( jEnumSetType );
     }
 
-    public boolean isList( JParameterizedType parameterizedType )
+    public boolean isMap( JParameterizedType parameterizedType )
     {
-        return parameterizedType.isAssignableTo( jListType );
-    }
-
-    public boolean isCollection( JParameterizedType parameterizedType )
-    {
-        return parameterizedType.isAssignableTo( jCollectionType );
+        return parameterizedType.isAssignableTo( jMapType );
     }
 
     public boolean isIterable( JParameterizedType parameterizedType )

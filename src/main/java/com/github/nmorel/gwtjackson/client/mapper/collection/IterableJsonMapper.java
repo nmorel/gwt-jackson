@@ -12,11 +12,12 @@ import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 /**
  * Default {@link JsonMapper} implementation for {@link Iterable}. The decoding process returns an {@link ArrayList}.
  *
+ * @param <T> Type of the elements inside the {@link Iterable}
  * @author Nicolas Morel
  */
-public class IterableJsonMapper<T> extends AbstractIterableJsonMapper<Iterable<T>, T>
+public class IterableJsonMapper<T> extends BaseIterableJsonMapper<Iterable<T>, T>
 {
-    /** @param mapper {@link JsonMapper} used to map the objects inside the iterable. */
+    /** @param mapper {@link JsonMapper} used to map the objects inside the {@link Iterable}. */
     public IterableJsonMapper( JsonMapper<T> mapper )
     {
         super( mapper );

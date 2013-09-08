@@ -6,17 +6,20 @@ import com.github.nmorel.gwtjackson.client.AbstractJsonMapper;
 import com.github.nmorel.gwtjackson.client.JsonEncodingContext;
 import com.github.nmorel.gwtjackson.client.JsonMapper;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
+
 /**
  * Base {@link JsonMapper} implementation for {@link Iterable}.
  *
+ * @param <I> {@link Iterable} type
+ * @param <T> Type of the elements inside the {@link Iterable}
  * @author Nicolas Morel
  */
-public abstract class AbstractIterableJsonMapper<I extends Iterable<T>, T> extends AbstractJsonMapper<I>
+public abstract class BaseIterableJsonMapper<I extends Iterable<T>, T> extends AbstractJsonMapper<I>
 {
     protected final JsonMapper<T> mapper;
 
-    /** @param mapper {@link JsonMapper} used to map the objects inside the iterable. */
-    public AbstractIterableJsonMapper( JsonMapper<T> mapper )
+    /** @param mapper {@link JsonMapper} used to map the objects inside the {@link Iterable}. */
+    public BaseIterableJsonMapper( JsonMapper<T> mapper )
     {
         if ( null == mapper )
         {

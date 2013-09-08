@@ -148,21 +148,19 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
         {
             String result;
 
-            if ( typeOracle.isSet( parameterizedType ) )
+            if ( typeOracle.isEnumSet( parameterizedType ) )
             {
-                result = "ctx.createSetJsonMapper(%s)";
-            }
-            else if ( typeOracle.isList( parameterizedType ) )
-            {
-                result = "ctx.createListJsonMapper(%s)";
-            }
-            else if ( typeOracle.isCollection( parameterizedType ) )
-            {
-                result = "ctx.createCollectionJsonMapper(%s)";
+                result = "ctx.createEnumSetJsonMapper(" + parameterizedType.getTypeArgs()[0].getQualifiedSourceName() + ".class, %s)";
             }
             else if ( typeOracle.isIterable( parameterizedType ) )
             {
-                result = "ctx.createIterableJsonMapper(%s)";
+                result = "ctx.create" + parameterizedType.getSimpleSourceName() + "JsonMapper(%s)";
+            }
+            else if ( typeOracle.isMap( parameterizedType ) )
+            {
+                // TODO add support for map
+                logger.log( TreeLogger.Type.ERROR, "Map are not supported yet" );
+                throw new UnableToCompleteException();
             }
             else
             {
