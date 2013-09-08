@@ -32,7 +32,11 @@ public class PrimitiveFloatArrayJsonMapper extends AbstractArrayJsonMapper<float
         int i = 0;
         for ( Float value : list )
         {
-            result[i++] = value;
+            if ( null != value )
+            {
+                result[i] = value;
+            }
+            i++;
         }
         return result;
     }

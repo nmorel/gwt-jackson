@@ -49,15 +49,15 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester
             "\"sqlDate\":\"2012-08-18\"," +
             "\"sqlTime\":\"" + time.toString() + "\"," +
             "\"sqlTimestamp\":1345304756546," +
-            "\"stringArray\":[\"Hello\",\"World\",\"!\"]," +
-            "\"booleanPrimitiveArray\":[true, false, 1, 0]," +
+            "\"stringArray\":[\"Hello\",null,\"World\",\"!\"]," +
+            "\"booleanPrimitiveArray\":[true, null, false, 1, 0]," +
             "\"bytePrimitiveArray\":\"SGVsbG8=\"," +
             "\"characterPrimitiveArray\":\"çou\"," +
-            "\"doublePrimitiveArray\":[45.789,5.1024]," +
-            "\"floatPrimitiveArray\":[]," +
-            "\"integerPrimitiveArray\":[4,5,6,7,8]," +
-            "\"longPrimitiveArray\":[9223372036854775807,-9223372036854775808]," +
-            "\"shortPrimitiveArray\":[9,7,8,15]" +
+            "\"doublePrimitiveArray\":[45.789,null,5.1024]," +
+            "\"floatPrimitiveArray\":[null]," +
+            "\"integerPrimitiveArray\":[4,5,6,null,7,8]," +
+            "\"longPrimitiveArray\":[9223372036854775807,null,-9223372036854775808]," +
+            "\"shortPrimitiveArray\":[9,null,7,8,15]" +
             "}";
 
         SimpleBean bean = decoder.decode( input );
@@ -87,15 +87,15 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester
         assertEquals( new java.sql.Date( getUTCTime( 2012, 8, 18, 15, 45, 56, 544 ) ).toString(), bean.getSqlDate().toString() );
         assertEquals( time.toString(), bean.getSqlTime().toString() );
         assertEquals( new java.sql.Timestamp( getUTCTime( 2012, 8, 18, 15, 45, 56, 546 ) ), bean.getSqlTimestamp() );
-        assertTrue( Arrays.deepEquals( new String[]{"Hello", "World", "!"}, bean.getStringArray() ) );
-        assertTrue( Arrays.equals( new boolean[]{true, false, true, false}, bean.getBooleanPrimitiveArray() ) );
+        assertTrue( Arrays.deepEquals( new String[]{"Hello", null, "World", "!"}, bean.getStringArray() ) );
+        assertTrue( Arrays.equals( new boolean[]{true, false, false, true, false}, bean.getBooleanPrimitiveArray() ) );
         assertTrue( Arrays.equals( "Hello".getBytes(), bean.getBytePrimitiveArray() ) );
         assertTrue( Arrays.equals( new char[]{'\u00e7', 'o', 'u'}, bean.getCharacterPrimitiveArray() ) );
-        assertTrue( Arrays.equals( new double[]{45.789, 5.1024}, bean.getDoublePrimitiveArray() ) );
-        assertTrue( Arrays.equals( new float[]{}, bean.getFloatPrimitiveArray() ) );
-        assertTrue( Arrays.equals( new int[]{4, 5, 6, 7, 8}, bean.getIntegerPrimitiveArray() ) );
-        assertTrue( Arrays.equals( new long[]{Long.MAX_VALUE, Long.MIN_VALUE}, bean.getLongPrimitiveArray() ) );
-        assertTrue( Arrays.equals( new short[]{9, 7, 8, 15}, bean.getShortPrimitiveArray() ) );
+        assertTrue( Arrays.equals( new double[]{45.789, 0d, 5.1024}, bean.getDoublePrimitiveArray() ) );
+        assertTrue( Arrays.equals( new float[]{0f}, bean.getFloatPrimitiveArray() ) );
+        assertTrue( Arrays.equals( new int[]{4, 5, 6, 0, 7, 8}, bean.getIntegerPrimitiveArray() ) );
+        assertTrue( Arrays.equals( new long[]{Long.MAX_VALUE, 0l, Long.MIN_VALUE}, bean.getLongPrimitiveArray() ) );
+        assertTrue( Arrays.equals( new short[]{9, 0, 7, 8, 15}, bean.getShortPrimitiveArray() ) );
     }
 
     public void testEncodeValue( JsonEncoderTester<SimpleBean> encoder )

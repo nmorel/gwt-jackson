@@ -32,7 +32,11 @@ public class PrimitiveDoubleArrayJsonMapper extends AbstractArrayJsonMapper<doub
         int i = 0;
         for ( Double value : list )
         {
-            result[i++] = value;
+            if ( null != value )
+            {
+                result[i] = value;
+            }
+            i++;
         }
         return result;
     }

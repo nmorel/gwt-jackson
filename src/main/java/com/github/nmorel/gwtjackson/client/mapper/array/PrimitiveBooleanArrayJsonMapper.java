@@ -32,7 +32,11 @@ public class PrimitiveBooleanArrayJsonMapper extends AbstractArrayJsonMapper<boo
         int i = 0;
         for ( Boolean value : list )
         {
-            result[i++] = value;
+            if ( null != value )
+            {
+                result[i] = value;
+            }
+            i++;
         }
         return result;
     }

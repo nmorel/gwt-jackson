@@ -32,7 +32,11 @@ public class PrimitiveLongArrayJsonMapper extends AbstractArrayJsonMapper<long[]
         int i = 0;
         for ( Long value : list )
         {
-            result[i++] = value;
+            if ( null != value )
+            {
+                result[i] = value;
+            }
+            i++;
         }
         return result;
     }

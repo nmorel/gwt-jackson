@@ -32,7 +32,11 @@ public class PrimitiveIntegerArrayJsonMapper extends AbstractArrayJsonMapper<int
         int i = 0;
         for ( Integer value : list )
         {
-            result[i++] = value;
+            if ( null != value )
+            {
+                result[i] = value;
+            }
+            i++;
         }
         return result;
     }
