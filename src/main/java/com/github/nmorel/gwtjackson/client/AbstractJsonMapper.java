@@ -20,7 +20,7 @@ public abstract class AbstractJsonMapper<T> implements JsonMapper<T>
     {
         JsonReader reader = new JsonReader( in );
         reader.setLenient( true );
-        return decode( reader, new JsonDecodingContext() );
+        return decode( reader, new JsonDecodingContext( reader ) );
     }
 
     @Override
@@ -37,7 +37,7 @@ public abstract class AbstractJsonMapper<T> implements JsonMapper<T>
         }
         catch ( IOException e )
         {
-            throw ctx.traceError( reader, e );
+            throw ctx.traceError( e );
         }
         catch ( JsonDecodingException e )
         {
@@ -46,7 +46,7 @@ public abstract class AbstractJsonMapper<T> implements JsonMapper<T>
         }
         catch ( Exception e )
         {
-           throw ctx.traceError( reader, e );
+            throw ctx.traceError( e );
         }
     }
 
@@ -59,7 +59,7 @@ public abstract class AbstractJsonMapper<T> implements JsonMapper<T>
         JsonWriter writer = new JsonWriter( builder );
         writer.setLenient( true );
         writer.setSerializeNulls( false );
-        encode( writer, value, new JsonEncodingContext() );
+        encode( writer, value, new JsonEncodingContext( writer ) );
         return builder.toString();
     }
 
@@ -77,7 +77,7 @@ public abstract class AbstractJsonMapper<T> implements JsonMapper<T>
         }
         catch ( IOException e )
         {
-            throw ctx.traceError( writer, value, e );
+            throw ctx.traceError( value, e );
         }
         catch ( JsonEncodingException e )
         {
@@ -86,7 +86,7 @@ public abstract class AbstractJsonMapper<T> implements JsonMapper<T>
         }
         catch ( Exception e )
         {
-            throw ctx.traceError( writer, value, e );
+            throw ctx.traceError( value, e );
         }
     }
 

@@ -115,8 +115,7 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         }
 
         source.println( "@Override" );
-        source.println( "protected %s newInstanceBuilder(%s reader, %s ctx) {", info
-            .getInstanceBuilderQualifiedName(), JSON_READER_CLASS, JSON_DECODING_CONTEXT_CLASS );
+        source.println( "protected %s newInstanceBuilder(%s ctx) {", info.getInstanceBuilderQualifiedName(), JSON_DECODING_CONTEXT_CLASS );
         source.indent();
         generateNewInstanceBuilderBody( source, info );
         source.outdent();
@@ -427,7 +426,7 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         }
         else
         {
-            source.println( "throw ctx.traceError(reader, \"Cannot instantiate the type \" + %s.class.getName());", info.getType()
+            source.println( "throw ctx.traceError(\"Cannot instantiate the type \" + %s.class.getName());", info.getType()
                 .getQualifiedSourceName() );
         }
     }

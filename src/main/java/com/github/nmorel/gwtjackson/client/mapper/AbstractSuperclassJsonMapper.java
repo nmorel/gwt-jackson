@@ -97,7 +97,7 @@ public abstract class AbstractSuperclassJsonMapper<T, B extends AbstractBeanJson
                     if ( !propertyName.equals( name ) )
                     {
                         // the type info is always the first value. If we don't find it, we throw an error
-                        throw ctx.traceError( reader, "Cannot find the type info" );
+                        throw ctx.traceError( "Cannot find the type info" );
                     }
                     String typeInfoProperty = reader.nextString();
 
@@ -128,7 +128,7 @@ public abstract class AbstractSuperclassJsonMapper<T, B extends AbstractBeanJson
                     break;
 
                 default:
-                    throw ctx.traceError( reader, "JsonTypeInfo.As." + include + " is not supported" );
+                    throw ctx.traceError( "JsonTypeInfo.As." + include + " is not supported" );
             }
         }
 
@@ -145,14 +145,14 @@ public abstract class AbstractSuperclassJsonMapper<T, B extends AbstractBeanJson
             }
             else
             {
-                throw ctx.traceError( reader, "Cannot decode the object. There is no type info and the type is not instantiable." );
+                throw ctx.traceError( "Cannot decode the object. There is no type info and the type is not instantiable." );
             }
         }
 
         SubtypeMapper<? extends T> mapper = subtypeInfoToMapper.get( typeInfo );
         if ( null == mapper )
         {
-            throw ctx.traceError( reader, "No mapper found for the type " + typeInfo );
+            throw ctx.traceError( "No mapper found for the type " + typeInfo );
         }
 
         return mapper.decodeObject( reader, ctx );
@@ -164,7 +164,7 @@ public abstract class AbstractSuperclassJsonMapper<T, B extends AbstractBeanJson
         SubtypeMapper mapper = subtypeClassToMapper.get( value.getClass() );
         if ( null == mapper )
         {
-            throw ctx.traceError( writer, value, "Cannot find mapper for class " + value.getClass() );
+            throw ctx.traceError( value, "Cannot find mapper for class " + value.getClass() );
         }
 
         if ( !includeTypeInfo )
@@ -179,7 +179,7 @@ public abstract class AbstractSuperclassJsonMapper<T, B extends AbstractBeanJson
             String typeInfo = subtypeClassToInfo.get( value.getClass() );
             if ( null == typeInfo )
             {
-                throw ctx.traceError( writer, value, "Cannot find type info for class " + value.getClass() );
+                throw ctx.traceError( value, "Cannot find type info for class " + value.getClass() );
             }
 
             switch ( include )
@@ -216,7 +216,7 @@ public abstract class AbstractSuperclassJsonMapper<T, B extends AbstractBeanJson
                     break;
 
                 default:
-                    throw ctx.traceError( writer, value, "JsonTypeInfo.As." + include + " is not supported" );
+                    throw ctx.traceError( value, "JsonTypeInfo.As." + include + " is not supported" );
             }
         }
     }

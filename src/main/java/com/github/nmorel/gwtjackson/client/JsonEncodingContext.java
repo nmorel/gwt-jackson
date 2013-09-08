@@ -11,6 +11,12 @@ import com.google.gwt.logging.client.LogConfiguration;
 public class JsonEncodingContext extends JsonMappingContext
 {
     private static final Logger logger = Logger.getLogger( "JsonEncoding" );
+    private final JsonWriter writer;
+
+    public JsonEncodingContext( JsonWriter writer )
+    {
+        this.writer = writer;
+    }
 
     @Override
     public Logger getLogger()
@@ -18,21 +24,21 @@ public class JsonEncodingContext extends JsonMappingContext
         return logger;
     }
 
-    public JsonEncodingException traceError( JsonWriter writer, Object value, String message )
+    public JsonEncodingException traceError( Object value, String message )
     {
         getLogger().log( Level.SEVERE, message );
-        traceWriterInfo( writer, value );
+        traceWriterInfo( value );
         return new JsonEncodingException( message );
     }
 
-    public JsonEncodingException traceError( JsonWriter writer, Object value, Exception cause )
+    public JsonEncodingException traceError( Object value, Exception cause )
     {
         getLogger().log( Level.SEVERE, "Error while encoding", cause );
-        traceWriterInfo( writer, value );
+        traceWriterInfo( value );
         return new JsonEncodingException( cause );
     }
 
-    private void traceWriterInfo( JsonWriter writer, Object value )
+    private void traceWriterInfo( Object value )
     {
         if ( LogConfiguration.loggingIsEnabled( Level.INFO ) )
         {

@@ -11,6 +11,12 @@ import com.google.gwt.logging.client.LogConfiguration;
 public class JsonDecodingContext extends JsonMappingContext
 {
     private static final Logger logger = Logger.getLogger( "JsonDecoding" );
+    private final JsonReader reader;
+
+    public JsonDecodingContext( JsonReader reader )
+    {
+        this.reader = reader;
+    }
 
     @Override
     public Logger getLogger()
@@ -18,21 +24,21 @@ public class JsonDecodingContext extends JsonMappingContext
         return logger;
     }
 
-    public JsonDecodingException traceError( JsonReader reader, String message )
+    public JsonDecodingException traceError( String message )
     {
         getLogger().log( Level.SEVERE, message );
-        traceReaderInfo( reader );
+        traceReaderInfo();
         return new JsonDecodingException( message );
     }
 
-    public JsonDecodingException traceError( JsonReader reader, Exception cause )
+    public JsonDecodingException traceError( Exception cause )
     {
         getLogger().log( Level.SEVERE, "Error while decoding", cause );
-        traceReaderInfo( reader );
+        traceReaderInfo();
         return new JsonDecodingException( cause );
     }
 
-    private void traceReaderInfo( JsonReader reader )
+    private void traceReaderInfo()
     {
         if ( LogConfiguration.loggingIsEnabled( Level.INFO ) )
         {

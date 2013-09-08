@@ -43,7 +43,7 @@ public class ArrayJsonMapper<T> extends AbstractArrayJsonMapper<T[]>
     {
         if ( null == arrayCreator )
         {
-            throw ctx.traceError( reader, "Can't decode an array without an arrayCreator" );
+            throw ctx.traceError( "Can't decode an array without an arrayCreator" );
         }
 
         List<T> list = decodeList( reader, ctx, mapper );
