@@ -366,39 +366,14 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
 
     private void generateSubtypeMapper( SourceWriter source, BeanInfo info, JClassType subtype ) throws UnableToCompleteException
     {
-        String typeInfo;
+        String typeMetadata;
         if ( null == info.getTypeInfo() )
         {
-            typeInfo = null;
+            typeMetadata = null;
         }
         else
         {
-            switch ( info.getTypeInfo().use() )
-            {
-                case CLASS:
-                    typeInfo = "\"" + subtype.getQualifiedBinaryName() + "\"";
-                    break;
-                case NAME:
-                    JsonTypeName typeName = findFirstEncounteredAnnotationsOnAllHierarchy( subtype, JsonTypeName.class );
-                    if ( null != typeName && null != typeName.value() && !typeName.value().isEmpty() )
-                    {
-                        typeInfo = "\"" + typeName.value() + "\"";
-                    }
-                    else
-                    {
-                        String simpleBinaryName = subtype.getQualifiedBinaryName();
-                        int indexLastDot = simpleBinaryName.lastIndexOf( '.' );
-                        if ( indexLastDot != -1 )
-                        {
-                            simpleBinaryName = simpleBinaryName.substring( indexLastDot + 1 );
-                        }
-                        typeInfo = "\"" + simpleBinaryName + "\"";
-                    }
-                    break;
-                default:
-                    logger.log( TreeLogger.Type.ERROR, "JsonTypeInfo.Id." + info.getTypeInfo().use() + " is not supported" );
-                    throw new UnableToCompleteException();
-            }
+            typeMetadata = "\"" + extractTypeMetadata( info, subtype ) + "\"";
         }
 
         String mapper = info.getType() == subtype ? info.getQualifiedMapperClassName() + ".this" : createMapperFromType( subtype );
@@ -425,8 +400,45 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         source.println( "}" );
 
         source.outdent();
-        source.println( "}, %s.class, %s );", subtype.getQualifiedSourceName(), typeInfo );
+        source.println( "}, %s.class, %s );", subtype.getQualifiedSourceName(), typeMetadata );
         source.println();
+    }
+
+    private String extractTypeMetadata( BeanInfo info, JClassType subtype ) throws UnableToCompleteException
+    {
+        switch ( info.getTypeInfo().use() )
+        {
+            case NAME:
+                JsonTypeName typeName = findFirstEncounteredAnnotationsOnAllHierarchy( subtype, JsonTypeName.class );
+                if ( null != typeName && null != typeName.value() && !typeName.value().isEmpty() )
+                {
+                    return typeName.value();
+                }
+                else
+                {
+                    String simpleBinaryName = subtype.getQualifiedBinaryName();
+                    int indexLastDot = simpleBinaryName.lastIndexOf( '.' );
+                    if ( indexLastDot != -1 )
+                    {
+                        simpleBinaryName = simpleBinaryName.substring( indexLastDot + 1 );
+                    }
+                    return simpleBinaryName;
+                }
+            case MINIMAL_CLASS:
+                if ( !info.getType().getPackage().isDefault() )
+                {
+                    String basePackage = info.getType().getPackage().getName();
+                    if ( subtype.getQualifiedBinaryName().startsWith( basePackage + "." ) )
+                    {
+                        return subtype.getQualifiedBinaryName().substring( basePackage.length() );
+                    }
+                }
+            case CLASS:
+                return subtype.getQualifiedBinaryName();
+            default:
+                logger.log( TreeLogger.Type.ERROR, "JsonTypeInfo.Id." + info.getTypeInfo().use() + " is not supported" );
+                throw new UnableToCompleteException();
+        }
     }
 
     private void generateNewInstanceBuilderBody( SourceWriter source, BeanInfo info )

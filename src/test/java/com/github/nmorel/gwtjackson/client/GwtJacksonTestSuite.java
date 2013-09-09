@@ -2,7 +2,7 @@ package com.github.nmorel.gwtjackson.client;
 
 import com.github.nmorel.gwtjackson.client.advanced.InheritanceGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.PolymorphismIdClassAsPropertyGwtTest;
-import com.github.nmorel.gwtjackson.client.advanced.PolymorphismIdClassAsWrapperArrayGwtTest;
+import com.github.nmorel.gwtjackson.client.advanced.PolymorphismIdMinimalClassAsWrapperArrayGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.PolymorphismIdNameAsWrapperObjectGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.PolymorphismNoTypeInfoGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonAutoDetectGwtTest;
@@ -88,7 +88,7 @@ public class GwtJacksonTestSuite extends TestCase
         suite.addTestSuite( InheritanceGwtTest.class );
         suite.addTestSuite( PolymorphismNoTypeInfoGwtTest.class );
         suite.addTestSuite( PolymorphismIdClassAsPropertyGwtTest.class );
-        suite.addTestSuite( PolymorphismIdClassAsWrapperArrayGwtTest.class );
+        suite.addTestSuite( PolymorphismIdMinimalClassAsWrapperArrayGwtTest.class );
         suite.addTestSuite( PolymorphismIdNameAsWrapperObjectGwtTest.class );
 
         return suite;

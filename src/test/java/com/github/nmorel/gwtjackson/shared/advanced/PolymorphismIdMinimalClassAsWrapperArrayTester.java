@@ -10,10 +10,10 @@ import com.github.nmorel.gwtjackson.shared.JsonDecoderTester;
 import com.github.nmorel.gwtjackson.shared.JsonEncoderTester;
 
 /** @author Nicolas Morel */
-public final class PolymorphismIdClassAsWrapperArrayTester extends AbstractTester
+public final class PolymorphismIdMinimalClassAsWrapperArrayTester extends AbstractTester
 {
 
-    @JsonTypeInfo( use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY )
+    @JsonTypeInfo( use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY )
     @JsonPropertyOrder( alphabetic = true )
     public static abstract class Person
     {
@@ -36,9 +36,9 @@ public final class PolymorphismIdClassAsWrapperArrayTester extends AbstractTeste
         public int satisfaction;
     }
 
-    public static final PolymorphismIdClassAsWrapperArrayTester INSTANCE = new PolymorphismIdClassAsWrapperArrayTester();
+    public static final PolymorphismIdMinimalClassAsWrapperArrayTester INSTANCE = new PolymorphismIdMinimalClassAsWrapperArrayTester();
 
-    private PolymorphismIdClassAsWrapperArrayTester()
+    private PolymorphismIdMinimalClassAsWrapperArrayTester()
     {
     }
 
@@ -74,7 +74,7 @@ public final class PolymorphismIdClassAsWrapperArrayTester extends AbstractTeste
 
         String expected = "[" +
             "[" +
-            "\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdClassAsWrapperArrayTester$Employee\"," +
+            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
             "{" +
             "\"id\":2," +
             "\"name\":\"Thomas\"," +
@@ -82,7 +82,7 @@ public final class PolymorphismIdClassAsWrapperArrayTester extends AbstractTeste
             "}" +
             "]," +
             "[" +
-            "\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdClassAsWrapperArrayTester$Employee\"," +
+            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
             "{" +
             "\"id\":3," +
             "\"name\":\"Patricia\"," +
@@ -90,13 +90,13 @@ public final class PolymorphismIdClassAsWrapperArrayTester extends AbstractTeste
             "}" +
             "]," +
             "[" +
-            "\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdClassAsWrapperArrayTester$Manager\"," +
+            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Manager\"," +
             "{" +
             "\"id\":1," +
             "\"managedEmployees\":" +
             "[" +
             "[" +
-            "\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdClassAsWrapperArrayTester$Employee\"," +
+            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
             "{" +
             "\"id\":2," +
             "\"name\":\"Thomas\"," +
@@ -104,7 +104,7 @@ public final class PolymorphismIdClassAsWrapperArrayTester extends AbstractTeste
             "}" +
             "]," +
             "[" +
-            "\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdClassAsWrapperArrayTester$Employee\"," +
+            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
             "{" +
             "\"id\":3," +
             "\"name\":\"Patricia\"," +
@@ -117,7 +117,7 @@ public final class PolymorphismIdClassAsWrapperArrayTester extends AbstractTeste
             "}" +
             "]," +
             "[" +
-            "\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdClassAsWrapperArrayTester$Customer\"," +
+            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Customer\"," +
             "{" +
             "\"name\":\"Brad\"," +
             "\"satisfaction\":90" +
@@ -132,7 +132,7 @@ public final class PolymorphismIdClassAsWrapperArrayTester extends AbstractTeste
     {
         String input = "[" +
             "[" +
-            "\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdClassAsWrapperArrayTester$Employee\"," +
+            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
             "{" +
             "\"id\":2," +
             "\"name\":\"Thomas\"," +
@@ -140,7 +140,7 @@ public final class PolymorphismIdClassAsWrapperArrayTester extends AbstractTeste
             "}" +
             "]," +
             "[" +
-            "\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdClassAsWrapperArrayTester$Employee\"," +
+            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
             "{" +
             "\"id\":3," +
             "\"name\":\"Patricia\"," +
@@ -148,13 +148,13 @@ public final class PolymorphismIdClassAsWrapperArrayTester extends AbstractTeste
             "}" +
             "]," +
             "[" +
-            "\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdClassAsWrapperArrayTester$Manager\"," +
+            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Manager\"," +
             "{" +
             "\"id\":1," +
             "\"managedEmployees\":" +
             "[" +
             "[" +
-            "\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdClassAsWrapperArrayTester$Employee\"," +
+            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
             "{" +
             "\"id\":2," +
             "\"name\":\"Thomas\"," +
@@ -162,7 +162,7 @@ public final class PolymorphismIdClassAsWrapperArrayTester extends AbstractTeste
             "}" +
             "]," +
             "[" +
-            "\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdClassAsWrapperArrayTester$Employee\"," +
+            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
             "{" +
             "\"id\":3," +
             "\"name\":\"Patricia\"," +
@@ -175,7 +175,7 @@ public final class PolymorphismIdClassAsWrapperArrayTester extends AbstractTeste
             "}" +
             "]," +
             "[" +
-            "\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdClassAsWrapperArrayTester$Customer\"," +
+            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Customer\"," +
             "{" +
             "\"name\":\"Brad\"," +
             "\"satisfaction\":90" +
