@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
@@ -21,6 +22,8 @@ import com.google.gwt.core.ext.typeinfo.JParameter;
 import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.user.rebind.SourceWriter;
+
+import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounteredAnnotationsOnAllHierarchy;
 
 /** @author Nicolas Morel */
 public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
@@ -376,13 +379,21 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
                     typeInfo = "\"" + subtype.getQualifiedBinaryName() + "\"";
                     break;
                 case NAME:
-                    String simpleBinaryName = subtype.getQualifiedBinaryName();
-                    int indexLastDot = simpleBinaryName.lastIndexOf( '.' );
-                    if ( indexLastDot != -1 )
+                    JsonTypeName typeName = findFirstEncounteredAnnotationsOnAllHierarchy( subtype, JsonTypeName.class );
+                    if ( null != typeName && null != typeName.value() && !typeName.value().isEmpty() )
                     {
-                        simpleBinaryName = simpleBinaryName.substring( indexLastDot + 1 );
+                        typeInfo = "\"" + typeName.value() + "\"";
                     }
-                    typeInfo = "\"" + simpleBinaryName + "\"";
+                    else
+                    {
+                        String simpleBinaryName = subtype.getQualifiedBinaryName();
+                        int indexLastDot = simpleBinaryName.lastIndexOf( '.' );
+                        if ( indexLastDot != -1 )
+                        {
+                            simpleBinaryName = simpleBinaryName.substring( indexLastDot + 1 );
+                        }
+                        typeInfo = "\"" + simpleBinaryName + "\"";
+                    }
                     break;
                 default:
                     logger.log( TreeLogger.Type.ERROR, "JsonTypeInfo.Id." + info.getTypeInfo().use() + " is not supported" );

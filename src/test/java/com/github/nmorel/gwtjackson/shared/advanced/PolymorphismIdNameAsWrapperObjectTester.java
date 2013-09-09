@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
 import com.github.nmorel.gwtjackson.shared.JsonDecoderTester;
 import com.github.nmorel.gwtjackson.shared.JsonEncoderTester;
@@ -13,8 +14,8 @@ import com.github.nmorel.gwtjackson.shared.JsonEncoderTester;
 public final class PolymorphismIdNameAsWrapperObjectTester extends AbstractTester
 {
 
-    @JsonTypeInfo( use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT )
-    @JsonPropertyOrder( alphabetic = true )
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
+    @JsonPropertyOrder(alphabetic = true)
     public static abstract class Person
     {
         public String name;
@@ -26,6 +27,7 @@ public final class PolymorphismIdNameAsWrapperObjectTester extends AbstractTeste
         public String title;
     }
 
+    @JsonTypeName( "Manager" )
     public static class Manager extends Employee
     {
         public List<Employee> managedEmployees;
@@ -90,7 +92,7 @@ public final class PolymorphismIdNameAsWrapperObjectTester extends AbstractTeste
             "}" +
             "}," +
             "{" +
-            "\"PolymorphismIdNameAsWrapperObjectTester$Manager\":" +
+            "\"Manager\":" +
             "{" +
             "\"id\":1," +
             "\"managedEmployees\":" +
@@ -148,7 +150,7 @@ public final class PolymorphismIdNameAsWrapperObjectTester extends AbstractTeste
             "}" +
             "}," +
             "{" +
-            "\"PolymorphismIdNameAsWrapperObjectTester$Manager\":" +
+            "\"Manager\":" +
             "{" +
             "\"id\":1," +
             "\"managedEmployees\":" +

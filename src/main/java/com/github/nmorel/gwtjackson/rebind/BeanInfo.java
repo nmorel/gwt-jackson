@@ -24,6 +24,8 @@ import com.google.gwt.core.ext.typeinfo.JConstructor;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JParameter;
 
+import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounteredAnnotationsOnAllHierarchy;
+
 /** @author Nicolas Morel */
 public final class BeanInfo
 {
@@ -213,28 +215,6 @@ public final class BeanInfo
         }
 
         return true;
-    }
-
-    private static <T extends Annotation> T findFirstEncounteredAnnotationsOnAllHierarchy( JClassType type, Class<T> annotation )
-    {
-        JClassType currentType = type;
-        while ( null != currentType && !currentType.getQualifiedSourceName().equals( "java.lang.Object" ) )
-        {
-            if ( currentType.isAnnotationPresent( annotation ) )
-            {
-                return currentType.getAnnotation( annotation );
-            }
-            for ( JClassType interf : currentType.getImplementedInterfaces() )
-            {
-                T annot = findFirstEncounteredAnnotationsOnAllHierarchy( interf, annotation );
-                if ( null != annot )
-                {
-                    return annot;
-                }
-            }
-            currentType = currentType.getSuperclass();
-        }
-        return null;
     }
 
     private JClassType type;

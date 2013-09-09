@@ -6,7 +6,7 @@ import com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdNameAsWrapperO
 import com.google.gwt.core.client.GWT;
 
 /** @author Nicolas Morel */
-public class PolymorphismIdClassAsWrapperObjectGwtTest extends GwtJacksonTestCase
+public class PolymorphismIdNameAsWrapperObjectGwtTest extends GwtJacksonTestCase
 {
     public interface PolymorphismMapper extends JsonMapper<PolymorphismIdNameAsWrapperObjectTester.Person[]>
     {

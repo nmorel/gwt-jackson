@@ -6,7 +6,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /** @author Nicolas Morel */
-public class PolymorphismIdClassAsWrapperObjectJacksonTest extends AbstractJacksonTest
+public class PolymorphismIdNameAsWrapperObjectJacksonTest extends AbstractJacksonTest
 {
     @Test
     public void testEncoding()
