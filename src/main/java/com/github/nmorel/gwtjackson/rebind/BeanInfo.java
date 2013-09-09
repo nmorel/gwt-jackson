@@ -41,7 +41,11 @@ public final class BeanInfo
         result.hasSubtypes = beanType.getSubtypes().length > 0;
         determineInstanceCreator( logger, result );
 
-        result.typeInfo = findFirstEncounteredAnnotationsOnAllHierarchy( beanType, JsonTypeInfo.class );
+        JsonTypeInfo typeInfo = findFirstEncounteredAnnotationsOnAllHierarchy( beanType, JsonTypeInfo.class );
+        if ( null != typeInfo && !JsonTypeInfo.Id.NONE.equals( typeInfo.use() ) )
+        {
+            result.typeInfo = typeInfo;
+        }
 
         JsonIgnoreType jsonIgnoreType = findFirstEncounteredAnnotationsOnAllHierarchy( beanType, JsonIgnoreType.class );
         result.ignoreAllProperties = null != jsonIgnoreType && jsonIgnoreType.value();
