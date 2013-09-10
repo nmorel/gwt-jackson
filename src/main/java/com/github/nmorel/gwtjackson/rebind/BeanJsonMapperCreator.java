@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.google.gwt.core.ext.GeneratorContext;
@@ -409,6 +410,17 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         switch ( info.getTypeInfo().use() )
         {
             case NAME:
+                JsonSubTypes jsonSubTypes = findFirstEncounteredAnnotationsOnAllHierarchy( info.getType(), JsonSubTypes.class );
+                if ( null != jsonSubTypes && jsonSubTypes.value().length > 0 )
+                {
+                    for ( JsonSubTypes.Type type : jsonSubTypes.value() )
+                    {
+                        if ( !type.name().isEmpty() && type.value().getName().equals( subtype.getQualifiedBinaryName() ) )
+                        {
+                            return type.name();
+                        }
+                    }
+                }
                 JsonTypeName typeName = findFirstEncounteredAnnotationsOnAllHierarchy( subtype, JsonTypeName.class );
                 if ( null != typeName && null != typeName.value() && !typeName.value().isEmpty() )
                 {

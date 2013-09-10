@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
@@ -14,8 +15,9 @@ import com.github.nmorel.gwtjackson.shared.JsonEncoderTester;
 public final class PolymorphismIdNameAsWrapperObjectTester extends AbstractTester
 {
 
-    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
-    @JsonPropertyOrder(alphabetic = true)
+    @JsonTypeInfo( use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT )
+    @JsonPropertyOrder( alphabetic = true )
+    @JsonSubTypes( {@JsonSubTypes.Type( value = Employee.class, name = "Employee" )} )
     public static abstract class Person
     {
         public String name;
@@ -76,7 +78,7 @@ public final class PolymorphismIdNameAsWrapperObjectTester extends AbstractTeste
 
         String expected = "[" +
             "{" +
-            "\"PolymorphismIdNameAsWrapperObjectTester$Employee\":" +
+            "\"Employee\":" +
             "{" +
             "\"id\":2," +
             "\"name\":\"Thomas\"," +
@@ -84,7 +86,7 @@ public final class PolymorphismIdNameAsWrapperObjectTester extends AbstractTeste
             "}" +
             "}," +
             "{" +
-            "\"PolymorphismIdNameAsWrapperObjectTester$Employee\":" +
+            "\"Employee\":" +
             "{" +
             "\"id\":3," +
             "\"name\":\"Patricia\"," +
@@ -98,7 +100,7 @@ public final class PolymorphismIdNameAsWrapperObjectTester extends AbstractTeste
             "\"managedEmployees\":" +
             "[" +
             "{" +
-            "\"PolymorphismIdNameAsWrapperObjectTester$Employee\":" +
+            "\"Employee\":" +
             "{" +
             "\"id\":2," +
             "\"name\":\"Thomas\"," +
@@ -106,7 +108,7 @@ public final class PolymorphismIdNameAsWrapperObjectTester extends AbstractTeste
             "}" +
             "}," +
             "{" +
-            "\"PolymorphismIdNameAsWrapperObjectTester$Employee\":" +
+            "\"Employee\":" +
             "{" +
             "\"id\":3," +
             "\"name\":\"Patricia\"," +
@@ -134,7 +136,7 @@ public final class PolymorphismIdNameAsWrapperObjectTester extends AbstractTeste
     {
         String input = "[" +
             "{" +
-            "\"PolymorphismIdNameAsWrapperObjectTester$Employee\":" +
+            "\"Employee\":" +
             "{" +
             "\"id\":2," +
             "\"name\":\"Thomas\"," +
@@ -142,7 +144,7 @@ public final class PolymorphismIdNameAsWrapperObjectTester extends AbstractTeste
             "}" +
             "}," +
             "{" +
-            "\"PolymorphismIdNameAsWrapperObjectTester$Employee\":" +
+            "\"Employee\":" +
             "{" +
             "\"id\":3," +
             "\"name\":\"Patricia\"," +
@@ -156,7 +158,7 @@ public final class PolymorphismIdNameAsWrapperObjectTester extends AbstractTeste
             "\"managedEmployees\":" +
             "[" +
             "{" +
-            "\"PolymorphismIdNameAsWrapperObjectTester$Employee\":" +
+            "\"Employee\":" +
             "{" +
             "\"id\":2," +
             "\"name\":\"Thomas\"," +
@@ -164,7 +166,7 @@ public final class PolymorphismIdNameAsWrapperObjectTester extends AbstractTeste
             "}" +
             "}," +
             "{" +
-            "\"PolymorphismIdNameAsWrapperObjectTester$Employee\":" +
+            "\"Employee\":" +
             "{" +
             "\"id\":3," +
             "\"name\":\"Patricia\"," +
