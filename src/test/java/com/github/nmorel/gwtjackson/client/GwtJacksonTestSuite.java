@@ -8,6 +8,7 @@ import com.github.nmorel.gwtjackson.client.advanced.PolymorphismNoTypeInfoGwtTes
 import com.github.nmorel.gwtjackson.client.annotations.JsonAutoDetectGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonCreatorGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonIgnoreGwtTest;
+import com.github.nmorel.gwtjackson.client.annotations.JsonIgnoreTypeGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonPropertyOrderGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.PrivateAccessGwtTest;
 import com.github.nmorel.gwtjackson.client.mapper.array.ArrayJsonMapperTest;
@@ -82,6 +83,7 @@ public class GwtJacksonTestSuite extends TestCase
         suite.addTestSuite( JsonPropertyOrderGwtTest.class );
         suite.addTestSuite( JsonIgnoreGwtTest.class );
         suite.addTestSuite( JsonCreatorGwtTest.class );
+        suite.addTestSuite( JsonIgnoreTypeGwtTest.class );
 
         // Advanced use cases
         suite.addTestSuite( PrivateAccessGwtTest.class );

@@ -94,16 +94,7 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         source.println();
         source.indent();
 
-        Map<String, PropertyInfo> properties;
-        if ( info.isIgnoreAllProperties() )
-        {
-            logger.log( TreeLogger.Type.DEBUG, "Ignoring all properties of type " + info.getType() );
-            properties = Collections.emptyMap();
-        }
-        else
-        {
-            properties = findAllProperties( info );
-        }
+        Map<String, PropertyInfo> properties = findAllProperties( info );
 
         if ( info.isInstantiable() )
         {
@@ -132,7 +123,7 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
             .println( "protected void initDecoders(java.util.Map<java.lang.String, %s<%s, %s>> decoders) {", DECODER_PROPERTY_BEAN_CLASS,
                 info
                 .getType().getParameterizedQualifiedSourceName(), info.getInstanceBuilderQualifiedName() );
-        if ( !info.isIgnoreAllProperties() && info.isInstantiable() )
+        if ( info.isInstantiable() )
         {
             source.indent();
             generateInitDecoders( source, info, properties );
@@ -145,12 +136,9 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         source.println( "@Override" );
         source.println( "protected void initEncoders(java.util.Map<java.lang.String, %s<%s>> encoders) {", ENCODER_PROPERTY_BEAN_CLASS, info
             .getType().getParameterizedQualifiedSourceName() );
-        if ( !info.isIgnoreAllProperties() )
-        {
-            source.indent();
-            generateInitEncoders( source, info, properties );
-            source.outdent();
-        }
+        source.indent();
+        generateInitEncoders( source, info, properties );
+        source.outdent();
         source.println( "}" );
 
         if ( info.isInstantiable() )
@@ -159,11 +147,8 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
             generateNewInstanceMethod( source, info, properties );
         }
 
-        if ( !info.isIgnoreAllProperties() )
-        {
-            source.println();
-            generateAdditionalMethods( source, properties );
-        }
+        source.println();
+        generateAdditionalMethods( source, properties );
 
         source.outdent();
         source.commit( logger );

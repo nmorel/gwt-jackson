@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gwt.core.ext.typeinfo.JField;
 import com.google.gwt.core.ext.typeinfo.JMethod;
@@ -13,6 +14,8 @@ import com.google.gwt.core.ext.typeinfo.JPackage;
 import com.google.gwt.core.ext.typeinfo.JParameter;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.user.rebind.SourceWriter;
+
+import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounteredAnnotationsOnAllHierarchy;
 
 /** @author Nicolas Morel */
 public final class PropertyInfo
@@ -36,6 +39,18 @@ public final class PropertyInfo
 
         // find the type of the property
         result.type = findType( fieldAccessors );
+
+        // if type is ignored, we ignore the property
+        if ( null != result.type.isClassOrInterface() )
+        {
+            JsonIgnoreType jsonIgnoreType = findFirstEncounteredAnnotationsOnAllHierarchy( result.type
+                .isClassOrInterface(), JsonIgnoreType.class );
+            result.ignored = null != jsonIgnoreType && jsonIgnoreType.value();
+            if ( result.ignored )
+            {
+                return result;
+            }
+        }
 
         // determine the property name
         JsonProperty jsonProperty = findAnnotationOnAnyAccessor( fieldAccessors, JsonProperty.class );

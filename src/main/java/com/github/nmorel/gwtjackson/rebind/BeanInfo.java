@@ -13,7 +13,6 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -46,9 +45,6 @@ public final class BeanInfo
         {
             result.typeInfo = typeInfo;
         }
-
-        JsonIgnoreType jsonIgnoreType = findFirstEncounteredAnnotationsOnAllHierarchy( beanType, JsonIgnoreType.class );
-        result.ignoreAllProperties = null != jsonIgnoreType && jsonIgnoreType.value();
 
         JsonAutoDetect jsonAutoDetect = findFirstEncounteredAnnotationsOnAllHierarchy( beanType, JsonAutoDetect.class );
         if ( null != jsonAutoDetect )
@@ -236,7 +232,6 @@ public final class BeanInfo
     private JsonTypeInfo typeInfo;
     private boolean hasSubtypes;
     /*####  Visibility properties  ####*/
-    private boolean ignoreAllProperties;
     private Set<String> ignoredFields = new HashSet<String>();
     private JsonAutoDetect.Visibility fieldVisibility = JsonAutoDetect.Visibility.DEFAULT;
     private JsonAutoDetect.Visibility getterVisibility = JsonAutoDetect.Visibility.DEFAULT;
@@ -316,11 +311,6 @@ public final class BeanInfo
     public boolean isHasSubtypes()
     {
         return hasSubtypes;
-    }
-
-    public boolean isIgnoreAllProperties()
-    {
-        return ignoreAllProperties;
     }
 
     public Set<String> getIgnoredFields()
