@@ -21,7 +21,7 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
 {
     public static interface InstanceBuilder<T>
     {
-        T build();
+        T build( JsonDecodingContext ctx );
     }
 
     public static interface DecoderProperty<T, B extends AbstractBeanJsonMapper.InstanceBuilder<T>>
@@ -97,7 +97,7 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
             }
         }
 
-        return builder.build();
+        return builder.build( ctx );
     }
 
     @Override

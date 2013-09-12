@@ -25,6 +25,7 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
             "java.util.Date", "java.lang.Double", "java.lang.Float", "java.lang.Integer", "java.lang.Long", "java.lang.Short",
             "java.sql.Date", "java.sql.Time", "java.sql.Timestamp", "java.lang.String" );
     public static final String BEAN_INSTANCE_NAME = "$$instance$$";
+    public static final String IS_SET_FORMAT = "is_%s_set";
     public static final String JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.JsonMapper";
     public static final String ABSTRACT_JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.AbstractJsonMapper";
     public static final String ABSTRACT_BEAN_JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper";

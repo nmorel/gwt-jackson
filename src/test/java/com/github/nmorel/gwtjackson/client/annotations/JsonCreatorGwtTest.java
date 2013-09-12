@@ -89,6 +89,13 @@ public class JsonCreatorGwtTest extends GwtJacksonTestCase
                 BeanWithoutDefaultConstructorAndPropertiesAnnotationMapper.INSTANCE ) );
     }
 
+    public void testDecodingBeanWithMissingRequiredPropertyInCreator()
+    {
+        tester
+            .testDecodingBeanWithMissingRequiredPropertyInCreator( createDecoder(
+                BeanWithoutDefaultConstructorAndPropertiesAnnotationMapper.INSTANCE ) );
+    }
+
     public void testEncodingBeanWithConstructorAnnotated()
     {
         tester.testEncodingBeanWithConstructorAnnotated( createEncoder( BeanWithConstructorAnnotatedMapper.INSTANCE ) );

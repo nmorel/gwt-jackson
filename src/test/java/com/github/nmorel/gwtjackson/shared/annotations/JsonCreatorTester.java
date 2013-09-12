@@ -62,7 +62,8 @@ public final class JsonCreatorTester extends AbstractTester
         private Boolean booleanProperty;
 
         public BeanWithoutDefaultConstructorAndPropertiesAnnotation( @JsonProperty( "intProperty" ) int intProperty,
-                                                                     @JsonProperty( "stringProperty" ) String stringProperty )
+                                                                     @JsonProperty( value = "stringProperty",
+            required = true ) String stringProperty )
         {
             this.intProperty = intProperty;
             this.stringProperty = stringProperty;
@@ -315,6 +316,21 @@ public final class JsonCreatorTester extends AbstractTester
         assertEquals( 15, result.intProperty );
         assertEquals( "IAmAString", result.stringProperty );
         assertTrue( result.booleanProperty );
+    }
+
+    public void testDecodingBeanWithMissingRequiredPropertyInCreator(
+        JsonDecoderTester<BeanWithoutDefaultConstructorAndPropertiesAnnotation> decoder )
+    {
+        String input = "{\"intProperty\":15,\"booleanProperty\":true}";
+
+        try
+        {
+            decoder.decode( input );
+            fail( "Expected an exception because a required property is missing" );
+        }
+        catch ( JsonDecodingException e )
+        {
+        }
     }
 
     public void testEncodingBeanWithConstructorAnnotated( JsonEncoderTester<BeanWithConstructorAnnotated> encoder )

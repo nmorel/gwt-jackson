@@ -63,4 +63,9 @@ public class JsonPropertyOrderGwtTest extends GwtJacksonTestCase
             .testEncodingBeanWithSomeDefinedAndRestAlphabeticOrder( createEncoder( BeanWithSomeDefinedAndRestAlphabeticOrderMapper
                 .INSTANCE ) );
     }
+
+    public void testDecodingBeanWithMissingRequiredProperties()
+    {
+        tester.testDecodingBeanWithMissingRequiredProperties( createDecoder( BeanWithPropertiesNotOrderedMapper.INSTANCE ) );
+    }
 }

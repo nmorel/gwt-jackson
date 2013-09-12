@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -194,20 +195,36 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
             .getQualifiedMapperClassName() );
         source.println();
 
+        Map<String, PropertyInfo> requiredProperties = new LinkedHashMap<String, PropertyInfo>();
+        for ( PropertyInfo property : properties.values() )
+        {
+            if ( property.isRequired() )
+            {
+                String isSetName = String.format( IS_SET_FORMAT, property.getPropertyName() );
+                source.println( "private boolean %;", isSetName );
+                requiredProperties.put( isSetName, property );
+            }
+        }
+
         for ( PropertyInfo property : properties.values() )
         {
             source.println( "private void _%s(%s value) {", property.getPropertyName(), property.getType()
                 .getParameterizedQualifiedSourceName() );
             source.indent();
             source.println( property.getSetterAccessor() + ";", "value" );
+            if ( property.isRequired() )
+            {
+                source.println( "this.%s = true;", String.format( IS_SET_FORMAT, property.getPropertyName() ) );
+            }
             source.outdent();
             source.println( "}" );
             source.println();
         }
 
         source.println( "@Override" );
-        source.println( "public %s build() {", info.getType().getParameterizedQualifiedSourceName() );
+        source.println( "public %s build(%s ctx) {", info.getType().getParameterizedQualifiedSourceName(), JSON_DECODING_CONTEXT_CLASS );
         source.indent();
+        generateRequiredPropertiesCheck( source, requiredProperties );
         source.println( "return %s;", BEAN_INSTANCE_NAME );
         source.outdent();
         source.println( "}" );
@@ -227,11 +244,17 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
     private void generateInstanceBuilderClassBodyForConstructorOrFactoryMethod( SourceWriter source, BeanInfo info, Map<String,
         PropertyInfo> properties )
     {
+        Map<String, PropertyInfo> requiredProperties = new LinkedHashMap<String, PropertyInfo>();
         for ( PropertyInfo property : properties.values() )
         {
             source.println();
             source.println( "private %s _%s;", property.getType().getParameterizedQualifiedSourceName(), property.getPropertyName() );
-            source.println( "private boolean is_%s_set;", property.getPropertyName() );
+            String isSetName = String.format( IS_SET_FORMAT, property.getPropertyName() );
+            source.println( "private boolean %s;", isSetName );
+            if ( property.isRequired() )
+            {
+                requiredProperties.put( isSetName, property );
+            }
         }
 
         source.println();
@@ -242,15 +265,17 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
                 .getParameterizedQualifiedSourceName() );
             source.indent();
             source.println( "this._%s = value;", property.getPropertyName() );
-            source.println( "this.is_%s_set = true;", property.getPropertyName() );
+            source.println( "this.%s = true;", String.format( IS_SET_FORMAT, property.getPropertyName() ) );
             source.outdent();
             source.println( "}" );
             source.println();
         }
 
         source.println( "@Override" );
-        source.println( "public %s build() {", info.getType().getParameterizedQualifiedSourceName() );
+        source.println( "public %s build(%s ctx) {", info.getType().getParameterizedQualifiedSourceName(), JSON_DECODING_CONTEXT_CLASS );
         source.indent();
+
+        generateRequiredPropertiesCheck( source, requiredProperties );
 
         StringBuilder parametersBuilder = new StringBuilder();
         for ( Map.Entry<String, JParameter> parameterEntry : info.getCreatorParameters().entrySet() )
@@ -269,7 +294,7 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         {
             if ( !info.getCreatorParameters().containsKey( propertyEntry.getKey() ) )
             {
-                source.println( "if (this.is_%s_set) {", propertyEntry.getKey() );
+                source.println( "if (this.%s) {", String.format( IS_SET_FORMAT, propertyEntry.getKey() ) );
                 source.indent();
                 source.println( propertyEntry.getValue().getSetterAccessor() + ";", "this._" + propertyEntry.getKey() );
                 source.outdent();
@@ -295,6 +320,34 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         // FIXME @JsonCreator with delegation
         logger.log( TreeLogger.Type.ERROR, "The delegation is not supported yet" );
         throw new UnableToCompleteException();
+    }
+
+    /** Generates the if statement for required properties. */
+    private void generateRequiredPropertiesCheck( SourceWriter source, Map<String, PropertyInfo> requiredProperties )
+    {
+        if ( requiredProperties.isEmpty() )
+        {
+            return;
+        }
+
+        source.print( "if(" );
+        boolean first = true;
+        for ( String isSetName : requiredProperties.keySet() )
+        {
+            if ( !first )
+            {
+                source.print( " || " );
+            }
+            source.print( "!" );
+            source.print( isSetName );
+            first = false;
+        }
+        source.println( ") {" );
+        source.indent();
+        // TODO we could specify the name of the missing properties
+        source.println( "throw ctx.traceError(\"A required property is missing\");" );
+        source.outdent();
+        source.println( "}" );
     }
 
     private void generateSubtypesMethods( SourceWriter source, BeanInfo info ) throws UnableToCompleteException
@@ -550,9 +603,14 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         {
             for ( Map.Entry<String, JParameter> entry : info.getCreatorParameters().entrySet() )
             {
-                if ( !propertiesMap.containsKey( entry.getKey() ) )
+                PropertyInfo property = propertiesMap.get( entry.getKey() );
+                if ( null == property )
                 {
                     propertiesMap.put( entry.getKey(), PropertyInfo.process( entry.getKey(), entry.getValue(), info ) );
+                }
+                else if ( entry.getValue().getAnnotation( JsonProperty.class ).required() )
+                {
+                    property.setRequired( true );
                 }
             }
         }

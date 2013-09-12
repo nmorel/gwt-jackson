@@ -54,6 +54,7 @@ public final class PropertyInfo
 
         // determine the property name
         JsonProperty jsonProperty = findAnnotationOnAnyAccessor( fieldAccessors, JsonProperty.class );
+        result.required = null != jsonProperty && jsonProperty.required();
         if ( null != jsonProperty && null != jsonProperty.value() && !JsonProperty.USE_DEFAULT_NAME.equals( jsonProperty.value() ) )
         {
             result.propertyName = jsonProperty.value();
@@ -95,6 +96,7 @@ public final class PropertyInfo
     {
         PropertyInfo result = new PropertyInfo();
         result.type = constructorParameter.getType();
+        result.required = constructorParameter.getAnnotation( JsonProperty.class ).required();
         result.propertyName = propertyName;
         // TODO find a better way. If we let null, the decoder won't be added. But the setterAccessor is never used for constructor fields.
         result.setterAccessor = "";
@@ -328,6 +330,7 @@ public final class PropertyInfo
 
     private boolean ignored;
     private JType type;
+    private boolean required;
     private String propertyName;
     private String getterAccessor;
     private String setterAccessor;
@@ -345,6 +348,11 @@ public final class PropertyInfo
     public JType getType()
     {
         return type;
+    }
+
+    public boolean isRequired()
+    {
+        return required;
     }
 
     public String getPropertyName()
@@ -370,5 +378,10 @@ public final class PropertyInfo
     public List<AdditionalMethod> getAdditionalMethods()
     {
         return additionalMethods;
+    }
+
+    public void setRequired( boolean required )
+    {
+        this.required = required;
     }
 }

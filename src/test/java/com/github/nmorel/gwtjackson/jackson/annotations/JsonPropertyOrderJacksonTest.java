@@ -9,7 +9,7 @@ import org.junit.Test;
 public class JsonPropertyOrderJacksonTest extends AbstractJacksonTest
 {
     @Test
-    @Ignore( "jackson has a different natural order" )
+    @Ignore("jackson has a different natural order")
     public void testEncodingBeanWithPropertiesNotOrdered()
     {
         JsonPropertyOrderTester.INSTANCE
@@ -43,5 +43,13 @@ public class JsonPropertyOrderJacksonTest extends AbstractJacksonTest
         JsonPropertyOrderTester.INSTANCE
             .testEncodingBeanWithSomeDefinedAndRestAlphabeticOrder( createEncoder( JsonPropertyOrderTester
                 .BeanWithSomeDefinedAndRestAlphabeticOrder.class ) );
+    }
+
+    @Test
+    @Ignore("jackson doesn't support it yet")
+    public void testDecodingBeanWithMissingRequiredProperties()
+    {
+        JsonPropertyOrderTester.INSTANCE
+            .testDecodingBeanWithMissingRequiredProperties( createDecoder( JsonPropertyOrderTester.BeanWithPropertiesNotOrdered.class ) );
     }
 }

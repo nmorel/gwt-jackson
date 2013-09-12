@@ -3,7 +3,9 @@ package com.github.nmorel.gwtjackson.shared.annotations;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.github.nmorel.gwtjackson.client.exception.JsonDecodingException;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
+import com.github.nmorel.gwtjackson.shared.JsonDecoderTester;
 import com.github.nmorel.gwtjackson.shared.JsonEncoderTester;
 
 /** @author Nicolas Morel */
@@ -14,8 +16,9 @@ public final class JsonPropertyOrderTester extends AbstractTester
     {
         protected int intProperty;
         protected String stringProperty;
-        @JsonProperty( "aBooleanProperty" )
+        @JsonProperty( value = "aBooleanProperty", required = true )
         protected boolean booleanProperty;
+        @JsonProperty( required = true )
         protected double doubleProperty;
     }
 
@@ -29,12 +32,12 @@ public final class JsonPropertyOrderTester extends AbstractTester
     {
     }
 
-    @JsonPropertyOrder( alphabetic = true)
+    @JsonPropertyOrder( alphabetic = true )
     public static class BeanWithAlphabeticOrder extends BeanWithPropertiesNotOrdered
     {
     }
 
-    @JsonPropertyOrder( value = {"doubleProperty"} , alphabetic = true)
+    @JsonPropertyOrder( value = {"doubleProperty"}, alphabetic = true )
     public static class BeanWithSomeDefinedAndRestAlphabeticOrder extends BeanWithPropertiesNotOrdered
     {
     }
@@ -113,7 +116,8 @@ public final class JsonPropertyOrderTester extends AbstractTester
         assertEquals( expected, result );
     }
 
-    public void testEncodingBeanWithSomeDefinedAndRestAlphabeticOrder( JsonEncoderTester<BeanWithSomeDefinedAndRestAlphabeticOrder> encoder )
+    public void testEncodingBeanWithSomeDefinedAndRestAlphabeticOrder( JsonEncoderTester<BeanWithSomeDefinedAndRestAlphabeticOrder>
+                                                                           encoder )
     {
         BeanWithSomeDefinedAndRestAlphabeticOrder bean = new BeanWithSomeDefinedAndRestAlphabeticOrder();
         bean.intProperty = 15;
@@ -128,6 +132,28 @@ public final class JsonPropertyOrderTester extends AbstractTester
         String result = encoder.encode( bean );
 
         assertEquals( expected, result );
+    }
+
+    public void testDecodingBeanWithMissingRequiredProperties( JsonDecoderTester<BeanWithPropertiesNotOrdered> decoder )
+    {
+        BeanWithPropertiesNotOrdered bean = new BeanWithPropertiesNotOrdered();
+        bean.intProperty = 15;
+        bean.stringProperty = "IAmAString";
+        bean.booleanProperty = true;
+        bean.doubleProperty = 45.7d;
+
+        String input = "{\"intProperty\":15," +
+            "\"stringProperty\":\"IAmAString\"," +
+            "\"aBooleanProperty\":true}";
+
+        try
+        {
+            decoder.decode( input );
+            fail( "Expected an exception because a required property is missing" );
+        }
+        catch ( JsonDecodingException e )
+        {
+        }
     }
 
 }
