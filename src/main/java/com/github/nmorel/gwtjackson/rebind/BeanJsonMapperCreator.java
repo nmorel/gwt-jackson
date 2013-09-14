@@ -31,9 +31,10 @@ import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounte
 public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
 {
 
-    public BeanJsonMapperCreator( TreeLogger logger, GeneratorContext context, JacksonTypeOracle typeOracle )
+    public BeanJsonMapperCreator( TreeLogger logger, GeneratorContext context, JacksonTypeOracle typeOracle, Map<JType,
+        String> typeToMapper )
     {
-        super( logger, context, typeOracle );
+        super( logger, context, typeOracle, typeToMapper );
     }
 
     /**
@@ -93,7 +94,6 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
     private void writeClassBody( SourceWriter source, BeanInfo info ) throws UnableToCompleteException
     {
         source.println();
-        source.indent();
 
         Map<String, PropertyInfo> properties = findAllProperties( info );
 
@@ -120,10 +120,8 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         source.println();
 
         source.println( "@Override" );
-        source
-            .println( "protected void initDecoders(java.util.Map<java.lang.String, %s<%s, %s>> decoders) {", DECODER_PROPERTY_BEAN_CLASS,
-                info
-                .getType().getParameterizedQualifiedSourceName(), info.getInstanceBuilderQualifiedName() );
+        source.println( "protected void initDecoders() {", DECODER_PROPERTY_BEAN_CLASS, info.getType()
+            .getParameterizedQualifiedSourceName(), info.getInstanceBuilderQualifiedName() );
         if ( info.isInstantiable() )
         {
             source.indent();
@@ -135,8 +133,8 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         source.println();
 
         source.println( "@Override" );
-        source.println( "protected void initEncoders(java.util.Map<java.lang.String, %s<%s>> encoders) {", ENCODER_PROPERTY_BEAN_CLASS, info
-            .getType().getParameterizedQualifiedSourceName() );
+        source.println( "protected void initEncoders() {", ENCODER_PROPERTY_BEAN_CLASS, info.getType()
+            .getParameterizedQualifiedSourceName() );
         source.indent();
         generateInitEncoders( source, info, properties );
         source.outdent();
@@ -151,14 +149,13 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         source.println();
         generateAdditionalMethods( source, properties );
 
-        source.outdent();
         source.commit( logger );
     }
 
     private void generateInstanceBuilderClass( SourceWriter source, BeanInfo info, Map<String,
         PropertyInfo> properties ) throws UnableToCompleteException
     {
-        source.println( "public static class %s implements %s<%s> {", info.getInstanceBuilderSimpleName(), INSTANCE_BUILDER_CLASS, info
+        source.println( "private static class %s implements %s<%s> {", info.getInstanceBuilderSimpleName(), INSTANCE_BUILDER_CLASS, info
             .getType().getParameterizedQualifiedSourceName() );
         source.indent();
 
@@ -190,35 +187,57 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
     private void generateInstanceBuilderClassBodyForDefaultConstructor( SourceWriter source, BeanInfo info, Map<String,
         PropertyInfo> properties )
     {
+        // when using default constructor, we can create the instance at the builder instantiation.
         source.println();
         source.println( "private %s %s = %s.newInstance();", info.getType().getParameterizedQualifiedSourceName(), BEAN_INSTANCE_NAME, info
             .getQualifiedMapperClassName() );
         source.println();
 
+        // we initialize a map containing the required properties
         Map<String, PropertyInfo> requiredProperties = new LinkedHashMap<String, PropertyInfo>();
         for ( PropertyInfo property : properties.values() )
         {
-            if ( property.isRequired() )
+            if ( null == property.getBackReference() && property.isRequired() )
             {
                 String isSetName = String.format( IS_SET_FORMAT, property.getPropertyName() );
-                source.println( "private boolean %;", isSetName );
+                source.println( "private boolean %s;", isSetName );
                 requiredProperties.put( isSetName, property );
             }
         }
 
+        // generate the setter for each property
         for ( PropertyInfo property : properties.values() )
         {
-            source.println( "private void _%s(%s value) {", property.getPropertyName(), property.getType()
-                .getParameterizedQualifiedSourceName() );
-            source.indent();
-            source.println( property.getSetterAccessor() + ";", "value" );
-            if ( property.isRequired() )
+            // backReference don't need setter
+            if ( null == property.getBackReference() )
             {
-                source.println( "this.%s = true;", String.format( IS_SET_FORMAT, property.getPropertyName() ) );
+                if ( null == property.getManagedReference() )
+                {
+                    source.println( "private void _%s(%s value, %s ctx) {", property.getPropertyName(), property.getType()
+                        .getParameterizedQualifiedSourceName(), JSON_DECODING_CONTEXT_CLASS );
+                }
+                else
+                {
+                    source.println( "private void _%s(%s value, %s<%s> mapper, %s ctx) {", property.getPropertyName(), property.getType()
+                        .getParameterizedQualifiedSourceName(), JSON_MAPPER_CLASS, property.getType()
+                        .getParameterizedQualifiedSourceName(), JSON_DECODING_CONTEXT_CLASS );
+                }
+
+                source.indent();
+                source.println( property.getSetterAccessor() + ";", "value" );
+                if ( property.isRequired() )
+                {
+                    source.println( "this.%s = true;", String.format( IS_SET_FORMAT, property.getPropertyName() ) );
+                }
+                if ( null != property.getManagedReference() )
+                {
+                    source.println( "mapper.setBackReference(\"%s\", %s, value, ctx);", property
+                        .getManagedReference(), BEAN_INSTANCE_NAME );
+                }
+                source.outdent();
+                source.println( "}" );
+                source.println();
             }
-            source.outdent();
-            source.println( "}" );
-            source.println();
         }
 
         source.println( "@Override" );
@@ -226,9 +245,6 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         source.indent();
         generateRequiredPropertiesCheck( source, requiredProperties );
         source.println( "return %s;", BEAN_INSTANCE_NAME );
-        source.outdent();
-        source.println( "}" );
-
         source.outdent();
         source.println( "}" );
     }
@@ -244,16 +260,26 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
     private void generateInstanceBuilderClassBodyForConstructorOrFactoryMethod( SourceWriter source, BeanInfo info, Map<String,
         PropertyInfo> properties )
     {
+        // we initialize a map containing the required properties
         Map<String, PropertyInfo> requiredProperties = new LinkedHashMap<String, PropertyInfo>();
+        // generating the builder's fields used to hold the values before we instantiate the result
         for ( PropertyInfo property : properties.values() )
         {
-            source.println();
-            source.println( "private %s _%s;", property.getType().getParameterizedQualifiedSourceName(), property.getPropertyName() );
-            String isSetName = String.format( IS_SET_FORMAT, property.getPropertyName() );
-            source.println( "private boolean %s;", isSetName );
-            if ( property.isRequired() )
+            if ( null == property.getBackReference() )
             {
-                requiredProperties.put( isSetName, property );
+                source.println();
+                source.println( "private %s _%s;", property.getType().getParameterizedQualifiedSourceName(), property.getPropertyName() );
+                String isSetName = String.format( IS_SET_FORMAT, property.getPropertyName() );
+                source.println( "private boolean %s;", isSetName );
+                if ( property.isRequired() )
+                {
+                    requiredProperties.put( isSetName, property );
+                }
+                if ( null != property.getManagedReference() )
+                {
+                    source.println( "private %s<%s> %s;", JSON_MAPPER_CLASS, property.getType()
+                        .getParameterizedQualifiedSourceName(), String.format( BUILDER_MAPPER_FORMAT, property.getPropertyName() ) );
+                }
             }
         }
 
@@ -261,14 +287,31 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
 
         for ( PropertyInfo property : properties.values() )
         {
-            source.println( "private void _%s(%s value) {", property.getPropertyName(), property.getType()
-                .getParameterizedQualifiedSourceName() );
-            source.indent();
-            source.println( "this._%s = value;", property.getPropertyName() );
-            source.println( "this.%s = true;", String.format( IS_SET_FORMAT, property.getPropertyName() ) );
-            source.outdent();
-            source.println( "}" );
-            source.println();
+            if ( null == property.getBackReference() )
+            {
+                if ( null == property.getManagedReference() )
+                {
+                    source.println( "private void _%s(%s value, %s ctx) {", property.getPropertyName(), property.getType()
+                        .getParameterizedQualifiedSourceName(), JSON_DECODING_CONTEXT_CLASS );
+                }
+                else
+                {
+                    source.println( "private void _%s(%s value, %s<%s> mapper, %s ctx) {", property.getPropertyName(), property.getType()
+                        .getParameterizedQualifiedSourceName(), JSON_MAPPER_CLASS, property.getType()
+                        .getParameterizedQualifiedSourceName(), JSON_DECODING_CONTEXT_CLASS );
+                }
+
+                source.indent();
+                source.println( "this._%s = value;", property.getPropertyName() );
+                source.println( "this.%s = true;", String.format( IS_SET_FORMAT, property.getPropertyName() ) );
+                if ( null != property.getManagedReference() )
+                {
+                    source.println( "this.%s = mapper;", String.format( BUILDER_MAPPER_FORMAT, property.getPropertyName() ) );
+                }
+                source.outdent();
+                source.println( "}" );
+                source.println();
+            }
         }
 
         source.println( "@Override" );
@@ -292,11 +335,17 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         // Writing the rest of the properties
         for ( Map.Entry<String, PropertyInfo> propertyEntry : properties.entrySet() )
         {
-            if ( !info.getCreatorParameters().containsKey( propertyEntry.getKey() ) )
+            if ( !info.getCreatorParameters().containsKey( propertyEntry.getKey() ) && null == propertyEntry.getValue().getBackReference() )
             {
                 source.println( "if (this.%s) {", String.format( IS_SET_FORMAT, propertyEntry.getKey() ) );
                 source.indent();
                 source.println( propertyEntry.getValue().getSetterAccessor() + ";", "this._" + propertyEntry.getKey() );
+                if ( null != propertyEntry.getValue().getManagedReference() )
+                {
+                    source.println( "%s.setBackReference(%s, %s, this._%s, ctx);", String.format( BUILDER_MAPPER_FORMAT, propertyEntry
+                        .getKey() ), propertyEntry.getKey(), propertyEntry.getValue()
+                        .getManagedReference(), BEAN_INSTANCE_NAME, propertyEntry.getKey() );
+                }
                 source.outdent();
                 source.println( "}" );
             }
@@ -415,16 +464,34 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
             typeMetadata = "\"" + extractTypeMetadata( info, subtype ) + "\"";
         }
 
-        String mapper = info.getType() == subtype ? info.getQualifiedMapperClassName() + ".this" : createMapperFromType( subtype );
-
         source.println( "addSubtypeMapper( new %s<%s>() {", SUBTYPE_MAPPER_CLASS, subtype.getQualifiedSourceName() );
         source.indent();
+
+        source.println();
+        source.println( "private %s<%s, ?> mapper;", ABSTRACT_BEAN_JSON_MAPPER_CLASS, subtype.getQualifiedSourceName() );
+        source.println();
+
+        source.println( "@Override" );
+        source.println( "public %s<%s, ?> getMapper( %s ctx ) {", ABSTRACT_BEAN_JSON_MAPPER_CLASS, subtype
+            .getQualifiedSourceName(), JSON_MAPPING_CONTEXT_CLASS );
+        source.indent();
+        String mapper = info.getType() == subtype ? info.getQualifiedMapperClassName() + ".this" : getMapperFromType( subtype );
+        source.println( "if(null == this.mapper) {", mapper );
+        source.indent();
+        source.println( "this.mapper = %s;", mapper );
+        source.outdent();
+        source.println( "}" );
+        source.println( "return this.mapper;" );
+        source.outdent();
+        source.println( "}" );
+
+        source.println();
 
         source.println( "@Override" );
         source.println( "public %s decodeObject( %s reader, %s ctx ) throws java.io.IOException {", subtype
             .getQualifiedSourceName(), JSON_READER_CLASS, JSON_DECODING_CONTEXT_CLASS );
         source.indent();
-        source.println( "return %s.decodeObject( reader, ctx );", mapper );
+        source.println( "return getMapper(ctx).decodeObject( reader, ctx );" );
         source.outdent();
         source.println( "}" );
 
@@ -434,7 +501,7 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         source.println( "public void encodeObject( %s writer, %s bean, %s ctx ) throws java.io.IOException {", JSON_WRITER_CLASS, subtype
             .getParameterizedQualifiedSourceName(), JSON_ENCODING_CONTEXT_CLASS );
         source.indent();
-        source.println( "%s.encodeObject( writer, bean, ctx );", mapper );
+        source.println( "getMapper(ctx).encodeObject( writer, bean, ctx );" );
         source.outdent();
         source.println( "}" );
 
@@ -515,17 +582,49 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
                 continue;
             }
 
-            source.println( "decoders.put(\"%s\", new " + DECODER_PROPERTY_BEAN_CLASS + "<%s, %s>() {", property.getPropertyName(), info
-                .getType().getParameterizedQualifiedSourceName(), info.getInstanceBuilderQualifiedName() );
+            if ( null == property.getBackReference() )
+            {
+                // this is not a back reference, we add the default decoder
+                source.println( "addProperty(\"%s\", new " + DECODER_PROPERTY_BEAN_CLASS + "<%s, %s>() {", property.getPropertyName(), info
+                    .getType().getParameterizedQualifiedSourceName(), info.getInstanceBuilderQualifiedName() );
 
-            source.indent();
-            source.println( "@Override" );
-            source.println( "public void decode(%s reader, %s builder, %s ctx) throws java.io.IOException {", JSON_READER_CLASS, info
-                .getInstanceBuilderQualifiedName(), JSON_DECODING_CONTEXT_CLASS );
-            source.indent();
+                source.indent();
+                source.println( "@Override" );
+                source.println( "public void decode(%s reader, %s builder, %s ctx) {", JSON_READER_CLASS, info
+                    .getInstanceBuilderQualifiedName(), JSON_DECODING_CONTEXT_CLASS );
+                source.indent();
 
-            source.println( "builder._%s(%s);", property.getPropertyName(), String
-                .format( "%s.decode(reader, ctx)", createMapperFromType( property.getType() ) ) );
+                String mapper = getMapperFromType( property.getType() );
+                if ( null == property.getManagedReference() )
+                {
+                    source.println( "builder._%s(%s, ctx);", property.getPropertyName(), String
+                        .format( "%s.decode(reader, ctx)", mapper ) );
+                }
+                else
+                {
+                    // it's a managed reference, we have to give the mapper to the builder. It needs it to call the setBackReference
+                    // method once the bean is instantiated.
+                    source.println( "%s<%s> mapper = %s;", JSON_MAPPER_CLASS, property.getType()
+                        .getParameterizedQualifiedSourceName(), mapper );
+                    source.println( "builder._%s(mapper.decode(reader, ctx), mapper, ctx);", property.getPropertyName() );
+                }
+            }
+            else
+            {
+                // this is a back reference, we add the special back reference property that will be called by the parent
+                source.println( "addProperty(\"%s\", new " + BACK_REFERENCE_PROPERTY_BEAN_CLASS + "<%s, %s>() {", property
+                    .getBackReference(), info.getType().getParameterizedQualifiedSourceName(), property.getType()
+                    .getParameterizedQualifiedSourceName() );
+
+                source.indent();
+                source.println( "@Override" );
+                source.println( "public void setBackReference(%s %s, %s reference, %s ctx) {", info.getType()
+                    .getParameterizedQualifiedSourceName(), BEAN_INSTANCE_NAME, property.getType()
+                    .getParameterizedQualifiedSourceName(), JSON_DECODING_CONTEXT_CLASS );
+                source.indent();
+
+                source.println( property.getSetterAccessor() + ";", "reference" );
+            }
 
             source.outdent();
             source.println( "}" );
@@ -546,16 +645,16 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
                 continue;
             }
 
-            source.println( "encoders.put(\"%s\", new " + ENCODER_PROPERTY_BEAN_CLASS + "<%s>() {", property.getPropertyName(), info
+            source.println( "addProperty(\"%s\", new " + ENCODER_PROPERTY_BEAN_CLASS + "<%s>() {", property.getPropertyName(), info
                 .getType().getParameterizedQualifiedSourceName() );
 
             source.indent();
             source.println( "@Override" );
-            source.println( "public void encode(%s writer, %s bean, %s ctx) throws java.io.IOException {", JSON_WRITER_CLASS, info.getType()
+            source.println( "public void encode(%s writer, %s bean, %s ctx) {", JSON_WRITER_CLASS, info.getType()
                 .getParameterizedQualifiedSourceName(), JSON_ENCODING_CONTEXT_CLASS );
             source.indent();
 
-            source.println( "%s.encode(writer, %s, ctx);", createMapperFromType( property.getType() ), getterAccessor );
+            source.println( "%s.encode(writer, %s, ctx);", getMapperFromType( property.getType() ), getterAccessor );
 
             source.outdent();
             source.println( "}" );

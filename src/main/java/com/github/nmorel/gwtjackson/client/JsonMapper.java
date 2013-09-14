@@ -33,6 +33,17 @@ public interface JsonMapper<T>
     T decode( JsonReader reader, JsonDecodingContext ctx ) throws JsonDecodingException;
 
     /**
+     * Set the back reference.
+     *
+     * @param referenceName name of the reference
+     * @param reference reference to set
+     * @param value value to set the reference to.
+     * @param ctx Context for the full decoding process
+     * @see com.fasterxml.jackson.annotation.JsonBackReference
+     */
+    void setBackReference( String referenceName, Object reference, T value, JsonDecodingContext ctx );
+
+    /**
      * Encodes an object into JSON output.
      *
      * @param value Object to encode

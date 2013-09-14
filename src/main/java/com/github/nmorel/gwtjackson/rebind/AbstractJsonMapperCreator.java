@@ -2,7 +2,9 @@ package com.github.nmorel.gwtjackson.rebind;
 
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
@@ -26,6 +28,7 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
             "java.sql.Date", "java.sql.Time", "java.sql.Timestamp", "java.lang.String" );
     public static final String BEAN_INSTANCE_NAME = "$$instance$$";
     public static final String IS_SET_FORMAT = "is_%s_set";
+    public static final String BUILDER_MAPPER_FORMAT = "mapper_%s";
     public static final String JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.JsonMapper";
     public static final String ABSTRACT_JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.AbstractJsonMapper";
     public static final String ABSTRACT_BEAN_JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper";
@@ -35,6 +38,8 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
         ".DecoderProperty";
     public static final String ENCODER_PROPERTY_BEAN_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper" + "" +
         ".EncoderProperty";
+    public static final String BACK_REFERENCE_PROPERTY_BEAN_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper" +
+        ".BackReferenceProperty";
     public static final String JSON_READER_CLASS = "com.github.nmorel.gwtjackson.client.stream.JsonReader";
     public static final String JSON_WRITER_CLASS = "com.github.nmorel.gwtjackson.client.stream.JsonWriter";
     public static final String JSON_MAPPING_CONTEXT_CLASS = "com.github.nmorel.gwtjackson.client.JsonMappingContext";
@@ -74,17 +79,21 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
     protected final TreeLogger logger;
     protected final GeneratorContext context;
     protected final JacksonTypeOracle typeOracle;
+    protected final Map<JType, String> typeToMapper;
 
     protected AbstractJsonMapperCreator( TreeLogger logger, GeneratorContext context )
     {
-        this( logger, context, new JacksonTypeOracle( logger, context.getTypeOracle() ) );
+        this( logger, context, new JacksonTypeOracle( logger, context.getTypeOracle() ), new HashMap<JType, String>() );
     }
 
-    protected AbstractJsonMapperCreator( TreeLogger logger, GeneratorContext context, JacksonTypeOracle typeOracle )
+    /** @param typeToMapper Map that stores all the JsonMapper we found by type. */
+    protected AbstractJsonMapperCreator( TreeLogger logger, GeneratorContext context, JacksonTypeOracle typeOracle, Map<JType,
+        String> typeToMapper )
     {
         this.logger = logger;
         this.context = context;
         this.typeOracle = typeOracle;
+        this.typeToMapper = typeToMapper;
     }
 
     protected PrintWriter getPrintWriter( String packageName, String className )
@@ -107,7 +116,18 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
         return composer.createSourceWriter( context, printWriter );
     }
 
-    protected String createMapperFromType( JType type ) throws UnableToCompleteException
+    protected String getMapperFromType( JType type ) throws UnableToCompleteException
+    {
+        String mapper = typeToMapper.get( type );
+        if ( null == mapper )
+        {
+            mapper = createMapperFromType( type );
+            typeToMapper.put( type, mapper );
+        }
+        return mapper;
+    }
+
+    private String createMapperFromType( JType type ) throws UnableToCompleteException
     {
         JPrimitiveType primitiveType = type.isPrimitive();
         if ( null != primitiveType )
@@ -140,7 +160,7 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
                     "    return new " + arrayType.getComponentType().getParameterizedQualifiedSourceName() + "[length];\n" +
                     "  }\n" +
                     "}";
-                return String.format( method, createMapperFromType( arrayType.getComponentType() ), arrayCreator );
+                return String.format( method, getMapperFromType( arrayType.getComponentType() ), arrayCreator );
             }
         }
 
@@ -175,7 +195,7 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
             String[] mappers = new String[args.length];
             for ( int i = 0; i < args.length; i++ )
             {
-                mappers[i] = createMapperFromType( args[i] );
+                mappers[i] = getMapperFromType( args[i] );
             }
 
             return String.format( result, mappers );
@@ -199,7 +219,8 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
 
             // it's a bean, we create the mapper
             BeanJsonMapperCreator beanJsonMapperCreator = new BeanJsonMapperCreator( logger
-                .branch( TreeLogger.Type.INFO, "Creating mapper for " + classType.getQualifiedSourceName() ), context, typeOracle );
+                .branch( TreeLogger.Type.INFO, "Creating mapper for " + classType
+                    .getQualifiedSourceName() ), context, typeOracle, typeToMapper );
             String name = beanJsonMapperCreator.create( classType );
             return "new " + name + "()";
         }

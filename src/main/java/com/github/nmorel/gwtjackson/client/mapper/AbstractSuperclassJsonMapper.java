@@ -7,6 +7,8 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.github.nmorel.gwtjackson.client.JsonDecodingContext;
 import com.github.nmorel.gwtjackson.client.JsonEncodingContext;
+import com.github.nmorel.gwtjackson.client.JsonMapper;
+import com.github.nmorel.gwtjackson.client.JsonMappingContext;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
@@ -20,6 +22,8 @@ public abstract class AbstractSuperclassJsonMapper<T, B extends AbstractBeanJson
 {
     public static interface SubtypeMapper<T>
     {
+        JsonMapper<T> getMapper( JsonMappingContext ctx );
+
         T decodeObject( JsonReader reader, JsonDecodingContext ctx ) throws IOException;
 
         void encodeObject( JsonWriter writer, T bean, JsonEncodingContext ctx ) throws IOException;
@@ -156,6 +160,20 @@ public abstract class AbstractSuperclassJsonMapper<T, B extends AbstractBeanJson
         }
 
         return mapper.decodeObject( reader, ctx );
+    }
+
+    @Override
+    public void setBackReference( String referenceName, Object reference, T value, JsonDecodingContext ctx )
+    {
+        if ( null != value )
+        {
+            SubtypeMapper mapper = subtypeClassToMapper.get( value.getClass() );
+            if ( null == mapper )
+            {
+                throw ctx.traceError( "Cannot find mapper for class " + value.getClass() );
+            }
+            mapper.getMapper( ctx ).setBackReference( referenceName, reference, value, ctx );
+        }
     }
 
     @Override

@@ -54,4 +54,16 @@ public abstract class BaseCollectionJsonMapper<C extends Collection<T>, T> exten
     {
         return true;
     }
+
+    @Override
+    public void setBackReference( String referenceName, Object reference, C value, JsonDecodingContext ctx )
+    {
+        if ( null != value && !value.isEmpty() )
+        {
+            for ( T val : value )
+            {
+                mapper.setBackReference( referenceName, reference, val, ctx );
+            }
+        }
+    }
 }

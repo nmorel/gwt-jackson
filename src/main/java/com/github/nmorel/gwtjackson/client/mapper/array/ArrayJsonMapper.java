@@ -58,6 +58,18 @@ public class ArrayJsonMapper<T> extends AbstractArrayJsonMapper<T[]>
     }
 
     @Override
+    public void setBackReference( String referenceName, Object reference, T[] value, JsonDecodingContext ctx )
+    {
+        if ( null != value && value.length > 0 )
+        {
+            for ( T val : value )
+            {
+                mapper.setBackReference( referenceName, reference, val, ctx );
+            }
+        }
+    }
+
+    @Override
     public void doEncode( JsonWriter writer, T[] values, JsonEncodingContext ctx ) throws IOException
     {
         writer.beginArray();

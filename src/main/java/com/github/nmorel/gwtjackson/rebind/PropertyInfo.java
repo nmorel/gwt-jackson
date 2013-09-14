@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gwt.core.ext.typeinfo.JField;
 import com.google.gwt.core.ext.typeinfo.JMethod;
@@ -71,11 +73,21 @@ public final class PropertyInfo
             return result;
         }
 
-        boolean getterAutoDetected = null != fieldAccessors.getGetter() && (null != jsonProperty || isGetterAutoDetected( fieldAccessors
+        JsonManagedReference jsonManagedReference = findAnnotationOnAnyAccessor( fieldAccessors, JsonManagedReference.class );
+        result.managedReference = null == jsonManagedReference ? null : jsonManagedReference.value();
+
+        JsonBackReference jsonBackReference = findAnnotationOnAnyAccessor( fieldAccessors, JsonBackReference.class );
+        result.backReference = null == jsonBackReference ? null : jsonBackReference.value();
+
+        // if an accessor has jackson annotation, the property is considered auto detected.
+        // TODO can we do a search on @JacksonAnnotation instead of enumerating all of them ?
+        boolean hasAnyAnnotation = null != jsonProperty || null != jsonManagedReference || null != jsonBackReference;
+
+        boolean getterAutoDetected = null != fieldAccessors.getGetter() && (hasAnyAnnotation || isGetterAutoDetected( fieldAccessors
             .getGetter(), beanInfo ));
-        boolean setterAutoDetected = null != fieldAccessors.getSetter() && (null != jsonProperty || isSetterAutoDetected( fieldAccessors
+        boolean setterAutoDetected = null != fieldAccessors.getSetter() && (hasAnyAnnotation || isSetterAutoDetected( fieldAccessors
             .getSetter(), beanInfo ));
-        boolean fieldAutoDetected = null != fieldAccessors.getField() && (null != jsonProperty || isFieldAutoDetected( fieldAccessors
+        boolean fieldAutoDetected = null != fieldAccessors.getField() && (hasAnyAnnotation || isFieldAutoDetected( fieldAccessors
             .getField(), beanInfo ));
 
         if ( !getterAutoDetected && !setterAutoDetected && !fieldAutoDetected )
@@ -85,7 +97,10 @@ public final class PropertyInfo
             return result;
         }
 
-        determineGetter( fieldAccessors, getterAutoDetected, fieldAutoDetected, beanInfo, result );
+        if ( null == result.backReference )
+        {
+            determineGetter( fieldAccessors, getterAutoDetected, fieldAutoDetected, beanInfo, result );
+        }
         determineSetter( fieldAccessors, setterAutoDetected, fieldAutoDetected, beanInfo, result );
 
         return result;
@@ -332,6 +347,8 @@ public final class PropertyInfo
     private JType type;
     private boolean required;
     private String propertyName;
+    private String managedReference;
+    private String backReference;
     private String getterAccessor;
     private String setterAccessor;
     private List<AdditionalMethod> additionalMethods = new ArrayList<AdditionalMethod>();
@@ -358,6 +375,16 @@ public final class PropertyInfo
     public String getPropertyName()
     {
         return propertyName;
+    }
+
+    public String getManagedReference()
+    {
+        return managedReference;
+    }
+
+    public String getBackReference()
+    {
+        return backReference;
     }
 
     public String getGetterAccessor()

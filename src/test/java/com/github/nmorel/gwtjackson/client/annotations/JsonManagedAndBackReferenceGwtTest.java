@@ -64,6 +64,13 @@ public class JsonManagedAndBackReferenceGwtTest extends GwtJacksonTestCase
 
     private JsonManagedAndBackReferenceTester tester = JsonManagedAndBackReferenceTester.INSTANCE;
 
+    public void testBackReferenceWithoutManaged()
+    {
+        tester
+            .testBackReferenceWithoutManaged( createDecoder( SimpleTreeNodeMapper.INSTANCE ),
+                createEncoder( SimpleTreeNodeMapper.INSTANCE ) );
+    }
+
     public void testSimpleRefs()
     {
         tester.testSimpleRefs( createDecoder( SimpleTreeNodeMapper.INSTANCE ), createEncoder( SimpleTreeNodeMapper.INSTANCE ) );
@@ -90,9 +97,9 @@ public class JsonManagedAndBackReferenceGwtTest extends GwtJacksonTestCase
     }
 
     public void testMapOfRefs()
-    {
-        tester.testMapOfRefs( createDecoder( NodeMapMapper.INSTANCE ), createEncoder( NodeMapMapper.INSTANCE ) );
-    }
+{
+    tester.testMapOfRefs( createDecoder( NodeMapMapper.INSTANCE ), createEncoder( NodeMapMapper.INSTANCE ) );
+}
 
     public void testAbstract368()
     {

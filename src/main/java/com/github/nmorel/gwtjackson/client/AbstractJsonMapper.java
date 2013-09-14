@@ -53,6 +53,12 @@ public abstract class AbstractJsonMapper<T> implements JsonMapper<T>
     protected abstract T doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException;
 
     @Override
+    public void setBackReference( String referenceName, Object reference, T value, JsonDecodingContext ctx )
+    {
+        throw new JsonDecodingException( "Cannot set a back reference to the type mapped by this mapper" );
+    }
+
+    @Override
     public String encode( T value ) throws JsonEncodingException
     {
         StringBuilder builder = new StringBuilder();

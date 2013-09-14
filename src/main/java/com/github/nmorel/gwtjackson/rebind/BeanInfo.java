@@ -106,6 +106,7 @@ public final class BeanInfo
                 if ( constructor.getParameters().length == 0 )
                 {
                     creatorDefaultConstructor = constructor;
+                    continue;
                 }
 
                 // A constructor is considered as a creator if

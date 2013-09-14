@@ -26,40 +26,80 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
 
     public static interface DecoderProperty<T, B extends AbstractBeanJsonMapper.InstanceBuilder<T>>
     {
-        void decode( JsonReader reader, B builder, JsonDecodingContext ctx ) throws IOException;
+        void decode( JsonReader reader, B builder, JsonDecodingContext ctx );
+    }
+
+    public static interface BackReferenceProperty<T, R>
+    {
+        void setBackReference( T value, R reference, JsonDecodingContext ctx );
     }
 
     public static interface EncoderProperty<T>
     {
-        void encode( JsonWriter writer, T bean, JsonEncodingContext ctx ) throws IOException;
+        void encode( JsonWriter writer, T bean, JsonEncodingContext ctx );
     }
 
     private Map<String, DecoderProperty<T, B>> decoders;
     private Map<String, EncoderProperty<T>> encoders;
+    private Map<String, BackReferenceProperty<T, ?>> backReferenceDecoders;
 
-    protected void initDecoders()
+    protected void initDecodersIfNeeded()
     {
         if ( null == decoders )
         {
             decoders = new LinkedHashMap<String, DecoderProperty<T, B>>();
-            initDecoders( decoders );
+            backReferenceDecoders = new LinkedHashMap<String, BackReferenceProperty<T, ?>>();
+            initDecoders();
         }
     }
 
-    protected abstract void initDecoders( Map<String, DecoderProperty<T, B>> decoders );
+    protected abstract void initDecoders();
 
-    protected void initEncoders()
+    protected void initEncodersIfNeeded()
     {
         if ( null == encoders )
         {
             encoders = new LinkedHashMap<String, EncoderProperty<T>>();
-            initEncoders( encoders );
+            initEncoders();
         }
     }
 
-    protected abstract void initEncoders( Map<String, EncoderProperty<T>> encoders );
+    protected abstract void initEncoders();
 
     protected abstract B newInstanceBuilder( JsonDecodingContext ctx );
+
+    /**
+     * Add a {@link DecoderProperty}
+     *
+     * @param propertyName name of the property
+     * @param decoder decoder
+     */
+    protected void addProperty( String propertyName, DecoderProperty<T, B> decoder )
+    {
+        decoders.put( propertyName, decoder );
+    }
+
+    /**
+     * Add an {@link EncoderProperty}
+     *
+     * @param propertyName name of the property
+     * @param encoder encoder
+     */
+    protected void addProperty( String propertyName, EncoderProperty<T> encoder )
+    {
+        encoders.put( propertyName, encoder );
+    }
+
+    /**
+     * Add a {@link BackReferenceProperty}
+     *
+     * @param referenceName name of the reference
+     * @param backReference backReference
+     */
+    protected void addProperty( String referenceName, BackReferenceProperty<T, ?> backReference )
+    {
+        backReferenceDecoders.put( referenceName, backReference );
+    }
 
     @Override
     public T doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
@@ -72,7 +112,7 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
 
     public final T decodeObject( JsonReader reader, JsonDecodingContext ctx ) throws IOException
     {
-        initDecoders();
+        initDecodersIfNeeded();
 
         B builder = newInstanceBuilder( ctx );
 
@@ -101,6 +141,21 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
     }
 
     @Override
+    public void setBackReference( String referenceName, Object reference, T value, JsonDecodingContext ctx )
+    {
+        if ( null != value )
+        {
+            initDecodersIfNeeded();
+            BackReferenceProperty backReferenceProperty = backReferenceDecoders.get( referenceName );
+            if ( null == backReferenceProperty )
+            {
+                throw ctx.traceError( "The back reference '" + referenceName + "' does not exist" );
+            }
+            backReferenceProperty.setBackReference( value, reference, ctx );
+        }
+    }
+
+    @Override
     public void doEncode( JsonWriter writer, T value, JsonEncodingContext ctx ) throws IOException
     {
         writer.beginObject();
@@ -110,7 +165,7 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
 
     public final void encodeObject( JsonWriter writer, T value, JsonEncodingContext ctx ) throws IOException
     {
-        initEncoders();
+        initEncodersIfNeeded();
 
         for ( Map.Entry<String, EncoderProperty<T>> entry : encoders.entrySet() )
         {

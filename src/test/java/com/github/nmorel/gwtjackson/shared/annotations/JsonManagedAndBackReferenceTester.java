@@ -287,6 +287,21 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester
     /* Unit tests
     /**********************************************************
      */
+    public void testBackReferenceWithoutManaged( JsonDecoderTester<SimpleTreeNode> decoder, JsonEncoderTester<SimpleTreeNode> encoder )
+    {
+        SimpleTreeNode root = new SimpleTreeNode( "root" );
+        SimpleTreeNode child = new SimpleTreeNode( "kid" );
+        root.child = child;
+        child.parent = root;
+
+        String json = encoder.encode( child );
+        assertEquals( "{\"name\":\"kid\"}", json );
+
+        SimpleTreeNode resultNode = decoder.decode( json );
+        assertEquals( "kid", resultNode.name );
+        assertNull( resultNode.parent );
+        assertNull( resultNode.child );
+    }
 
     public void testSimpleRefs( JsonDecoderTester<SimpleTreeNode> decoder, JsonEncoderTester<SimpleTreeNode> encoder )
     {
@@ -296,6 +311,7 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester
         child.parent = root;
 
         String json = encoder.encode( root );
+        assertEquals( "{\"name\":\"root\",\"child\":{\"name\":\"kid\"}}", json );
 
         SimpleTreeNode resultNode = decoder.decode( json );
         assertEquals( "root", resultNode.name );
@@ -314,6 +330,7 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester
         child.parent = root;
 
         String json = encoder.encode( root );
+        assertEquals( "{\"name\":\"root\",\"child\":{\"name\":\"kid\"}}", json );
 
         SimpleTreeNode2 resultNode = decoder.decode( json );
         assertEquals( "root", resultNode.name );
@@ -334,6 +351,7 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester
         child2.prev = child1;
 
         String json = encoder.encode( root );
+        assertEquals( "{\"name\":\"root\",\"firstChild\":{\"name\":\"kid1\",\"next\":{\"name\":\"kid2\"}}}", json );
 
         FullTreeNode resultNode = decoder.decode( json );
         assertEquals( "root", resultNode.name );
@@ -357,7 +375,9 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester
         ArrayNode node1 = new ArrayNode( "a" );
         ArrayNode node2 = new ArrayNode( "b" );
         root.nodes = new ArrayNode[]{node1, node2};
+
         String json = encoder.encode( root );
+        assertEquals( "{\"nodes\":[{\"name\":\"a\"},{\"name\":\"b\"}]}", json );
 
         NodeArray result = decoder.decode( json );
         ArrayNode[] kids = result.nodes;
@@ -375,7 +395,9 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester
         NodeForList node1 = new NodeForList( "a" );
         NodeForList node2 = new NodeForList( "b" );
         root.nodes = Arrays.asList( node1, node2 );
+
         String json = encoder.encode( root );
+        assertEquals( "{\"nodes\":[{\"name\":\"a\"},{\"name\":\"b\"}]}", json );
 
         NodeList result = decoder.decode( json );
         List<NodeForList> kids = result.nodes;
@@ -396,7 +418,9 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester
         nodes.put( "a1", node1 );
         nodes.put( "b2", node2 );
         root.nodes = nodes;
+
         String json = encoder.encode( root );
+        assertEquals( "{\"nodes\":{\"a1\":{\"name\":\"a\"},\"b2\":{\"name\":\"b\"}}}", json );
 
         NodeMap result = decoder.decode( json );
         Map<String, NodeForMap> kids = result.nodes;
@@ -420,6 +444,7 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester
 
         // serialization ought to be ok
         String json = encoder.encode( parent );
+        assertEquals( "{\"@type\":\"concrete\",\"id\":\"p\",\"next\":{\"@type\":\"concrete\",\"id\":\"c\"}}", json );
 
         AbstractNode root = decoder.decode( json );
 
@@ -437,7 +462,10 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester
         Parent parent = new Parent();
         parent.addChild( new Child( "foo" ) );
         parent.addChild( new Child( "bar" ) );
+
         String json = encoder.encode( parent );
+        assertEquals( "{\"children\":[{\"value\":\"foo\"},{\"value\":\"bar\"}]}", json );
+
         Parent value = decoder.decode( json );
         for ( Child child : value.children )
         {

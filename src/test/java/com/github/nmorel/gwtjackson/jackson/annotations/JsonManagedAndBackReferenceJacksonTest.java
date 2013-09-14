@@ -17,6 +17,13 @@ import org.junit.Test;
 public class JsonManagedAndBackReferenceJacksonTest extends AbstractJacksonTest
 {
     @Test
+    public void testBackReferenceWithoutManaged()
+    {
+        JsonManagedAndBackReferenceTester.INSTANCE
+            .testBackReferenceWithoutManaged( createDecoder( SimpleTreeNode.class ), createEncoder( SimpleTreeNode.class ) );
+    }
+
+    @Test
     public void testSimpleRefs()
     {
         JsonManagedAndBackReferenceTester.INSTANCE

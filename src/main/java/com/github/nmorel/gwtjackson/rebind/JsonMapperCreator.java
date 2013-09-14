@@ -145,6 +145,6 @@ public class JsonMapperCreator extends AbstractJsonMapperCreator
 
     private void generateGetMapperBody( SourceWriter source, JClassType mappedTypeClass ) throws UnableToCompleteException
     {
-        source.println( "return %s;", createMapperFromType( mappedTypeClass ) );
+        source.println( "return %s;", getMapperFromType( mappedTypeClass ) );
     }
 }

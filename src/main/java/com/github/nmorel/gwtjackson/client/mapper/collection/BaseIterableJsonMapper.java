@@ -3,6 +3,7 @@ package com.github.nmorel.gwtjackson.client.mapper.collection;
 import java.io.IOException;
 
 import com.github.nmorel.gwtjackson.client.AbstractJsonMapper;
+import com.github.nmorel.gwtjackson.client.JsonDecodingContext;
 import com.github.nmorel.gwtjackson.client.JsonEncodingContext;
 import com.github.nmorel.gwtjackson.client.JsonMapper;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
@@ -37,5 +38,17 @@ public abstract class BaseIterableJsonMapper<I extends Iterable<T>, T> extends A
             mapper.encode( writer, value, ctx );
         }
         writer.endArray();
+    }
+
+    @Override
+    public void setBackReference( String referenceName, Object reference, I value, JsonDecodingContext ctx )
+    {
+        if ( null != value )
+        {
+            for ( T val : value )
+            {
+                mapper.setBackReference( referenceName, reference, val, ctx );
+            }
+        }
     }
 }
