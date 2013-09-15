@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.Stack;
 import java.util.TreeSet;
+import java.util.UUID;
 import java.util.Vector;
 import java.util.logging.Logger;
 
@@ -30,6 +31,7 @@ import com.github.nmorel.gwtjackson.client.mapper.BooleanJsonMapper;
 import com.github.nmorel.gwtjackson.client.mapper.CharacterJsonMapper;
 import com.github.nmorel.gwtjackson.client.mapper.EnumJsonMapper;
 import com.github.nmorel.gwtjackson.client.mapper.StringJsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.UUIDJsonMapper;
 import com.github.nmorel.gwtjackson.client.mapper.array.ArrayJsonMapper;
 import com.github.nmorel.gwtjackson.client.mapper.array.PrimitiveBooleanArrayJsonMapper;
 import com.github.nmorel.gwtjackson.client.mapper.array.PrimitiveByteArrayJsonMapper;
@@ -90,6 +92,7 @@ public abstract class JsonMappingContext
     protected static final JsonMapper<Time> DEFAULT_SQL_TIME_MAPPER = new SqlTimeJsonMapper();
     protected static final JsonMapper<Timestamp> DEFAULT_SQL_TIMESTAMP_MAPPER = new SqlTimestampJsonMapper();
     protected static final JsonMapper<String> DEFAULT_STRING_MAPPER = new StringJsonMapper();
+    protected static final JsonMapper<UUID> DEFAULT_UUID_MAPPER = new UUIDJsonMapper();
     protected static final JsonMapper<boolean[]> DEFAULT_PRIMITIVE_BOOLEAN_ARRAY_MAPPER = new PrimitiveBooleanArrayJsonMapper(
         DEFAULT_BOOLEAN_MAPPER );
     protected static final JsonMapper<byte[]> DEFAULT_PRIMITIVE_BYTE_ARRAY_MAPPER = new PrimitiveByteArrayJsonMapper();
@@ -219,6 +222,11 @@ public abstract class JsonMappingContext
     public JsonMapper<String> getStringJsonMapper()
     {
         return DEFAULT_STRING_MAPPER;
+    }
+
+    public JsonMapper<UUID> getUUIDJsonMapper()
+    {
+        return DEFAULT_UUID_MAPPER;
     }
 
     public <T> JsonMapper<T[]> createArrayJsonMapper( JsonMapper<T> mapper, ArrayJsonMapper.ArrayCreator<T> arrayCreator )
