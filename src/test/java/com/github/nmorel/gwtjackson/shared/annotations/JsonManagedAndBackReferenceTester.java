@@ -14,8 +14,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
-import com.github.nmorel.gwtjackson.shared.JsonDecoderTester;
-import com.github.nmorel.gwtjackson.shared.JsonEncoderTester;
+import com.github.nmorel.gwtjackson.shared.JsonMapperTester;
 
 /** Test from jackson-databind and adapted for the project */
 public class JsonManagedAndBackReferenceTester extends AbstractTester
@@ -287,33 +286,33 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester
     /* Unit tests
     /**********************************************************
      */
-    public void testBackReferenceWithoutManaged( JsonDecoderTester<SimpleTreeNode> decoder, JsonEncoderTester<SimpleTreeNode> encoder )
+    public void testBackReferenceWithoutManaged( JsonMapperTester<SimpleTreeNode> mapper )
     {
         SimpleTreeNode root = new SimpleTreeNode( "root" );
         SimpleTreeNode child = new SimpleTreeNode( "kid" );
         root.child = child;
         child.parent = root;
 
-        String json = encoder.encode( child );
+        String json = mapper.encode( child );
         assertEquals( "{\"name\":\"kid\"}", json );
 
-        SimpleTreeNode resultNode = decoder.decode( json );
+        SimpleTreeNode resultNode = mapper.decode( json );
         assertEquals( "kid", resultNode.name );
         assertNull( resultNode.parent );
         assertNull( resultNode.child );
     }
 
-    public void testSimpleRefs( JsonDecoderTester<SimpleTreeNode> decoder, JsonEncoderTester<SimpleTreeNode> encoder )
+    public void testSimpleRefs( JsonMapperTester<SimpleTreeNode> mapper )
     {
         SimpleTreeNode root = new SimpleTreeNode( "root" );
         SimpleTreeNode child = new SimpleTreeNode( "kid" );
         root.child = child;
         child.parent = root;
 
-        String json = encoder.encode( root );
+        String json = mapper.encode( root );
         assertEquals( "{\"name\":\"root\",\"child\":{\"name\":\"kid\"}}", json );
 
-        SimpleTreeNode resultNode = decoder.decode( json );
+        SimpleTreeNode resultNode = mapper.decode( json );
         assertEquals( "root", resultNode.name );
         SimpleTreeNode resultChild = resultNode.child;
         assertNotNull( resultChild );
@@ -322,17 +321,17 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester
     }
 
     // [JACKSON-693]
-    public void testSimpleRefsWithGetter( JsonDecoderTester<SimpleTreeNode2> decoder, JsonEncoderTester<SimpleTreeNode2> encoder )
+    public void testSimpleRefsWithGetter( JsonMapperTester<SimpleTreeNode2> mapper )
     {
         SimpleTreeNode2 root = new SimpleTreeNode2( "root" );
         SimpleTreeNode2 child = new SimpleTreeNode2( "kid" );
         root.child = child;
         child.parent = root;
 
-        String json = encoder.encode( root );
+        String json = mapper.encode( root );
         assertEquals( "{\"name\":\"root\",\"child\":{\"name\":\"kid\"}}", json );
 
-        SimpleTreeNode2 resultNode = decoder.decode( json );
+        SimpleTreeNode2 resultNode = mapper.decode( json );
         assertEquals( "root", resultNode.name );
         SimpleTreeNode2 resultChild = resultNode.child;
         assertNotNull( resultChild );
@@ -340,7 +339,7 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester
         assertSame( resultChild.parent, resultNode );
     }
 
-    public void testFullRefs( JsonDecoderTester<FullTreeNode> decoder, JsonEncoderTester<FullTreeNode> encoder )
+    public void testFullRefs( JsonMapperTester<FullTreeNode> mapper )
     {
         FullTreeNode root = new FullTreeNode( "root" );
         FullTreeNode child1 = new FullTreeNode( "kid1" );
@@ -350,10 +349,10 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester
         child1.next = child2;
         child2.prev = child1;
 
-        String json = encoder.encode( root );
+        String json = mapper.encode( root );
         assertEquals( "{\"name\":\"root\",\"firstChild\":{\"name\":\"kid1\",\"next\":{\"name\":\"kid2\"}}}", json );
 
-        FullTreeNode resultNode = decoder.decode( json );
+        FullTreeNode resultNode = mapper.decode( json );
         assertEquals( "root", resultNode.name );
         FullTreeNode resultChild = resultNode.firstChild;
         assertNotNull( resultChild );
@@ -369,17 +368,17 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester
         assertNull( resultChild2.next );
     }
 
-    public void testArrayOfRefs( JsonDecoderTester<NodeArray> decoder, JsonEncoderTester<NodeArray> encoder )
+    public void testArrayOfRefs( JsonMapperTester<NodeArray> mapper )
     {
         NodeArray root = new NodeArray();
         ArrayNode node1 = new ArrayNode( "a" );
         ArrayNode node2 = new ArrayNode( "b" );
         root.nodes = new ArrayNode[]{node1, node2};
 
-        String json = encoder.encode( root );
+        String json = mapper.encode( root );
         assertEquals( "{\"nodes\":[{\"name\":\"a\"},{\"name\":\"b\"}]}", json );
 
-        NodeArray result = decoder.decode( json );
+        NodeArray result = mapper.decode( json );
         ArrayNode[] kids = result.nodes;
         assertNotNull( kids );
         assertEquals( 2, kids.length );
@@ -389,17 +388,17 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester
         assertSame( result, kids[1].parent );
     }
 
-    public void testListOfRefs( JsonDecoderTester<NodeList> decoder, JsonEncoderTester<NodeList> encoder )
+    public void testListOfRefs( JsonMapperTester<NodeList> mapper )
     {
         NodeList root = new NodeList();
         NodeForList node1 = new NodeForList( "a" );
         NodeForList node2 = new NodeForList( "b" );
         root.nodes = Arrays.asList( node1, node2 );
 
-        String json = encoder.encode( root );
+        String json = mapper.encode( root );
         assertEquals( "{\"nodes\":[{\"name\":\"a\"},{\"name\":\"b\"}]}", json );
 
-        NodeList result = decoder.decode( json );
+        NodeList result = mapper.decode( json );
         List<NodeForList> kids = result.nodes;
         assertNotNull( kids );
         assertEquals( 2, kids.size() );
@@ -409,7 +408,7 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester
         assertSame( result, kids.get( 1 ).parent );
     }
 
-    public void testMapOfRefs( JsonDecoderTester<NodeMap> decoder, JsonEncoderTester<NodeMap> encoder )
+    public void testMapOfRefs( JsonMapperTester<NodeMap> mapper )
     {
         NodeMap root = new NodeMap();
         NodeForMap node1 = new NodeForMap( "a" );
@@ -419,10 +418,10 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester
         nodes.put( "b2", node2 );
         root.nodes = nodes;
 
-        String json = encoder.encode( root );
+        String json = mapper.encode( root );
         assertEquals( "{\"nodes\":{\"a1\":{\"name\":\"a\"},\"b2\":{\"name\":\"b\"}}}", json );
 
-        NodeMap result = decoder.decode( json );
+        NodeMap result = mapper.decode( json );
         Map<String, NodeForMap> kids = result.nodes;
         assertNotNull( kids );
         assertEquals( 2, kids.size() );
@@ -435,7 +434,7 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester
     }
 
     // for [JACKSON-368]
-    public void testAbstract368( JsonDecoderTester<AbstractNode> decoder, JsonEncoderTester<AbstractNode> encoder )
+    public void testAbstract368( JsonMapperTester<AbstractNode> mapper )
     {
         AbstractNode parent = new ConcreteNode( "p" );
         AbstractNode child = new ConcreteNode( "c" );
@@ -443,10 +442,10 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester
         child.prev = parent;
 
         // serialization ought to be ok
-        String json = encoder.encode( parent );
+        String json = mapper.encode( parent );
         assertEquals( "{\"@type\":\"concrete\",\"id\":\"p\",\"next\":{\"@type\":\"concrete\",\"id\":\"c\"}}", json );
 
-        AbstractNode root = decoder.decode( json );
+        AbstractNode root = mapper.decode( json );
 
         assertEquals( ConcreteNode.class, root.getClass() );
         assertEquals( "p", root.id );
@@ -457,25 +456,25 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester
         assertSame( root, leaf.prev );
     }
 
-    public void testIssue693( JsonDecoderTester<Parent> decoder, JsonEncoderTester<Parent> encoder )
+    public void testIssue693( JsonMapperTester<Parent> mapper )
     {
         Parent parent = new Parent();
         parent.addChild( new Child( "foo" ) );
         parent.addChild( new Child( "bar" ) );
 
-        String json = encoder.encode( parent );
+        String json = mapper.encode( parent );
         assertEquals( "{\"children\":[{\"value\":\"foo\"},{\"value\":\"bar\"}]}", json );
 
-        Parent value = decoder.decode( json );
+        Parent value = mapper.decode( json );
         for ( Child child : value.children )
         {
             assertEquals( value, child.getParent() );
         }
     }
 
-    public void testIssue708( JsonDecoderTester<Advertisement708> decoder )
+    public void testIssue708( JsonMapperTester<Advertisement708> mapper )
     {
-        Advertisement708 ad = decoder.decode( "{\"title\":\"Hroch\",\"photos\":[{\"id\":3}]}" );
+        Advertisement708 ad = mapper.decode( "{\"title\":\"Hroch\",\"photos\":[{\"id\":3}]}" );
         assertNotNull( ad );
     }
 }

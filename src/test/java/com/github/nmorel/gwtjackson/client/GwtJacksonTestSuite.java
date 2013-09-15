@@ -5,6 +5,10 @@ import com.github.nmorel.gwtjackson.client.advanced.PolymorphismIdClassAsPropert
 import com.github.nmorel.gwtjackson.client.advanced.PolymorphismIdMinimalClassAsWrapperArrayGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.PolymorphismIdNameAsWrapperObjectGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.PolymorphismNoTypeInfoGwtTest;
+import com.github.nmorel.gwtjackson.client.advanced.identity.ObjectIdDeserializationGwtTest;
+import com.github.nmorel.gwtjackson.client.advanced.identity.ObjectIdGwtTest;
+import com.github.nmorel.gwtjackson.client.advanced.identity.ObjectIdSerializationGwtTest;
+import com.github.nmorel.gwtjackson.client.advanced.identity.ObjectIdWithPolymorphicGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonAutoDetectGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonCreatorGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonIgnoreGwtTest;
@@ -90,10 +94,16 @@ public class GwtJacksonTestSuite extends TestCase
         // Advanced use cases
         suite.addTestSuite( PrivateAccessGwtTest.class );
         suite.addTestSuite( InheritanceGwtTest.class );
+        // Polymorphism
         suite.addTestSuite( PolymorphismNoTypeInfoGwtTest.class );
         suite.addTestSuite( PolymorphismIdClassAsPropertyGwtTest.class );
         suite.addTestSuite( PolymorphismIdMinimalClassAsWrapperArrayGwtTest.class );
         suite.addTestSuite( PolymorphismIdNameAsWrapperObjectGwtTest.class );
+        // Identity
+        suite.addTestSuite( ObjectIdGwtTest.class );
+        suite.addTestSuite( ObjectIdDeserializationGwtTest.class );
+        suite.addTestSuite( ObjectIdSerializationGwtTest.class );
+        suite.addTestSuite( ObjectIdWithPolymorphicGwtTest.class );
 
         return suite;
     }

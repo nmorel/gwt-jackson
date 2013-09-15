@@ -16,67 +16,65 @@ import org.junit.Test;
 /** @author Nicolas Morel */
 public class JsonManagedAndBackReferenceJacksonTest extends AbstractJacksonTest
 {
+    private final JsonManagedAndBackReferenceTester tester = JsonManagedAndBackReferenceTester.INSTANCE;
+
     @Test
     public void testBackReferenceWithoutManaged()
     {
-        JsonManagedAndBackReferenceTester.INSTANCE
-            .testBackReferenceWithoutManaged( createDecoder( SimpleTreeNode.class ), createEncoder( SimpleTreeNode.class ) );
+        tester.testBackReferenceWithoutManaged( createMapper( SimpleTreeNode.class ) );
     }
 
     @Test
     public void testSimpleRefs()
     {
-        JsonManagedAndBackReferenceTester.INSTANCE
-            .testSimpleRefs( createDecoder( SimpleTreeNode.class ), createEncoder( SimpleTreeNode.class ) );
+        tester.testSimpleRefs( createMapper( SimpleTreeNode.class ) );
     }
 
     @Test
     public void testSimpleRefsWithGetter()
     {
-        JsonManagedAndBackReferenceTester.INSTANCE
-            .testSimpleRefsWithGetter( createDecoder( SimpleTreeNode2.class ), createEncoder( SimpleTreeNode2.class ) );
+        tester.testSimpleRefsWithGetter( createMapper( SimpleTreeNode2.class ) );
     }
 
     @Test
     public void testFullRefs()
     {
-        JsonManagedAndBackReferenceTester.INSTANCE.testFullRefs( createDecoder( FullTreeNode.class ), createEncoder( FullTreeNode.class ) );
+        tester.testFullRefs( createMapper( FullTreeNode.class ) );
     }
 
     @Test
     public void testArrayOfRefs()
     {
-        JsonManagedAndBackReferenceTester.INSTANCE.testArrayOfRefs( createDecoder( NodeArray.class ), createEncoder( NodeArray.class ) );
+        tester.testArrayOfRefs( createMapper( NodeArray.class ) );
     }
 
     @Test
     public void testListOfRefs()
     {
-        JsonManagedAndBackReferenceTester.INSTANCE.testListOfRefs( createDecoder( NodeList.class ), createEncoder( NodeList.class ) );
+        tester.testListOfRefs( createMapper( NodeList.class ) );
     }
 
     @Test
     public void testMapOfRefs()
     {
-        JsonManagedAndBackReferenceTester.INSTANCE.testMapOfRefs( createDecoder( NodeMap.class ), createEncoder( NodeMap.class ) );
+        tester.testMapOfRefs( createMapper( NodeMap.class ) );
     }
 
     @Test
     public void testAbstract368()
     {
-        JsonManagedAndBackReferenceTester.INSTANCE
-            .testAbstract368( createDecoder( AbstractNode.class ), createEncoder( AbstractNode.class ) );
+        tester.testAbstract368( createMapper( AbstractNode.class ) );
     }
 
     @Test
     public void testIssue693()
     {
-        JsonManagedAndBackReferenceTester.INSTANCE.testIssue693( createDecoder( Parent.class ), createEncoder( Parent.class ) );
+        tester.testIssue693( createMapper( Parent.class ) );
     }
 
     @Test
     public void testIssue708()
     {
-        JsonManagedAndBackReferenceTester.INSTANCE.testIssue708( createDecoder( Advertisement708.class ) );
+        tester.testIssue708( createMapper( Advertisement708.class ) );
     }
 }

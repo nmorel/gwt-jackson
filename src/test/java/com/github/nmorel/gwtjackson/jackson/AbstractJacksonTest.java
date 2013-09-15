@@ -10,6 +10,7 @@ import com.github.nmorel.gwtjackson.client.exception.JsonDecodingException;
 import com.github.nmorel.gwtjackson.client.exception.JsonEncodingException;
 import com.github.nmorel.gwtjackson.shared.JsonDecoderTester;
 import com.github.nmorel.gwtjackson.shared.JsonEncoderTester;
+import com.github.nmorel.gwtjackson.shared.JsonMapperTester;
 import org.junit.Before;
 
 /** @author Nicolas Morel */
@@ -25,10 +26,23 @@ public abstract class AbstractJacksonTest
         objectMapper.configure( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false );
     }
 
-    protected <T> JsonEncoderTester<T> createEncoder( Class<T> clazz )
+    protected <T> JsonMapperTester<T> createMapper( final Class<T> clazz )
     {
-        return new JsonEncoderTester<T>()
+        return new JsonMapperTester<T>()
         {
+            @Override
+            public T decode( String input )
+            {
+                try
+                {
+                    return objectMapper.readValue( input, clazz );
+                }
+                catch ( IOException e )
+                {
+                    throw new JsonDecodingException( e );
+                }
+            }
+
             @Override
             public String encode( T input )
             {
@@ -44,22 +58,13 @@ public abstract class AbstractJacksonTest
         };
     }
 
+    protected <T> JsonEncoderTester<T> createEncoder( Class<T> clazz )
+    {
+        return createMapper( clazz );
+    }
+
     protected <T> JsonDecoderTester<T> createDecoder( final Class<T> clazz )
     {
-        return new JsonDecoderTester<T>()
-        {
-            @Override
-            public T decode( String input )
-            {
-                try
-                {
-                    return objectMapper.readValue( input, clazz );
-                }
-                catch ( IOException e )
-                {
-                    throw new JsonDecodingException( e );
-                }
-            }
-        };
+        return createMapper( clazz );
     }
 }
