@@ -12,8 +12,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.ObjectIdGenerator;
+import com.fasterxml.jackson.annotation.ObjectIdGenerator.IdKey;
+import com.github.nmorel.gwtjackson.client.utils.ObjectIdEncoder;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
+import com.google.gwt.core.ext.TreeLogger.Type;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JAbstractMethod;
 import com.google.gwt.core.ext.typeinfo.JClassType;
@@ -81,7 +85,7 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
             return qualifiedMapperClassName;
         }
 
-        BeanInfo info = BeanInfo.process( logger, beanType, qualifiedMapperClassName, mapperClassSimpleName );
+        BeanInfo info = BeanInfo.process( logger, typeOracle, beanType, qualifiedMapperClassName, mapperClassSimpleName );
 
         SourceWriter source = getSourceWriter( printWriter, packageName, mapperClassSimpleName, info.getSuperclass() + "<" +
             beanType.getParameterizedQualifiedSourceName() + ", " + info.getInstanceBuilderQualifiedName() + ">" );
@@ -103,6 +107,12 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         }
 
         source.println();
+
+        if ( null != info.getIdentityInfo() )
+        {
+            generateIdentityMethods( source, info );
+            source.println();
+        }
 
         if ( info.isHasSubtypes() )
         {
@@ -150,6 +160,127 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         generateAdditionalMethods( source, properties );
 
         source.commit( logger );
+    }
+
+    private void generateIdentityMethods( SourceWriter source, BeanInfo info ) throws UnableToCompleteException
+    {
+        BeanIdentityInfo identityInfo = info.getIdentityInfo();
+
+        String qualifiedType = null != identityInfo.getType().isPrimitive() ? identityInfo.getType().isPrimitive()
+            .getQualifiedBoxedSourceName() : identityInfo.getType().getParameterizedQualifiedSourceName();
+
+        String identityPropertyClass = String.format( "%s<%s, %s>", IDENTITY_PROPERTY_BEAN_CLASS, info.getType()
+            .getParameterizedQualifiedSourceName(), info.getInstanceBuilderSimpleName() );
+
+        source.println( "private %s identityProperty;", identityPropertyClass );
+
+        source.println();
+
+        source.println( "@Override" );
+        source.println( "protected %s getIdProperty() {", identityPropertyClass );
+        source.indent();
+
+        source.println( "if(null == this.identityProperty) {" );
+        source.indent();
+        source.println( "this.identityProperty = new %s() {", identityPropertyClass );
+        source.indent();
+
+        source.println();
+        source.println( "private %s<%s> mapper;", JSON_MAPPER_CLASS, qualifiedType );
+        source.println();
+        source.println( "private %s<%s> getMapper(%s ctx) {", JSON_MAPPER_CLASS, qualifiedType, JSON_MAPPING_CONTEXT_CLASS );
+        source.indent();
+        source.println( "if(null == mapper) {" );
+        source.indent();
+        source.println( "mapper = %s;", getMapperFromType( identityInfo.getType() ) );
+        source.outdent();
+        source.println( "}" );
+        source.println( "return mapper;" );
+        source.outdent();
+        source.println( "}" );
+        source.println();
+
+        source.println( "@Override" );
+        source.println( "public boolean isAlwaysAsId() {" );
+        source.indent();
+        source.println( "return %s;", identityInfo.isAlwaysAsId() );
+        source.outdent();
+        source.println( "}" );
+        source.println();
+
+        source.println( "@Override" );
+        source.println( "public String getPropertyName() {" );
+        source.indent();
+        source.println( "return \"%s\";", identityInfo.getPropertyName() );
+        source.outdent();
+        source.println( "}" );
+        source.println();
+
+        source.println( "@Override" );
+        source.println( "public %s<%s> getObjectId( %s bean, %s ctx ) {", ObjectIdEncoder.class.getName(), qualifiedType, info.getType()
+            .getParameterizedQualifiedSourceName(), JSON_ENCODING_CONTEXT_CLASS );
+        source.indent();
+        if ( null == identityInfo.getProperty() )
+        {
+            String generatorType = String.format( "%s<%s>", ObjectIdGenerator.class.getName(), qualifiedType );
+            source.println( "%s generator = new %s().forScope(%s.class);", generatorType, identityInfo.getGenerator()
+                .getCanonicalName(), identityInfo.getScope().getName() );
+            source.println( "%s scopedGen = ctx.findObjectIdGenerator(generator);", generatorType );
+            source.println( "if(null == scopedGen) {" );
+            source.indent();
+            source.println( "scopedGen = generator.newForSerialization(ctx);" );
+            source.println( "ctx.addGenerator(scopedGen);" );
+            source.outdent();
+            source.println( "}" );
+            source.println( "return new %s<%s>(scopedGen.generateId(bean), getMapper(ctx));", ObjectIdEncoder.class
+                .getName(), qualifiedType );
+        }
+        else
+        {
+            source.println( "return new %s<%s>(%s, getMapper(ctx));", ObjectIdEncoder.class.getName(), qualifiedType, identityInfo
+                .getProperty().getGetterAccessor() );
+        }
+        source.outdent();
+        source.println( "}" );
+        source.println();
+
+        source.println( "@Override" );
+        source.println( "public %s getObjectId( %s reader, %s ctx ) {", IdKey.class
+            .getCanonicalName(), JSON_READER_CLASS, JSON_DECODING_CONTEXT_CLASS );
+        source.indent();
+        source.println( "return new %s(%s.class, %s.class, getMapper(ctx).decode(reader, ctx));", IdKey.class
+            .getCanonicalName(), identityInfo.getGenerator().getCanonicalName(), identityInfo.getScope().getCanonicalName() );
+        source.outdent();
+        source.println( "}" );
+        source.println();
+
+        source.println( "@Override" );
+        source.println( "public void decode( %s reader, %s builder, %s ctx ) {", JSON_READER_CLASS, info
+            .getInstanceBuilderSimpleName(), JSON_DECODING_CONTEXT_CLASS );
+        source.indent();
+        if ( null == identityInfo.getProperty() )
+        {
+            // it's not a property of the bean, we call a special builder setter
+            source.println( "builder.%s(getMapper(ctx).decode(reader, ctx), ctx);", BUILDER_IDENTITY_FIELD_NAME );
+        }
+        else
+        {
+            // it's a property of the bean
+            source.println( "builder._%s(getMapper(ctx).decode(reader, ctx), ctx);", identityInfo.getPropertyName() );
+        }
+        source.outdent();
+        source.println( "}" );
+
+        source.outdent();
+        source.println( "};" );
+
+        source.outdent();
+        source.println( "}" );
+
+        source.println( "return this.identityProperty;" );
+
+        source.outdent();
+        source.println( "}" );
     }
 
     private void generateInstanceBuilderClass( SourceWriter source, BeanInfo info, Map<String,
@@ -208,8 +339,8 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         // generate the setter for each property
         for ( PropertyInfo property : properties.values() )
         {
-            // backReference don't need setter
-            if ( null == property.getBackReference() )
+            // backReference don't need setter and identityProperty are handled differently
+            if ( null == property.getBackReference() && !property.isIdentityProperty() )
             {
                 if ( null == property.getManagedReference() )
                 {
@@ -224,20 +355,30 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
                 }
 
                 source.indent();
-                source.println( property.getSetterAccessor() + ";", "value" );
-                if ( property.isRequired() )
-                {
-                    source.println( "this.%s = true;", String.format( IS_SET_FORMAT, property.getPropertyName() ) );
-                }
-                if ( null != property.getManagedReference() )
-                {
-                    source.println( "mapper.setBackReference(\"%s\", %s, value, ctx);", property
-                        .getManagedReference(), BEAN_INSTANCE_NAME );
-                }
+                generateInstanceBuilderSetterBodyForDefaultConstructor( source, property );
                 source.outdent();
                 source.println( "}" );
                 source.println();
             }
+        }
+
+        if ( null != info.getIdentityInfo() )
+        {
+            // generate the setter for identity
+            BeanIdentityInfo identityInfo = info.getIdentityInfo();
+            String methodName = identityInfo.isIdABeanProperty() ? "_" + identityInfo.getPropertyName() : BUILDER_IDENTITY_FIELD_NAME;
+            source.println( "private void %s(%s value, %s ctx) {", methodName, identityInfo.getType()
+                .getParameterizedQualifiedSourceName(), JSON_DECODING_CONTEXT_CLASS );
+            source.indent();
+            if ( null != identityInfo.getProperty() )
+            {
+                generateInstanceBuilderSetterBodyForDefaultConstructor( source, identityInfo.getProperty() );
+            }
+            source.println( "ctx.addObjectId( new %s(%s.class, %s.class, value), %s );", IdKey.class.getCanonicalName(), identityInfo
+                .getGenerator().getCanonicalName(), identityInfo.getScope().getCanonicalName(), BEAN_INSTANCE_NAME );
+            source.outdent();
+            source.println( "}" );
+            source.println();
         }
 
         source.println( "@Override" );
@@ -247,6 +388,19 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         source.println( "return %s;", BEAN_INSTANCE_NAME );
         source.outdent();
         source.println( "}" );
+    }
+
+    private void generateInstanceBuilderSetterBodyForDefaultConstructor( SourceWriter source, PropertyInfo property )
+    {
+        source.println( property.getSetterAccessor() + ";", "value" );
+        if ( property.isRequired() )
+        {
+            source.println( "this.%s = true;", String.format( IS_SET_FORMAT, property.getPropertyName() ) );
+        }
+        if ( null != property.getManagedReference() )
+        {
+            source.println( "mapper.setBackReference(\"%s\", %s, value, ctx);", property.getManagedReference(), BEAN_INSTANCE_NAME );
+        }
     }
 
     /**
@@ -260,6 +414,11 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
     private void generateInstanceBuilderClassBodyForConstructorOrFactoryMethod( SourceWriter source, BeanInfo info, Map<String,
         PropertyInfo> properties )
     {
+        // will contain the instance once created
+        source.println();
+        source.println( "private %s %s;", info.getType().getParameterizedQualifiedSourceName(), BEAN_INSTANCE_NAME, info
+            .getQualifiedMapperClassName() );
+
         // we initialize a map containing the required properties
         Map<String, PropertyInfo> requiredProperties = new LinkedHashMap<String, PropertyInfo>();
         // generating the builder's fields used to hold the values before we instantiate the result
@@ -283,11 +442,22 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
             }
         }
 
+        // we store the identity value. Once the identity and all parameters of the creator has been set,
+        // we add the instance to the context
+        if ( null != info.getIdentityInfo() && !info.getIdentityInfo().isIdABeanProperty() )
+        {
+            source.println();
+            source.println( "private %s %s;", info.getIdentityInfo().getType()
+                .getParameterizedQualifiedSourceName(), BUILDER_IDENTITY_FIELD_NAME );
+            String isSetName = String.format( IS_SET_FORMAT, BUILDER_IDENTITY_FIELD_NAME );
+            source.println( "private boolean %s;", isSetName );
+        }
+
         source.println();
 
         for ( PropertyInfo property : properties.values() )
         {
-            if ( null == property.getBackReference() )
+            if ( null == property.getBackReference() && !property.isIdentityProperty() )
             {
                 if ( null == property.getManagedReference() )
                 {
@@ -302,8 +472,9 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
                 }
 
                 source.indent();
-                source.println( "this._%s = value;", property.getPropertyName() );
-                source.println( "this.%s = true;", String.format( IS_SET_FORMAT, property.getPropertyName() ) );
+                generateInstanceBuilderSetterBodyForConstructorOrFactoryMethod( source, info, "_" + property.getPropertyName(), String
+                    .format( IS_SET_FORMAT, property.getPropertyName() ), info.getCreatorParameters().containsKey( property
+                    .getPropertyName() ) );
                 if ( null != property.getManagedReference() )
                 {
                     source.println( "this.%s = mapper;", String.format( BUILDER_MAPPER_FORMAT, property.getPropertyName() ) );
@@ -314,23 +485,42 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
             }
         }
 
+        if ( null != info.getIdentityInfo() )
+        {
+            // generate the setter for identity
+            BeanIdentityInfo identityInfo = info.getIdentityInfo();
+            String methodName = identityInfo.isIdABeanProperty() ? "_" + identityInfo.getPropertyName() : BUILDER_IDENTITY_FIELD_NAME;
+            source.println( "private void %s(%s value, %s ctx) {", methodName, identityInfo.getType()
+                .getParameterizedQualifiedSourceName(), JSON_DECODING_CONTEXT_CLASS );
+            source.indent();
+            if ( identityInfo.isIdABeanProperty() )
+            {
+                generateInstanceBuilderSetterBodyForConstructorOrFactoryMethod( source, info, "_" + identityInfo.getPropertyName(), String
+                    .format( IS_SET_FORMAT, identityInfo.getPropertyName() ), true );
+            }
+            else
+            {
+                generateInstanceBuilderSetterBodyForConstructorOrFactoryMethod( source, info, BUILDER_IDENTITY_FIELD_NAME, String
+                    .format( IS_SET_FORMAT, BUILDER_IDENTITY_FIELD_NAME ), true );
+            }
+            source.outdent();
+            source.println( "}" );
+            source.println();
+        }
+
+        generateInstanceBuilderCreateInstanceForConstructorOrFactoryMethod( source, info );
+
         source.println( "@Override" );
         source.println( "public %s build(%s ctx) {", info.getType().getParameterizedQualifiedSourceName(), JSON_DECODING_CONTEXT_CLASS );
         source.indent();
 
         generateRequiredPropertiesCheck( source, requiredProperties );
 
-        StringBuilder parametersBuilder = new StringBuilder();
-        for ( Map.Entry<String, JParameter> parameterEntry : info.getCreatorParameters().entrySet() )
-        {
-            if ( parametersBuilder.length() > 0 )
-            {
-                parametersBuilder.append( ", " );
-            }
-            parametersBuilder.append( "_" ).append( parameterEntry.getKey() );
-        }
-        source.println( "%s %s = %s.newInstance(%s);", info.getType().getParameterizedQualifiedSourceName(), BEAN_INSTANCE_NAME, info
-            .getQualifiedMapperClassName(), parametersBuilder.toString() );
+        source.println( "if(null == this.%s) {", BEAN_INSTANCE_NAME );
+        source.indent();
+        source.println( "createInstance(ctx);" );
+        source.outdent();
+        source.println( "}" );
 
         // Writing the rest of the properties
         for ( Map.Entry<String, PropertyInfo> propertyEntry : properties.entrySet() )
@@ -354,6 +544,72 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
 
         source.outdent();
         source.println( "}" );
+    }
+
+    private void generateInstanceBuilderSetterBodyForConstructorOrFactoryMethod( SourceWriter source, BeanInfo info, String fieldName,
+                                                                                 String isSetName, boolean creatorOrIdentityProperty )
+    {
+        source.println( "this.%s = value;", fieldName );
+        source.println( "this.%s = true;", isSetName );
+        if ( creatorOrIdentityProperty )
+        {
+            StringBuilder ifBuilder = new StringBuilder();
+            for ( Map.Entry<String, JParameter> parameterEntry : info.getCreatorParameters().entrySet() )
+            {
+                if ( ifBuilder.length() > 0 )
+                {
+                    ifBuilder.append( " && " );
+                }
+                ifBuilder.append( String.format( IS_SET_FORMAT, parameterEntry.getKey() ) );
+            }
+            if ( null != info.getIdentityInfo() )
+            {
+                ifBuilder.append( " && " );
+                if ( info.getIdentityInfo().isIdABeanProperty() )
+                {
+                    ifBuilder.append( String.format( IS_SET_FORMAT, info.getIdentityInfo().getPropertyName() ) );
+                }
+                else
+                {
+                    ifBuilder.append( String.format( IS_SET_FORMAT, BUILDER_IDENTITY_FIELD_NAME ) );
+                }
+            }
+            source.println( "if(null == this.%s && %s) {", BEAN_INSTANCE_NAME, ifBuilder.toString() );
+            source.indent();
+            source.println( "createInstance(ctx);" );
+            source.outdent();
+            source.println( "}" );
+        }
+    }
+
+    private void generateInstanceBuilderCreateInstanceForConstructorOrFactoryMethod( SourceWriter source, BeanInfo info )
+    {
+        // we compute the creator args
+        StringBuilder parametersBuilder = new StringBuilder();
+        for ( Map.Entry<String, JParameter> parameterEntry : info.getCreatorParameters().entrySet() )
+        {
+            if ( parametersBuilder.length() > 0 )
+            {
+                parametersBuilder.append( ", " );
+            }
+            parametersBuilder.append( "_" ).append( parameterEntry.getKey() );
+        }
+
+        source.println( "private void createInstance(%s ctx) {", JSON_DECODING_CONTEXT_CLASS );
+        source.indent();
+        source.println( "this.%s = %s.newInstance(%s);", BEAN_INSTANCE_NAME, info.getQualifiedMapperClassName(), parametersBuilder
+            .toString() );
+        if ( null != info.getIdentityInfo() )
+        {
+            String idField = info.getIdentityInfo().isIdABeanProperty() ? "_" + info.getIdentityInfo()
+                .getPropertyName() : BUILDER_IDENTITY_FIELD_NAME;
+            source.println( "ctx.addObjectId( new %s(%s.class, %s.class, %s), this.%s );", IdKey.class.getCanonicalName(), info
+                .getIdentityInfo().getGenerator().getCanonicalName(), info.getIdentityInfo().getScope()
+                .getCanonicalName(), idField, BEAN_INSTANCE_NAME );
+        }
+        source.outdent();
+        source.println( "}" );
+        source.println();
     }
 
     /**
@@ -577,8 +833,9 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         for ( PropertyInfo property : properties.values() )
         {
             String setterAccessor = property.getSetterAccessor();
-            if ( null == setterAccessor )
+            if ( null == setterAccessor || property.isIdentityProperty() )
             {
+                // there is no setter visible or the property is used as identity and is handled separately
                 continue;
             }
 
@@ -632,6 +889,13 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
             source.outdent();
             source.println( "} );" );
         }
+
+        if ( null != info.getIdentityInfo() )
+        {
+            // we add the IdentityProperty as a DecoderProperty so it is called automatically when we decode
+            source.println( "addProperty(\"%s\", getIdProperty());", info.getIdentityInfo().getPropertyName() );
+        }
+
     }
 
     private void generateInitEncoders( SourceWriter source, BeanInfo info, Map<String,
@@ -640,8 +904,9 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         for ( PropertyInfo property : properties.values() )
         {
             String getterAccessor = property.getGetterAccessor();
-            if ( null == getterAccessor )
+            if ( null == getterAccessor || property.isIdentityProperty() )
             {
+                // there is no getter visible or the property is used as identity and is handled separately
                 continue;
             }
 
@@ -676,7 +941,7 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         }
     }
 
-    private Map<String, PropertyInfo> findAllProperties( BeanInfo info )
+    private Map<String, PropertyInfo> findAllProperties( BeanInfo info ) throws UnableToCompleteException
     {
         Map<String, FieldAccessors> fieldsMap = new LinkedHashMap<String, FieldAccessors>();
         parseFields( info.getType(), fieldsMap );
@@ -749,6 +1014,19 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
             {
                 result.put( entry.getKey(), entry.getValue() );
             }
+        }
+
+        if ( null != info.getIdentityInfo() && info.getIdentityInfo().isIdABeanProperty() )
+        {
+            PropertyInfo property = result.get( info.getIdentityInfo().getPropertyName() );
+            if ( null == property )
+            {
+                logger.log( Type.ERROR, "Cannot find the property with the name '" + info.getIdentityInfo()
+                    .getPropertyName() + "' used for identity" );
+                throw new UnableToCompleteException();
+            }
+            property.setIdentityProperty( true );
+            info.getIdentityInfo().setProperty( property );
         }
 
         return result;

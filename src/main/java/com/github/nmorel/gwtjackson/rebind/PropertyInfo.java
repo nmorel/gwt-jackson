@@ -352,6 +352,7 @@ public final class PropertyInfo
     private String getterAccessor;
     private String setterAccessor;
     private List<AdditionalMethod> additionalMethods = new ArrayList<AdditionalMethod>();
+    private boolean identityProperty;
 
     private PropertyInfo()
     {
@@ -410,5 +411,15 @@ public final class PropertyInfo
     public void setRequired( boolean required )
     {
         this.required = required;
+    }
+
+    public boolean isIdentityProperty()
+    {
+        return identityProperty;
+    }
+
+    public void setIdentityProperty( boolean identityProperty )
+    {
+        this.identityProperty = identityProperty;
     }
 }

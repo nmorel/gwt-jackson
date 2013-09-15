@@ -12,11 +12,15 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.google.gwt.core.ext.TreeLogger;
+import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JAbstractMethod;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JConstructor;
@@ -28,7 +32,8 @@ import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounte
 /** @author Nicolas Morel */
 public final class BeanInfo
 {
-    public static BeanInfo process( TreeLogger logger, JClassType beanType, String qualifiedMapperClassName, String mapperClassSimpleName )
+    public static BeanInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, JClassType beanType,
+                                    String qualifiedMapperClassName, String mapperClassSimpleName ) throws UnableToCompleteException
     {
         BeanInfo result = new BeanInfo();
         result.type = beanType;
@@ -80,6 +85,16 @@ public final class BeanInfo
             result.propertyOrderList = Collections.emptyList();
         }
         result.propertyOrderAlphabetic = null != jsonPropertyOrder && jsonPropertyOrder.alphabetic();
+
+        JsonIdentityInfo jsonIdentityInfo = findFirstEncounteredAnnotationsOnAllHierarchy( beanType, JsonIdentityInfo.class );
+        if ( null != jsonIdentityInfo && ObjectIdGenerators.None.class != jsonIdentityInfo.generator() )
+        {
+            JsonIdentityReference jsonIdentityReference = findFirstEncounteredAnnotationsOnAllHierarchy( beanType,
+                JsonIdentityReference.class );
+            result.identityInfo = new BeanIdentityInfo( jsonIdentityInfo.property(), null != jsonIdentityReference && jsonIdentityReference
+                .alwaysAsId(), jsonIdentityInfo.generator(), jsonIdentityInfo.scope(), typeOracle );
+        }
+
         return result;
     }
 
@@ -243,6 +258,8 @@ public final class BeanInfo
     /*####  Ordering properties  ####*/
     private List<String> propertyOrderList;
     private boolean propertyOrderAlphabetic;
+    /*####  Identity info  ####*/
+    private BeanIdentityInfo identityInfo;
 
     private BeanInfo()
     {
@@ -362,5 +379,10 @@ public final class BeanInfo
     public boolean isPropertyOrderAlphabetic()
     {
         return propertyOrderAlphabetic;
+    }
+
+    public BeanIdentityInfo getIdentityInfo()
+    {
+        return identityInfo;
     }
 }

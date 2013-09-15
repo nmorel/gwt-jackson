@@ -25,10 +25,11 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
     public static final List<String> BASE_TYPES = Arrays
         .asList( "java.math.BigDecimal", "java.math.BigInteger", "java.lang.Boolean", "java.lang.Byte", "java.lang.Character",
             "java.util.Date", "java.lang.Double", "java.lang.Float", "java.lang.Integer", "java.lang.Long", "java.lang.Short",
-            "java.sql.Date", "java.sql.Time", "java.sql.Timestamp", "java.lang.String" );
+            "java.sql.Date", "java.sql.Time", "java.sql.Timestamp", "java.lang.String", "java.util.UUID" );
     public static final String BEAN_INSTANCE_NAME = "$$instance$$";
     public static final String IS_SET_FORMAT = "is_%s_set";
     public static final String BUILDER_MAPPER_FORMAT = "mapper_%s";
+    public static final String BUILDER_IDENTITY_FIELD_NAME = "identity";
     public static final String JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.JsonMapper";
     public static final String ABSTRACT_JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.AbstractJsonMapper";
     public static final String ABSTRACT_BEAN_JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper";
@@ -40,6 +41,8 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
         ".EncoderProperty";
     public static final String BACK_REFERENCE_PROPERTY_BEAN_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper" +
         ".BackReferenceProperty";
+    public static final String IDENTITY_PROPERTY_BEAN_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper" +
+        ".IdProperty";
     public static final String JSON_READER_CLASS = "com.github.nmorel.gwtjackson.client.stream.JsonReader";
     public static final String JSON_WRITER_CLASS = "com.github.nmorel.gwtjackson.client.stream.JsonWriter";
     public static final String JSON_MAPPING_CONTEXT_CLASS = "com.github.nmorel.gwtjackson.client.JsonMappingContext";

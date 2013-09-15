@@ -144,7 +144,7 @@ public final class ObjectIdTester extends AbstractTester
     }
 
     // For Issue#188
-    public void testMixedRefsIssue188( JsonMapperTester<Company> encoder )
+    public void testMixedRefsIssue188( JsonMapperTester<Company> mapper )
     {
         Company comp = new Company();
         Employee e1 = new Employee( 1, "First", null );
@@ -153,8 +153,8 @@ public final class ObjectIdTester extends AbstractTester
         comp.add( e1 );
         comp.add( e2 );
 
-        String json = encoder.encode( comp );
+        String json = mapper.encode( comp );
         assertEquals( "{\"employees\":[{\"id\":1,\"name\":\"First\",\"reports\":[2]},{\"id\":2,\"name\":\"Second\",\"manager\":1," +
-            "\"reports\":[]}]}", json );
+            "" + "\"reports\":[]}]}", json );
     }
 }

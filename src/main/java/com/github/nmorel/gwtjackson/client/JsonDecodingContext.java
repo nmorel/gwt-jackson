@@ -1,8 +1,11 @@
 package com.github.nmorel.gwtjackson.client;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.annotation.ObjectIdGenerator.IdKey;
 import com.github.nmorel.gwtjackson.client.exception.JsonDecodingException;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.google.gwt.logging.client.LogConfiguration;
@@ -12,6 +15,7 @@ public class JsonDecodingContext extends JsonMappingContext
 {
     private static final Logger logger = Logger.getLogger( "JsonDecoding" );
     private final JsonReader reader;
+    private Map<IdKey, Object> idToObject;
 
     public JsonDecodingContext( JsonReader reader )
     {
@@ -45,5 +49,23 @@ public class JsonDecodingContext extends JsonMappingContext
             getLogger().log( Level.INFO, "Error at line " + reader.getLineNumber() + " and column " + reader
                 .getColumnNumber() + " of input <" + reader.getInput() + ">" );
         }
+    }
+
+    public void addObjectId( IdKey id, Object instance )
+    {
+        if ( null == idToObject )
+        {
+            idToObject = new HashMap<IdKey, Object>();
+        }
+        idToObject.put( id, instance );
+    }
+
+    public Object getObjectWithId( IdKey id )
+    {
+        if ( null != idToObject )
+        {
+            return idToObject.get( id );
+        }
+        return null;
     }
 }

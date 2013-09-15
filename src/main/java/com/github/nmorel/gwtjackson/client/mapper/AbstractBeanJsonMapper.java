@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.ObjectIdGenerator.IdKey;
 import com.github.nmorel.gwtjackson.client.AbstractJsonMapper;
 import com.github.nmorel.gwtjackson.client.JsonDecodingContext;
 import com.github.nmorel.gwtjackson.client.JsonEncodingContext;
@@ -11,6 +12,7 @@ import com.github.nmorel.gwtjackson.client.JsonMapper;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
+import com.github.nmorel.gwtjackson.client.utils.ObjectIdEncoder;
 
 /**
  * Base implementation of {@link JsonMapper} for beans.
@@ -37,6 +39,17 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
     public static interface EncoderProperty<T>
     {
         void encode( JsonWriter writer, T bean, JsonEncodingContext ctx );
+    }
+
+    public static interface IdProperty<T, B extends AbstractBeanJsonMapper.InstanceBuilder<T>> extends DecoderProperty<T, B>
+    {
+        boolean isAlwaysAsId();
+
+        String getPropertyName();
+
+        ObjectIdEncoder<?> getObjectId( T bean, JsonEncodingContext ctx );
+
+        IdKey getObjectId( JsonReader reader, JsonDecodingContext ctx );
     }
 
     private Map<String, DecoderProperty<T, B>> decoders;
@@ -67,6 +80,11 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
     protected abstract void initEncoders();
 
     protected abstract B newInstanceBuilder( JsonDecodingContext ctx );
+
+    protected IdProperty<T, B> getIdProperty()
+    {
+        return null;
+    }
 
     /**
      * Add a {@link DecoderProperty}
@@ -104,6 +122,18 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
     @Override
     public T doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
     {
+        IdProperty<T, B> idProperty = getIdProperty();
+        if ( null != idProperty && !JsonToken.BEGIN_OBJECT.equals( reader.peek() ) )
+        {
+            IdKey id = idProperty.getObjectId( reader, ctx );
+            Object instance = ctx.getObjectWithId( id );
+            if ( null == instance )
+            {
+                throw ctx.traceError( "Cannot find an object with id " + id );
+            }
+            return (T) instance;
+        }
+
         reader.beginObject();
         T result = decodeObject( reader, ctx );
         reader.endObject();
@@ -158,7 +188,35 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
     @Override
     public void doEncode( JsonWriter writer, T value, JsonEncodingContext ctx ) throws IOException
     {
-        writer.beginObject();
+        IdProperty<T, B> idProperty = getIdProperty();
+        if ( null != idProperty )
+        {
+            ObjectIdEncoder<?> idWriter = ctx.getObjectId( value );
+            if ( null != idWriter )
+            {
+                idWriter.encodeId( writer, ctx );
+                return;
+            }
+
+            idWriter = idProperty.getObjectId( value, ctx );
+            ctx.addObjectId( value, idWriter );
+            if ( idProperty.isAlwaysAsId() )
+            {
+                idWriter.encodeId( writer, ctx );
+                return;
+            }
+            else
+            {
+                writer.beginObject();
+                writer.name( idProperty.getPropertyName() );
+                idWriter.encodeId( writer, ctx );
+            }
+        }
+        else
+        {
+            writer.beginObject();
+        }
+
         encodeObject( writer, value, ctx );
         writer.endObject();
     }
@@ -173,4 +231,5 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
             entry.getValue().encode( writer, value, ctx );
         }
     }
+
 }
