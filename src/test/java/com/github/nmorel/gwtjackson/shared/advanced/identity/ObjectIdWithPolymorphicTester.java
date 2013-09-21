@@ -1,6 +1,7 @@
 package com.github.nmorel.gwtjackson.shared.advanced.identity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
@@ -9,8 +10,9 @@ import com.github.nmorel.gwtjackson.shared.JsonMapperTester;
 /** Test from jackson-databind and adapted for the project */
 public final class ObjectIdWithPolymorphicTester extends AbstractTester
 {
-    @JsonTypeInfo( use = JsonTypeInfo.Id.CLASS )
-    @JsonIdentityInfo( generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id" )
+    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
+    @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id")
+    @JsonPropertyOrder(alphabetic = true)
     public static abstract class Base
     {
         public int value;
@@ -68,6 +70,9 @@ public final class ObjectIdWithPolymorphicTester extends AbstractTester
         in1.next.next = in1;
 
         String json = mapper.encode( in1 );
+        assertEquals( "{\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdWithPolymorphicTester$Impl\",\"id\":1," +
+            "\"extra\":456,\"next\":{\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.identity" +
+            ".ObjectIdWithPolymorphicTester$Impl\",\"id\":2,\"extra\":222,\"next\":1,\"value\":111},\"value\":123}", json );
 
         // then bring back...
         Base result0 = mapper.decode( json );

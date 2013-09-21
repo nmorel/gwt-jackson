@@ -9,6 +9,7 @@ import com.github.nmorel.gwtjackson.client.AbstractJsonMapper;
 import com.github.nmorel.gwtjackson.client.JsonDecodingContext;
 import com.github.nmorel.gwtjackson.client.JsonEncodingContext;
 import com.github.nmorel.gwtjackson.client.JsonMapper;
+import com.github.nmorel.gwtjackson.client.mapper.SuperclassInfo.SubtypeMapper;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
@@ -41,7 +42,7 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
         void encode( JsonWriter writer, T bean, JsonEncodingContext ctx );
     }
 
-    public static interface IdProperty<T, B extends AbstractBeanJsonMapper.InstanceBuilder<T>> extends DecoderProperty<T, B>
+    public static interface IdProperty<T>
     {
         boolean isAlwaysAsId();
 
@@ -52,6 +53,8 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
         IdKey getObjectId( JsonReader reader, JsonDecodingContext ctx );
     }
 
+    private IdProperty<T> idProperty;
+    private SuperclassInfo<T> superclassInfo;
     private Map<String, DecoderProperty<T, B>> decoders;
     private Map<String, EncoderProperty<T>> encoders;
     private Map<String, BackReferenceProperty<T, ?>> backReferenceDecoders;
@@ -79,12 +82,9 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
 
     protected abstract void initEncoders();
 
-    protected abstract B newInstanceBuilder( JsonDecodingContext ctx );
+    protected abstract boolean isInstantiable();
 
-    protected IdProperty<T, B> getIdProperty()
-    {
-        return null;
-    }
+    protected abstract B newInstanceBuilder( JsonDecodingContext ctx );
 
     /**
      * Add a {@link DecoderProperty}
@@ -122,7 +122,6 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
     @Override
     public T doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException
     {
-        IdProperty<T, B> idProperty = getIdProperty();
         if ( null != idProperty && !JsonToken.BEGIN_OBJECT.equals( reader.peek() ) )
         {
             IdKey id = idProperty.getObjectId( reader, ctx );
@@ -134,9 +133,64 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
             return (T) instance;
         }
 
-        reader.beginObject();
-        T result = decodeObject( reader, ctx );
-        reader.endObject();
+        T result;
+
+        if ( null != superclassInfo && superclassInfo.isIncludeTypeInfo() )
+        {
+            switch ( superclassInfo.getInclude() )
+            {
+                case PROPERTY:
+                    // the type info is the first property of the object
+                    reader.beginObject();
+                    String name = reader.nextName();
+                    if ( !superclassInfo.getPropertyName().equals( name ) )
+                    {
+                        // the type info is always the first value. If we don't find it, we throw an error
+                        throw ctx.traceError( "Cannot find the type info" );
+                    }
+                    String typeInfoProperty = reader.nextString();
+
+                    result = decodeSubtype( reader, ctx, typeInfoProperty );
+                    reader.endObject();
+                    break;
+
+                case WRAPPER_OBJECT:
+                    // type info is included in a wrapper object that contains only one property. The name of this property is the type
+                    // info and the value the object
+                    reader.beginObject();
+                    String typeInfoWrapObj = reader.nextName();
+                    reader.beginObject();
+                    result = decodeSubtype( reader, ctx, typeInfoWrapObj );
+                    reader.endObject();
+                    reader.endObject();
+                    break;
+
+                case WRAPPER_ARRAY:
+                    // type info is included in a wrapper array that contains two elements. First one is the type
+                    // info and the second one the object
+                    reader.beginArray();
+                    String typeInfoWrapArray = reader.nextString();
+                    reader.beginObject();
+                    result = decodeSubtype( reader, ctx, typeInfoWrapArray );
+                    reader.endObject();
+                    reader.endArray();
+                    break;
+
+                default:
+                    throw ctx.traceError( "JsonTypeInfo.As." + superclassInfo.getInclude() + " is not supported" );
+            }
+        }
+        else if ( isInstantiable() )
+        {
+            reader.beginObject();
+            result = decodeObject( reader, ctx );
+            reader.endObject();
+        }
+        else
+        {
+            throw ctx.traceError( "Cannot instantiate the type" );
+        }
+
         return result;
     }
 
@@ -170,30 +224,61 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
         return builder.build( ctx );
     }
 
+    public final T decodeSubtype( JsonReader reader, JsonDecodingContext ctx, String typeInfo ) throws IOException
+    {
+        SubtypeMapper<? extends T> mapper = superclassInfo.getMapper( typeInfo );
+        if ( null == mapper )
+        {
+            throw ctx.traceError( "No mapper found for the type " + typeInfo );
+        }
+
+        return mapper.decodeObject( reader, ctx );
+    }
+
     @Override
     public void setBackReference( String referenceName, Object reference, T value, JsonDecodingContext ctx )
     {
-        if ( null != value )
+        if ( null == value )
         {
-            initDecodersIfNeeded();
-            BackReferenceProperty backReferenceProperty = backReferenceDecoders.get( referenceName );
-            if ( null == backReferenceProperty )
-            {
-                throw ctx.traceError( "The back reference '" + referenceName + "' does not exist" );
-            }
-            backReferenceProperty.setBackReference( value, reference, ctx );
+            return;
         }
+
+        if ( null != superclassInfo )
+        {
+            SubtypeMapper mapper = superclassInfo.getMapper( value.getClass() );
+            if ( null == mapper )
+            {
+                // should never happen, the generator add every subtype to the map
+                throw ctx.traceError( "Cannot find mapper for class " + value.getClass() );
+            }
+            JsonMapper<T> jsonMapper = mapper.getMapper( ctx );
+            if ( jsonMapper != this )
+            {
+                // we test if it's not this mapper to avoid an infinite loop
+                jsonMapper.setBackReference( referenceName, reference, value, ctx );
+                return;
+            }
+        }
+
+        initDecodersIfNeeded();
+        BackReferenceProperty backReferenceProperty = backReferenceDecoders.get( referenceName );
+        if ( null == backReferenceProperty )
+        {
+            throw ctx.traceError( "The back reference '" + referenceName + "' does not exist" );
+        }
+        backReferenceProperty.setBackReference( value, reference, ctx );
     }
 
     @Override
     public void doEncode( JsonWriter writer, T value, JsonEncodingContext ctx ) throws IOException
     {
-        IdProperty<T, B> idProperty = getIdProperty();
+        ObjectIdEncoder<?> idWriter = null;
         if ( null != idProperty )
         {
-            ObjectIdEncoder<?> idWriter = ctx.getObjectId( value );
+            idWriter = ctx.getObjectId( value );
             if ( null != idWriter )
             {
+                // the bean has already been encoded, we just encode the id-
                 idWriter.encodeId( writer, ctx );
                 return;
             }
@@ -205,20 +290,100 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
                 idWriter.encodeId( writer, ctx );
                 return;
             }
+        }
+
+        if ( null != superclassInfo )
+        {
+            SubtypeMapper mapper = superclassInfo.getMapper( value.getClass() );
+            if ( null == mapper )
+            {
+                throw ctx.traceError( value, "Cannot find mapper for class " + value.getClass() );
+            }
+
+            if ( !superclassInfo.isIncludeTypeInfo() )
+            {
+                // we don't include type info so we just encode the properties
+                writer.beginObject();
+                if ( null != idWriter )
+                {
+                    writer.name( idProperty.getPropertyName() );
+                    idWriter.encodeId( writer, ctx );
+                }
+                mapper.encodeObject( writer, value, ctx );
+                writer.endObject();
+            }
             else
             {
-                writer.beginObject();
-                writer.name( idProperty.getPropertyName() );
-                idWriter.encodeId( writer, ctx );
+                String typeInfo = superclassInfo.getTypeInfo( value.getClass() );
+                if ( null == typeInfo )
+                {
+                    throw ctx.traceError( value, "Cannot find type info for class " + value.getClass() );
+                }
+
+                switch ( superclassInfo.getInclude() )
+                {
+                    case PROPERTY:
+                        // type info is included as a property of the object
+                        writer.beginObject();
+                        writer.name( superclassInfo.getPropertyName() );
+                        writer.value( typeInfo );
+                        if ( null != idWriter )
+                        {
+                            writer.name( idProperty.getPropertyName() );
+                            idWriter.encodeId( writer, ctx );
+                        }
+                        mapper.encodeObject( writer, value, ctx );
+                        writer.endObject();
+                        break;
+
+                    case WRAPPER_OBJECT:
+                        // type info is included in a wrapper object that contains only one property. The name of this property is the type
+                        // info and the value the object
+                        writer.beginObject();
+                        writer.name( typeInfo );
+                        writer.beginObject();
+                        if ( null != idWriter )
+                        {
+                            writer.name( idProperty.getPropertyName() );
+                            idWriter.encodeId( writer, ctx );
+                        }
+                        mapper.encodeObject( writer, value, ctx );
+                        writer.endObject();
+                        writer.endObject();
+                        break;
+
+                    case WRAPPER_ARRAY:
+                        // type info is included in a wrapper array that contains two elements. First one is the type
+                        // info and the second one the object
+                        writer.beginArray();
+                        writer.value( typeInfo );
+                        writer.beginObject();
+                        if ( null != idWriter )
+                        {
+                            writer.name( idProperty.getPropertyName() );
+                            idWriter.encodeId( writer, ctx );
+                        }
+                        mapper.encodeObject( writer, value, ctx );
+                        writer.endObject();
+                        writer.endArray();
+                        break;
+
+                    default:
+                        throw ctx.traceError( value, "JsonTypeInfo.As." + superclassInfo.getInclude() + " is not supported" );
+                }
             }
         }
         else
         {
             writer.beginObject();
+            if ( null != idWriter )
+            {
+                writer.name( idProperty.getPropertyName() );
+                idWriter.encodeId( writer, ctx );
+            }
+            encodeObject( writer, value, ctx );
+            writer.endObject();
         }
-
-        encodeObject( writer, value, ctx );
-        writer.endObject();
     }
 
     public final void encodeObject( JsonWriter writer, T value, JsonEncodingContext ctx ) throws IOException
@@ -232,4 +397,13 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
         }
     }
 
+    public void setIdProperty( IdProperty<T> idProperty )
+    {
+        this.idProperty = idProperty;
+    }
+
+    public void setSuperclassInfo( SuperclassInfo<T> superclassInfo )
+    {
+        this.superclassInfo = superclassInfo;
+    }
 }

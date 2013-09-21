@@ -108,17 +108,16 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
 
         source.println();
 
-        if ( null != info.getIdentityInfo() )
-        {
-            generateIdentityMethods( source, info );
-            source.println();
-        }
+        generateConstructors( source, info );
 
-        if ( info.isHasSubtypes() )
-        {
-            generateSubtypesMethods( source, info );
-            source.println();
-        }
+        // tell if the class is instantiable
+        source.println( "@Override" );
+        source.println( "protected boolean isInstantiable() {" );
+        source.indent();
+        source.println( "return %s;", info.isInstantiable() );
+        source.outdent();
+        source.println( "}" );
+        source.println();
 
         source.println( "@Override" );
         source.println( "protected %s newInstanceBuilder(%s ctx) {", info.getInstanceBuilderQualifiedName(), JSON_DECODING_CONTEXT_CLASS );
@@ -162,27 +161,74 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         source.commit( logger );
     }
 
-    private void generateIdentityMethods( SourceWriter source, BeanInfo info ) throws UnableToCompleteException
+    private void generateConstructors( SourceWriter source, BeanInfo info ) throws UnableToCompleteException
+    {
+        source.println( "public %s() {", info.getMapperClassSimpleName() );
+        source.indent();
+        source.println( "this(null, null);" );
+        source.outdent();
+        source.println( "}" );
+
+        source.println();
+
+        source.println( "public %s(%s<%s> idProperty, %s<%s> superclassInfo) {", info
+            .getMapperClassSimpleName(), IDENTITY_PROPERTY_BEAN_CLASS, info.getType()
+            .getParameterizedQualifiedSourceName(), SUPERCLASS_INFO_CLASS, info.getType().getParameterizedQualifiedSourceName() );
+        source.indent();
+        source.println( "super();" );
+        if ( null != info.getIdentityInfo() )
+        {
+            source.println( "if(null == idProperty) {" );
+            source.indent();
+            source.print( "setIdProperty(" );
+            generateDefaultIdProperty( source, info );
+            source.println( ");" );
+            source.outdent();
+            source.println( "} else {" );
+        }
+        else
+        {
+            source.println( "if(null != idProperty) {" );
+        }
+        source.indent();
+        source.println( "setIdProperty(idProperty);" );
+        source.outdent();
+        source.println( "}" );
+
+        if ( info.isHasSubtypes() )
+        {
+            source.println( "if(null == superclassInfo) {" );
+            source.indent();
+            source.print( "setSuperclassInfo(" );
+            generateDefaultSuperclassInfo( source, info );
+            source.println( ");" );
+            source.outdent();
+            source.println( "} else {" );
+        }
+        else
+        {
+            source.println( "if(null != superclassInfo) {" );
+        }
+        source.indent();
+        source.println( "setSuperclassInfo(superclassInfo);" );
+        source.outdent();
+        source.println( "}" );
+
+        source.outdent();
+        source.println( "}" );
+    }
+
+    private void generateDefaultIdProperty( SourceWriter source, BeanInfo info ) throws UnableToCompleteException
     {
         BeanIdentityInfo identityInfo = info.getIdentityInfo();
 
         String qualifiedType = null != identityInfo.getType().isPrimitive() ? identityInfo.getType().isPrimitive()
             .getQualifiedBoxedSourceName() : identityInfo.getType().getParameterizedQualifiedSourceName();
 
-        String identityPropertyClass = String.format( "%s<%s, %s>", IDENTITY_PROPERTY_BEAN_CLASS, info.getType()
-            .getParameterizedQualifiedSourceName(), info.getInstanceBuilderSimpleName() );
+        String identityPropertyClass = String.format( "%s<%s>", IDENTITY_PROPERTY_BEAN_CLASS, info.getType()
+            .getParameterizedQualifiedSourceName() );
 
-        source.println( "private %s identityProperty;", identityPropertyClass );
-
-        source.println();
-
-        source.println( "@Override" );
-        source.println( "protected %s getIdProperty() {", identityPropertyClass );
-        source.indent();
-
-        source.println( "if(null == this.identityProperty) {" );
-        source.indent();
-        source.println( "this.identityProperty = new %s() {", identityPropertyClass );
+        source.println( "new %s() {", identityPropertyClass );
         source.indent();
 
         source.println();
@@ -253,31 +299,6 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         source.outdent();
         source.println( "}" );
         source.println();
-
-        source.println( "@Override" );
-        source.println( "public void decode( %s reader, %s builder, %s ctx ) {", JSON_READER_CLASS, info
-            .getInstanceBuilderSimpleName(), JSON_DECODING_CONTEXT_CLASS );
-        source.indent();
-        if ( null == identityInfo.getProperty() )
-        {
-            // it's not a property of the bean, we call a special builder setter
-            source.println( "builder.%s(getMapper(ctx).decode(reader, ctx), ctx);", BUILDER_IDENTITY_FIELD_NAME );
-        }
-        else
-        {
-            // it's a property of the bean
-            source.println( "builder._%s(getMapper(ctx).decode(reader, ctx), ctx);", identityInfo.getPropertyName() );
-        }
-        source.outdent();
-        source.println( "}" );
-
-        source.outdent();
-        source.println( "};" );
-
-        source.outdent();
-        source.println( "}" );
-
-        source.println( "return this.identityProperty;" );
 
         source.outdent();
         source.println( "}" );
@@ -655,8 +676,9 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         source.println( "}" );
     }
 
-    private void generateSubtypesMethods( SourceWriter source, BeanInfo info ) throws UnableToCompleteException
+    private void generateDefaultSuperclassInfo( SourceWriter source, BeanInfo info ) throws UnableToCompleteException
     {
+        source.print( "new %s(", SUPERCLASS_INFO_CLASS );
         // gives the information about how to read and write the type info
         if ( null != info.getTypeInfo() )
         {
@@ -666,34 +688,14 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
                 typeInfoProperty = "\"" + (info.getTypeInfo().property().isEmpty() ? info.getTypeInfo().use()
                     .getDefaultPropertyName() : info.getTypeInfo().property()) + "\"";
             }
-
-            source.println( "public %s() {", info.getMapperClassSimpleName() );
-            source.indent();
-            source.println( "super(com.fasterxml.jackson.annotation.JsonTypeInfo.As.%s, %s);", info.getTypeInfo()
-                .include(), typeInfoProperty );
-            source.outdent();
-            source.println( "}" );
-            source.println();
+            source.print( "com.fasterxml.jackson.annotation.JsonTypeInfo.As.%s, %s", info.getTypeInfo().include(), typeInfoProperty );
         }
-
-        // tell if the class is instantiable
-        source.println( "@Override" );
-        source.println( "protected boolean isInstantiable() {" );
-        source.indent();
-        source.println( "return %s;", info.isInstantiable() );
-        source.outdent();
-        source.println( "}" );
-        source.println();
-
-        // generate the subtype mappers
-        source.println( "@Override" );
-        source.println( "protected void initSubtypeMappers() {" );
+        source.println( ")" );
         source.indent();
 
         generateSubtypeMappers( source, info );
 
         source.outdent();
-        source.println( "}" );
     }
 
     private void generateSubtypeMappers( SourceWriter source, BeanInfo info ) throws UnableToCompleteException
@@ -720,7 +722,8 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
             typeMetadata = "\"" + extractTypeMetadata( info, subtype ) + "\"";
         }
 
-        source.println( "addSubtypeMapper( new %s<%s>() {", SUBTYPE_MAPPER_CLASS, subtype.getQualifiedSourceName() );
+        source.println( ".addSubtypeMapper( new %s<%s>() {", SUBTYPE_MAPPER_CLASS, subtype.getQualifiedSourceName() );
+        source.indent();
         source.indent();
 
         source.println();
@@ -762,8 +765,10 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         source.println( "}" );
 
         source.outdent();
-        source.println( "}, %s.class, %s );", subtype.getQualifiedSourceName(), typeMetadata );
+        source.println( "}, %s.class, %s )", subtype.getQualifiedSourceName(), typeMetadata );
         source.println();
+
+        source.outdent();
     }
 
     private String extractTypeMetadata( BeanInfo info, JClassType subtype ) throws UnableToCompleteException
@@ -833,7 +838,7 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         for ( PropertyInfo property : properties.values() )
         {
             String setterAccessor = property.getSetterAccessor();
-            if ( null == setterAccessor || property.isIdentityProperty() )
+            if ( null == setterAccessor )
             {
                 // there is no setter visible or the property is used as identity and is handled separately
                 continue;
@@ -890,10 +895,26 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
             source.println( "} );" );
         }
 
-        if ( null != info.getIdentityInfo() )
+        if ( null != info.getIdentityInfo() && null == info.getIdentityInfo().getProperty() )
         {
-            // we add the IdentityProperty as a DecoderProperty so it is called automatically when we decode
-            source.println( "addProperty(\"%s\", getIdProperty());", info.getIdentityInfo().getPropertyName() );
+            source.println( "addProperty(\"%s\", new " + DECODER_PROPERTY_BEAN_CLASS + "<%s, %s>() {", info.getIdentityInfo()
+                .getPropertyName(), info.getType().getParameterizedQualifiedSourceName(), info.getInstanceBuilderQualifiedName() );
+
+            source.indent();
+            source.println( "@Override" );
+            source.println( "public void decode(%s reader, %s builder, %s ctx) {", JSON_READER_CLASS, info
+                .getInstanceBuilderQualifiedName(), JSON_DECODING_CONTEXT_CLASS );
+            source.indent();
+
+            // it's not a property of the bean, we call a special builder setter
+            source.println( "builder.%s(%s, ctx);", BUILDER_IDENTITY_FIELD_NAME, String
+                .format( "%s.decode(reader, ctx)", getMapperFromType( info.getIdentityInfo().getType() ) ) );
+
+            source.outdent();
+            source.println( "}" );
+
+            source.outdent();
+            source.println( "} );" );
         }
 
     }

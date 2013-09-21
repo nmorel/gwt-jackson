@@ -41,7 +41,7 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
         ".EncoderProperty";
     public static final String BACK_REFERENCE_PROPERTY_BEAN_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper" +
         ".BackReferenceProperty";
-    public static final String IDENTITY_PROPERTY_BEAN_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper" +
+    public static final String IDENTITY_PROPERTY_BEAN_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper" + "" +
         ".IdProperty";
     public static final String JSON_READER_CLASS = "com.github.nmorel.gwtjackson.client.stream.JsonReader";
     public static final String JSON_WRITER_CLASS = "com.github.nmorel.gwtjackson.client.stream.JsonWriter";
@@ -51,9 +51,8 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
     public static final String JSON_DECODING_EXCEPTION_CLASS = "com.github.nmorel.gwtjackson.client.exception.JsonDecodingException";
     public static final String JSON_ENCODING_EXCEPTION_CLASS = "com.github.nmorel.gwtjackson.client.exception.JsonEncodingException";
     public static final String ARRAY_CREATOR_CLASS = "com.github.nmorel.gwtjackson.client.mapper.array.ArrayJsonMapper.ArrayCreator";
-    public static final String ABSTRACT_SUPERCLASS_JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.mapper" + "" +
-        ".AbstractSuperclassJsonMapper";
-    public static final String SUBTYPE_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractSuperclassJsonMapper" + "" +
+    public static final String SUPERCLASS_INFO_CLASS = "com.github.nmorel.gwtjackson.client.mapper.SuperclassInfo";
+    public static final String SUBTYPE_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.mapper.SuperclassInfo" + "" +
         ".SubtypeMapper";
 
     /**

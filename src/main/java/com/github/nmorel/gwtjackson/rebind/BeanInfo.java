@@ -39,9 +39,7 @@ public final class BeanInfo
         result.type = beanType;
         result.qualifiedMapperClassName = qualifiedMapperClassName;
         result.mapperClassSimpleName = mapperClassSimpleName;
-        result.superclass = beanType
-            .getSubtypes().length == 0 ? AbstractJsonMapperCreator.ABSTRACT_BEAN_JSON_MAPPER_CLASS : AbstractJsonMapperCreator
-            .ABSTRACT_SUPERCLASS_JSON_MAPPER_CLASS;
+        result.superclass = AbstractJsonMapperCreator.ABSTRACT_BEAN_JSON_MAPPER_CLASS;
         result.hasSubtypes = beanType.getSubtypes().length > 0;
         determineInstanceCreator( logger, result );
 
