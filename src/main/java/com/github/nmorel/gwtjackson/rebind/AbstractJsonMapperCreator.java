@@ -29,12 +29,13 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
     public static final String BEAN_INSTANCE_NAME = "$$instance$$";
     public static final String IS_SET_FORMAT = "is_%s_set";
     public static final String BUILDER_MAPPER_FORMAT = "mapper_%s";
-    public static final String BUILDER_IDENTITY_FIELD_NAME = "identity";
     public static final String JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.JsonMapper";
     public static final String ABSTRACT_JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.AbstractJsonMapper";
     public static final String ABSTRACT_BEAN_JSON_MAPPER_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper";
     public static final String INSTANCE_BUILDER_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper" + "" +
         ".InstanceBuilder";
+    public static final String INSTANCE_BUILDER_CALLBACK_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper" + "" +
+        ".InstanceBuilderCallback";
     public static final String DECODER_PROPERTY_BEAN_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper" + "" +
         ".DecoderProperty";
     public static final String ENCODER_PROPERTY_BEAN_CLASS = "com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper" + "" +
@@ -203,6 +204,7 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
             return String.format( result, mappers );
         }
 
+        // TODO should we use isClassOrInterface ? need to add test for interface
         JClassType classType = type.isClass();
         if ( null != classType )
         {
@@ -229,5 +231,17 @@ public abstract class AbstractJsonMapperCreator extends AbstractSourceCreator
 
         logger.log( TreeLogger.Type.ERROR, "Type '" + type.getQualifiedSourceName() + "' is not supported" );
         throw new UnableToCompleteException();
+    }
+
+    protected String getQualifiedBoxedName( JType type )
+    {
+        if ( null != type.isPrimitive() )
+        {
+            return type.isPrimitive().getQualifiedBoxedSourceName();
+        }
+        else
+        {
+            return type.getParameterizedQualifiedSourceName();
+        }
     }
 }

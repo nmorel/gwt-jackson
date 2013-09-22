@@ -9,6 +9,7 @@ import com.github.nmorel.gwtjackson.client.AbstractJsonMapper;
 import com.github.nmorel.gwtjackson.client.JsonDecodingContext;
 import com.github.nmorel.gwtjackson.client.JsonEncodingContext;
 import com.github.nmorel.gwtjackson.client.JsonMapper;
+import com.github.nmorel.gwtjackson.client.JsonMappingContext;
 import com.github.nmorel.gwtjackson.client.mapper.SuperclassInfo.SubtypeMapper;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
@@ -25,11 +26,18 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
     public static interface InstanceBuilder<T>
     {
         T build( JsonDecodingContext ctx );
+
+        void addCallback( InstanceBuilderCallback<T> callback );
+    }
+
+    public static interface InstanceBuilderCallback<T>
+    {
+        void onInstanceCreated( T instance );
     }
 
     public static interface DecoderProperty<T, B extends AbstractBeanJsonMapper.InstanceBuilder<T>>
     {
-        void decode( JsonReader reader, B builder, JsonDecodingContext ctx );
+        Object decode( JsonReader reader, B builder, JsonDecodingContext ctx );
     }
 
     public static interface BackReferenceProperty<T, R>
@@ -48,9 +56,13 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
 
         String getPropertyName();
 
+        JsonMapper<?> getMapper( JsonMappingContext ctx );
+
         ObjectIdEncoder<?> getObjectId( T bean, JsonEncodingContext ctx );
 
-        IdKey getObjectId( JsonReader reader, JsonDecodingContext ctx );
+        IdKey getIdKey( JsonReader reader, JsonDecodingContext ctx );
+
+        IdKey newIdKey( Object id );
     }
 
     private IdProperty<T> idProperty;
@@ -124,7 +136,7 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
     {
         if ( null != idProperty && !JsonToken.BEGIN_OBJECT.equals( reader.peek() ) )
         {
-            IdKey id = idProperty.getObjectId( reader, ctx );
+            IdKey id = idProperty.getIdKey( reader, ctx );
             Object instance = ctx.getObjectWithId( id );
             if ( null == instance )
             {
@@ -194,7 +206,7 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
         return result;
     }
 
-    public final T decodeObject( JsonReader reader, JsonDecodingContext ctx ) throws IOException
+    public final T decodeObject( final JsonReader reader, final JsonDecodingContext ctx ) throws IOException
     {
         initDecodersIfNeeded();
 
@@ -210,7 +222,27 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
             }
 
             DecoderProperty<T, B> property = decoders.get( name );
-            if ( null == property )
+            if ( null != idProperty )
+            {
+                final Object id;
+                if ( null == property )
+                {
+                    id = idProperty.getMapper( ctx ).decode( reader, ctx );
+                }
+                else
+                {
+                    id = property.decode( reader, builder, ctx );
+                }
+                builder.addCallback( new InstanceBuilderCallback<T>()
+                {
+                    @Override
+                    public void onInstanceCreated( T instance )
+                    {
+                        ctx.addObjectId( idProperty.newIdKey( id ), instance );
+                    }
+                } );
+            }
+            else if ( null == property )
             {
                 // TODO add a configuration to tell if we skip or throw an unknown property
                 reader.skipValue();
