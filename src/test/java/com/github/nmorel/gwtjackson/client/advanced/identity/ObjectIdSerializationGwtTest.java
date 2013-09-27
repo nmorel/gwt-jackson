@@ -5,7 +5,6 @@ import com.github.nmorel.gwtjackson.client.JsonMapper;
 import com.github.nmorel.gwtjackson.shared.JsonMapperTester;
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdSerializationTester;
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdSerializationTester.AlwaysContainer;
-import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdSerializationTester.Broken;
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdSerializationTester.IdWrapper;
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdSerializationTester.IdWrapperCustom;
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdSerializationTester.Identifiable;
@@ -46,11 +45,6 @@ public class ObjectIdSerializationGwtTest extends GwtJacksonTestCase
         static TreeNodeMapper INSTANCE = GWT.create( TreeNodeMapper.class );
     }
 
-    public interface BrokenMapper extends JsonMapper<Broken>, JsonMapperTester<Broken>
-    {
-        static BrokenMapper INSTANCE = GWT.create( BrokenMapper.class );
-    }
-
     private ObjectIdSerializationTester tester = ObjectIdSerializationTester.INSTANCE;
 
     public void testSimpleSerializationClass()
@@ -83,8 +77,9 @@ public class ObjectIdSerializationGwtTest extends GwtJacksonTestCase
         tester.testAlwaysIdForTree( TreeNodeMapper.INSTANCE );
     }
 
-    public void testInvalidProp()
-    {
-        tester.testInvalidProp( BrokenMapper.INSTANCE );
-    }
+    // The error is detected during generation so we can't catch it
+//    public void testInvalidProp()
+//    {
+//        tester.testInvalidProp( BrokenMapper.INSTANCE );
+//    }
 }

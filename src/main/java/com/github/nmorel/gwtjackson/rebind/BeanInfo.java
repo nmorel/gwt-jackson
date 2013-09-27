@@ -12,13 +12,10 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JAbstractMethod;
@@ -84,14 +81,7 @@ public final class BeanInfo
         }
         result.propertyOrderAlphabetic = null != jsonPropertyOrder && jsonPropertyOrder.alphabetic();
 
-        JsonIdentityInfo jsonIdentityInfo = findFirstEncounteredAnnotationsOnAllHierarchy( beanType, JsonIdentityInfo.class );
-        if ( null != jsonIdentityInfo && ObjectIdGenerators.None.class != jsonIdentityInfo.generator() )
-        {
-            JsonIdentityReference jsonIdentityReference = findFirstEncounteredAnnotationsOnAllHierarchy( beanType,
-                JsonIdentityReference.class );
-            result.identityInfo = new BeanIdentityInfo( jsonIdentityInfo.property(), null != jsonIdentityReference && jsonIdentityReference
-                .alwaysAsId(), jsonIdentityInfo.generator(), jsonIdentityInfo.scope(), typeOracle );
-        }
+        result.identityInfo = BeanIdentityInfo.process( logger, typeOracle, beanType );
 
         return result;
     }

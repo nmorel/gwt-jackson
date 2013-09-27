@@ -12,12 +12,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.ObjectIdGenerator;
-import com.fasterxml.jackson.annotation.ObjectIdGenerator.IdKey;
-import com.github.nmorel.gwtjackson.client.utils.ObjectIdEncoder;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
-import com.google.gwt.core.ext.TreeLogger.Type;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JAbstractMethod;
 import com.google.gwt.core.ext.typeinfo.JClassType;
@@ -35,24 +31,9 @@ import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounte
 public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
 {
 
-    public BeanJsonMapperCreator( TreeLogger logger, GeneratorContext context, JacksonTypeOracle typeOracle, Map<JType,
-        String> typeToMapper )
+    public BeanJsonMapperCreator( TreeLogger logger, GeneratorContext context, JacksonTypeOracle typeOracle )
     {
-        super( logger, context, typeOracle, typeToMapper );
-    }
-
-    /**
-     * Creates an implementation of {@link com.github.nmorel.gwtjackson.client.mapper.AbstractBeanJsonMapper} for the type given in
-     * parameter
-     *
-     * @param beanName name of the bean
-     * @return the fully qualified name of the created class
-     * @throws com.google.gwt.core.ext.UnableToCompleteException
-     */
-    public String create( String beanName ) throws UnableToCompleteException
-    {
-        JClassType beanType = typeOracle.getType( beanName );
-        return create( beanType );
+        super( logger, context, typeOracle );
     }
 
     /**
@@ -63,7 +44,7 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
      * @return the fully qualified name of the created class
      * @throws com.google.gwt.core.ext.UnableToCompleteException
      */
-    public String create( JClassType beanType ) throws UnableToCompleteException
+    public BeanJsonMapperInfo create( JClassType beanType ) throws UnableToCompleteException
     {
         // we concatenate the name of all the enclosing class
         StringBuilder builder = new StringBuilder( beanType.getSimpleSourceName() + "BeanJsonMapperImpl" );
@@ -78,28 +59,30 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         String packageName = beanType.getPackage().getName();
         String qualifiedMapperClassName = packageName + "." + mapperClassSimpleName;
 
+        // retrieve the informations on the beans and its properties
+        BeanInfo info = BeanInfo.process( logger, typeOracle, beanType, qualifiedMapperClassName, mapperClassSimpleName );
+        Map<String, PropertyInfo> properties = findAllProperties( info );
+
+        BeanJsonMapperInfo result = new BeanJsonMapperInfo( qualifiedMapperClassName, info, properties );
+
         PrintWriter printWriter = getPrintWriter( packageName, mapperClassSimpleName );
         // the class already exists, no need to continue
         if ( printWriter == null )
         {
-            return qualifiedMapperClassName;
+            return result;
         }
-
-        BeanInfo info = BeanInfo.process( logger, typeOracle, beanType, qualifiedMapperClassName, mapperClassSimpleName );
 
         SourceWriter source = getSourceWriter( printWriter, packageName, mapperClassSimpleName, info.getSuperclass() + "<" +
             beanType.getParameterizedQualifiedSourceName() + ", " + info.getInstanceBuilderQualifiedName() + ">" );
 
-        writeClassBody( source, info );
+        writeClassBody( source, info, properties );
 
-        return qualifiedMapperClassName;
+        return result;
     }
 
-    private void writeClassBody( SourceWriter source, BeanInfo info ) throws UnableToCompleteException
+    private void writeClassBody( SourceWriter source, BeanInfo info, Map<String, PropertyInfo> properties ) throws UnableToCompleteException
     {
         source.println();
-
-        Map<String, PropertyInfo> properties = findAllProperties( info );
 
         if ( info.isInstantiable() )
         {
@@ -109,6 +92,8 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         source.println();
 
         generateConstructors( source, info );
+
+        source.println();
 
         // tell if the class is instantiable
         source.println( "@Override" );
@@ -181,7 +166,7 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
             source.println( "if(null == idProperty) {" );
             source.indent();
             source.print( "setIdProperty(" );
-            generateDefaultIdProperty( source, info );
+            generateIdProperty( source, info.getType(), info.getIdentityInfo() );
             source.println( ");" );
             source.outdent();
             source.println( "} else {" );
@@ -213,102 +198,6 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         source.println( "setSuperclassInfo(superclassInfo);" );
         source.outdent();
         source.println( "}" );
-
-        source.outdent();
-        source.println( "}" );
-    }
-
-    private void generateDefaultIdProperty( SourceWriter source, BeanInfo info ) throws UnableToCompleteException
-    {
-        BeanIdentityInfo identityInfo = info.getIdentityInfo();
-
-        String qualifiedType = null != identityInfo.getType().isPrimitive() ? identityInfo.getType().isPrimitive()
-            .getQualifiedBoxedSourceName() : identityInfo.getType().getParameterizedQualifiedSourceName();
-
-        String identityPropertyClass = String.format( "%s<%s>", IDENTITY_PROPERTY_BEAN_CLASS, info.getType()
-            .getParameterizedQualifiedSourceName() );
-
-        source.println( "new %s() {", identityPropertyClass );
-        source.indent();
-
-        source.println();
-        source.println( "private %s<%s> mapper;", JSON_MAPPER_CLASS, qualifiedType );
-        source.println();
-        source.println( "@Override" );
-        source.println( "public %s<%s> getMapper(%s ctx) {", JSON_MAPPER_CLASS, qualifiedType, JSON_MAPPING_CONTEXT_CLASS );
-        source.indent();
-        source.println( "if(null == mapper) {" );
-        source.indent();
-        source.println( "mapper = %s;", getMapperFromType( identityInfo.getType() ) );
-        source.outdent();
-        source.println( "}" );
-        source.println( "return mapper;" );
-        source.outdent();
-        source.println( "}" );
-        source.println();
-
-        source.println( "@Override" );
-        source.println( "public boolean isAlwaysAsId() {" );
-        source.indent();
-        source.println( "return %s;", identityInfo.isAlwaysAsId() );
-        source.outdent();
-        source.println( "}" );
-        source.println();
-
-        source.println( "@Override" );
-        source.println( "public String getPropertyName() {" );
-        source.indent();
-        source.println( "return \"%s\";", identityInfo.getPropertyName() );
-        source.outdent();
-        source.println( "}" );
-        source.println();
-
-        source.println( "@Override" );
-        source.println( "public %s<%s> getObjectId( %s bean, %s ctx ) {", ObjectIdEncoder.class.getName(), qualifiedType, info.getType()
-            .getParameterizedQualifiedSourceName(), JSON_ENCODING_CONTEXT_CLASS );
-        source.indent();
-        if ( null == identityInfo.getProperty() )
-        {
-            String generatorType = String.format( "%s<%s>", ObjectIdGenerator.class.getName(), qualifiedType );
-            source.println( "%s generator = new %s().forScope(%s.class);", generatorType, identityInfo.getGenerator()
-                .getCanonicalName(), identityInfo.getScope().getName() );
-            source.println( "%s scopedGen = ctx.findObjectIdGenerator(generator);", generatorType );
-            source.println( "if(null == scopedGen) {" );
-            source.indent();
-            source.println( "scopedGen = generator.newForSerialization(ctx);" );
-            source.println( "ctx.addGenerator(scopedGen);" );
-            source.outdent();
-            source.println( "}" );
-            source.println( "return new %s<%s>(scopedGen.generateId(bean), getMapper(ctx));", ObjectIdEncoder.class
-                .getName(), qualifiedType );
-        }
-        else
-        {
-            source.println( "return new %s<%s>(%s, getMapper(ctx));", ObjectIdEncoder.class.getName(), qualifiedType, identityInfo
-                .getProperty().getGetterAccessor() );
-        }
-        source.outdent();
-        source.println( "}" );
-        source.println();
-
-        source.println( "@Override" );
-        source.println( "public %s getIdKey( %s reader, %s ctx ) {", IdKey.class
-            .getCanonicalName(), JSON_READER_CLASS, JSON_DECODING_CONTEXT_CLASS );
-        source.indent();
-        source.println( "return newIdKey(getMapper(ctx).decode(reader, ctx));" );
-        source.outdent();
-        source.println( "}" );
-        source.println();
-
-        source.println( "@Override" );
-        source.println( "public %s newIdKey( java.lang.Object id ) {", IdKey.class
-            .getCanonicalName(), JSON_READER_CLASS, JSON_DECODING_CONTEXT_CLASS );
-        source.indent();
-        source.println( "return new %s(%s.class, %s.class, id);", IdKey.class.getCanonicalName(), identityInfo.getGenerator()
-            .getCanonicalName(), identityInfo.getScope().getCanonicalName() );
-        source.outdent();
-        source.println( "}" );
-        source.println();
 
         source.outdent();
         source.println( "}" );
@@ -821,7 +710,7 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
             String setterAccessor = property.getSetterAccessor();
             if ( null == setterAccessor )
             {
-                // there is no setter visible or the property is used as identity and is handled separately
+                // there is no setter visible
                 continue;
             }
 
@@ -838,7 +727,7 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
                 source.indent();
 
                 source.println( "%s<%s> mapper = %s;", JSON_MAPPER_CLASS, getQualifiedBoxedName( property
-                    .getType() ), getMapperFromType( property.getType() ) );
+                    .getType() ), getMapperFromType( property.getType(), property ) );
                 source.println( "%s value = mapper.decode(reader, ctx);", property.getType().getParameterizedQualifiedSourceName() );
                 if ( null == property.getManagedReference() )
                 {
@@ -883,11 +772,15 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         for ( PropertyInfo property : properties.values() )
         {
             String getterAccessor = property.getGetterAccessor();
-            if ( null == getterAccessor || property.isIdentityProperty() )
+            if ( null == getterAccessor )
             {
                 // there is no getter visible or the property is used as identity and is handled separately
                 continue;
             }
+
+            source.println( "if(null == getIdProperty() || !getIdProperty().getPropertyName().equals(\"%s\")) {",
+                property.getPropertyName() );
+            source.indent();
 
             source.println( "addProperty(\"%s\", new " + ENCODER_PROPERTY_BEAN_CLASS + "<%s>() {", property.getPropertyName(), info
                 .getType().getParameterizedQualifiedSourceName() );
@@ -898,13 +791,16 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
                 .getParameterizedQualifiedSourceName(), JSON_ENCODING_CONTEXT_CLASS );
             source.indent();
 
-            source.println( "%s.encode(writer, %s, ctx);", getMapperFromType( property.getType() ), getterAccessor );
+            source.println( "%s.encode(writer, %s, ctx);", getMapperFromType( property.getType(), property ), getterAccessor );
 
             source.outdent();
             source.println( "}" );
 
             source.outdent();
             source.println( "} );" );
+
+            source.outdent();
+            source.println( "}" );
         }
     }
 
@@ -930,7 +826,7 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
         Map<String, PropertyInfo> propertiesMap = new LinkedHashMap<String, PropertyInfo>();
         for ( FieldAccessors field : fieldsMap.values() )
         {
-            PropertyInfo property = PropertyInfo.process( field, info );
+            PropertyInfo property = PropertyInfo.process( logger, typeOracle, field, info );
             if ( property.isIgnored() )
             {
                 logger.log( TreeLogger.Type.DEBUG, "Ignoring field " + field.getFieldName() + " of type " + info.getType() );
@@ -949,7 +845,7 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
                 PropertyInfo property = propertiesMap.get( entry.getKey() );
                 if ( null == property )
                 {
-                    propertiesMap.put( entry.getKey(), PropertyInfo.process( entry.getKey(), entry.getValue(), info ) );
+                    propertiesMap.put( entry.getKey(), PropertyInfo.process( logger, typeOracle, entry.getKey(), entry.getValue(), info ) );
                 }
                 else if ( entry.getValue().getAnnotation( JsonProperty.class ).required() )
                 {
@@ -995,18 +891,7 @@ public class BeanJsonMapperCreator extends AbstractJsonMapperCreator
             }
         }
 
-        if ( null != info.getIdentityInfo() && info.getIdentityInfo().isIdABeanProperty() )
-        {
-            PropertyInfo property = result.get( info.getIdentityInfo().getPropertyName() );
-            if ( null == property )
-            {
-                logger.log( Type.ERROR, "Cannot find the property with the name '" + info.getIdentityInfo()
-                    .getPropertyName() + "' used for identity" );
-                throw new UnableToCompleteException();
-            }
-            property.setIdentityProperty( true );
-            info.getIdentityInfo().setProperty( property );
-        }
+        findIdPropertyInfo( result, info.getIdentityInfo() );
 
         return result;
     }

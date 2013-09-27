@@ -316,12 +316,12 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
             }
 
             idWriter = idProperty.getObjectId( value, ctx );
-            ctx.addObjectId( value, idWriter );
             if ( idProperty.isAlwaysAsId() )
             {
                 idWriter.encodeId( writer, ctx );
                 return;
             }
+            ctx.addObjectId( value, idWriter );
         }
 
         if ( null != superclassInfo )
@@ -429,12 +429,22 @@ public abstract class AbstractBeanJsonMapper<T, B extends AbstractBeanJsonMapper
         }
     }
 
-    public void setIdProperty( IdProperty<T> idProperty )
+    protected final IdProperty<T> getIdProperty()
+    {
+        return idProperty;
+    }
+
+    protected final void setIdProperty( IdProperty<T> idProperty )
     {
         this.idProperty = idProperty;
     }
 
-    public void setSuperclassInfo( SuperclassInfo<T> superclassInfo )
+    protected final SuperclassInfo<T> getSuperclassInfo()
+    {
+        return superclassInfo;
+    }
+
+    protected final void setSuperclassInfo( SuperclassInfo<T> superclassInfo )
     {
         this.superclassInfo = superclassInfo;
     }

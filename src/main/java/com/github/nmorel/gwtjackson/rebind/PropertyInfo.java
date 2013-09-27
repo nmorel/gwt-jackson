@@ -1,6 +1,5 @@
 package com.github.nmorel.gwtjackson.rebind;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gwt.core.ext.TreeLogger;
+import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JField;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JPackage;
@@ -17,6 +18,7 @@ import com.google.gwt.core.ext.typeinfo.JParameter;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.user.rebind.SourceWriter;
 
+import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findAnnotationOnAnyAccessor;
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounteredAnnotationsOnAllHierarchy;
 
 /** @author Nicolas Morel */
@@ -27,7 +29,8 @@ public final class PropertyInfo
         void write( SourceWriter source );
     }
 
-    public static PropertyInfo process( FieldAccessors fieldAccessors, BeanInfo beanInfo )
+    public static PropertyInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, FieldAccessors fieldAccessors,
+                                        BeanInfo beanInfo ) throws UnableToCompleteException
     {
         PropertyInfo result = new PropertyInfo();
 
@@ -103,11 +106,14 @@ public final class PropertyInfo
         }
         determineSetter( fieldAccessors, setterAutoDetected, fieldAutoDetected, beanInfo, result );
 
+        result.identityInfo = BeanIdentityInfo.process( logger, typeOracle, result.type, fieldAccessors );
+
         return result;
     }
 
     /** Processes and construct a {@link PropertyInfo} for a constructor parameter. */
-    public static PropertyInfo process( String propertyName, JParameter constructorParameter, BeanInfo beanInfo )
+    public static PropertyInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, String propertyName,
+                                        JParameter constructorParameter, BeanInfo beanInfo )
     {
         PropertyInfo result = new PropertyInfo();
         result.type = constructorParameter.getType();
@@ -116,43 +122,6 @@ public final class PropertyInfo
         // TODO find a better way. If we let null, the decoder won't be added. But the setterAccessor is never used for constructor fields.
         result.setterAccessor = "";
         return result;
-    }
-
-    private static <T extends Annotation> T findAnnotationOnAnyAccessor( FieldAccessors fieldAccessors, Class<T> annotation )
-    {
-        // TODO with this current setup, an annotation present on a getter method in superclass will be returned instead of the same
-        // annotation present on field in the child class. Test the behaviour in jackson.
-
-        if ( null != fieldAccessors.getGetter() && fieldAccessors.getGetter().isAnnotationPresent( annotation ) )
-        {
-            return fieldAccessors.getGetter().getAnnotation( annotation );
-        }
-        if ( null != fieldAccessors.getSetter() && fieldAccessors.getSetter().isAnnotationPresent( annotation ) )
-        {
-            return fieldAccessors.getSetter().getAnnotation( annotation );
-        }
-        if ( null != fieldAccessors.getField() && fieldAccessors.getField().isAnnotationPresent( annotation ) )
-        {
-            return fieldAccessors.getField().getAnnotation( annotation );
-        }
-
-        for ( JMethod method : fieldAccessors.getGetters() )
-        {
-            if ( method.isAnnotationPresent( annotation ) )
-            {
-                return method.getAnnotation( annotation );
-            }
-        }
-
-        for ( JMethod method : fieldAccessors.getSetters() )
-        {
-            if ( method.isAnnotationPresent( annotation ) )
-            {
-                return method.getAnnotation( annotation );
-            }
-        }
-
-        return null;
     }
 
     private static JType findType( FieldAccessors fieldAccessors )
@@ -352,7 +321,7 @@ public final class PropertyInfo
     private String getterAccessor;
     private String setterAccessor;
     private List<AdditionalMethod> additionalMethods = new ArrayList<AdditionalMethod>();
-    private boolean identityProperty;
+    private BeanIdentityInfo identityInfo;
 
     private PropertyInfo()
     {
@@ -413,13 +382,8 @@ public final class PropertyInfo
         this.required = required;
     }
 
-    public boolean isIdentityProperty()
+    public BeanIdentityInfo getIdentityInfo()
     {
-        return identityProperty;
-    }
-
-    public void setIdentityProperty( boolean identityProperty )
-    {
-        this.identityProperty = identityProperty;
+        return identityInfo;
     }
 }

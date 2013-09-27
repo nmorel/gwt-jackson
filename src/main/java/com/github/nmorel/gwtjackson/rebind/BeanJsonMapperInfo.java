@@ -9,14 +9,16 @@ public class BeanJsonMapperInfo
     private BeanInfo beanInfo;
     private Map<String, PropertyInfo> properties;
 
+    public BeanJsonMapperInfo( String qualifiedMapperClassName, BeanInfo beanInfo, Map<String, PropertyInfo> properties )
+    {
+        this.qualifiedMapperClassName = qualifiedMapperClassName;
+        this.beanInfo = beanInfo;
+        this.properties = properties;
+    }
+
     public String getQualifiedMapperClassName()
     {
         return qualifiedMapperClassName;
-    }
-
-    public void setQualifiedMapperClassName( String qualifiedMapperClassName )
-    {
-        this.qualifiedMapperClassName = qualifiedMapperClassName;
     }
 
     public BeanInfo getBeanInfo()
@@ -24,18 +26,8 @@ public class BeanJsonMapperInfo
         return beanInfo;
     }
 
-    public void setBeanInfo( BeanInfo beanInfo )
-    {
-        this.beanInfo = beanInfo;
-    }
-
     public Map<String, PropertyInfo> getProperties()
     {
         return properties;
-    }
-
-    public void setProperties( Map<String, PropertyInfo> properties )
-    {
-        this.properties = properties;
     }
 }
