@@ -15,7 +15,6 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
     @Override
     public T read( String in ) throws JsonDeserializationException {
         JsonReader reader = new JsonReader( in );
-        reader.setLenient( true );
         return read( reader, new JsonDeserializationContext( reader ) );
     }
 
@@ -44,7 +43,6 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
     public String write( T value ) throws JsonSerializationException {
         StringBuilder builder = new StringBuilder();
         JsonWriter writer = new JsonWriter( builder );
-        writer.setLenient( true );
         writer.setSerializeNulls( false );
         write( writer, value, new JsonSerializationContext( writer ) );
         return builder.toString();

@@ -23,19 +23,19 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 public class CommonJsonMapperTest extends GwtJacksonTestCase {
 
     public void testDeserializeUnexpectedException() {
-        ObjectReader<String> reader = new AbstractObjectReader<String>() {
+        ObjectReader<String[]> reader = new AbstractObjectReader<String[]>() {
             @Override
-            protected JsonDeserializer<String> newDeserializer( JsonDeserializationContext ctx ) {
-                return new JsonDeserializer<String>() {
+            protected JsonDeserializer<String[]> newDeserializer( JsonDeserializationContext ctx ) {
+                return new JsonDeserializer<String[]>() {
                     @Override
-                    protected String doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+                    protected String[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
                         throw new UnsupportedOperationException();
                     }
                 };
             }
         };
         try {
-            reader.read( "\"fail\"" );
+            reader.read( "[\"fail\"]" );
             fail();
         } catch ( JsonDeserializationException e ) {
             assertTrue( e.getCause() instanceof UnsupportedOperationException );
@@ -43,19 +43,19 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
     }
 
     public void testDeserializeIOException() {
-        ObjectReader<String> reader = new AbstractObjectReader<String>() {
+        ObjectReader<String[]> reader = new AbstractObjectReader<String[]>() {
             @Override
-            protected JsonDeserializer<String> newDeserializer( JsonDeserializationContext ctx ) {
-                return new JsonDeserializer<String>() {
+            protected JsonDeserializer<String[]> newDeserializer( JsonDeserializationContext ctx ) {
+                return new JsonDeserializer<String[]>() {
                     @Override
-                    protected String doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+                    protected String[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
                         throw new IOException();
                     }
                 };
             }
         };
         try {
-            reader.read( "\"fail\"" );
+            reader.read( "[\"fail\"]" );
             fail();
         } catch ( JsonDeserializationException e ) {
             assertTrue( e.getCause() instanceof IOException );
@@ -64,19 +64,19 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
 
     public void testDeserializeDecodingException() {
         final JsonDeserializationException jsonDeserializationException = new JsonDeserializationException();
-        ObjectReader<String> reader = new AbstractObjectReader<String>() {
+        ObjectReader<String[]> reader = new AbstractObjectReader<String[]>() {
             @Override
-            protected JsonDeserializer<String> newDeserializer( JsonDeserializationContext ctx ) {
-                return new JsonDeserializer<String>() {
+            protected JsonDeserializer<String[]> newDeserializer( JsonDeserializationContext ctx ) {
+                return new JsonDeserializer<String[]>() {
                     @Override
-                    protected String doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+                    protected String[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
                         throw jsonDeserializationException;
                     }
                 };
             }
         };
         try {
-            reader.read( "\"fail\"" );
+            reader.read( "[\"fail\"]" );
             fail();
         } catch ( JsonDeserializationException e ) {
             assertSame( jsonDeserializationException, e );
