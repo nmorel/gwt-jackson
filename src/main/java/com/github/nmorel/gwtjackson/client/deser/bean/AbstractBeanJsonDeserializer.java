@@ -116,6 +116,14 @@ public abstract class AbstractBeanJsonDeserializer<T, B extends InstanceBuilder<
         return result;
     }
 
+    /**
+     * Deserializes all the properties of the bean. The {@link JsonReader} must be in a json object.
+     *
+     * @param reader reader
+     * @param ctx context of the deserialization process
+     *
+     * @throws IOException if an error occurs while reading a property
+     */
     public final T deserializeObject( final JsonReader reader, final JsonDeserializationContext ctx ) throws IOException {
         B builder = newInstanceBuilder( ctx );
 

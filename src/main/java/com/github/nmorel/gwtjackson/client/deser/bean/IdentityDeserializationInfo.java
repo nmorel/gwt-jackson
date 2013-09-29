@@ -7,6 +7,8 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 
 /**
+ * Contains identity informations for deserialization process.
+ *
  * @author Nicolas Morel
  */
 public abstract class IdentityDeserializationInfo<T> extends HasDeserializer<T, JsonDeserializer<T>> {

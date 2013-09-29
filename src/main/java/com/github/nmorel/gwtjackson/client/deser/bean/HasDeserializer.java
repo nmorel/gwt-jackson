@@ -4,6 +4,8 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 
 /**
+ * Lazy initialize a {@link JsonDeserializer}
+ *
  * @author Nicolas Morel
  */
 public abstract class HasDeserializer<V, S extends JsonDeserializer<V>> {

@@ -13,12 +13,18 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 public class SuperclassDeserializationInfo<T> {
 
     /**
-     * Name of the property containing information about the subtype
+     * if we include type information in the result
      */
     private final boolean includeTypeInfo;
 
+    /**
+     * inclusion mechanism
+     */
     private final As include;
 
+    /**
+     * Name of the property containing information about the subtype
+     */
     private final String propertyName;
 
     private final Map<String, SubtypeDeserializer<? extends T>> subtypeInfoToDeserializer;
