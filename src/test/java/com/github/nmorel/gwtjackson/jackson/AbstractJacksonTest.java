@@ -6,65 +6,54 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.nmorel.gwtjackson.client.exception.JsonDecodingException;
-import com.github.nmorel.gwtjackson.client.exception.JsonEncodingException;
-import com.github.nmorel.gwtjackson.shared.JsonDecoderTester;
-import com.github.nmorel.gwtjackson.shared.JsonEncoderTester;
-import com.github.nmorel.gwtjackson.shared.JsonMapperTester;
+import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException;
+import com.github.nmorel.gwtjackson.client.exception.JsonSerializationException;
+import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
+import com.github.nmorel.gwtjackson.shared.ObjectReaderTester;
+import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
 import org.junit.Before;
 
-/** @author Nicolas Morel */
-public abstract class AbstractJacksonTest
-{
+/**
+ * @author Nicolas Morel
+ */
+public abstract class AbstractJacksonTest {
+
     protected ObjectMapper objectMapper;
 
     @Before
-    public void setUp()
-    {
+    public void setUp() {
         objectMapper = new ObjectMapper();
         objectMapper.setSerializationInclusion( JsonInclude.Include.NON_NULL );
         objectMapper.configure( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false );
     }
 
-    protected <T> JsonMapperTester<T> createMapper( final Class<T> clazz )
-    {
-        return new JsonMapperTester<T>()
-        {
+    protected <T> ObjectMapperTester<T> createMapper( final Class<T> clazz ) {
+        return new ObjectMapperTester<T>() {
             @Override
-            public T decode( String input )
-            {
-                try
-                {
+            public T read( String input ) {
+                try {
                     return objectMapper.readValue( input, clazz );
-                }
-                catch ( IOException e )
-                {
-                    throw new JsonDecodingException( e );
+                } catch ( IOException e ) {
+                    throw new JsonDeserializationException( e );
                 }
             }
 
             @Override
-            public String encode( T input )
-            {
-                try
-                {
+            public String write( T input ) {
+                try {
                     return objectMapper.writeValueAsString( input );
-                }
-                catch ( JsonProcessingException e )
-                {
-                    throw new JsonEncodingException( e );
+                } catch ( JsonProcessingException e ) {
+                    throw new JsonSerializationException( e );
                 }
             }
         };
     }
 
-    protected <T> JsonEncoderTester<T> createEncoder( Class<T> clazz )
-    {
+    protected <T> ObjectWriterTester<T> createEncoder( Class<T> clazz ) {
         return createMapper( clazz );
     }
 
-    protected <T> JsonDecoderTester<T> createDecoder( final Class<T> clazz )
-    {
+    protected <T> ObjectReaderTester<T> createDecoder( final Class<T> clazz ) {
         return createMapper( clazz );
     }
 }

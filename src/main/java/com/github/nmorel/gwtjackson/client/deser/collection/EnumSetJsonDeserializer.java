@@ -5,9 +5,9 @@ import java.util.EnumSet;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 
 /**
- * Default {@link JsonDeserializer} implementation for {@link java.util.EnumSet}.
+ * Default {@link JsonDeserializer} implementation for {@link EnumSet}.
  *
- * @param <E> Type of the enumeration inside the {@link java.util.EnumSet}
+ * @param <E> Type of the enumeration inside the {@link EnumSet}
  *
  * @author Nicolas Morel
  */

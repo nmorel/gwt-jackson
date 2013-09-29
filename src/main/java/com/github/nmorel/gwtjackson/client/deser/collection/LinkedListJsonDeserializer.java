@@ -5,9 +5,9 @@ import java.util.LinkedList;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 
 /**
- * Default {@link com.github.nmorel.gwtjackson.client.JsonDeserializer} implementation for {@link java.util.LinkedList}.
+ * Default {@link JsonDeserializer} implementation for {@link LinkedList}.
  *
- * @param <T> Type of the elements inside the {@link java.util.LinkedList}
+ * @param <T> Type of the elements inside the {@link LinkedList}
  *
  * @author Nicolas Morel
  */

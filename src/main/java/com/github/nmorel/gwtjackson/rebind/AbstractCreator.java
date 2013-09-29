@@ -38,7 +38,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
     public static final String IS_SET_FORMAT = "is_%s_set";
 
-    public static final String BUILDER_MAPPER_FORMAT = "mapper_%s";
+    public static final String BUILDER_DESERIALIZER_FORMAT = "mapper_%s";
 
     public static final String JSON_DESERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.JsonDeserializer";
 
@@ -48,17 +48,17 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
     public static final String JSON_WRITER_CLASS = "com.github.nmorel.gwtjackson.client.stream.JsonWriter";
 
-    public static final String JSON_DECODING_CONTEXT_CLASS = "com.github.nmorel.gwtjackson.client.JsonDecodingContext";
+    public static final String JSON_DESERIALIZATION_CONTEXT_CLASS = "com.github.nmorel.gwtjackson.client.JsonDeserializationContext";
 
-    public static final String JSON_ENCODING_CONTEXT_CLASS = "com.github.nmorel.gwtjackson.client.JsonEncodingContext";
+    public static final String JSON_SERIALIZATION_CONTEXT_CLASS = "com.github.nmorel.gwtjackson.client.JsonSerializationContext";
 
     public static final String ARRAY_CREATOR_CLASS = "com.github.nmorel.gwtjackson.client.deser.array.ArrayJsonDeserializer.ArrayCreator";
 
-    protected static final String IDENTITY_SERIALIZATION_INFO_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean" + "" +
-        ".IdentitySerializationInfo";
-
     protected static final String IDENTITY_DESERIALIZATION_INFO_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean" + "" +
         ".IdentityDeserializationInfo";
+
+    protected static final String IDENTITY_SERIALIZATION_INFO_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean" + "" +
+        ".IdentitySerializationInfo";
 
     /**
      * Returns the String represention of the java type for a primitive for example int/Integer, float/Float, char/Character.
@@ -188,12 +188,12 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             }
 
             JClassType[] args = parameterizedType.getTypeArgs();
-            String[] mappers = new String[args.length];
+            String[] serializers = new String[args.length];
             for ( int i = 0; i < args.length; i++ ) {
-                mappers[i] = getSerializerFromType( args[i], propertyInfo );
+                serializers[i] = getSerializerFromType( args[i], propertyInfo );
             }
 
-            return String.format( result, mappers );
+            return String.format( result, serializers );
         }
 
         // TODO should we use isClassOrInterface ? need to add test for interface
@@ -255,7 +255,8 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
         source.println();
         source.println( "@Override" );
-        source.println( "protected %s<%s> newSerializer(%s ctx) {", JSON_SERIALIZER_CLASS, qualifiedType, JSON_ENCODING_CONTEXT_CLASS );
+        source
+            .println( "protected %s<%s> newSerializer(%s ctx) {", JSON_SERIALIZER_CLASS, qualifiedType, JSON_SERIALIZATION_CONTEXT_CLASS );
         source.indent();
         source.println( "return %s;", getSerializerFromType( identityInfo.getType() ) );
         source.outdent();
@@ -264,7 +265,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
         source.println( "@Override" );
         source.println( "public %s<%s> getObjectId(%s bean, %s ctx) {", ObjectIdSerializer.class.getName(), qualifiedType, type
-            .getParameterizedQualifiedSourceName(), JSON_ENCODING_CONTEXT_CLASS );
+            .getParameterizedQualifiedSourceName(), JSON_SERIALIZATION_CONTEXT_CLASS );
         source.indent();
         if ( null == identityInfo.getProperty() ) {
             String generatorType = String.format( "%s<%s>", ObjectIdGenerator.class.getName(), qualifiedType );
@@ -368,12 +369,12 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             }
 
             JClassType[] args = parameterizedType.getTypeArgs();
-            String[] mappers = new String[args.length];
+            String[] deserializers = new String[args.length];
             for ( int i = 0; i < args.length; i++ ) {
-                mappers[i] = getDeserializerFromType( args[i], propertyInfo );
+                deserializers[i] = getDeserializerFromType( args[i], propertyInfo );
             }
 
-            return String.format( result, mappers );
+            return String.format( result, deserializers );
         }
 
         // TODO should we use isClassOrInterface ? need to add test for interface
@@ -393,15 +394,15 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                 .branch( TreeLogger.Type.INFO, "Creating deserializer for " + classType.getQualifiedSourceName() ), context, typeOracle );
             BeanJsonMapperInfo info = beanJsonDeserializerCreator.create( classType );
             return String.format( "new %s(%s)", info
-                .getQualifiedDeserializerClassName(), generateBeanJsonDeserializerParameters( classType, info, propertyInfo ) );
+                .getQualifiedDeserializerClassName(), generateBeanJsonDeserializerParameters( info, propertyInfo ) );
         }
 
         logger.log( TreeLogger.Type.ERROR, "Type '" + type.getQualifiedSourceName() + "' is not supported" );
         throw new UnableToCompleteException();
     }
 
-    private String generateBeanJsonDeserializerParameters( JClassType type, BeanJsonMapperInfo info,
-                                                           PropertyInfo propertyInfo ) throws UnableToCompleteException {
+    private String generateBeanJsonDeserializerParameters( BeanJsonMapperInfo info, PropertyInfo propertyInfo ) throws
+        UnableToCompleteException {
         if ( null == propertyInfo || (null == propertyInfo.getIdentityInfo()) ) {
             return "";
         }
@@ -412,7 +413,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             sourceWriter.print( "null" );
         } else {
             findIdPropertyInfo( info.getProperties(), propertyInfo.getIdentityInfo() );
-            generateIdentifierDeserializationInfo( sourceWriter, type, propertyInfo.getIdentityInfo() );
+            generateIdentifierDeserializationInfo( sourceWriter, propertyInfo.getIdentityInfo() );
         }
 
         sourceWriter.print( ", " );
@@ -423,7 +424,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         return sourceWriter.toString();
     }
 
-    protected void generateIdentifierDeserializationInfo( SourceWriter source, JClassType type, BeanIdentityInfo identityInfo ) throws
+    protected void generateIdentifierDeserializationInfo( SourceWriter source, BeanIdentityInfo identityInfo ) throws
         UnableToCompleteException {
         String qualifiedType = getQualifiedClassName( identityInfo.getType() );
 
@@ -435,7 +436,9 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
         source.println();
         source.println( "@Override" );
-        source.println( "protected %s<%s> newDeserializer(%s ctx) {", JSON_DESERIALIZER_CLASS, qualifiedType, JSON_DECODING_CONTEXT_CLASS );
+        source
+            .println( "protected %s<%s> newDeserializer(%s ctx) {", JSON_DESERIALIZER_CLASS, qualifiedType,
+                JSON_DESERIALIZATION_CONTEXT_CLASS );
         source.indent();
         source.println( "return %s;", getDeserializerFromType( identityInfo.getType() ) );
         source.outdent();

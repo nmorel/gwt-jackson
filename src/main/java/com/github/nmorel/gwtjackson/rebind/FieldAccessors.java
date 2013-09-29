@@ -11,87 +11,75 @@ import com.google.gwt.core.ext.typeinfo.JMethod;
  *
  * @author Nicolas Morel
  */
-public class FieldAccessors
-{
+public class FieldAccessors {
+
     // name fo the field
     private String fieldName;
+
     // field
     private JField field;
+
     // getter method that will be called
     private JMethod getter;
+
     // additionnal getters found on superclass or interfaces that may contains annotations
     private List<JMethod> getters = new ArrayList<JMethod>();
+
     // setter method that will be called
     private JMethod setter;
+
     // additionnal setters found on superclass or interfaces that may contains annotations
     private List<JMethod> setters = new ArrayList<JMethod>();
 
-    public FieldAccessors( String fieldName )
-    {
+    public FieldAccessors( String fieldName ) {
         this.fieldName = fieldName;
     }
 
-    public String getFieldName()
-    {
+    public String getFieldName() {
         return fieldName;
     }
 
-    public void setFieldName( String fieldName )
-    {
+    public void setFieldName( String fieldName ) {
         this.fieldName = fieldName;
     }
 
-    public JField getField()
-    {
+    public JField getField() {
         return field;
     }
 
-    public void setField( JField field )
-    {
+    public void setField( JField field ) {
         this.field = field;
     }
 
-    public JMethod getGetter()
-    {
+    public JMethod getGetter() {
         return getter;
     }
 
-    public void addGetter( JMethod getter )
-    {
-        if ( null == this.getter && !getter.isAbstract() )
-        {
+    public void addGetter( JMethod getter ) {
+        if ( null == this.getter && !getter.isAbstract() ) {
             this.getter = getter;
-        }
-        else
-        {
+        } else {
             this.getters.add( getter );
         }
     }
 
-    public JMethod getSetter()
-    {
+    public JMethod getSetter() {
         return setter;
     }
 
-    public void addSetter( JMethod setter )
-    {
-        if ( null == this.setter && !setter.isAbstract() )
-        {
+    public void addSetter( JMethod setter ) {
+        if ( null == this.setter && !setter.isAbstract() ) {
             this.setter = setter;
-        }
-        else
-        {
+        } else {
             this.setters.add( setter );
         }
     }
 
-    public List<JMethod> getGetters()
-    {
+    public List<JMethod> getGetters() {
         return getters;
     }
 
-    public List<JMethod> getSetters()
-    {
+    public List<JMethod> getSetters() {
         return setters;
     }
 }

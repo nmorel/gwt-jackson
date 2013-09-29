@@ -14,7 +14,7 @@ public class DoubleJsonSerializerTest extends AbstractJsonSerializerTest<Double>
         return NumberJsonSerializer.getDoubleInstance();
     }
 
-    public void testEncodeValue() {
+    public void testSerializeValue() {
         assertSerialization( "34.100247", 34.100247 );
         assertSerialization( "-784.15454", -784.15454d );
         assertSerialization( (GWT.isProdMode() ? "5e-324" : "4.9E-324"), Double.MIN_VALUE );

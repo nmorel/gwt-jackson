@@ -6,10 +6,9 @@ import java.util.Collection;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 
 /**
- * Default {@link com.github.nmorel.gwtjackson.client.JsonDeserializer} implementation for {@link java.util.Collection}. The decoding
- * process returns an {@link java.util.ArrayList}.
+ * Default {@link JsonDeserializer} implementation for {@link Collection}. The deserialization process returns an {@link ArrayList}.
  *
- * @param <T> Type of the elements inside the {@link java.util.Collection}
+ * @param <T> Type of the elements inside the {@link Collection}
  *
  * @author Nicolas Morel
  */

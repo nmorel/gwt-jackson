@@ -10,7 +10,7 @@ public class StringJsonSerializerTest extends AbstractJsonSerializerTest<String>
         return StringJsonSerializer.getInstance();
     }
 
-    public void testEncodeValue() {
+    public void testSerializeValue() {
         assertSerialization( "\"Hello World!\"", "Hello World!" );
         assertSerialization( "\"\"", "" );
     }

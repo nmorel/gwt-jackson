@@ -18,7 +18,7 @@ public class EnumJsonDeserializerTest extends AbstractJsonDeserializerTest<EnumT
     }
 
     @Override
-    public void testDecodeValue() {
+    public void testDeserializeValue() {
         assertDeserialization( EnumTest.ONE, "\"ONE\"" );
         assertDeserialization( EnumTest.TWO, "\"TWO\"" );
         assertDeserialization( EnumTest.THREE, "\"THREE\"" );

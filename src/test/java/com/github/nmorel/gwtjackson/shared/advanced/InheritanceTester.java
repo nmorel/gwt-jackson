@@ -4,14 +4,16 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
-import com.github.nmorel.gwtjackson.shared.JsonDecoderTester;
-import com.github.nmorel.gwtjackson.shared.JsonEncoderTester;
+import com.github.nmorel.gwtjackson.shared.ObjectReaderTester;
+import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
 
-/** @author Nicolas Morel */
-public final class InheritanceTester extends AbstractTester
-{
-    public static interface InterfaceBean
-    {
+/**
+ * @author Nicolas Morel
+ */
+public final class InheritanceTester extends AbstractTester {
+
+    public static interface InterfaceBean {
+
         @JsonProperty( value = "propertyOnInterface" )
         String getInterfaceProperty();
 
@@ -20,9 +22,10 @@ public final class InheritanceTester extends AbstractTester
 
     @JsonAutoDetect( fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE,
         setterVisibility = JsonAutoDetect.Visibility.NONE )
-    public static abstract class ParentBean implements InterfaceBean
-    {
+    public static abstract class ParentBean implements InterfaceBean {
+
         public String protectedField;
+
         @JsonProperty
         String defaultButAnnotated;
 
@@ -36,44 +39,39 @@ public final class InheritanceTester extends AbstractTester
         .PUBLIC_ONLY,
         setterVisibility = JsonAutoDetect.Visibility.PUBLIC_ONLY )
     @JsonPropertyOrder( value = {"parentProperty", "protectedField", "propertyOnInterface", "defaultButAnnotated"} )
-    public static class ChildBean extends ParentBean
-    {
+    public static class ChildBean extends ParentBean {
+
         private String property;
+
         private String interfaceProperty;
 
         @Override
-        public String getProperty()
-        {
+        public String getProperty() {
             return property;
         }
 
         @Override
-        public void setProperty( String property )
-        {
+        public void setProperty( String property ) {
             this.property = property;
         }
 
         @Override
-        public String getInterfaceProperty()
-        {
+        public String getInterfaceProperty() {
             return interfaceProperty;
         }
 
         @Override
-        public void setInterfaceProperty( String interfaceProperty )
-        {
+        public void setInterfaceProperty( String interfaceProperty ) {
             this.interfaceProperty = interfaceProperty;
         }
     }
 
     public static final InheritanceTester INSTANCE = new InheritanceTester();
 
-    private InheritanceTester()
-    {
+    private InheritanceTester() {
     }
 
-    public void testEncoding( JsonEncoderTester<ChildBean> encoder )
-    {
+    public void testSerialize( ObjectWriterTester<ChildBean> writer ) {
         ChildBean bean = new ChildBean();
         bean.protectedField = "protectedOnParent";
         bean.defaultButAnnotated = "defaultOnParent";
@@ -84,19 +82,18 @@ public final class InheritanceTester extends AbstractTester
             "\"protectedField\":\"protectedOnParent\"," +
             "\"propertyOnInterface\":\"propertyOnInterface\"," +
             "\"defaultButAnnotated\":\"defaultOnParent\"}";
-        String result = encoder.encode( bean );
+        String result = writer.write( bean );
 
         assertEquals( expected, result );
     }
 
-    public void testDecoding( JsonDecoderTester<ChildBean> decoder )
-    {
+    public void testDeserialize( ObjectReaderTester<ChildBean> reader ) {
         String input = "{\"protectedField\":\"protectedOnParent\"," +
             "\"defaultButAnnotated\":\"defaultOnParent\"," +
             "\"parentProperty\":\"propertyOnChild\"," +
             "\"propertyOnInterface\":\"propertyOnInterface\"}";
 
-        ChildBean result = decoder.decode( input );
+        ChildBean result = reader.read( input );
         assertEquals( "protectedOnParent", result.protectedField );
         assertEquals( "defaultOnParent", result.defaultButAnnotated );
         assertEquals( "propertyOnChild", result.property );

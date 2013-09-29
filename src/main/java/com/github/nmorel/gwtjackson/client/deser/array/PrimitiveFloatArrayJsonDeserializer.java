@@ -3,12 +3,13 @@ package com.github.nmorel.gwtjackson.client.deser.array;
 import java.io.IOException;
 import java.util.List;
 
-import com.github.nmorel.gwtjackson.client.JsonDecodingContext;
+import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
+import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.NumberJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 
 /**
- * Default {@link com.github.nmorel.gwtjackson.client.JsonDeserializer} implementation for array of float.
+ * Default {@link JsonDeserializer} implementation for array of float.
  *
  * @author Nicolas Morel
  */
@@ -26,8 +27,8 @@ public class PrimitiveFloatArrayJsonDeserializer extends AbstractArrayJsonDeseri
     private PrimitiveFloatArrayJsonDeserializer() { }
 
     @Override
-    public float[] doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException {
-        List<Float> list = decodeList( reader, ctx, NumberJsonDeserializer.getFloatInstance() );
+    public float[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+        List<Float> list = deserializeIntoList( reader, ctx, NumberJsonDeserializer.getFloatInstance() );
 
         float[] result = new float[list.size()];
         int i = 0;

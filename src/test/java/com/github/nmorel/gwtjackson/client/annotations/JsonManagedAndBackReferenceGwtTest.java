@@ -2,7 +2,7 @@ package com.github.nmorel.gwtjackson.client.annotations;
 
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;
-import com.github.nmorel.gwtjackson.shared.JsonMapperTester;
+import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonManagedAndBackReferenceTester;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonManagedAndBackReferenceTester.AbstractNode;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonManagedAndBackReferenceTester.Advertisement708;
@@ -20,47 +20,47 @@ import com.google.gwt.core.client.GWT;
  */
 public class JsonManagedAndBackReferenceGwtTest extends GwtJacksonTestCase {
 
-    public interface SimpleTreeNodeMapper extends ObjectMapper<SimpleTreeNode>, JsonMapperTester<SimpleTreeNode> {
+    public interface SimpleTreeNodeMapper extends ObjectMapper<SimpleTreeNode>, ObjectMapperTester<SimpleTreeNode> {
 
         static SimpleTreeNodeMapper INSTANCE = GWT.create( SimpleTreeNodeMapper.class );
     }
 
-    public interface SimpleTreeNode2Mapper extends ObjectMapper<SimpleTreeNode2>, JsonMapperTester<SimpleTreeNode2> {
+    public interface SimpleTreeNode2Mapper extends ObjectMapper<SimpleTreeNode2>, ObjectMapperTester<SimpleTreeNode2> {
 
         static SimpleTreeNode2Mapper INSTANCE = GWT.create( SimpleTreeNode2Mapper.class );
     }
 
-    public interface FullTreeNodeMapper extends ObjectMapper<FullTreeNode>, JsonMapperTester<FullTreeNode> {
+    public interface FullTreeNodeMapper extends ObjectMapper<FullTreeNode>, ObjectMapperTester<FullTreeNode> {
 
         static FullTreeNodeMapper INSTANCE = GWT.create( FullTreeNodeMapper.class );
     }
 
-    public interface NodeArrayMapper extends ObjectMapper<NodeArray>, JsonMapperTester<NodeArray> {
+    public interface NodeArrayMapper extends ObjectMapper<NodeArray>, ObjectMapperTester<NodeArray> {
 
         static NodeArrayMapper INSTANCE = GWT.create( NodeArrayMapper.class );
     }
 
-    public interface NodeListMapper extends ObjectMapper<NodeList>, JsonMapperTester<NodeList> {
+    public interface NodeListMapper extends ObjectMapper<NodeList>, ObjectMapperTester<NodeList> {
 
         static NodeListMapper INSTANCE = GWT.create( NodeListMapper.class );
     }
 
-    public interface NodeMapMapper extends ObjectMapper<NodeMap>, JsonMapperTester<NodeMap> {
+    public interface NodeMapMapper extends ObjectMapper<NodeMap>, ObjectMapperTester<NodeMap> {
 
         static NodeMapMapper INSTANCE = GWT.create( NodeMapMapper.class );
     }
 
-    public interface AbstractNodeMapper extends ObjectMapper<AbstractNode>, JsonMapperTester<AbstractNode> {
+    public interface AbstractNodeMapper extends ObjectMapper<AbstractNode>, ObjectMapperTester<AbstractNode> {
 
         static AbstractNodeMapper INSTANCE = GWT.create( AbstractNodeMapper.class );
     }
 
-    public interface ParentMapper extends ObjectMapper<Parent>, JsonMapperTester<Parent> {
+    public interface ParentMapper extends ObjectMapper<Parent>, ObjectMapperTester<Parent> {
 
         static ParentMapper INSTANCE = GWT.create( ParentMapper.class );
     }
 
-    public interface Advertisement708Mapper extends ObjectMapper<Advertisement708>, JsonMapperTester<Advertisement708> {
+    public interface Advertisement708Mapper extends ObjectMapper<Advertisement708>, ObjectMapperTester<Advertisement708> {
 
         static Advertisement708Mapper INSTANCE = GWT.create( Advertisement708Mapper.class );
     }

@@ -13,7 +13,7 @@ public class CharacterJsonDeserializerTest extends AbstractJsonDeserializerTest<
     }
 
     @Override
-    public void testDecodeValue() {
+    public void testDeserializeValue() {
         assertDeserialization( 'e', "e" );
         assertDeserialization( '\u00e9', "\"\u00e9\"" );
     }

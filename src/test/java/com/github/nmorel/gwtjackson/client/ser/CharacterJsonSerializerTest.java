@@ -10,7 +10,7 @@ public class CharacterJsonSerializerTest extends AbstractJsonSerializerTest<Char
         return CharacterJsonSerializer.getInstance();
     }
 
-    public void testEncodeValue() {
+    public void testSerializeValue() {
         assertSerialization( "\"e\"", 'e' );
         assertSerialization( "\"\\u0000\"", '\u0000' );
     }

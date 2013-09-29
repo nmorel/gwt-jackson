@@ -4,30 +4,33 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
-import com.github.nmorel.gwtjackson.shared.JsonDecoderTester;
-import com.github.nmorel.gwtjackson.shared.JsonEncoderTester;
+import com.github.nmorel.gwtjackson.shared.ObjectReaderTester;
+import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
 
-/** @author Nicolas Morel */
-public final class PrivateAccessTester extends AbstractTester
-{
-    @JsonAutoDetect( getterVisibility = JsonAutoDetect.Visibility.ANY, setterVisibility = JsonAutoDetect.Visibility.ANY )
-    @JsonPropertyOrder( alphabetic = true )
-    public static class PrivateBean
-    {
-        @JsonProperty( value = "private" )
+/**
+ * @author Nicolas Morel
+ */
+public final class PrivateAccessTester extends AbstractTester {
+
+    @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.ANY, setterVisibility = JsonAutoDetect.Visibility.ANY)
+    @JsonPropertyOrder(alphabetic = true)
+    public static class PrivateBean {
+
+        @JsonProperty(value = "private")
         private String privateField;
+
         private boolean usedPrivateGetter;
+
         private boolean usedPrivateSetter;
+
         private PrivateBean privateAccessors;
 
-        private PrivateBean getPrivateAccessors()
-        {
+        private PrivateBean getPrivateAccessors() {
             usedPrivateGetter = true;
             return privateAccessors;
         }
 
-        private void setPrivateAccessors( PrivateBean privateAccessors )
-        {
+        private void setPrivateAccessors( PrivateBean privateAccessors ) {
             usedPrivateSetter = true;
             this.privateAccessors = privateAccessors;
         }
@@ -35,12 +38,10 @@ public final class PrivateAccessTester extends AbstractTester
 
     public static final PrivateAccessTester INSTANCE = new PrivateAccessTester();
 
-    private PrivateAccessTester()
-    {
+    private PrivateAccessTester() {
     }
 
-    public void testEncodingPrivateField( JsonEncoderTester<PrivateBean> encoder )
-    {
+    public void testSerializePrivateField( ObjectWriterTester<PrivateBean> writer ) {
         PrivateBean bean = new PrivateBean();
         bean.privateField = "IAmAPrivateField";
         PrivateBean internalBean = new PrivateBean();
@@ -48,18 +49,17 @@ public final class PrivateAccessTester extends AbstractTester
         bean.privateAccessors = internalBean;
 
         String expected = "{\"private\":\"IAmAPrivateField\",\"privateAccessors\":{\"private\":\"IHavePrivateAccessors\"}}";
-        String result = encoder.encode( bean );
+        String result = writer.write( bean );
 
         assertTrue( bean.usedPrivateGetter );
         assertFalse( bean.usedPrivateSetter );
         assertEquals( expected, result );
     }
 
-    public void testDecodingPrivateField( JsonDecoderTester<PrivateBean> decoder )
-    {
+    public void testDeserializePrivateField( ObjectReaderTester<PrivateBean> reader ) {
         String input = "{\"private\":\"IAmAPrivateField\",\"privateAccessors\":{\"private\":\"IHavePrivateAccessors\"}}";
 
-        PrivateBean result = decoder.decode( input );
+        PrivateBean result = reader.read( input );
 
         assertTrue( result.usedPrivateSetter );
         assertFalse( result.usedPrivateGetter );

@@ -2,7 +2,7 @@ package com.github.nmorel.gwtjackson.client.advanced.identity;
 
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;
-import com.github.nmorel.gwtjackson.shared.JsonMapperTester;
+import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdTester;
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdTester.Company;
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdTester.Wrapper;
@@ -13,12 +13,12 @@ import com.google.gwt.core.client.GWT;
  */
 public class ObjectIdGwtTest extends GwtJacksonTestCase {
 
-    public interface WrapperMapper extends ObjectMapper<Wrapper>, JsonMapperTester<Wrapper> {
+    public interface WrapperMapper extends ObjectMapper<Wrapper>, ObjectMapperTester<Wrapper> {
 
         static WrapperMapper INSTANCE = GWT.create( WrapperMapper.class );
     }
 
-    public interface CompanyMapper extends ObjectMapper<Company>, JsonMapperTester<Company> {
+    public interface CompanyMapper extends ObjectMapper<Company>, ObjectMapperTester<Company> {
 
         static CompanyMapper INSTANCE = GWT.create( CompanyMapper.class );
     }

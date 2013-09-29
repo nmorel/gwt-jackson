@@ -1,35 +1,54 @@
 package com.github.nmorel.gwtjackson.client;
 
-import com.github.nmorel.gwtjackson.client.exception.JsonEncodingException;
+import com.github.nmorel.gwtjackson.client.exception.JsonSerializationException;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
+import com.google.gwt.core.client.GWT;
 
 /**
- * Write an object to JSON output
+ * Writes an object to JSON.
+ * <p>To generate an implementation, use {@link GWT#create(Class)}.</p>
+ * <p>Example : </p>
+ * <pre>
+ * public class Person {
+ *     public String firstName, lastName;
+ *     public Person(String firstName, String lastName){
+ *         this.firstName = firstName;
+ *         this.lastName = lastName;
+ *     }
+ * }
  *
- * @param <T> Type of the mapped object
+ * public interface PersonWriter extends ObjectWriter&lt;Person&gt; {}
+ *
+ * PersonWriter writer = GWT.create(PersonWriter.class);
+ * String json = writer.write(new Person("Nicolas", "Morel"));
+ *
+ * json ==> {"firstName":"Nicolas","lastName":"Morel"}
+ * </pre>
+ *
+ * @param <T> Type of the object to write
  *
  * @author Nicolas Morel
  */
 public interface ObjectWriter<T> {
 
     /**
-     * Encodes an object into JSON output.
+     * Writes an object to JSON.
      *
-     * @param value Object to encode
+     * @param value Object to write
      *
      * @return the JSON output
-     * @throws com.github.nmorel.gwtjackson.client.exception.JsonEncodingException if an exception occurs while encoding the output
+     * @throws JsonSerializationException if an exception occurs while writing the output
      */
-    String encode( T value ) throws JsonEncodingException;
+    String write( T value ) throws JsonSerializationException;
 
     /**
-     * Encodes an object into JSON output.
+     * Writes an object to JSON.
      *
-     * @param writer {@link com.github.nmorel.gwtjackson.client.stream.JsonWriter} used to write the JSON output
-     * @param value Object to encode
-     * @param ctx Context for the full encoding process
+     * @param writer {@link JsonWriter} used to write the JSON output
+     * @param value Object to write
+     * @param ctx Context for the full writing process
      *
-     * @throws JsonEncodingException if an exception occurs while encoding the output
+     * @throws JsonSerializationException if an exception occurs while writing the output
      */
-    void encode( JsonWriter writer, T value, JsonEncodingContext ctx ) throws JsonEncodingException;
+    void write( JsonWriter writer, T value, JsonSerializationContext ctx ) throws JsonSerializationException;
 }

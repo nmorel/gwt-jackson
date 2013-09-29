@@ -14,7 +14,7 @@ public class FloatJsonSerializerTest extends AbstractJsonSerializerTest<Float> {
         return NumberJsonSerializer.getFloatInstance();
     }
 
-    public void testEncodeValue() {
+    public void testSerializeValue() {
         assertSerialization( "34.10245", new Float( "34.10245" ) );
         assertSerialization( "-784.15454", new Float( "-784.15454" ) );
         // the float emulation gives slightly different results => use double!

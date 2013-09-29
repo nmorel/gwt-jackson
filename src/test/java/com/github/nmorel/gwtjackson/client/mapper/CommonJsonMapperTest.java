@@ -6,14 +6,14 @@ import java.io.IOException;
 import com.github.nmorel.gwtjackson.client.AbstractObjectReader;
 import com.github.nmorel.gwtjackson.client.AbstractObjectWriter;
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
-import com.github.nmorel.gwtjackson.client.JsonDecodingContext;
+import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
-import com.github.nmorel.gwtjackson.client.JsonEncodingContext;
+import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.ObjectReader;
 import com.github.nmorel.gwtjackson.client.ObjectWriter;
-import com.github.nmorel.gwtjackson.client.exception.JsonDecodingException;
-import com.github.nmorel.gwtjackson.client.exception.JsonEncodingException;
+import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException;
+import com.github.nmorel.gwtjackson.client.exception.JsonSerializationException;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
@@ -22,125 +22,128 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  */
 public class CommonJsonMapperTest extends GwtJacksonTestCase {
 
-    public void testDecodeUnexpectedException() {
-        ObjectReader<String> mapper = new AbstractObjectReader<String>() {
+    public void testDeserializeUnexpectedException() {
+        ObjectReader<String> reader = new AbstractObjectReader<String>() {
             @Override
-            protected JsonDeserializer<String> newDeserializer( JsonDecodingContext ctx ) {
+            protected JsonDeserializer<String> newDeserializer( JsonDeserializationContext ctx ) {
                 return new JsonDeserializer<String>() {
                     @Override
-                    protected String doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException {
+                    protected String doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
                         throw new UnsupportedOperationException();
                     }
                 };
             }
         };
         try {
-            mapper.decode( "\"fail\"" );
+            reader.read( "\"fail\"" );
             fail();
-        } catch ( JsonDecodingException e ) {
+        } catch ( JsonDeserializationException e ) {
             assertTrue( e.getCause() instanceof UnsupportedOperationException );
         }
     }
 
-    public void testDecodeIOException() {
-        ObjectReader<String> mapper = new AbstractObjectReader<String>() {
+    public void testDeserializeIOException() {
+        ObjectReader<String> reader = new AbstractObjectReader<String>() {
             @Override
-            protected JsonDeserializer<String> newDeserializer( JsonDecodingContext ctx ) {
+            protected JsonDeserializer<String> newDeserializer( JsonDeserializationContext ctx ) {
                 return new JsonDeserializer<String>() {
                     @Override
-                    protected String doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException {
+                    protected String doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
                         throw new IOException();
                     }
                 };
             }
         };
         try {
-            mapper.decode( "\"fail\"" );
+            reader.read( "\"fail\"" );
             fail();
-        } catch ( JsonDecodingException e ) {
+        } catch ( JsonDeserializationException e ) {
             assertTrue( e.getCause() instanceof IOException );
         }
     }
 
-    public void testDecodeDecodingException() {
-        final JsonDecodingException jsonDecodingException = new JsonDecodingException();
-        ObjectReader<String> mapper = new AbstractObjectReader<String>() {
+    public void testDeserializeDecodingException() {
+        final JsonDeserializationException jsonDeserializationException = new JsonDeserializationException();
+        ObjectReader<String> reader = new AbstractObjectReader<String>() {
             @Override
-            protected JsonDeserializer<String> newDeserializer( JsonDecodingContext ctx ) {
+            protected JsonDeserializer<String> newDeserializer( JsonDeserializationContext ctx ) {
                 return new JsonDeserializer<String>() {
                     @Override
-                    protected String doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException {
-                        throw jsonDecodingException;
+                    protected String doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+                        throw jsonDeserializationException;
                     }
                 };
             }
         };
         try {
-            mapper.decode( "\"fail\"" );
+            reader.read( "\"fail\"" );
             fail();
-        } catch ( JsonDecodingException e ) {
-            assertSame( jsonDecodingException, e );
+        } catch ( JsonDeserializationException e ) {
+            assertSame( jsonDeserializationException, e );
         }
     }
 
-    public void testEncodeUnexpectedException() {
-        ObjectWriter<String> mapper = new AbstractObjectWriter<String>() {
+    public void testSerializeUnexpectedException() {
+        ObjectWriter<String> writer = new AbstractObjectWriter<String>() {
             @Override
-            protected JsonSerializer<String> newSerializer( JsonEncodingContext ctx ) {
+            protected JsonSerializer<String> newSerializer( JsonSerializationContext ctx ) {
                 return new JsonSerializer<String>() {
                     @Override
-                    protected void doEncode( JsonWriter writer, @Nonnull String value, JsonEncodingContext ctx ) throws IOException {
+                    protected void doSerialize( JsonWriter writer, @Nonnull String value, JsonSerializationContext ctx ) throws
+                        IOException {
                         throw new NullPointerException();
                     }
                 };
             }
         };
         try {
-            mapper.encode( "fail" );
+            writer.write( "fail" );
             fail();
-        } catch ( JsonEncodingException e ) {
+        } catch ( JsonSerializationException e ) {
             assertTrue( e.getCause() instanceof NullPointerException );
         }
     }
 
-    public void testEncodeIOException() {
-        ObjectWriter<String> mapper = new AbstractObjectWriter<String>() {
+    public void testSerializeIOException() {
+        ObjectWriter<String> writer = new AbstractObjectWriter<String>() {
             @Override
-            protected JsonSerializer<String> newSerializer( JsonEncodingContext ctx ) {
+            protected JsonSerializer<String> newSerializer( JsonSerializationContext ctx ) {
                 return new JsonSerializer<String>() {
                     @Override
-                    protected void doEncode( JsonWriter writer, @Nonnull String value, JsonEncodingContext ctx ) throws IOException {
+                    protected void doSerialize( JsonWriter writer, @Nonnull String value, JsonSerializationContext ctx ) throws
+                        IOException {
                         throw new IOException();
                     }
                 };
             }
         };
         try {
-            mapper.encode( "fail" );
+            writer.write( "fail" );
             fail();
-        } catch ( JsonEncodingException e ) {
+        } catch ( JsonSerializationException e ) {
             assertTrue( e.getCause() instanceof IOException );
         }
     }
 
-    public void testEncodeEncodingException() {
-        final JsonEncodingException jsonEncodingException = new JsonEncodingException();
-        ObjectWriter<String> mapper = new AbstractObjectWriter<String>() {
+    public void testSerializeEncodingException() {
+        final JsonSerializationException jsonSerializationException = new JsonSerializationException();
+        ObjectWriter<String> writer = new AbstractObjectWriter<String>() {
             @Override
-            protected JsonSerializer<String> newSerializer( JsonEncodingContext ctx ) {
+            protected JsonSerializer<String> newSerializer( JsonSerializationContext ctx ) {
                 return new JsonSerializer<String>() {
                     @Override
-                    protected void doEncode( JsonWriter writer, @Nonnull String value, JsonEncodingContext ctx ) throws IOException {
-                        throw jsonEncodingException;
+                    protected void doSerialize( JsonWriter writer, @Nonnull String value, JsonSerializationContext ctx ) throws
+                        IOException {
+                        throw jsonSerializationException;
                     }
                 };
             }
         };
         try {
-            mapper.encode( "fail" );
+            writer.write( "fail" );
             fail();
-        } catch ( JsonEncodingException e ) {
-            assertSame( jsonEncodingException, e );
+        } catch ( JsonSerializationException e ) {
+            assertSame( jsonSerializationException, e );
         }
     }
 }

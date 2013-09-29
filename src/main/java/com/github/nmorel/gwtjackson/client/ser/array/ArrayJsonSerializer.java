@@ -3,12 +3,12 @@ package com.github.nmorel.gwtjackson.client.ser.array;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 
-import com.github.nmorel.gwtjackson.client.JsonEncodingContext;
+import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
 /**
- * Default {@link com.github.nmorel.gwtjackson.client.JsonSerializer} implementation for array.
+ * Default {@link JsonSerializer} implementation for array.
  *
  * @param <T> Type of the elements inside the array
  *
@@ -39,10 +39,10 @@ public class ArrayJsonSerializer<T> extends JsonSerializer<T[]> {
     }
 
     @Override
-    public void doEncode( JsonWriter writer, @Nonnull T[] values, JsonEncodingContext ctx ) throws IOException {
+    public void doSerialize( JsonWriter writer, @Nonnull T[] values, JsonSerializationContext ctx ) throws IOException {
         writer.beginArray();
         for ( T value : values ) {
-            serializer.encode( writer, value, ctx );
+            serializer.serialize( writer, value, ctx );
         }
         writer.endArray();
     }

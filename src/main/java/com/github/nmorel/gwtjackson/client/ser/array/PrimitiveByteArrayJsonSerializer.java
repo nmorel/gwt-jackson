@@ -3,7 +3,7 @@ package com.github.nmorel.gwtjackson.client.ser.array;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 
-import com.github.nmorel.gwtjackson.client.JsonEncodingContext;
+import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 import com.github.nmorel.gwtjackson.client.utils.Base64;
@@ -27,7 +27,7 @@ public class PrimitiveByteArrayJsonSerializer extends JsonSerializer<byte[]> {
     private PrimitiveByteArrayJsonSerializer() { }
 
     @Override
-    public void doEncode( JsonWriter writer, @Nonnull byte[] values, JsonEncodingContext ctx ) throws IOException {
+    public void doSerialize( JsonWriter writer, @Nonnull byte[] values, JsonSerializationContext ctx ) throws IOException {
         writer.value( Base64.encode( new String( values ) ) );
     }
 }

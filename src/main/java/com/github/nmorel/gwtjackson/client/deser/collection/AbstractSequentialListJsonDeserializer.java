@@ -6,11 +6,10 @@ import java.util.LinkedList;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 
 /**
- * Default {@link com.github.nmorel.gwtjackson.client.JsonDeserializer} implementation for {@link java.util.AbstractSequentialList}. The
- * decoding process
- * returns a {@link java.util.LinkedList}.
+ * Default {@link JsonDeserializer} implementation for {@link AbstractSequentialList}. The deserialization process returns a {@link
+ * LinkedList}.
  *
- * @param <T> Type of the elements inside the {@link java.util.AbstractSequentialList}
+ * @param <T> Type of the elements inside the {@link AbstractSequentialList}
  *
  * @author Nicolas Morel
  */

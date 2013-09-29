@@ -13,7 +13,7 @@ public class BooleanJsonDeserializerTest extends AbstractJsonDeserializerTest<Bo
     }
 
     @Override
-    public void testDecodeValue() {
+    public void testDeserializeValue() {
         assertTrue( deserialize( "true" ) );
         assertTrue( deserialize( "\"trUe\"" ) );
         assertTrue( deserialize( "1" ) );

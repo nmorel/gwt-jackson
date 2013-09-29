@@ -79,7 +79,7 @@ public class AllCollectionsObjectMapperTest extends GwtJacksonTestCase {
         public Vector<String> vector;
     }
 
-    public void testDecodeValue() {
+    public void testDeserializeValue() {
         String input = "{" +
             "\"abstractCollection\":[\"Hello\",null,\"World\",\"!\"]," +
             "\"abstractList\":[\"Hello\",null,\"World\",\"!\"]," +
@@ -103,7 +103,7 @@ public class AllCollectionsObjectMapperTest extends GwtJacksonTestCase {
             "\"vector\":[\"Hello\",null,\"World\",\"!\"]" +
             "}";
 
-        BeanWithCollectionsType bean = BeanWithCollectionsTypeMapper.INSTANCE.decode( input );
+        BeanWithCollectionsType bean = BeanWithCollectionsTypeMapper.INSTANCE.read( input );
         assertNotNull( bean );
 
         Collection<String> baseExpectedList = Arrays.asList( "Hello", null, "World", "!" );
@@ -141,7 +141,7 @@ public class AllCollectionsObjectMapperTest extends GwtJacksonTestCase {
         assertEquals( baseExpectedSortedSet, bean.treeSet );
     }
 
-    public void testEncodeValue() {
+    public void testSerializeValue() {
 
         ArrayList<String> list = new ArrayList<String>( Arrays.asList( "Hello", null, "World", "!" ) );
         LinkedList<String> linkedList = new LinkedList<String>( list );
@@ -200,6 +200,6 @@ public class AllCollectionsObjectMapperTest extends GwtJacksonTestCase {
             "\"vector\":[\"Hello\",null,\"World\",\"!\"]" +
             "}";
 
-        assertEquals( expected, BeanWithCollectionsTypeMapper.INSTANCE.encode( bean ) );
+        assertEquals( expected, BeanWithCollectionsTypeMapper.INSTANCE.write( bean ) );
     }
 }

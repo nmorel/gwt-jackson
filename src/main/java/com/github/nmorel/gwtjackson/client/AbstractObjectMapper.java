@@ -1,31 +1,29 @@
 package com.github.nmorel.gwtjackson.client;
 
-import com.github.nmorel.gwtjackson.client.exception.JsonDecodingException;
-import com.github.nmorel.gwtjackson.client.exception.JsonEncodingException;
+import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException;
+import com.github.nmorel.gwtjackson.client.exception.JsonSerializationException;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
 /**
+ * Base implementation of {@link ObjectMapper}. It delegates the serialization/deserialization to a serializer/deserializer.
+ *
  * @author Nicolas Morel
  */
 public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
 
-    protected abstract JsonDeserializer<T> newDeserializer( JsonDecodingContext ctx );
-
-    protected abstract JsonSerializer<T> newSerializer( JsonEncodingContext ctx );
-
     @Override
-    public T decode( String in ) throws JsonDecodingException {
+    public T read( String in ) throws JsonDeserializationException {
         JsonReader reader = new JsonReader( in );
         reader.setLenient( true );
-        return decode( reader, new JsonDecodingContext( reader ) );
+        return read( reader, new JsonDeserializationContext( reader ) );
     }
 
     @Override
-    public T decode( JsonReader reader, JsonDecodingContext ctx ) throws JsonDecodingException {
+    public T read( JsonReader reader, JsonDeserializationContext ctx ) throws JsonDeserializationException {
         try {
-            return newDeserializer( ctx ).decode( reader, ctx );
-        } catch ( JsonDecodingException e ) {
+            return newDeserializer( ctx ).deserialize( reader, ctx );
+        } catch ( JsonDeserializationException e ) {
             // already logged, we just throw it
             throw e;
         } catch ( Exception e ) {
@@ -33,25 +31,43 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
         }
     }
 
+    /**
+     * Instantiates a new deserializer
+     *
+     * @param ctx Context of the current deserialization process
+     *
+     * @return a new deserializer
+     */
+    protected abstract JsonDeserializer<T> newDeserializer( JsonDeserializationContext ctx );
+
     @Override
-    public String encode( T value ) throws JsonEncodingException {
+    public String write( T value ) throws JsonSerializationException {
         StringBuilder builder = new StringBuilder();
         JsonWriter writer = new JsonWriter( builder );
         writer.setLenient( true );
         writer.setSerializeNulls( false );
-        encode( writer, value, new JsonEncodingContext( writer ) );
+        write( writer, value, new JsonSerializationContext( writer ) );
         return builder.toString();
     }
 
     @Override
-    public void encode( JsonWriter writer, T value, JsonEncodingContext ctx ) throws JsonEncodingException {
+    public void write( JsonWriter writer, T value, JsonSerializationContext ctx ) throws JsonSerializationException {
         try {
-            newSerializer( ctx ).encode( writer, value, ctx );
-        } catch ( JsonEncodingException e ) {
+            newSerializer( ctx ).serialize( writer, value, ctx );
+        } catch ( JsonSerializationException e ) {
             // already logged, we just throw it
             throw e;
         } catch ( Exception e ) {
             throw ctx.traceError( value, e );
         }
     }
+
+    /**
+     * Instantiates a new serializer
+     *
+     * @param ctx Context of the current serialization process
+     *
+     * @return a new serializer
+     */
+    protected abstract JsonSerializer<T> newSerializer( JsonSerializationContext ctx );
 }

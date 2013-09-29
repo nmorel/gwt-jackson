@@ -6,10 +6,9 @@ import java.util.Set;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 
 /**
- * Default {@link com.github.nmorel.gwtjackson.client.JsonDeserializer} implementation for {@link java.util.Set}. The decoding process
- * returns a {@link java.util.LinkedHashSet}.
+ * Default {@link JsonDeserializer} implementation for {@link Set}. The deserialization process returns a {@link LinkedHashSet}.
  *
- * @param <T> Type of the elements inside the {@link java.util.Set}
+ * @param <T> Type of the elements inside the {@link Set}
  *
  * @author Nicolas Morel
  */

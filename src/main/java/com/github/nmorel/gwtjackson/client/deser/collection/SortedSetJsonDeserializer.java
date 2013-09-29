@@ -6,11 +6,9 @@ import java.util.TreeSet;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 
 /**
- * Default {@link com.github.nmorel.gwtjackson.client.JsonDeserializer} implementation for {@link java.util.SortedSet}. The decoding
- * process returns a
- * {@link java.util.TreeSet}.
+ * Default {@link JsonDeserializer} implementation for {@link SortedSet}. The deserialization process returns a {@link TreeSet}.
  *
- * @param <T> Type of the elements inside the {@link java.util.SortedSet}
+ * @param <T> Type of the elements inside the {@link SortedSet}
  *
  * @author Nicolas Morel
  */

@@ -15,7 +15,7 @@ public class ByteJsonDeserializerTest extends AbstractJsonDeserializerTest<Byte>
     }
 
     @Override
-    public void testDecodeValue() {
+    public void testDeserializeValue() {
         assertDeserialization( new Byte( "34" ), "34" );
         assertDeserialization( new Byte( "1" ), "\"1\"" );
         assertDeserialization( Byte.MIN_VALUE, "-128" );

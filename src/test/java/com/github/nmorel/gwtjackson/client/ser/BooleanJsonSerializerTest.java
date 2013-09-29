@@ -10,7 +10,7 @@ public class BooleanJsonSerializerTest extends AbstractJsonSerializerTest<Boolea
         return BooleanJsonSerializer.getInstance();
     }
 
-    public void testEncodeValue() {
+    public void testSerializeValue() {
         assertSerialization( "true", true );
         assertSerialization( "true", Boolean.TRUE );
         assertSerialization( "false", false );

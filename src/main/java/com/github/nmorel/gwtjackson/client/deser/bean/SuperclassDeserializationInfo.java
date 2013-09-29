@@ -66,11 +66,11 @@ public class SuperclassDeserializationInfo<T> {
         return propertyName;
     }
 
-    public SubtypeDeserializer<? extends T> getMapper( Class aClass ) {
+    public SubtypeDeserializer<? extends T> getDeserializer( Class aClass ) {
         return subtypeClassToDeserializer.get( aClass );
     }
 
-    public SubtypeDeserializer<? extends T> getMapper( String typeInfo ) {
+    public SubtypeDeserializer<? extends T> getDeserializer( String typeInfo ) {
         return subtypeInfoToDeserializer.get( typeInfo );
     }
 }

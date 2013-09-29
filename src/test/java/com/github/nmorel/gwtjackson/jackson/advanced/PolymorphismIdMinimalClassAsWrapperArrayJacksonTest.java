@@ -4,20 +4,20 @@ import com.github.nmorel.gwtjackson.jackson.AbstractJacksonTest;
 import com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdMinimalClassAsWrapperArrayTester;
 import org.junit.Test;
 
-/** @author Nicolas Morel */
-public class PolymorphismIdMinimalClassAsWrapperArrayJacksonTest extends AbstractJacksonTest
-{
+/**
+ * @author Nicolas Morel
+ */
+public class PolymorphismIdMinimalClassAsWrapperArrayJacksonTest extends AbstractJacksonTest {
+
     @Test
-    public void testEncoding()
-    {
+    public void testSerialize() {
         PolymorphismIdMinimalClassAsWrapperArrayTester.INSTANCE
-            .testEncoding( createEncoder( PolymorphismIdMinimalClassAsWrapperArrayTester.Person[].class ) );
+            .testSerialize( createEncoder( PolymorphismIdMinimalClassAsWrapperArrayTester.Person[].class ) );
     }
 
     @Test
-    public void testDecoding()
-    {
+    public void testDeserialize() {
         PolymorphismIdMinimalClassAsWrapperArrayTester.INSTANCE
-            .testDecoding( createDecoder( PolymorphismIdMinimalClassAsWrapperArrayTester.Person[].class ) );
+            .testDeserialize( createDecoder( PolymorphismIdMinimalClassAsWrapperArrayTester.Person[].class ) );
     }
 }

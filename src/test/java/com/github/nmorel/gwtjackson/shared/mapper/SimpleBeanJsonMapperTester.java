@@ -5,23 +5,23 @@ import java.math.BigInteger;
 import java.util.Arrays;
 
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
-import com.github.nmorel.gwtjackson.shared.JsonDecoderTester;
-import com.github.nmorel.gwtjackson.shared.JsonEncoderTester;
+import com.github.nmorel.gwtjackson.shared.ObjectReaderTester;
+import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
 import com.github.nmorel.gwtjackson.shared.model.AnEnum;
 import com.github.nmorel.gwtjackson.shared.model.SimpleBean;
 import com.google.gwt.core.client.GWT;
 
-/** @author Nicolas Morel */
-public final class SimpleBeanJsonMapperTester extends AbstractTester
-{
+/**
+ * @author Nicolas Morel
+ */
+public final class SimpleBeanJsonMapperTester extends AbstractTester {
+
     public static final SimpleBeanJsonMapperTester INSTANCE = new SimpleBeanJsonMapperTester();
 
-    private SimpleBeanJsonMapperTester()
-    {
+    private SimpleBeanJsonMapperTester() {
     }
 
-    public void testDecodeValue( JsonDecoderTester<SimpleBean> decoder )
-    {
+    public void testDeserializeValue( ObjectReaderTester<SimpleBean> reader ) {
         java.sql.Time time = new java.sql.Time( getUTCTime( 2012, 8, 18, 15, 45, 56, 545 ) );
 
         String input = "{" +
@@ -60,7 +60,7 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester
             "\"shortPrimitiveArray\":[9,null,7,8,15]" +
             "}";
 
-        SimpleBean bean = decoder.decode( input );
+        SimpleBean bean = reader.read( input );
         assertNotNull( bean );
 
         assertEquals( "toto", bean.getString() );
@@ -98,8 +98,7 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester
         assertTrue( Arrays.equals( new short[]{9, 0, 7, 8, 15}, bean.getShortPrimitiveArray() ) );
     }
 
-    public void testEncodeValue( JsonEncoderTester<SimpleBean> encoder )
-    {
+    public void testSerializeValue( ObjectWriterTester<SimpleBean> writer ) {
         SimpleBean bean = new SimpleBean();
         bean.setString( "toto" );
         bean.setBytePrimitive( new Integer( 34 ).byteValue() );
@@ -171,11 +170,10 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester
             "\"shortPrimitiveArray\":[9,7,8,15]" +
             "}";
 
-        assertEquals( expected, encoder.encode( bean ) );
+        assertEquals( expected, writer.write( bean ) );
     }
 
-    public void testWriteWithNullProperties( JsonEncoderTester<SimpleBean> encoder )
-    {
+    public void testWriteWithNullProperties( ObjectWriterTester<SimpleBean> writer ) {
         String doubleAndFloatZeroString = GWT.isProdMode() ? "0" : "0.0";
 
         String expected = "{\"bytePrimitive\":0," +
@@ -187,6 +185,6 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester
             "\"booleanPrimitive\":false," +
             "\"charPrimitive\":\"\\u0000\"}";
 
-        assertEquals( expected, encoder.encode( new SimpleBean() ) );
+        assertEquals( expected, writer.write( new SimpleBean() ) );
     }
 }

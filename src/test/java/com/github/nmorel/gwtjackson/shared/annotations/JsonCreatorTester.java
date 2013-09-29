@@ -3,234 +3,216 @@ package com.github.nmorel.gwtjackson.shared.annotations;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.github.nmorel.gwtjackson.client.exception.JsonDecodingException;
+import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
-import com.github.nmorel.gwtjackson.shared.JsonDecoderTester;
-import com.github.nmorel.gwtjackson.shared.JsonEncoderTester;
+import com.github.nmorel.gwtjackson.shared.ObjectReaderTester;
+import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
 
-/** @author Nicolas Morel */
-public final class JsonCreatorTester extends AbstractTester
-{
-    public static class BeanWithDefaultConstructorPrivate
-    {
+/**
+ * @author Nicolas Morel
+ */
+public final class JsonCreatorTester extends AbstractTester {
+
+    public static class BeanWithDefaultConstructorPrivate {
+
         public int intProperty;
+
         public String stringProperty;
+
         public Boolean booleanProperty;
 
-        private BeanWithDefaultConstructorPrivate()
-        {
+        private BeanWithDefaultConstructorPrivate() {
         }
     }
 
-    public static class BeanWithoutDefaultConstructorAndNoAnnotation
-    {
+    public static class BeanWithoutDefaultConstructorAndNoAnnotation {
+
         private int intProperty;
+
         private String stringProperty;
+
         private Boolean booleanProperty;
 
-        public BeanWithoutDefaultConstructorAndNoAnnotation( int intProperty, String stringProperty )
-        {
+        public BeanWithoutDefaultConstructorAndNoAnnotation( int intProperty, String stringProperty ) {
             this.intProperty = intProperty;
             this.stringProperty = stringProperty;
         }
 
-        public int getIntProperty()
-        {
+        public int getIntProperty() {
             return intProperty;
         }
 
-        public String getStringProperty()
-        {
+        public String getStringProperty() {
             return stringProperty;
         }
 
-        public Boolean getBooleanProperty()
-        {
+        public Boolean getBooleanProperty() {
             return booleanProperty;
         }
 
-        public void setBooleanProperty( Boolean booleanProperty )
-        {
+        public void setBooleanProperty( Boolean booleanProperty ) {
             this.booleanProperty = booleanProperty;
         }
     }
 
-    public static class BeanWithoutDefaultConstructorAndPropertiesAnnotation
-    {
+    public static class BeanWithoutDefaultConstructorAndPropertiesAnnotation {
+
         private int intProperty;
+
         private String stringProperty;
+
         private Boolean booleanProperty;
 
-        public BeanWithoutDefaultConstructorAndPropertiesAnnotation( @JsonProperty( "intProperty" ) int intProperty,
-                                                                     @JsonProperty( value = "stringProperty",
-            required = true ) String stringProperty )
-        {
+        public BeanWithoutDefaultConstructorAndPropertiesAnnotation( @JsonProperty("intProperty") int intProperty,
+                                                                     @JsonProperty(value = "stringProperty",
+            required = true) String stringProperty ) {
             this.intProperty = intProperty;
             this.stringProperty = stringProperty;
         }
 
-        public int getIntProperty()
-        {
+        public int getIntProperty() {
             return intProperty;
         }
 
-        public String getStringProperty()
-        {
+        public String getStringProperty() {
             return stringProperty;
         }
 
-        public Boolean getBooleanProperty()
-        {
+        public Boolean getBooleanProperty() {
             return booleanProperty;
         }
 
-        public void setBooleanProperty( Boolean booleanProperty )
-        {
+        public void setBooleanProperty( Boolean booleanProperty ) {
             this.booleanProperty = booleanProperty;
         }
     }
 
-    public static class BeanWithConstructorAnnotated
-    {
+    public static class BeanWithConstructorAnnotated {
+
         private int intProperty;
+
         private String stringProperty;
+
         private Boolean booleanProperty;
 
         @JsonCreator
-        public BeanWithConstructorAnnotated( @JsonProperty( "intProperty" ) int intProperty, @JsonProperty( "stringProperty" ) String
-            stringProperty )
-        {
+        public BeanWithConstructorAnnotated( @JsonProperty("intProperty") int intProperty, @JsonProperty("stringProperty") String
+            stringProperty ) {
             this.intProperty = intProperty;
             this.stringProperty = stringProperty;
         }
 
-        public int getIntProperty()
-        {
+        public int getIntProperty() {
             return intProperty;
         }
 
-        public String getStringProperty()
-        {
+        public String getStringProperty() {
             return stringProperty;
         }
 
-        public Boolean getBooleanProperty()
-        {
+        public Boolean getBooleanProperty() {
             return booleanProperty;
         }
 
-        public void setBooleanProperty( Boolean booleanProperty )
-        {
+        public void setBooleanProperty( Boolean booleanProperty ) {
             this.booleanProperty = booleanProperty;
         }
     }
 
-    @JsonPropertyOrder( alphabetic = true )
-    public static class BeanWithFactoryMethod
-    {
+    @JsonPropertyOrder(alphabetic = true)
+    public static class BeanWithFactoryMethod {
+
         @JsonCreator
-        static BeanWithFactoryMethod newInstance( @JsonProperty( "stringProperty" ) String stringProperty,
-                                                  @JsonProperty( "intProperty" ) int intProperty )
-        {
+        static BeanWithFactoryMethod newInstance( @JsonProperty("stringProperty") String stringProperty,
+                                                  @JsonProperty("intProperty") int intProperty ) {
             return new BeanWithFactoryMethod( intProperty, stringProperty );
         }
 
         private int intProperty;
+
         private String stringProperty;
+
         private Boolean booleanProperty;
 
-        private BeanWithFactoryMethod( int intProperty, String stringProperty )
-        {
+        private BeanWithFactoryMethod( int intProperty, String stringProperty ) {
             this.intProperty = intProperty;
             this.stringProperty = stringProperty;
         }
 
-        public int getIntProperty()
-        {
+        public int getIntProperty() {
             return intProperty;
         }
 
-        public String getStringProperty()
-        {
+        public String getStringProperty() {
             return stringProperty;
         }
 
-        public Boolean getBooleanProperty()
-        {
+        public Boolean getBooleanProperty() {
             return booleanProperty;
         }
 
-        public void setBooleanProperty( Boolean booleanProperty )
-        {
+        public void setBooleanProperty( Boolean booleanProperty ) {
             this.booleanProperty = booleanProperty;
         }
     }
 
-    @JsonPropertyOrder( value = {"booleanProperty", "intProperty", "stringProperty"} )
-    public static class BeanWithPrivateFactoryMethod
-    {
+    @JsonPropertyOrder(value = {"booleanProperty", "intProperty", "stringProperty"})
+    public static class BeanWithPrivateFactoryMethod {
+
         @JsonCreator
-        private static BeanWithPrivateFactoryMethod newInstance( @JsonProperty( "stringProperty" ) String stringProperty,
-                                                                 @JsonProperty( "intProperty" ) int intProperty )
-        {
+        private static BeanWithPrivateFactoryMethod newInstance( @JsonProperty("stringProperty") String stringProperty,
+                                                                 @JsonProperty("intProperty") int intProperty ) {
             return new BeanWithPrivateFactoryMethod( intProperty, stringProperty );
         }
 
         private int intProperty;
+
         private String stringProperty;
+
         private Boolean booleanProperty;
 
-        private BeanWithPrivateFactoryMethod( int intProperty, String stringProperty )
-        {
+        private BeanWithPrivateFactoryMethod( int intProperty, String stringProperty ) {
             this.intProperty = intProperty;
             this.stringProperty = stringProperty;
         }
 
-        public int getIntProperty()
-        {
+        public int getIntProperty() {
             return intProperty;
         }
 
-        public String getStringProperty()
-        {
+        public String getStringProperty() {
             return stringProperty;
         }
 
-        public Boolean getBooleanProperty()
-        {
+        public Boolean getBooleanProperty() {
             return booleanProperty;
         }
 
-        public void setBooleanProperty( Boolean booleanProperty )
-        {
+        public void setBooleanProperty( Boolean booleanProperty ) {
             this.booleanProperty = booleanProperty;
         }
     }
 
-    public static class BeanWithPropertiesOnlyPresentOnConstructor
-    {
+    public static class BeanWithPropertiesOnlyPresentOnConstructor {
+
         private int result;
 
         @JsonCreator
-        public BeanWithPropertiesOnlyPresentOnConstructor( @JsonProperty( "x" ) int x, @JsonProperty( "y" ) int y )
-        {
+        public BeanWithPropertiesOnlyPresentOnConstructor( @JsonProperty("x") int x, @JsonProperty("y") int y ) {
             this.result = x * y;
         }
 
-        public int getResult()
-        {
+        public int getResult() {
             return result;
         }
     }
 
     public static final JsonCreatorTester INSTANCE = new JsonCreatorTester();
 
-    private JsonCreatorTester()
-    {
+    private JsonCreatorTester() {
     }
 
-    public void testEncodingBeanWithDefaultConstructorPrivate( JsonEncoderTester<BeanWithDefaultConstructorPrivate> encoder )
-    {
+    public void testSerializeBeanWithDefaultConstructorPrivate( ObjectWriterTester<BeanWithDefaultConstructorPrivate> writer ) {
         BeanWithDefaultConstructorPrivate bean = new BeanWithDefaultConstructorPrivate();
         bean.intProperty = 15;
         bean.stringProperty = "IAmAString";
@@ -239,59 +221,52 @@ public final class JsonCreatorTester extends AbstractTester
         String expected = "{\"intProperty\":15," +
             "\"stringProperty\":\"IAmAString\"," +
             "\"booleanProperty\":true}";
-        String result = encoder.encode( bean );
+        String result = writer.write( bean );
 
         assertEquals( expected, result );
     }
 
-    public void testDecodingBeanWithDefaultConstructorPrivate( JsonDecoderTester<BeanWithDefaultConstructorPrivate> decoder )
-    {
+    public void testDeserializeBeanWithDefaultConstructorPrivate( ObjectReaderTester<BeanWithDefaultConstructorPrivate> reader ) {
         String input = "{\"intProperty\":15," +
             "\"stringProperty\":\"IAmAString\"," +
             "\"booleanProperty\":true}";
 
-        BeanWithDefaultConstructorPrivate result = decoder.decode( input );
+        BeanWithDefaultConstructorPrivate result = reader.read( input );
 
         assertEquals( 15, result.intProperty );
         assertEquals( "IAmAString", result.stringProperty );
         assertTrue( result.booleanProperty );
     }
 
-    public void testEncodingBeanWithoutDefaultConstructorAndNoAnnotation( JsonEncoderTester<BeanWithoutDefaultConstructorAndNoAnnotation>
-                                                                              encoder )
-    {
+    public void testSerializeBeanWithoutDefaultConstructorAndNoAnnotation(
+        ObjectWriterTester<BeanWithoutDefaultConstructorAndNoAnnotation> writer ) {
         BeanWithoutDefaultConstructorAndNoAnnotation bean = new BeanWithoutDefaultConstructorAndNoAnnotation( 15, "IAmAString" );
         bean.booleanProperty = true;
 
         String expected = "{\"intProperty\":15," +
             "\"stringProperty\":\"IAmAString\"," +
             "\"booleanProperty\":true}";
-        String result = encoder.encode( bean );
+        String result = writer.write( bean );
 
         assertEquals( expected, result );
     }
 
-    public void testDecodingBeanWithoutDefaultConstructorAndNoAnnotation( JsonDecoderTester<BeanWithoutDefaultConstructorAndNoAnnotation>
-                                                                              decoder )
-    {
+    public void testDeserializeBeanWithoutDefaultConstructorAndNoAnnotation(
+        ObjectReaderTester<BeanWithoutDefaultConstructorAndNoAnnotation> reader ) {
         String input = "{\"intProperty\":15," +
             "\"stringProperty\":\"IAmAString\"," +
             "\"booleanProperty\":true}";
 
-        try
-        {
-            decoder.decode( input );
+        try {
+            reader.read( input );
             fail();
-        }
-        catch ( JsonDecodingException e )
-        {
+        } catch ( JsonDeserializationException e ) {
             // no way to instantiate it
         }
     }
 
-    public void testEncodingBeanWithoutDefaultConstructorAndPropertiesAnnotation(
-        JsonEncoderTester<BeanWithoutDefaultConstructorAndPropertiesAnnotation> encoder )
-    {
+    public void testSerializeBeanWithoutDefaultConstructorAndPropertiesAnnotation(
+        ObjectWriterTester<BeanWithoutDefaultConstructorAndPropertiesAnnotation> writer ) {
         BeanWithoutDefaultConstructorAndPropertiesAnnotation bean = new BeanWithoutDefaultConstructorAndPropertiesAnnotation( 15,
             "IAmAString" );
         bean.booleanProperty = true;
@@ -299,68 +274,60 @@ public final class JsonCreatorTester extends AbstractTester
         String expected = "{\"intProperty\":15," +
             "\"stringProperty\":\"IAmAString\"," +
             "\"booleanProperty\":true}";
-        String result = encoder.encode( bean );
+        String result = writer.write( bean );
 
         assertEquals( expected, result );
     }
 
-    public void testDecodingBeanWithoutDefaultConstructorAndPropertiesAnnotation(
-        JsonDecoderTester<BeanWithoutDefaultConstructorAndPropertiesAnnotation> decoder )
-    {
+    public void testDeserializeBeanWithoutDefaultConstructorAndPropertiesAnnotation(
+        ObjectReaderTester<BeanWithoutDefaultConstructorAndPropertiesAnnotation> reader ) {
         String input = "{\"intProperty\":15," +
             "\"stringProperty\":\"IAmAString\"," +
             "\"booleanProperty\":true}";
 
-        BeanWithoutDefaultConstructorAndPropertiesAnnotation result = decoder.decode( input );
+        BeanWithoutDefaultConstructorAndPropertiesAnnotation result = reader.read( input );
 
         assertEquals( 15, result.intProperty );
         assertEquals( "IAmAString", result.stringProperty );
         assertTrue( result.booleanProperty );
     }
 
-    public void testDecodingBeanWithMissingRequiredPropertyInCreator(
-        JsonDecoderTester<BeanWithoutDefaultConstructorAndPropertiesAnnotation> decoder )
-    {
+    public void testDeserializeBeanWithMissingRequiredPropertyInCreator(
+        ObjectReaderTester<BeanWithoutDefaultConstructorAndPropertiesAnnotation> reader ) {
         String input = "{\"intProperty\":15,\"booleanProperty\":true}";
 
-        try
-        {
-            decoder.decode( input );
+        try {
+            reader.read( input );
             fail( "Expected an exception because a required property is missing" );
-        }
-        catch ( JsonDecodingException e )
-        {
+        } catch ( JsonDeserializationException e ) {
         }
     }
 
-    public void testEncodingBeanWithConstructorAnnotated( JsonEncoderTester<BeanWithConstructorAnnotated> encoder )
-    {
+    public void testSerializeBeanWithConstructorAnnotated( ObjectWriterTester<BeanWithConstructorAnnotated> writer ) {
         BeanWithConstructorAnnotated bean = new BeanWithConstructorAnnotated( 15, "IAmAString" );
         bean.booleanProperty = true;
 
         String expected = "{\"intProperty\":15," +
             "\"stringProperty\":\"IAmAString\"," +
             "\"booleanProperty\":true}";
-        String result = encoder.encode( bean );
+        String result = writer.write( bean );
 
         assertEquals( expected, result );
     }
 
-    public void testDecodingBeanWithConstructorAnnotated( JsonDecoderTester<BeanWithConstructorAnnotated> decoder )
-    {
+    public void testDeserializeBeanWithConstructorAnnotated( ObjectReaderTester<BeanWithConstructorAnnotated> reader ) {
         String input = "{\"intProperty\":15," +
             "\"stringProperty\":\"IAmAString\"," +
             "\"booleanProperty\":true}";
 
-        BeanWithConstructorAnnotated result = decoder.decode( input );
+        BeanWithConstructorAnnotated result = reader.read( input );
 
         assertEquals( 15, result.intProperty );
         assertEquals( "IAmAString", result.stringProperty );
         assertTrue( result.booleanProperty );
     }
 
-    public void testEncodingBeanWithFactoryMethod( JsonEncoderTester<BeanWithFactoryMethod> encoder )
-    {
+    public void testSerializeBeanWithFactoryMethod( ObjectWriterTester<BeanWithFactoryMethod> writer ) {
         BeanWithFactoryMethod bean = new BeanWithFactoryMethod( 15, "IAmAString" );
         bean.booleanProperty = true;
 
@@ -369,26 +336,24 @@ public final class JsonCreatorTester extends AbstractTester
         String expected = "{\"stringProperty\":\"IAmAString\"," +
             "\"intProperty\":15," +
             "\"booleanProperty\":true}";
-        String result = encoder.encode( bean );
+        String result = writer.write( bean );
 
         assertEquals( expected, result );
     }
 
-    public void testDecodingBeanWithFactoryMethod( JsonDecoderTester<BeanWithFactoryMethod> decoder )
-    {
+    public void testDeserializeBeanWithFactoryMethod( ObjectReaderTester<BeanWithFactoryMethod> reader ) {
         String input = "{\"intProperty\":15," +
             "\"stringProperty\":\"IAmAString\"," +
             "\"booleanProperty\":true}";
 
-        BeanWithFactoryMethod result = decoder.decode( input );
+        BeanWithFactoryMethod result = reader.read( input );
 
         assertEquals( 15, result.intProperty );
         assertEquals( "IAmAString", result.stringProperty );
         assertTrue( result.booleanProperty );
     }
 
-    public void testEncodingBeanWithPrivateFactoryMethod( JsonEncoderTester<BeanWithPrivateFactoryMethod> encoder )
-    {
+    public void testSerializeBeanWithPrivateFactoryMethod( ObjectWriterTester<BeanWithPrivateFactoryMethod> writer ) {
         BeanWithPrivateFactoryMethod bean = new BeanWithPrivateFactoryMethod( 15, "IAmAString" );
         bean.booleanProperty = true;
 
@@ -397,40 +362,37 @@ public final class JsonCreatorTester extends AbstractTester
         String expected = "{\"booleanProperty\":true," +
             "\"intProperty\":15," +
             "\"stringProperty\":\"IAmAString\"}";
-        String result = encoder.encode( bean );
+        String result = writer.write( bean );
 
         assertEquals( expected, result );
     }
 
-    public void testDecodingBeanWithPrivateFactoryMethod( JsonDecoderTester<BeanWithPrivateFactoryMethod> decoder )
-    {
+    public void testDeserializeBeanWithPrivateFactoryMethod( ObjectReaderTester<BeanWithPrivateFactoryMethod> reader ) {
         String input = "{\"intProperty\":15," +
             "\"stringProperty\":\"IAmAString\"," +
             "\"booleanProperty\":true}";
 
-        BeanWithPrivateFactoryMethod result = decoder.decode( input );
+        BeanWithPrivateFactoryMethod result = reader.read( input );
 
         assertEquals( 15, result.intProperty );
         assertEquals( "IAmAString", result.stringProperty );
         assertTrue( result.booleanProperty );
     }
 
-    public void testEncodingBeanWithPropertiesOnlyPresentOnConstructor( JsonEncoderTester<BeanWithPropertiesOnlyPresentOnConstructor>
-                                                                            encoder )
-    {
+    public void testSerializeBeanWithPropertiesOnlyPresentOnConstructor( ObjectWriterTester<BeanWithPropertiesOnlyPresentOnConstructor>
+                                                                             writer ) {
         BeanWithPropertiesOnlyPresentOnConstructor bean = new BeanWithPropertiesOnlyPresentOnConstructor( 15, 10 );
 
         String expected = "{\"result\":150}";
-        String result = encoder.encode( bean );
+        String result = writer.write( bean );
 
         assertEquals( expected, result );
     }
 
-    public void testDecodingBeanWithPropertiesOnlyPresentOnConstructor( JsonDecoderTester<BeanWithPropertiesOnlyPresentOnConstructor> decoder )
-    {
+    public void testDeserializeBeanWithPropertiesOnlyPresentOnConstructor( ObjectReaderTester<BeanWithPropertiesOnlyPresentOnConstructor> reader ) {
         String input = "{\"x\":15,\"y\":10}";
 
-        BeanWithPropertiesOnlyPresentOnConstructor result = decoder.decode( input );
+        BeanWithPropertiesOnlyPresentOnConstructor result = reader.read( input );
 
         assertEquals( 150, result.result );
     }

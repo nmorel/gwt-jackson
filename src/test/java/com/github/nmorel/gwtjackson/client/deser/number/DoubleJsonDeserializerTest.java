@@ -15,7 +15,7 @@ public class DoubleJsonDeserializerTest extends AbstractJsonDeserializerTest<Dou
     }
 
     @Override
-    public void testDecodeValue() {
+    public void testDeserializeValue() {
         assertDeserialization( 34.100247d, "34.100247" );
         assertDeserialization( -487.15487d, "-487.15487" );
         assertDeserialization( -784.15454d, "\"-784.15454\"" );

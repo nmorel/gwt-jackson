@@ -3,12 +3,13 @@ package com.github.nmorel.gwtjackson.client.deser.array;
 import java.io.IOException;
 import java.util.List;
 
-import com.github.nmorel.gwtjackson.client.JsonDecodingContext;
+import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
+import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.NumberJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 
 /**
- * Default {@link com.github.nmorel.gwtjackson.client.JsonDeserializer} implementation for array of double.
+ * Default {@link JsonDeserializer} implementation for array of double.
  *
  * @author Nicolas Morel
  */
@@ -26,8 +27,8 @@ public class PrimitiveDoubleArrayJsonDeserializer extends AbstractArrayJsonDeser
     private PrimitiveDoubleArrayJsonDeserializer() { }
 
     @Override
-    public double[] doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException {
-        List<Double> list = decodeList( reader, ctx, NumberJsonDeserializer.getDoubleInstance() );
+    public double[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+        List<Double> list = deserializeIntoList( reader, ctx, NumberJsonDeserializer.getDoubleInstance() );
 
         double[] result = new double[list.size()];
         int i = 0;

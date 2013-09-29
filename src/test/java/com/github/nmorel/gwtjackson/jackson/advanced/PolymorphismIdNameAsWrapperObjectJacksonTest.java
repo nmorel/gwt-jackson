@@ -5,21 +5,21 @@ import com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdNameAsWrapperO
 import org.junit.Ignore;
 import org.junit.Test;
 
-/** @author Nicolas Morel */
-public class PolymorphismIdNameAsWrapperObjectJacksonTest extends AbstractJacksonTest
-{
+/**
+ * @author Nicolas Morel
+ */
+public class PolymorphismIdNameAsWrapperObjectJacksonTest extends AbstractJacksonTest {
+
     @Test
-    public void testEncoding()
-    {
+    public void testSerialize() {
         PolymorphismIdNameAsWrapperObjectTester.INSTANCE
-            .testEncoding( createEncoder( PolymorphismIdNameAsWrapperObjectTester.Person[].class ) );
+            .testSerialize( createEncoder( PolymorphismIdNameAsWrapperObjectTester.Person[].class ) );
     }
 
     @Test
-    @Ignore( "jackson can't event find the subtype, booooo" )
-    public void testDecoding()
-    {
+    @Ignore("jackson can't event find the subtype, booooo")
+    public void testDeserialize() {
         PolymorphismIdNameAsWrapperObjectTester.INSTANCE
-            .testDecoding( createDecoder( PolymorphismIdNameAsWrapperObjectTester.Person[].class ) );
+            .testDeserialize( createDecoder( PolymorphismIdNameAsWrapperObjectTester.Person[].class ) );
     }
 }

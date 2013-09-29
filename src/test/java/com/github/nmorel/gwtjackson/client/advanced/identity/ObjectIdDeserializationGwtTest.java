@@ -3,8 +3,8 @@ package com.github.nmorel.gwtjackson.client.advanced.identity;
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;
 import com.github.nmorel.gwtjackson.client.ObjectReader;
-import com.github.nmorel.gwtjackson.shared.JsonDecoderTester;
-import com.github.nmorel.gwtjackson.shared.JsonMapperTester;
+import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
+import com.github.nmorel.gwtjackson.shared.ObjectReaderTester;
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester;
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester.IdWrapper;
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester.IdWrapperExt;
@@ -18,27 +18,27 @@ import com.google.gwt.core.client.GWT;
  */
 public class ObjectIdDeserializationGwtTest extends GwtJacksonTestCase {
 
-    public interface IdentifiableMapper extends ObjectReader<Identifiable>, JsonDecoderTester<Identifiable> {
+    public interface IdentifiableMapper extends ObjectReader<Identifiable>, ObjectReaderTester<Identifiable> {
 
         static IdentifiableMapper INSTANCE = GWT.create( IdentifiableMapper.class );
     }
 
-    public interface UUIDNodeMapper extends ObjectMapper<UUIDNode>, JsonMapperTester<UUIDNode> {
+    public interface UUIDNodeMapper extends ObjectMapper<UUIDNode>, ObjectMapperTester<UUIDNode> {
 
         static UUIDNodeMapper INSTANCE = GWT.create( UUIDNodeMapper.class );
     }
 
-    public interface IdWrapperMapper extends ObjectReader<IdWrapper>, JsonDecoderTester<IdWrapper> {
+    public interface IdWrapperMapper extends ObjectReader<IdWrapper>, ObjectReaderTester<IdWrapper> {
 
         static IdWrapperMapper INSTANCE = GWT.create( IdWrapperMapper.class );
     }
 
-    public interface IdentifiableCustomMapper extends ObjectReader<IdentifiableCustom>, JsonDecoderTester<IdentifiableCustom> {
+    public interface IdentifiableCustomMapper extends ObjectReader<IdentifiableCustom>, ObjectReaderTester<IdentifiableCustom> {
 
         static IdentifiableCustomMapper INSTANCE = GWT.create( IdentifiableCustomMapper.class );
     }
 
-    public interface IdWrapperExtMapper extends ObjectReader<IdWrapperExt>, JsonDecoderTester<IdWrapperExt> {
+    public interface IdWrapperExtMapper extends ObjectReader<IdWrapperExt>, ObjectReaderTester<IdWrapperExt> {
 
         static IdWrapperExtMapper INSTANCE = GWT.create( IdWrapperExtMapper.class );
     }

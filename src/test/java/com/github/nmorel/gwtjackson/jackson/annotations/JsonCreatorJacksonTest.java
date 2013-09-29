@@ -5,116 +5,103 @@ import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester;
 import org.junit.Ignore;
 import org.junit.Test;
 
-/** @author Nicolas Morel */
-public class JsonCreatorJacksonTest extends AbstractJacksonTest
-{
+/**
+ * @author Nicolas Morel
+ */
+public class JsonCreatorJacksonTest extends AbstractJacksonTest {
+
     @Test
-    public void testEncodingBeanWithDefaultConstructorPrivate()
-    {
+    public void testSerializeBeanWithDefaultConstructorPrivate() {
         JsonCreatorTester.INSTANCE
-            .testEncodingBeanWithDefaultConstructorPrivate( createEncoder( JsonCreatorTester.BeanWithDefaultConstructorPrivate.class ) );
+            .testSerializeBeanWithDefaultConstructorPrivate( createEncoder( JsonCreatorTester.BeanWithDefaultConstructorPrivate.class ) );
     }
 
     @Test
-    public void testDecodingBeanWithDefaultConstructorPrivate()
-    {
+    public void testDeserializeBeanWithDefaultConstructorPrivate() {
         JsonCreatorTester.INSTANCE
-            .testDecodingBeanWithDefaultConstructorPrivate( createDecoder( JsonCreatorTester.BeanWithDefaultConstructorPrivate.class ) );
+            .testDeserializeBeanWithDefaultConstructorPrivate( createDecoder( JsonCreatorTester.BeanWithDefaultConstructorPrivate.class ) );
     }
 
     @Test
-    public void testEncodingBeanWithoutDefaultConstructorAndNoAnnotation()
-    {
+    public void testSerializeBeanWithoutDefaultConstructorAndNoAnnotation() {
         JsonCreatorTester.INSTANCE
-            .testEncodingBeanWithoutDefaultConstructorAndNoAnnotation( createEncoder( JsonCreatorTester
+            .testSerializeBeanWithoutDefaultConstructorAndNoAnnotation( createEncoder( JsonCreatorTester
                 .BeanWithoutDefaultConstructorAndNoAnnotation.class ) );
     }
 
     @Test
-    public void testDecodingBeanWithoutDefaultConstructorAndNoAnnotation()
-    {
+    public void testDeserializeBeanWithoutDefaultConstructorAndNoAnnotation() {
         JsonCreatorTester.INSTANCE
-            .testDecodingBeanWithoutDefaultConstructorAndNoAnnotation( createDecoder( JsonCreatorTester
+            .testDeserializeBeanWithoutDefaultConstructorAndNoAnnotation( createDecoder( JsonCreatorTester
                 .BeanWithoutDefaultConstructorAndNoAnnotation.class ) );
     }
 
     @Test
-    public void testEncodingBeanWithoutDefaultConstructorAndPropertiesAnnotation()
-    {
+    public void testSerializeBeanWithoutDefaultConstructorAndPropertiesAnnotation() {
         JsonCreatorTester.INSTANCE
-            .testEncodingBeanWithoutDefaultConstructorAndPropertiesAnnotation( createEncoder( JsonCreatorTester
+            .testSerializeBeanWithoutDefaultConstructorAndPropertiesAnnotation( createEncoder( JsonCreatorTester
                 .BeanWithoutDefaultConstructorAndPropertiesAnnotation.class ) );
     }
 
     @Test
-    public void testDecodingBeanWithoutDefaultConstructorAndPropertiesAnnotation()
-    {
+    public void testDeserializeBeanWithoutDefaultConstructorAndPropertiesAnnotation() {
         JsonCreatorTester.INSTANCE
-            .testDecodingBeanWithoutDefaultConstructorAndPropertiesAnnotation( createDecoder( JsonCreatorTester
+            .testDeserializeBeanWithoutDefaultConstructorAndPropertiesAnnotation( createDecoder( JsonCreatorTester
                 .BeanWithoutDefaultConstructorAndPropertiesAnnotation.class ) );
     }
 
     @Test
     @Ignore("jackson doesn't support it yet")
-    public void testDecodingBeanWithMissingRequiredPropertyInCreator()
-    {
+    public void testDeserializeBeanWithMissingRequiredPropertyInCreator() {
         JsonCreatorTester.INSTANCE
-            .testDecodingBeanWithMissingRequiredPropertyInCreator( createDecoder( JsonCreatorTester
+            .testDeserializeBeanWithMissingRequiredPropertyInCreator( createDecoder( JsonCreatorTester
                 .BeanWithoutDefaultConstructorAndPropertiesAnnotation.class ) );
     }
 
     @Test
-    public void testEncodingBeanWithConstructorAnnotated()
-    {
+    public void testSerializeBeanWithConstructorAnnotated() {
         JsonCreatorTester.INSTANCE
-            .testEncodingBeanWithConstructorAnnotated( createEncoder( JsonCreatorTester.BeanWithConstructorAnnotated.class ) );
+            .testSerializeBeanWithConstructorAnnotated( createEncoder( JsonCreatorTester.BeanWithConstructorAnnotated.class ) );
     }
 
     @Test
-    public void testDecodingBeanWithConstructorAnnotated()
-    {
+    public void testDeserializeBeanWithConstructorAnnotated() {
         JsonCreatorTester.INSTANCE
-            .testDecodingBeanWithConstructorAnnotated( createDecoder( JsonCreatorTester.BeanWithConstructorAnnotated.class ) );
+            .testDeserializeBeanWithConstructorAnnotated( createDecoder( JsonCreatorTester.BeanWithConstructorAnnotated.class ) );
     }
 
     @Test
-    public void testEncodingBeanWithFactoryMethod()
-    {
-        JsonCreatorTester.INSTANCE.testEncodingBeanWithFactoryMethod( createEncoder( JsonCreatorTester.BeanWithFactoryMethod.class ) );
+    public void testSerializeBeanWithFactoryMethod() {
+        JsonCreatorTester.INSTANCE.testSerializeBeanWithFactoryMethod( createEncoder( JsonCreatorTester.BeanWithFactoryMethod.class ) );
     }
 
     @Test
-    public void testDecodingBeanWithFactoryMethod()
-    {
-        JsonCreatorTester.INSTANCE.testDecodingBeanWithFactoryMethod( createDecoder( JsonCreatorTester.BeanWithFactoryMethod.class ) );
+    public void testDeserializeBeanWithFactoryMethod() {
+        JsonCreatorTester.INSTANCE.testDeserializeBeanWithFactoryMethod( createDecoder( JsonCreatorTester.BeanWithFactoryMethod.class ) );
     }
 
     @Test
-    public void testEncodingBeanWithPrivateFactoryMethod()
-    {
+    public void testSerializeBeanWithPrivateFactoryMethod() {
         JsonCreatorTester.INSTANCE
-            .testEncodingBeanWithPrivateFactoryMethod( createEncoder( JsonCreatorTester.BeanWithPrivateFactoryMethod.class ) );
+            .testSerializeBeanWithPrivateFactoryMethod( createEncoder( JsonCreatorTester.BeanWithPrivateFactoryMethod.class ) );
     }
 
     @Test
-    public void testDecodingBeanWithPrivateFactoryMethod()
-    {
+    public void testDeserializeBeanWithPrivateFactoryMethod() {
         JsonCreatorTester.INSTANCE
-            .testDecodingBeanWithPrivateFactoryMethod( createDecoder( JsonCreatorTester.BeanWithPrivateFactoryMethod.class ) );
+            .testDeserializeBeanWithPrivateFactoryMethod( createDecoder( JsonCreatorTester.BeanWithPrivateFactoryMethod.class ) );
     }
 
     @Test
-    public void testEncodingBeanWithPropertiesOnlyPresentOnConstructor()
-    {
+    public void testSerializeBeanWithPropertiesOnlyPresentOnConstructor() {
         JsonCreatorTester.INSTANCE
-            .testEncodingBeanWithPropertiesOnlyPresentOnConstructor( createEncoder( JsonCreatorTester
+            .testSerializeBeanWithPropertiesOnlyPresentOnConstructor( createEncoder( JsonCreatorTester
                 .BeanWithPropertiesOnlyPresentOnConstructor.class ) );
     }
 
     @Test
-    public void testDecodingBeanWithPropertiesOnlyPresentOnConstructor  ()
-    {
+    public void testDeserializeBeanWithPropertiesOnlyPresentOnConstructor() {
         JsonCreatorTester.INSTANCE
-            .testDecodingBeanWithPropertiesOnlyPresentOnConstructor( createDecoder( JsonCreatorTester.BeanWithPropertiesOnlyPresentOnConstructor.class ) );
+            .testDeserializeBeanWithPropertiesOnlyPresentOnConstructor( createDecoder( JsonCreatorTester.BeanWithPropertiesOnlyPresentOnConstructor.class ) );
     }
 }

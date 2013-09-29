@@ -5,9 +5,9 @@ import java.util.Stack;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 
 /**
- * Default {@link com.github.nmorel.gwtjackson.client.JsonDeserializer} implementation for {@link java.util.Stack}.
+ * Default {@link JsonDeserializer} implementation for {@link Stack}.
  *
- * @param <T> Type of the elements inside the {@link java.util.Stack}
+ * @param <T> Type of the elements inside the {@link Stack}
  *
  * @author Nicolas Morel
  */

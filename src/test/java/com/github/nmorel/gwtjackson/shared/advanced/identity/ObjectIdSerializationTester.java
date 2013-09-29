@@ -4,16 +4,16 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.github.nmorel.gwtjackson.client.exception.JsonEncodingException;
+import com.github.nmorel.gwtjackson.client.exception.JsonSerializationException;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
-import com.github.nmorel.gwtjackson.shared.JsonEncoderTester;
+import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
 
 /**
  * Test from jackson-databind and adapted for the project
  */
 public final class ObjectIdSerializationTester extends AbstractTester {
 
-    @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id")
+    @JsonIdentityInfo( generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id" )
     public static class Identifiable {
 
         public int value;
@@ -29,7 +29,7 @@ public final class ObjectIdSerializationTester extends AbstractTester {
         }
     }
 
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "customId")
+    @JsonIdentityInfo( generator = ObjectIdGenerators.PropertyGenerator.class, property = "customId" )
     public static class IdentifiableWithProp {
 
         public int value;
@@ -53,7 +53,7 @@ public final class ObjectIdSerializationTester extends AbstractTester {
 
     public static class IdWrapper {
 
-        @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
+        @JsonIdentityInfo( generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id" )
         public ValueNode node;
 
         public IdWrapper() {
@@ -83,7 +83,7 @@ public final class ObjectIdSerializationTester extends AbstractTester {
 
     public static class IdWrapperCustom {
 
-        @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+        @JsonIdentityInfo( generator = ObjectIdGenerators.PropertyGenerator.class, property = "id" )
         public ValueNodeCustom node;
 
         public IdWrapperCustom() {
@@ -116,7 +116,7 @@ public final class ObjectIdSerializationTester extends AbstractTester {
         }
     }
 
-    @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id")
+    @JsonIdentityInfo( generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id" )
     public static class AlwaysAsId {
 
         public int value;
@@ -131,14 +131,14 @@ public final class ObjectIdSerializationTester extends AbstractTester {
     }
 
     // For [https://github.com/FasterXML/jackson-annotations/issues/4]
-    @JsonPropertyOrder(alphabetic = true)
+    @JsonPropertyOrder( alphabetic = true )
     public static class AlwaysContainer {
 
-        @JsonIdentityReference(alwaysAsId = true)
+        @JsonIdentityReference( alwaysAsId = true )
         public AlwaysAsId a = new AlwaysAsId( 13 );
 
-        @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id")
-        @JsonIdentityReference(alwaysAsId = true)
+        @JsonIdentityInfo( generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id" )
+        @JsonIdentityReference( alwaysAsId = true )
         public Value b = new Value();
     }
 
@@ -147,14 +147,14 @@ public final class ObjectIdSerializationTester extends AbstractTester {
         public int x = 3;
     }
 
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityInfo( generator = ObjectIdGenerators.PropertyGenerator.class, property = "id" )
     public static class TreeNode {
 
         public int id;
 
         public String name;
 
-        @JsonIdentityReference(alwaysAsId = true)
+        @JsonIdentityReference( alwaysAsId = true )
         public TreeNode parent;
 
         // children serialized with ids if need be
@@ -173,7 +173,7 @@ public final class ObjectIdSerializationTester extends AbstractTester {
     // // Let's also have one 'broken' test
 
     // no "id" property
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityInfo( generator = ObjectIdGenerators.PropertyGenerator.class, property = "id" )
     public static class Broken {
 
         public int value;
@@ -206,68 +206,68 @@ public final class ObjectIdSerializationTester extends AbstractTester {
     /*****************************************************
      */
 
-    public void testSimpleSerializationClass( JsonEncoderTester<Identifiable> mapper ) {
+    public void testSimpleSerializationClass( ObjectWriterTester<Identifiable> writer ) {
         Identifiable src = new Identifiable( 13 );
         src.next = src;
 
         // First, serialize:
-        String json = mapper.encode( src );
+        String json = writer.write( src );
         assertEquals( EXP_SIMPLE_INT_CLASS, json );
 
         // and ensure that state is cleared in-between as well:
-        json = mapper.encode( src );
+        json = writer.write( src );
         assertEquals( EXP_SIMPLE_INT_CLASS, json );
     }
 
-    public void testSimpleSerializationProperty( JsonEncoderTester<IdWrapper> mapper ) {
+    public void testSimpleSerializationProperty( ObjectWriterTester<IdWrapper> writer ) {
         IdWrapper src = new IdWrapper( 7 );
         src.node.next = src;
 
         // First, serialize:
-        String json = mapper.encode( src );
+        String json = writer.write( src );
         assertEquals( EXP_SIMPLE_INT_PROP, json );
         // and second time too, for a good measure
-        json = mapper.encode( src );
+        json = writer.write( src );
         assertEquals( EXP_SIMPLE_INT_PROP, json );
     }
 
     // Test for verifying that custom
-    public void testCustomPropertyForClass( JsonEncoderTester<IdentifiableWithProp> mapper ) {
+    public void testCustomPropertyForClass( ObjectWriterTester<IdentifiableWithProp> writer ) {
         IdentifiableWithProp src = new IdentifiableWithProp( 123, -19 );
         src.next = src;
 
         // First, serialize:
-        String json = mapper.encode( src );
+        String json = writer.write( src );
         assertEquals( EXP_CUSTOM_PROP, json );
 
         // and ensure that state is cleared in-between as well:
-        json = mapper.encode( src );
+        json = writer.write( src );
         assertEquals( EXP_CUSTOM_PROP, json );
     }
 
     // Test for verifying that custom
-    public void testCustomPropertyViaProperty( JsonEncoderTester<IdWrapperCustom> mapper ) {
+    public void testCustomPropertyViaProperty( ObjectWriterTester<IdWrapperCustom> writer ) {
         IdWrapperCustom src = new IdWrapperCustom( 123, 7 );
         src.node.next = src;
 
         // First, serialize:
-        String json = mapper.encode( src );
+        String json = writer.write( src );
         assertEquals( EXP_CUSTOM_PROP_VIA_REF, json );
         // and second time too, for a good measure
-        json = mapper.encode( src );
+        json = writer.write( src );
         assertEquals( EXP_CUSTOM_PROP_VIA_REF, json );
     }
 
-    public void testAlwaysAsId( JsonEncoderTester<AlwaysContainer> mapper ) {
-        String json = mapper.encode( new AlwaysContainer() );
+    public void testAlwaysAsId( ObjectWriterTester<AlwaysContainer> writer ) {
+        String json = writer.write( new AlwaysContainer() );
         assertEquals( "{\"a\":1,\"b\":2}", json );
     }
 
-    public void testAlwaysIdForTree( JsonEncoderTester<TreeNode> mapper ) {
+    public void testAlwaysIdForTree( ObjectWriterTester<TreeNode> writer ) {
         TreeNode root = new TreeNode( null, 1, "root" );
         TreeNode leaf = new TreeNode( root, 2, "leaf" );
         root.child = leaf;
-        String json = mapper.encode( root );
+        String json = writer.write( root );
         assertEquals( "{\"id\":1,\"name\":\"root\",\"child\":{\"id\":2,\"name\":\"leaf\",\"parent\":1}}", json );
     }
 
@@ -277,11 +277,11 @@ public final class ObjectIdSerializationTester extends AbstractTester {
     /*****************************************************
      */
 
-    public void testInvalidProp( JsonEncoderTester<Broken> mapper ) {
+    public void testInvalidProp( ObjectWriterTester<Broken> writer ) {
         try {
-            mapper.encode( new Broken() );
+            writer.write( new Broken() );
             fail( "Should have thrown an exception" );
-        } catch ( JsonEncodingException e ) {
+        } catch ( JsonSerializationException e ) {
         }
     }
 }

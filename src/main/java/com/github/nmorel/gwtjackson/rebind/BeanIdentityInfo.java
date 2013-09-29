@@ -18,54 +18,45 @@ import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.extractBeanType;
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findAnnotationOnAnyAccessor;
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounteredAnnotationsOnAllHierarchy;
 
-/** @author Nicolas Morel */
-public class BeanIdentityInfo
-{
+/**
+ * @author Nicolas Morel
+ */
+public class BeanIdentityInfo {
+
     public static BeanIdentityInfo process( TreeLogger logger, JacksonTypeOracle typeOracle,
-                                            JClassType type ) throws UnableToCompleteException
-    {
+                                            JClassType type ) throws UnableToCompleteException {
         return process( logger, typeOracle, type, null, false );
     }
 
     public static BeanIdentityInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, JType type,
-                                            FieldAccessors fieldAccessors ) throws UnableToCompleteException
-    {
+                                            FieldAccessors fieldAccessors ) throws UnableToCompleteException {
         JClassType classType = extractBeanType( typeOracle, type );
-        if ( null == classType )
-        {
+        if ( null == classType ) {
             return null;
-        }
-        else
-        {
+        } else {
             return process( logger, typeOracle, classType, fieldAccessors, true );
         }
     }
 
     private static BeanIdentityInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, JClassType type,
-                                             FieldAccessors fieldAccessors, boolean property ) throws UnableToCompleteException
-    {
+                                             FieldAccessors fieldAccessors, boolean property ) throws UnableToCompleteException {
         JsonIdentityInfo jsonIdentityInfo = null;
         JsonIdentityReference jsonIdentityReference = null;
-        if ( property )
-        {
+        if ( property ) {
             jsonIdentityInfo = findAnnotationOnAnyAccessor( fieldAccessors, JsonIdentityInfo.class );
             jsonIdentityReference = findAnnotationOnAnyAccessor( fieldAccessors, JsonIdentityReference.class );
-            if ( null == jsonIdentityInfo && null == jsonIdentityReference )
-            {
+            if ( null == jsonIdentityInfo && null == jsonIdentityReference ) {
                 // no override on field
                 return null;
             }
         }
 
-        if ( null == jsonIdentityInfo )
-        {
+        if ( null == jsonIdentityInfo ) {
             jsonIdentityInfo = findFirstEncounteredAnnotationsOnAllHierarchy( type, JsonIdentityInfo.class );
         }
 
-        if ( null != jsonIdentityInfo && ObjectIdGenerators.None.class != jsonIdentityInfo.generator() )
-        {
-            if ( null == jsonIdentityReference )
-            {
+        if ( null != jsonIdentityInfo && ObjectIdGenerators.None.class != jsonIdentityInfo.generator() ) {
+            if ( null == jsonIdentityReference ) {
                 jsonIdentityReference = findFirstEncounteredAnnotationsOnAllHierarchy( type, JsonIdentityReference.class );
             }
             return new BeanIdentityInfo( jsonIdentityInfo.property(), null != jsonIdentityReference && jsonIdentityReference
@@ -75,36 +66,33 @@ public class BeanIdentityInfo
     }
 
     private String propertyName;
+
     private boolean alwaysAsId;
+
     private Class<? extends ObjectIdGenerator<?>> generator;
+
     private Class<?> scope;
+
     private PropertyInfo property;
+
     private JType type;
 
     private BeanIdentityInfo( String propertyName, boolean alwaysAsId, Class<? extends ObjectIdGenerator<?>> generator, Class<?> scope,
-                              JacksonTypeOracle typeOracle ) throws UnableToCompleteException
-    {
+                              JacksonTypeOracle typeOracle ) throws UnableToCompleteException {
         this.propertyName = propertyName;
         this.alwaysAsId = alwaysAsId;
         this.generator = generator;
         this.scope = scope;
 
-        if ( !isIdABeanProperty() )
-        {
-            if ( IntSequenceGenerator.class == generator )
-            {
+        if ( !isIdABeanProperty() ) {
+            if ( IntSequenceGenerator.class == generator ) {
                 type = typeOracle.getType( Integer.class.getName() );
-            }
-            else if ( UUIDGenerator.class == generator )
-            {
+            } else if ( UUIDGenerator.class == generator ) {
                 type = typeOracle.getType( UUID.class.getName() );
-            }
-            else
-            {
+            } else {
                 JClassType generatorType = typeOracle.getType( generator.getCanonicalName() );
                 JClassType objectIdGeneratorType = generatorType.getSuperclass();
-                while ( !objectIdGeneratorType.getQualifiedSourceName().equals( ObjectIdGenerator.class.getName() ) )
-                {
+                while ( !objectIdGeneratorType.getQualifiedSourceName().equals( ObjectIdGenerator.class.getName() ) ) {
                     objectIdGeneratorType = objectIdGeneratorType.getSuperclass();
                 }
                 type = objectIdGeneratorType.isParameterized().getTypeArgs()[0];
@@ -112,44 +100,36 @@ public class BeanIdentityInfo
         }
     }
 
-    public boolean isIdABeanProperty()
-    {
+    public boolean isIdABeanProperty() {
         return generator.isAssignableFrom( PropertyGenerator.class );
     }
 
-    public String getPropertyName()
-    {
+    public String getPropertyName() {
         return propertyName;
     }
 
-    public boolean isAlwaysAsId()
-    {
+    public boolean isAlwaysAsId() {
         return alwaysAsId;
     }
 
-    public Class<? extends ObjectIdGenerator<?>> getGenerator()
-    {
+    public Class<? extends ObjectIdGenerator<?>> getGenerator() {
         return generator;
     }
 
-    public Class<?> getScope()
-    {
+    public Class<?> getScope() {
         return scope;
     }
 
-    public void setProperty( PropertyInfo property )
-    {
+    public void setProperty( PropertyInfo property ) {
         this.property = property;
         this.type = property.getType();
     }
 
-    public PropertyInfo getProperty()
-    {
+    public PropertyInfo getProperty() {
         return property;
     }
 
-    public JType getType()
-    {
+    public JType getType() {
         return type;
     }
 }

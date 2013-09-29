@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import com.github.nmorel.gwtjackson.client.JsonEncodingContext;
+import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
@@ -45,9 +45,9 @@ public abstract class NumberJsonSerializer<N extends Number> extends JsonSeriali
 
     private static final NumberJsonSerializer<Double> DOUBLE_INSTANCE = new NumberJsonSerializer<Double>() {
         @Override
-        public void doEncode( JsonWriter writer, @Nonnull Double value, JsonEncodingContext ctx ) throws IOException {
+        public void doSerialize( JsonWriter writer, @Nonnull Double value, JsonSerializationContext ctx ) throws IOException {
             // writer has a special method to write double, let's use instead of default Number method.
-            writer.value( (double) value );
+            writer.value( value.doubleValue() );
         }
     };
 
@@ -79,9 +79,9 @@ public abstract class NumberJsonSerializer<N extends Number> extends JsonSeriali
     private static final NumberJsonSerializer<Long> LONG_INSTANCE = new NumberJsonSerializer<Long>() {
 
         @Override
-        public void doEncode( JsonWriter writer, @Nonnull Long value, JsonEncodingContext ctx ) throws IOException {
+        public void doSerialize( JsonWriter writer, @Nonnull Long value, JsonSerializationContext ctx ) throws IOException {
             // writer has a special method to write long, let's use instead of default Number method.
-            writer.value( (long) value );
+            writer.value( value.longValue() );
         }
     };
 
@@ -102,7 +102,7 @@ public abstract class NumberJsonSerializer<N extends Number> extends JsonSeriali
     }
 
     @Override
-    public void doEncode( JsonWriter writer, @Nonnull N value, JsonEncodingContext ctx ) throws IOException {
+    public void doSerialize( JsonWriter writer, @Nonnull N value, JsonSerializationContext ctx ) throws IOException {
         writer.value( value );
     }
 }

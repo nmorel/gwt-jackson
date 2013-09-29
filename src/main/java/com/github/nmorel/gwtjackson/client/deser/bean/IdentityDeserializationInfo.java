@@ -2,7 +2,7 @@ package com.github.nmorel.gwtjackson.client.deser.bean;
 
 import com.fasterxml.jackson.annotation.ObjectIdGenerator;
 import com.fasterxml.jackson.annotation.ObjectIdGenerator.IdKey;
-import com.github.nmorel.gwtjackson.client.JsonDecodingContext;
+import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 
@@ -36,8 +36,8 @@ public abstract class IdentityDeserializationInfo<T> extends HasDeserializer<T, 
         return propertyName;
     }
 
-    public IdKey getIdKey( JsonReader reader, JsonDecodingContext ctx ) {
-        return newIdKey( getDeserializer( ctx ).decode( reader, ctx ) );
+    public IdKey getIdKey( JsonReader reader, JsonDeserializationContext ctx ) {
+        return newIdKey( getDeserializer( ctx ).deserialize( reader, ctx ) );
     }
 
     public IdKey newIdKey( Object id ) {

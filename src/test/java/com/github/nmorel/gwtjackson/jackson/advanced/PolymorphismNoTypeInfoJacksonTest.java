@@ -4,24 +4,25 @@ import com.github.nmorel.gwtjackson.jackson.AbstractJacksonTest;
 import com.github.nmorel.gwtjackson.shared.advanced.PolymorphismNoTypeInfoTester;
 import org.junit.Test;
 
-/** @author Nicolas Morel */
-public class PolymorphismNoTypeInfoJacksonTest extends AbstractJacksonTest
-{
+/**
+ * @author Nicolas Morel
+ */
+public class PolymorphismNoTypeInfoJacksonTest extends AbstractJacksonTest {
+
     @Test
-    public void testEncoding()
-    {
-        PolymorphismNoTypeInfoTester.INSTANCE.testEncoding( createEncoder( PolymorphismNoTypeInfoTester.Person[].class ) );
+    public void testSerialize() {
+        PolymorphismNoTypeInfoTester.INSTANCE.testSerialize( createEncoder( PolymorphismNoTypeInfoTester.Person[].class ) );
     }
 
     @Test
-    public void testDecodingNonInstantiableBean()
-    {
-        PolymorphismNoTypeInfoTester.INSTANCE.testDecodingNonInstantiableBean( createDecoder( PolymorphismNoTypeInfoTester.Person[].class ) );
+    public void testDeserializeNonInstantiableBean() {
+        PolymorphismNoTypeInfoTester.INSTANCE
+            .testDeserializeNonInstantiableBean( createDecoder( PolymorphismNoTypeInfoTester.Person[].class ) );
     }
 
     @Test
-    public void testDecodingInstantiableBean()
-    {
-        PolymorphismNoTypeInfoTester.INSTANCE.testDecodingInstantiableBean( createDecoder( PolymorphismNoTypeInfoTester.Employee[].class ) );
+    public void testDeserializeInstantiableBean() {
+        PolymorphismNoTypeInfoTester.INSTANCE
+            .testDeserializeInstantiableBean( createDecoder( PolymorphismNoTypeInfoTester.Employee[].class ) );
     }
 }

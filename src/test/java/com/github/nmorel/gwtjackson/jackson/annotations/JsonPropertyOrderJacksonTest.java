@@ -5,51 +5,47 @@ import com.github.nmorel.gwtjackson.shared.annotations.JsonPropertyOrderTester;
 import org.junit.Ignore;
 import org.junit.Test;
 
-/** @author Nicolas Morel */
-public class JsonPropertyOrderJacksonTest extends AbstractJacksonTest
-{
+/**
+ * @author Nicolas Morel
+ */
+public class JsonPropertyOrderJacksonTest extends AbstractJacksonTest {
+
     @Test
     @Ignore("jackson has a different natural order")
-    public void testEncodingBeanWithPropertiesNotOrdered()
-    {
+    public void testSerializeBeanWithPropertiesNotOrdered() {
         JsonPropertyOrderTester.INSTANCE
-            .testEncodingBeanWithPropertiesNotOrdered( createEncoder( JsonPropertyOrderTester.BeanWithPropertiesNotOrdered.class ) );
+            .testSerializeBeanWithPropertiesNotOrdered( createEncoder( JsonPropertyOrderTester.BeanWithPropertiesNotOrdered.class ) );
     }
 
     @Test
-    public void testEncodingBeanWithDefinedOrder()
-    {
+    public void testSerializeBeanWithDefinedOrder() {
         JsonPropertyOrderTester.INSTANCE
-            .testEncodingBeanWithDefinedOrder( createEncoder( JsonPropertyOrderTester.BeanWithDefinedOrder.class ) );
+            .testSerializeBeanWithDefinedOrder( createEncoder( JsonPropertyOrderTester.BeanWithDefinedOrder.class ) );
     }
 
     @Test
-    public void testEncodingBeanWithSomeDefinedOrder()
-    {
+    public void testSerializeBeanWithSomeDefinedOrder() {
         JsonPropertyOrderTester.INSTANCE
-            .testEncodingBeanWithSomeDefinedOrder( createEncoder( JsonPropertyOrderTester.BeanWithSomeDefinedOrder.class ) );
+            .testSerializeBeanWithSomeDefinedOrder( createEncoder( JsonPropertyOrderTester.BeanWithSomeDefinedOrder.class ) );
     }
 
     @Test
-    public void testEncodingBeanWithAlphabeticOrder()
-    {
+    public void testSerializeBeanWithAlphabeticOrder() {
         JsonPropertyOrderTester.INSTANCE
-            .testEncodingBeanWithAlphabeticOrder( createEncoder( JsonPropertyOrderTester.BeanWithAlphabeticOrder.class ) );
+            .testSerializeBeanWithAlphabeticOrder( createEncoder( JsonPropertyOrderTester.BeanWithAlphabeticOrder.class ) );
     }
 
     @Test
-    public void testEncodingBeanWithSomeDefinedAndRestAlphabeticOrder()
-    {
+    public void testSerializeBeanWithSomeDefinedAndRestAlphabeticOrder() {
         JsonPropertyOrderTester.INSTANCE
-            .testEncodingBeanWithSomeDefinedAndRestAlphabeticOrder( createEncoder( JsonPropertyOrderTester
+            .testSerializeBeanWithSomeDefinedAndRestAlphabeticOrder( createEncoder( JsonPropertyOrderTester
                 .BeanWithSomeDefinedAndRestAlphabeticOrder.class ) );
     }
 
     @Test
     @Ignore("jackson doesn't support it yet")
-    public void testDecodingBeanWithMissingRequiredProperties()
-    {
+    public void testDeserializeBeanWithMissingRequiredProperties() {
         JsonPropertyOrderTester.INSTANCE
-            .testDecodingBeanWithMissingRequiredProperties( createDecoder( JsonPropertyOrderTester.BeanWithPropertiesNotOrdered.class ) );
+            .testDeserializeBeanWithMissingRequiredProperties( createDecoder( JsonPropertyOrderTester.BeanWithPropertiesNotOrdered.class ) );
     }
 }

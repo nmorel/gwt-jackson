@@ -17,7 +17,7 @@ public class SqlTimeJsonDeserializerTest extends AbstractJsonDeserializerTest<Ti
     }
 
     @Override
-    public void testDecodeValue() {
+    public void testDeserializeValue() {
         assertDeserialization( new Time( 1377543971773l ), "1377543971773" );
         Time time = new Time( getUTCTime( 2012, 8, 18, 15, 45, 56, 543 ) );
         assertEquals( time.toString(), deserialize( "\"" + time.toString() + "\"" ).toString() );

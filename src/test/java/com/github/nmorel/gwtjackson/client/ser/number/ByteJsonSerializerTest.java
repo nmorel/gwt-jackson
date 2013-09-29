@@ -13,7 +13,7 @@ public class ByteJsonSerializerTest extends AbstractJsonSerializerTest<Byte> {
         return NumberJsonSerializer.getByteInstance();
     }
 
-    public void testEncodeValue() {
+    public void testSerializeValue() {
         assertSerialization( "34", (byte) 34 );
         assertSerialization( "1", new Byte( "1" ) );
         assertSerialization( "-128", Byte.MIN_VALUE );

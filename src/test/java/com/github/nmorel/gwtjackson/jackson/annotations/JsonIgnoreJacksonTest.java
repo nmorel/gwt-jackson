@@ -4,18 +4,18 @@ import com.github.nmorel.gwtjackson.jackson.AbstractJacksonTest;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonIgnoreTester;
 import org.junit.Test;
 
-/** @author Nicolas Morel */
-public class JsonIgnoreJacksonTest extends AbstractJacksonTest
-{
+/**
+ * @author Nicolas Morel
+ */
+public class JsonIgnoreJacksonTest extends AbstractJacksonTest {
+
     @Test
-    public void testEncoding()
-    {
-        JsonIgnoreTester.INSTANCE.testEncoding( createEncoder( JsonIgnoreTester.BeanWithIgnoredProperties.class ) );
+    public void testSerialize() {
+        JsonIgnoreTester.INSTANCE.testSerialize( createEncoder( JsonIgnoreTester.BeanWithIgnoredProperties.class ) );
     }
 
     @Test
-    public void testDecoding()
-    {
-        JsonIgnoreTester.INSTANCE.testDecoding( createDecoder( JsonIgnoreTester.BeanWithIgnoredProperties.class ) );
+    public void testDeserialize() {
+        JsonIgnoreTester.INSTANCE.testDeserialize( createDecoder( JsonIgnoreTester.BeanWithIgnoredProperties.class ) );
     }
 }

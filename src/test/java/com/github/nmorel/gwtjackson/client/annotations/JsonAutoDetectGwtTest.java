@@ -2,7 +2,7 @@ package com.github.nmorel.gwtjackson.client.annotations;
 
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;
-import com.github.nmorel.gwtjackson.shared.JsonMapperTester;
+import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonAutoDetectTester;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonAutoDetectTester.BeanOne;
 import com.google.gwt.core.client.GWT;
@@ -12,18 +12,18 @@ import com.google.gwt.core.client.GWT;
  */
 public class JsonAutoDetectGwtTest extends GwtJacksonTestCase {
 
-    public interface JsonAutoDetectMapper extends ObjectMapper<BeanOne>, JsonMapperTester<BeanOne> {
+    public interface JsonAutoDetectMapper extends ObjectMapper<BeanOne>, ObjectMapperTester<BeanOne> {
 
         static JsonAutoDetectMapper INSTANCE = GWT.create( JsonAutoDetectMapper.class );
     }
 
     private JsonAutoDetectTester tester = JsonAutoDetectTester.INSTANCE;
 
-    public void testEncodingAutoDetection() {
-        tester.testEncodingAutoDetection( JsonAutoDetectMapper.INSTANCE );
+    public void testSerializeAutoDetection() {
+        tester.testSerializeAutoDetection( JsonAutoDetectMapper.INSTANCE );
     }
 
-    public void testDecodingAutoDetection() {
-        tester.testDecodingAutoDetection( JsonAutoDetectMapper.INSTANCE );
+    public void testDeserializeAutoDetection() {
+        tester.testDeserializeAutoDetection( JsonAutoDetectMapper.INSTANCE );
     }
 }

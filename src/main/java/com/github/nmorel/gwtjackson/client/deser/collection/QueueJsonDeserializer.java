@@ -6,11 +6,9 @@ import java.util.Queue;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 
 /**
- * Default {@link com.github.nmorel.gwtjackson.client.JsonDeserializer} implementation for {@link java.util.Queue}. The decoding process
- * returns a {@link
- * java.util.LinkedList}.
+ * Default {@link JsonDeserializer} implementation for {@link Queue}. The deserialization process returns a {@link LinkedList}.
  *
- * @param <T> Type of the elements inside the {@link java.util.Queue}
+ * @param <T> Type of the elements inside the {@link Queue}
  *
  * @author Nicolas Morel
  */

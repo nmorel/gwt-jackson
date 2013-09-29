@@ -15,7 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.ObjectIdGenerator;
-import com.github.nmorel.gwtjackson.client.exception.JsonEncodingException;
+import com.github.nmorel.gwtjackson.client.exception.JsonSerializationException;
 import com.github.nmorel.gwtjackson.client.ser.BooleanJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.CharacterJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.DateJsonSerializer;
@@ -38,11 +38,13 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 import com.google.gwt.logging.client.LogConfiguration;
 
 /**
+ * Context for the serialization process.
+ *
  * @author Nicolas Morel
  */
-public class JsonEncodingContext extends JsonMappingContext {
+public class JsonSerializationContext extends JsonMappingContext {
 
-    private static final Logger logger = Logger.getLogger( "JsonEncoding" );
+    private static final Logger logger = Logger.getLogger( "JsonSerialization" );
 
     private final JsonWriter writer;
 
@@ -51,11 +53,11 @@ public class JsonEncodingContext extends JsonMappingContext {
     private List<ObjectIdGenerator<?>> generators;
 
     /*
-     * Encoding options
+     * Serialization options
      */
     private boolean useEqualityForObjectId = false;
 
-    public JsonEncodingContext( JsonWriter writer ) {
+    public JsonSerializationContext( JsonWriter writer ) {
         this.writer = writer;
     }
 
@@ -172,18 +174,39 @@ public class JsonEncodingContext extends JsonMappingContext {
         return IterableJsonSerializer.newInstance( serializer );
     }
 
-    public JsonEncodingException traceError( Object value, String message ) {
+    /**
+     * Trace an error with current writer state and returns a corresponding exception.
+     *
+     * @param value current value
+     * @param message error message
+     *
+     * @return a {@link JsonSerializationException} with the given message
+     */
+    public JsonSerializationException traceError( Object value, String message ) {
         getLogger().log( Level.SEVERE, message );
         traceWriterInfo( value );
-        return new JsonEncodingException( message );
+        return new JsonSerializationException( message );
     }
 
-    public JsonEncodingException traceError( Object value, Exception cause ) {
-        getLogger().log( Level.SEVERE, "Error while encoding", cause );
+    /**
+     * Trace an error with current writer state and returns a corresponding exception.
+     *
+     * @param value current value
+     * @param cause cause of the error
+     *
+     * @return a {@link JsonSerializationException} with the given cause
+     */
+    public JsonSerializationException traceError( Object value, Exception cause ) {
+        getLogger().log( Level.SEVERE, "Error during serialization", cause );
         traceWriterInfo( value );
-        return new JsonEncodingException( cause );
+        return new JsonSerializationException( cause );
     }
 
+    /**
+     * Trace the current writer state
+     *
+     * @param value current value
+     */
     private void traceWriterInfo( Object value ) {
         if ( LogConfiguration.loggingIsEnabled( Level.INFO ) ) {
             getLogger().log( Level.INFO, "Error on value <" + value + ">. Current output : <" + writer.getCurrentString() + ">" );

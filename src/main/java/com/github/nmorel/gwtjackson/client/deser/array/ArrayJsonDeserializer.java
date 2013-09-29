@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.util.AbstractCollection;
 import java.util.List;
 
-import com.github.nmorel.gwtjackson.client.JsonDecodingContext;
+import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 
 /**
- * Default {@link com.github.nmorel.gwtjackson.client.JsonDeserializer} implementation for array.
+ * Default {@link JsonDeserializer} implementation for array.
  *
  * @author Nicolas Morel
  */
@@ -51,19 +51,13 @@ public class ArrayJsonDeserializer<T> extends AbstractArrayJsonDeserializer<T[]>
     }
 
     @Override
-    public T[] doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException {
-        List<T> list = decodeList( reader, ctx, deserializer );
-
-        T[] result = arrayCreator.create( list.size() );
-        int i = 0;
-        for ( T value : list ) {
-            result[i++] = value;
-        }
-        return result;
+    public T[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+        List<T> list = deserializeIntoList( reader, ctx, deserializer );
+        return list.toArray( arrayCreator.create( list.size() ) );
     }
 
     @Override
-    public void setBackReference( String referenceName, Object reference, T[] value, JsonDecodingContext ctx ) {
+    public void setBackReference( String referenceName, Object reference, T[] value, JsonDeserializationContext ctx ) {
         if ( null != value && value.length > 0 ) {
             for ( T val : value ) {
                 deserializer.setBackReference( referenceName, reference, val, ctx );

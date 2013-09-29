@@ -15,7 +15,7 @@ public class BigDecimalJsonSerializerTest extends AbstractJsonSerializerTest<Big
         return NumberJsonSerializer.getBigDecimalInstance();
     }
 
-    public void testEncodeValue() {
+    public void testSerializeValue() {
         BigDecimal value = new BigDecimal( "15487846511321245665435132032454.1545815468465578451323888744" );
         assertSerialization( "15487846511321245665435132032454.1545815468465578451323888744", value );
     }

@@ -16,7 +16,7 @@ public class FloatJsonDeserializerTest extends AbstractJsonDeserializerTest<Floa
     }
 
     @Override
-    public void testDecodeValue() {
+    public void testDeserializeValue() {
         assertDeserialization( new Float( "34.10245" ), "34.10245" );
         assertDeserialization( new Float( "-784.15454" ), "\"-784.15454\"" );
         // the float emulation gives slightly different results => use double!

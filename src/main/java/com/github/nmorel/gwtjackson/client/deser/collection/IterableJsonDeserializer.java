@@ -4,14 +4,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.github.nmorel.gwtjackson.client.JsonDecodingContext;
+import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 
 /**
- * Default {@link com.github.nmorel.gwtjackson.client.JsonDeserializer} implementation for {@link Iterable}. The decoding process returns an
- * {@link java.util.ArrayList}.
+ * Default {@link JsonDeserializer} implementation for {@link Iterable}. The deserialization process returns an {@link ArrayList}.
  *
  * @param <T> Type of the elements inside the {@link Iterable}
  *
@@ -37,12 +36,12 @@ public class IterableJsonDeserializer<T> extends BaseIterableJsonDeserializer<It
     }
 
     @Override
-    public Iterable<T> doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException {
+    public Iterable<T> doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
         Collection<T> result = new ArrayList<T>();
 
         reader.beginArray();
         while ( JsonToken.END_ARRAY != reader.peek() ) {
-            result.add( deserializer.decode( reader, ctx ) );
+            result.add( deserializer.deserialize( reader, ctx ) );
         }
         reader.endArray();
 

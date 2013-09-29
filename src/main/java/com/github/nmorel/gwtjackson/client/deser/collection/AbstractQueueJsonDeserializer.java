@@ -6,11 +6,9 @@ import java.util.PriorityQueue;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 
 /**
- * Default {@link com.github.nmorel.gwtjackson.client.JsonDeserializer} implementation for {@link java.util.AbstractQueue}. The decoding
- * process returns a
- * {@link java.util.PriorityQueue}.
+ * Default {@link JsonDeserializer} implementation for {@link AbstractQueue}. The deserialization process returns a {@link PriorityQueue}.
  *
- * @param <T> Type of the elements inside the {@link java.util.AbstractQueue}
+ * @param <T> Type of the elements inside the {@link AbstractQueue}
  *
  * @author Nicolas Morel
  */

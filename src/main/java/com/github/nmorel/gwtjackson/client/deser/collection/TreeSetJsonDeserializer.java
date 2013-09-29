@@ -5,9 +5,9 @@ import java.util.TreeSet;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 
 /**
- * Default {@link com.github.nmorel.gwtjackson.client.JsonDeserializer} implementation for {@link java.util.TreeSet}.
+ * Default {@link JsonDeserializer} implementation for {@link TreeSet}.
  *
- * @param <T> Type of the elements inside the {@link java.util.TreeSet}
+ * @param <T> Type of the elements inside the {@link TreeSet}
  *
  * @author Nicolas Morel
  */

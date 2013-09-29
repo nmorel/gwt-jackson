@@ -1,7 +1,7 @@
 package com.github.nmorel.gwtjackson.client.ser;
 
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
-import com.github.nmorel.gwtjackson.client.JsonEncodingContext;
+import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
@@ -12,7 +12,7 @@ public abstract class AbstractJsonSerializerTest<T> extends GwtJacksonTestCase {
 
     protected abstract JsonSerializer<T> createSerializer();
 
-    public void testEncodeNullValue() {
+    public void testSerializeNullValue() {
         assertSerialization( "null", null );
     }
 
@@ -21,7 +21,7 @@ public abstract class AbstractJsonSerializerTest<T> extends GwtJacksonTestCase {
         JsonWriter writer = new JsonWriter( builder );
         writer.setLenient( true );
         writer.setSerializeNulls( false );
-        createSerializer().encode( writer, value, new JsonEncodingContext( writer ) );
+        createSerializer().serialize( writer, value, new JsonSerializationContext( writer ) );
         return builder.toString();
     }
 
@@ -29,5 +29,5 @@ public abstract class AbstractJsonSerializerTest<T> extends GwtJacksonTestCase {
         assertEquals( expected, serialize( value ) );
     }
 
-    public abstract void testEncodeValue();
+    public abstract void testSerializeValue();
 }

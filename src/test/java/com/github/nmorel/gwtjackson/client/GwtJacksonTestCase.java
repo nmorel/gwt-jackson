@@ -3,7 +3,7 @@ package com.github.nmorel.gwtjackson.client;
 import java.util.Date;
 
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
-import com.github.nmorel.gwtjackson.shared.JsonMapperTester;
+import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
 import com.google.gwt.junit.client.GWTTestCase;
 
 /**
@@ -25,16 +25,16 @@ public abstract class GwtJacksonTestCase extends GWTTestCase {
         return AbstractTester.getUTCDate( year, month, day, hour, minute, second, milli );
     }
 
-    protected <T> JsonMapperTester<T> createMapper( final ObjectMapper<T> mapper ) {
-        return new JsonMapperTester<T>() {
+    protected <T> ObjectMapperTester<T> createMapper( final ObjectMapper<T> mapper ) {
+        return new ObjectMapperTester<T>() {
             @Override
-            public T decode( String input ) {
-                return mapper.decode( input );
+            public T read( String input ) {
+                return mapper.read( input );
             }
 
             @Override
-            public String encode( T input ) {
-                return mapper.encode( input );
+            public String write( T input ) {
+                return mapper.write( input );
             }
         };
     }

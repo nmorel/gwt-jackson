@@ -112,7 +112,8 @@ public final class PropertyInfo {
         result.type = constructorParameter.getType();
         result.required = constructorParameter.getAnnotation( JsonProperty.class ).required();
         result.propertyName = propertyName;
-        // TODO find a better way. If we let null, the decoder won't be added. But the setterAccessor is never used for constructor fields.
+        // TODO find a better way. If we let null, the deserializer won't be added. But the setterAccessor is never used for constructor
+        // fields.
         result.setterAccessor = "";
         return result;
     }
@@ -173,7 +174,7 @@ public final class PropertyInfo {
             return;
         }
 
-        // The mapper is in same package as bean so we can directly access all fields/getters but private ones. In case
+        // The serializer is in same package as bean so we can directly access all fields/getters but private ones. In case
         // the getter or field is in a different package because it is on a superclass and is not public, we use jsni.
 
         JPackage beanPackage = mapperInfo.getType().getPackage();
@@ -225,7 +226,7 @@ public final class PropertyInfo {
             // we can't set the value
         }
 
-        // The mapper is in same package as bean so we can directly access all fields/setters but private ones. In case
+        // The deserializer is in same package as bean so we can directly access all fields/setters but private ones. In case
         // the setter or field is in a different package because it is on a superclass and is not public, we use jsni.
 
         JPackage beanPackage = mapperInfo.getType().getPackage();

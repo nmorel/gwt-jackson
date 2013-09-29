@@ -1,6 +1,6 @@
 package com.github.nmorel.gwtjackson.client.deser.bean;
 
-import com.github.nmorel.gwtjackson.client.JsonDecodingContext;
+import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 
 /**
  * @author Nicolas Morel
@@ -8,7 +8,7 @@ import com.github.nmorel.gwtjackson.client.JsonDecodingContext;
 
 public interface InstanceBuilder<T> {
 
-    T build( JsonDecodingContext ctx );
+    T build( JsonDeserializationContext ctx );
 
     void addCallback( InstanceBuilderCallback<T> callback );
 }

@@ -15,7 +15,7 @@ public class IntegerJsonDeserializerTest extends AbstractJsonDeserializerTest<In
     }
 
     @Override
-    public void testDecodeValue() {
+    public void testDeserializeValue() {
         assertDeserialization( 34, "34" );
         assertDeserialization( -1, "\"-1\"" );
         assertDeserialization( Integer.MIN_VALUE, "-2147483648" );

@@ -17,7 +17,7 @@ public class EnumJsonSerializerTest extends AbstractJsonSerializerTest<EnumTest>
         return EnumJsonSerializer.getInstance();
     }
 
-    public void testEncodeValue() {
+    public void testSerializeValue() {
         assertSerialization( "\"ONE\"", EnumTest.ONE );
         assertSerialization( "\"TWO\"", EnumTest.TWO );
         assertSerialization( "\"THREE\"", EnumTest.THREE );

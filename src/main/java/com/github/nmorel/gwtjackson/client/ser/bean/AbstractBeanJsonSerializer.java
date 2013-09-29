@@ -5,40 +5,40 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.github.nmorel.gwtjackson.client.JsonEncodingContext;
+import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
 /**
- * Base implementation of {@link com.github.nmorel.gwtjackson.client.JsonSerializer} for beans.
+ * Base implementation of {@link JsonSerializer} for beans.
  *
  * @author Nicolas Morel
  */
 public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
 
-    private final Map<String, EncoderProperty<T, ?>> encoders = new LinkedHashMap<String, EncoderProperty<T, ?>>();
+    private final Map<String, BeanPropertySerializer<T, ?>> serializers = new LinkedHashMap<String, BeanPropertySerializer<T, ?>>();
 
     private IdentitySerializationInfo<T, ?> identityInfo;
 
     private SuperclassSerializationInfo<T> superclassInfo;
 
     /**
-     * Add an {@link EncoderProperty}
+     * Adds an {@link BeanPropertySerializer}.
      *
      * @param propertyName name of the property
-     * @param encoder encoder
+     * @param serializer serializer
      */
-    protected void addProperty( String propertyName, EncoderProperty<T, ?> encoder ) {
-        encoders.put( propertyName, encoder );
+    protected void addPropertySerializer( String propertyName, BeanPropertySerializer<T, ?> serializer ) {
+        serializers.put( propertyName, serializer );
     }
 
     @Override
-    public void doEncode( JsonWriter writer, @Nonnull T value, JsonEncodingContext ctx ) throws IOException {
+    public void doSerialize( JsonWriter writer, @Nonnull T value, JsonSerializationContext ctx ) throws IOException {
         ObjectIdSerializer<?> idWriter = null;
         if ( null != identityInfo ) {
             idWriter = ctx.getObjectId( value );
             if ( null != idWriter ) {
-                // the bean has already been encoded, we just encode the id-
+                // the bean has already been serialized, we just serialize the id
                 idWriter.serializeId( writer, ctx );
                 return;
             }
@@ -58,7 +58,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
             }
 
             if ( !superclassInfo.isIncludeTypeInfo() ) {
-                // we don't include type info so we just encode the properties
+                // we don't include type info so we just serialize the properties
                 writer.beginObject();
                 if ( null != idWriter ) {
                     writer.name( identityInfo.getPropertyName() );
@@ -131,10 +131,19 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
         }
     }
 
-    public final void serializeObject( JsonWriter writer, T value, JsonEncodingContext ctx ) throws IOException {
-        for ( Map.Entry<String, EncoderProperty<T, ?>> entry : encoders.entrySet() ) {
+    /**
+     * Serializes all the properties of the bean. The {@link JsonWriter} must be in a json object.
+     *
+     * @param writer writer
+     * @param value bean to serialize
+     * @param ctx context of the serialization process
+     *
+     * @throws IOException if an error occurs while writing a property
+     */
+    public final void serializeObject( JsonWriter writer, T value, JsonSerializationContext ctx ) throws IOException {
+        for ( Map.Entry<String, BeanPropertySerializer<T, ?>> entry : serializers.entrySet() ) {
             writer.name( entry.getKey() );
-            entry.getValue().encode( writer, value, ctx );
+            entry.getValue().serialize( writer, value, ctx );
         }
     }
 

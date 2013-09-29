@@ -3,8 +3,8 @@ package com.github.nmorel.gwtjackson.shared.advanced.identity;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
-import com.github.nmorel.gwtjackson.shared.JsonDecoderTester;
-import com.github.nmorel.gwtjackson.shared.JsonMapperTester;
+import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
+import com.github.nmorel.gwtjackson.shared.ObjectReaderTester;
 
 /**
  * Test from jackson-databind and adapted for the project
@@ -12,7 +12,7 @@ import com.github.nmorel.gwtjackson.shared.JsonMapperTester;
 public final class ObjectIdDeserializationTester extends AbstractTester {
     // // Classes for external id use
 
-    @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id")
+    @JsonIdentityInfo( generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id" )
     public static class Identifiable {
 
         public int value;
@@ -28,7 +28,7 @@ public final class ObjectIdDeserializationTester extends AbstractTester {
         }
     }
 
-    @JsonIdentityInfo(generator = ObjectIdGenerators.UUIDGenerator.class, property = "#")
+    @JsonIdentityInfo( generator = ObjectIdGenerators.UUIDGenerator.class, property = "#" )
     public static class UUIDNode {
 
         public int value;
@@ -52,7 +52,7 @@ public final class ObjectIdDeserializationTester extends AbstractTester {
 
     public static class IdWrapper {
 
-        @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
+        @JsonIdentityInfo( generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id" )
         public ValueNode node;
 
         public IdWrapper() {
@@ -80,7 +80,7 @@ public final class ObjectIdDeserializationTester extends AbstractTester {
 
     // // Classes for external id use
 
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "customId")
+    @JsonIdentityInfo( generator = ObjectIdGenerators.PropertyGenerator.class, property = "customId" )
     public static class IdentifiableCustom {
 
         public int value;
@@ -101,8 +101,8 @@ public final class ObjectIdDeserializationTester extends AbstractTester {
 
     public static class IdWrapperExt {
 
-        @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
-            property = "customId")
+        @JsonIdentityInfo( generator = ObjectIdGenerators.PropertyGenerator.class,
+            property = "customId" )
         public ValueNodeExt node;
 
         public IdWrapperExt() {
@@ -159,14 +159,14 @@ public final class ObjectIdDeserializationTester extends AbstractTester {
     /*****************************************************
      */
 
-    public void testSimpleDeserializationClass( JsonDecoderTester<Identifiable> mapper ) {
+    public void testSimpleDeserializationClass( ObjectReaderTester<Identifiable> reader ) {
         // then bring back...
-        Identifiable result = mapper.decode( EXP_SIMPLE_INT_CLASS );
+        Identifiable result = reader.read( EXP_SIMPLE_INT_CLASS );
         assertEquals( 13, result.value );
         assertSame( result, result.next );
     }
 
-    public void testSimpleUUIDForClassRoundTrip( JsonMapperTester<UUIDNode> mapper ) {
+    public void testSimpleUUIDForClassRoundTrip( ObjectMapperTester<UUIDNode> mapper ) {
         UUIDNode root = new UUIDNode( 1 );
         UUIDNode child1 = new UUIDNode( 2 );
         UUIDNode child2 = new UUIDNode( 3 );
@@ -176,10 +176,10 @@ public final class ObjectIdDeserializationTester extends AbstractTester {
         child2.parent = root;
         child1.first = child2;
 
-        String json = mapper.encode( root );
+        String json = mapper.write( root );
 
         // and should come back the same too...
-        UUIDNode result = mapper.decode( json );
+        UUIDNode result = mapper.read( json );
         assertEquals( 1, result.value );
         UUIDNode result2 = result.first;
         UUIDNode result3 = result.second;
@@ -199,29 +199,29 @@ public final class ObjectIdDeserializationTester extends AbstractTester {
     /*****************************************************
      */
 
-    public void testSimpleDeserializationProperty( JsonDecoderTester<IdWrapper> mapper ) {
-        IdWrapper result = mapper.decode( EXP_SIMPLE_INT_PROP );
+    public void testSimpleDeserializationProperty( ObjectReaderTester<IdWrapper> reader ) {
+        IdWrapper result = reader.read( EXP_SIMPLE_INT_PROP );
         assertEquals( 7, result.node.value );
         assertSame( result.node, result.node.next.node );
     }
 
     // Another test to ensure ordering is not required (i.e. can do front references)
-    public void testSimpleDeserWithForwardRefs( JsonDecoderTester<IdWrapper> mapper ) {
-        IdWrapper result = mapper.decode( "{\"node\":{\"value\":7,\"next\":{\"node\":1}, \"@id\":1}}" );
+    public void testSimpleDeserWithForwardRefs( ObjectReaderTester<IdWrapper> reader ) {
+        IdWrapper result = reader.read( "{\"node\":{\"value\":7,\"next\":{\"node\":1}, \"@id\":1}}" );
         assertEquals( 7, result.node.value );
         assertSame( result.node, result.node.next.node );
     }
 
-    public void testCustomDeserializationClass( JsonDecoderTester<IdentifiableCustom> mapper ) {
+    public void testCustomDeserializationClass( ObjectReaderTester<IdentifiableCustom> reader ) {
         // then bring back...
-        IdentifiableCustom result = mapper.decode( EXP_CUSTOM_VIA_CLASS );
+        IdentifiableCustom result = reader.read( EXP_CUSTOM_VIA_CLASS );
         assertEquals( -900, result.value );
         assertSame( result, result.next );
     }
 
-    public void testCustomDeserializationProperty( JsonDecoderTester<IdWrapperExt> mapper ) {
+    public void testCustomDeserializationProperty( ObjectReaderTester<IdWrapperExt> reader ) {
         // then bring back...
-        IdWrapperExt result = mapper.decode( EXP_CUSTOM_VIA_PROP );
+        IdWrapperExt result = reader.read( EXP_CUSTOM_VIA_PROP );
         assertEquals( 99, result.node.value );
         assertSame( result.node, result.node.next.node );
         assertEquals( 3, result.node.customId );

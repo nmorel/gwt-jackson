@@ -67,23 +67,25 @@ import com.github.nmorel.gwtjackson.client.deser.collection.SortedSetJsonDeseria
 import com.github.nmorel.gwtjackson.client.deser.collection.StackJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.collection.TreeSetJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.collection.VectorJsonDeserializer;
-import com.github.nmorel.gwtjackson.client.exception.JsonDecodingException;
+import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException;
 import com.github.nmorel.gwtjackson.client.ser.IterableJsonSerializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.google.gwt.logging.client.LogConfiguration;
 
 /**
+ * Context for the deserialization process.
+ *
  * @author Nicolas Morel
  */
-public class JsonDecodingContext extends JsonMappingContext {
+public class JsonDeserializationContext extends JsonMappingContext {
 
-    private static final Logger logger = Logger.getLogger( "JsonDecoding" );
+    private static final Logger logger = Logger.getLogger( "JsonDeserialization" );
 
     private final JsonReader reader;
 
     private Map<IdKey, Object> idToObject;
 
-    public JsonDecodingContext( JsonReader reader ) {
+    public JsonDeserializationContext( JsonReader reader ) {
         this.reader = reader;
     }
 
@@ -188,89 +190,90 @@ public class JsonDecodingContext extends JsonMappingContext {
         return UUIDJsonDeserializer.getInstance();
     }
 
-    public <T> JsonDeserializer<T[]> newArrayJsonDeserializer( JsonDeserializer<T> mapper, ArrayJsonDeserializer.ArrayCreator<T>
-        arrayCreator ) {
-        return ArrayJsonDeserializer.newInstance( mapper, arrayCreator );
+    public <T> JsonDeserializer<T[]> newArrayJsonDeserializer( JsonDeserializer<T> deserializer,
+                                                               ArrayJsonDeserializer.ArrayCreator<T> arrayCreator ) {
+        return ArrayJsonDeserializer.newInstance( deserializer, arrayCreator );
     }
 
-    public <T> JsonDeserializer<Iterable<T>> newIterableJsonDeserializer( JsonDeserializer<T> mapper ) {
-        return IterableJsonDeserializer.newInstance( mapper );
+    public <T> JsonDeserializer<Iterable<T>> newIterableJsonDeserializer( JsonDeserializer<T> deserializer ) {
+        return IterableJsonDeserializer.newInstance( deserializer );
     }
 
-    public <T> JsonDeserializer<Collection<T>> newCollectionJsonDeserializer( JsonDeserializer<T> mapper ) {
-        return CollectionJsonDeserializer.newInstance( mapper );
+    public <T> JsonDeserializer<Collection<T>> newCollectionJsonDeserializer( JsonDeserializer<T> deserializer ) {
+        return CollectionJsonDeserializer.newInstance( deserializer );
     }
 
-    public <T> JsonDeserializer<AbstractCollection<T>> newAbstractCollectionJsonDeserializer( JsonDeserializer<T> mapper ) {
-        return AbstractCollectionJsonDeserializer.newInstance( mapper );
+    public <T> JsonDeserializer<AbstractCollection<T>> newAbstractCollectionJsonDeserializer( JsonDeserializer<T> deserializer ) {
+        return AbstractCollectionJsonDeserializer.newInstance( deserializer );
     }
 
-    public <T> JsonDeserializer<List<T>> newListJsonDeserializer( JsonDeserializer<T> mapper ) {
-        return ListJsonDeserializer.newInstance( mapper );
+    public <T> JsonDeserializer<List<T>> newListJsonDeserializer( JsonDeserializer<T> deserializer ) {
+        return ListJsonDeserializer.newInstance( deserializer );
     }
 
-    public <T> JsonDeserializer<AbstractList<T>> newAbstractListJsonDeserializer( JsonDeserializer<T> mapper ) {
-        return AbstractListJsonDeserializer.newInstance( mapper );
+    public <T> JsonDeserializer<AbstractList<T>> newAbstractListJsonDeserializer( JsonDeserializer<T> deserializer ) {
+        return AbstractListJsonDeserializer.newInstance( deserializer );
     }
 
-    public <T> JsonDeserializer<ArrayList<T>> newArrayListJsonDeserializer( JsonDeserializer<T> mapper ) {
-        return ArrayListJsonDeserializer.newInstance( mapper );
+    public <T> JsonDeserializer<ArrayList<T>> newArrayListJsonDeserializer( JsonDeserializer<T> deserializer ) {
+        return ArrayListJsonDeserializer.newInstance( deserializer );
     }
 
-    public <T> JsonDeserializer<AbstractSequentialList<T>> newAbstractSequentialListJsonDeserializer( JsonDeserializer<T> mapper ) {
-        return AbstractSequentialListJsonDeserializer.newInstance( mapper );
+    public <T> JsonDeserializer<AbstractSequentialList<T>> newAbstractSequentialListJsonDeserializer( JsonDeserializer<T> deserializer ) {
+        return AbstractSequentialListJsonDeserializer.newInstance( deserializer );
     }
 
-    public <T> JsonDeserializer<LinkedList<T>> newLinkedListJsonDeserializer( JsonDeserializer<T> mapper ) {
-        return LinkedListJsonDeserializer.newInstance( mapper );
+    public <T> JsonDeserializer<LinkedList<T>> newLinkedListJsonDeserializer( JsonDeserializer<T> deserializer ) {
+        return LinkedListJsonDeserializer.newInstance( deserializer );
     }
 
-    public <T> JsonDeserializer<Vector<T>> newVectorJsonDeserializer( JsonDeserializer<T> mapper ) {
-        return VectorJsonDeserializer.newInstance( mapper );
+    public <T> JsonDeserializer<Vector<T>> newVectorJsonDeserializer( JsonDeserializer<T> deserializer ) {
+        return VectorJsonDeserializer.newInstance( deserializer );
     }
 
-    public <T> JsonDeserializer<Stack<T>> newStackJsonDeserializer( JsonDeserializer<T> mapper ) {
-        return StackJsonDeserializer.newInstance( mapper );
+    public <T> JsonDeserializer<Stack<T>> newStackJsonDeserializer( JsonDeserializer<T> deserializer ) {
+        return StackJsonDeserializer.newInstance( deserializer );
     }
 
-    public <T> JsonDeserializer<Set<T>> newSetJsonDeserializer( JsonDeserializer<T> mapper ) {
-        return SetJsonDeserializer.newInstance( mapper );
+    public <T> JsonDeserializer<Set<T>> newSetJsonDeserializer( JsonDeserializer<T> deserializer ) {
+        return SetJsonDeserializer.newInstance( deserializer );
     }
 
-    public <T> JsonDeserializer<AbstractSet<T>> newAbstractSetJsonDeserializer( JsonDeserializer<T> mapper ) {
-        return AbstractSetJsonDeserializer.newInstance( mapper );
+    public <T> JsonDeserializer<AbstractSet<T>> newAbstractSetJsonDeserializer( JsonDeserializer<T> deserializer ) {
+        return AbstractSetJsonDeserializer.newInstance( deserializer );
     }
 
-    public <T> JsonDeserializer<HashSet<T>> newHashSetJsonDeserializer( JsonDeserializer<T> mapper ) {
-        return HashSetJsonDeserializer.newInstance( mapper );
+    public <T> JsonDeserializer<HashSet<T>> newHashSetJsonDeserializer( JsonDeserializer<T> deserializer ) {
+        return HashSetJsonDeserializer.newInstance( deserializer );
     }
 
-    public <T> JsonDeserializer<LinkedHashSet<T>> newLinkedHashSetJsonDeserializer( JsonDeserializer<T> mapper ) {
-        return LinkedHashSetJsonDeserializer.newInstance( mapper );
+    public <T> JsonDeserializer<LinkedHashSet<T>> newLinkedHashSetJsonDeserializer( JsonDeserializer<T> deserializer ) {
+        return LinkedHashSetJsonDeserializer.newInstance( deserializer );
     }
 
-    public <T> JsonDeserializer<SortedSet<T>> newSortedSetJsonDeserializer( JsonDeserializer<T> mapper ) {
-        return SortedSetJsonDeserializer.newInstance( mapper );
+    public <T> JsonDeserializer<SortedSet<T>> newSortedSetJsonDeserializer( JsonDeserializer<T> deserializer ) {
+        return SortedSetJsonDeserializer.newInstance( deserializer );
     }
 
-    public <T> JsonDeserializer<TreeSet<T>> newTreeSetJsonDeserializer( JsonDeserializer<T> mapper ) {
-        return TreeSetJsonDeserializer.newInstance( mapper );
+    public <T> JsonDeserializer<TreeSet<T>> newTreeSetJsonDeserializer( JsonDeserializer<T> deserializer ) {
+        return TreeSetJsonDeserializer.newInstance( deserializer );
     }
 
-    public <T extends Enum<T>> JsonDeserializer<EnumSet<T>> newEnumSetJsonDeserializer( Class<T> enumClass, JsonDeserializer<T> mapper ) {
-        return EnumSetJsonDeserializer.newInstance( enumClass, mapper );
+    public <T extends Enum<T>> JsonDeserializer<EnumSet<T>> newEnumSetJsonDeserializer( Class<T> enumClass,
+                                                                                        JsonDeserializer<T> deserializer ) {
+        return EnumSetJsonDeserializer.newInstance( enumClass, deserializer );
     }
 
-    public <T> JsonDeserializer<Queue<T>> newQueueJsonDeserializer( JsonDeserializer<T> mapper ) {
-        return QueueJsonDeserializer.newInstance( mapper );
+    public <T> JsonDeserializer<Queue<T>> newQueueJsonDeserializer( JsonDeserializer<T> deserializer ) {
+        return QueueJsonDeserializer.newInstance( deserializer );
     }
 
-    public <T> JsonDeserializer<AbstractQueue<T>> newAbstractQueueJsonDeserializer( JsonDeserializer<T> mapper ) {
-        return AbstractQueueJsonDeserializer.newInstance( mapper );
+    public <T> JsonDeserializer<AbstractQueue<T>> newAbstractQueueJsonDeserializer( JsonDeserializer<T> deserializer ) {
+        return AbstractQueueJsonDeserializer.newInstance( deserializer );
     }
 
-    public <T> JsonDeserializer<PriorityQueue<T>> newPriorityQueueJsonDeserializer( JsonDeserializer<T> mapper ) {
-        return PriorityQueueJsonDeserializer.newInstance( mapper );
+    public <T> JsonDeserializer<PriorityQueue<T>> newPriorityQueueJsonDeserializer( JsonDeserializer<T> deserializer ) {
+        return PriorityQueueJsonDeserializer.newInstance( deserializer );
     }
 
     public <T extends Enum<T>> JsonDeserializer<T> newEnumJsonDeserializer( Class<T> enumClass ) {
@@ -281,18 +284,35 @@ public class JsonDecodingContext extends JsonMappingContext {
         return IterableJsonSerializer.newInstance( serializer );
     }
 
-    public JsonDecodingException traceError( String message ) {
+    /**
+     * Trace an error with current reader state and returns a corresponding exception.
+     *
+     * @param message error message
+     *
+     * @return a {@link JsonDeserializationException} with the given message
+     */
+    public JsonDeserializationException traceError( String message ) {
         getLogger().log( Level.SEVERE, message );
         traceReaderInfo();
-        return new JsonDecodingException( message );
+        return new JsonDeserializationException( message );
     }
 
-    public JsonDecodingException traceError( Exception cause ) {
-        getLogger().log( Level.SEVERE, "Error while decoding", cause );
+    /**
+     * Trace an error with current reader state and returns a corresponding exception.
+     *
+     * @param cause cause of the error
+     *
+     * @return a {@link JsonDeserializationException} with the given cause
+     */
+    public JsonDeserializationException traceError( Exception cause ) {
+        getLogger().log( Level.SEVERE, "Error during deserialization", cause );
         traceReaderInfo();
-        return new JsonDecodingException( cause );
+        return new JsonDeserializationException( cause );
     }
 
+    /**
+     * Trace the current reader state
+     */
     private void traceReaderInfo() {
         if ( LogConfiguration.loggingIsEnabled( Level.INFO ) ) {
             getLogger().log( Level.INFO, "Error at line " + reader.getLineNumber() + " and column " + reader

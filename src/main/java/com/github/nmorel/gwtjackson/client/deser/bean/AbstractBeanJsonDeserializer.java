@@ -5,21 +5,23 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.ObjectIdGenerator.IdKey;
-import com.github.nmorel.gwtjackson.client.JsonDecodingContext;
+import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 
 /**
- * Base implementation of {@link com.github.nmorel.gwtjackson.client.JsonDeserializer} for beans.
+ * Base implementation of {@link JsonDeserializer} for beans.
  *
  * @author Nicolas Morel
  */
 public abstract class AbstractBeanJsonDeserializer<T, B extends InstanceBuilder<T>> extends JsonDeserializer<T> {
 
-    private final Map<String, DecoderProperty<T, B>> decoders = new LinkedHashMap<String, DecoderProperty<T, B>>();
+    private final Map<String, BeanPropertyDeserializer<T, B, ?>> deserializers = new LinkedHashMap<String, BeanPropertyDeserializer<T, B,
+        ?>>();
 
-    private final Map<String, BackReferenceProperty<T, ?>> backReferenceDecoders = new LinkedHashMap<String, BackReferenceProperty<T, ?>>();
+    private final Map<String, BackReferenceProperty<T, ?>> backReferenceDeserializers = new LinkedHashMap<String,
+        BackReferenceProperty<T, ?>>();
 
     private IdentityDeserializationInfo<?> identityInfo;
 
@@ -27,16 +29,16 @@ public abstract class AbstractBeanJsonDeserializer<T, B extends InstanceBuilder<
 
     protected abstract boolean isInstantiable();
 
-    protected abstract B newInstanceBuilder( JsonDecodingContext ctx );
+    protected abstract B newInstanceBuilder( JsonDeserializationContext ctx );
 
     /**
-     * Add a {@link DecoderProperty}
+     * Add a {@link BeanPropertyDeserializer}
      *
      * @param propertyName name of the property
-     * @param decoder decoder
+     * @param deserializer deserializer
      */
-    protected void addProperty( String propertyName, DecoderProperty<T, B> decoder ) {
-        decoders.put( propertyName, decoder );
+    protected void addProperty( String propertyName, BeanPropertyDeserializer<T, B, ?> deserializer ) {
+        deserializers.put( propertyName, deserializer );
     }
 
     /**
@@ -46,11 +48,11 @@ public abstract class AbstractBeanJsonDeserializer<T, B extends InstanceBuilder<
      * @param backReference backReference
      */
     protected void addProperty( String referenceName, BackReferenceProperty<T, ?> backReference ) {
-        backReferenceDecoders.put( referenceName, backReference );
+        backReferenceDeserializers.put( referenceName, backReference );
     }
 
     @Override
-    public T doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException {
+    public T doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
         if ( null != identityInfo && !JsonToken.BEGIN_OBJECT.equals( reader.peek() ) ) {
             IdKey id = identityInfo.getIdKey( reader, ctx );
             Object instance = ctx.getObjectWithId( id );
@@ -74,7 +76,7 @@ public abstract class AbstractBeanJsonDeserializer<T, B extends InstanceBuilder<
                     }
                     String typeInfoProperty = reader.nextString();
 
-                    result = decodeSubtype( reader, ctx, typeInfoProperty );
+                    result = deserializeSubtype( reader, ctx, typeInfoProperty );
                     reader.endObject();
                     break;
 
@@ -84,7 +86,7 @@ public abstract class AbstractBeanJsonDeserializer<T, B extends InstanceBuilder<
                     reader.beginObject();
                     String typeInfoWrapObj = reader.nextName();
                     reader.beginObject();
-                    result = decodeSubtype( reader, ctx, typeInfoWrapObj );
+                    result = deserializeSubtype( reader, ctx, typeInfoWrapObj );
                     reader.endObject();
                     reader.endObject();
                     break;
@@ -95,7 +97,7 @@ public abstract class AbstractBeanJsonDeserializer<T, B extends InstanceBuilder<
                     reader.beginArray();
                     String typeInfoWrapArray = reader.nextString();
                     reader.beginObject();
-                    result = decodeSubtype( reader, ctx, typeInfoWrapArray );
+                    result = deserializeSubtype( reader, ctx, typeInfoWrapArray );
                     reader.endObject();
                     reader.endArray();
                     break;
@@ -114,7 +116,7 @@ public abstract class AbstractBeanJsonDeserializer<T, B extends InstanceBuilder<
         return result;
     }
 
-    public final T deserializeObject( final JsonReader reader, final JsonDecodingContext ctx ) throws IOException {
+    public final T deserializeObject( final JsonReader reader, final JsonDeserializationContext ctx ) throws IOException {
         B builder = newInstanceBuilder( ctx );
 
         while ( JsonToken.NAME.equals( reader.peek() ) ) {
@@ -124,13 +126,13 @@ public abstract class AbstractBeanJsonDeserializer<T, B extends InstanceBuilder<
                 continue;
             }
 
-            DecoderProperty<T, B> property = decoders.get( name );
+            BeanPropertyDeserializer<T, B, ?> property = deserializers.get( name );
             if ( null != identityInfo ) {
                 final Object id;
                 if ( null == property ) {
-                    id = identityInfo.getDeserializer( ctx ).decode( reader, ctx );
+                    id = identityInfo.getDeserializer( ctx ).deserialize( reader, ctx );
                 } else {
-                    id = property.decode( reader, builder, ctx );
+                    id = property.deserialize( reader, builder, ctx );
                 }
                 builder.addCallback( new InstanceBuilderCallback<T>() {
                     @Override
@@ -142,43 +144,43 @@ public abstract class AbstractBeanJsonDeserializer<T, B extends InstanceBuilder<
                 // TODO add a configuration to tell if we skip or throw an unknown property
                 reader.skipValue();
             } else {
-                property.decode( reader, builder, ctx );
+                property.deserialize( reader, builder, ctx );
             }
         }
 
         return builder.build( ctx );
     }
 
-    public final T decodeSubtype( JsonReader reader, JsonDecodingContext ctx, String typeInfo ) throws IOException {
-        SubtypeDeserializer<? extends T> mapper = superclassInfo.getMapper( typeInfo );
-        if ( null == mapper ) {
-            throw ctx.traceError( "No mapper found for the type " + typeInfo );
+    public final T deserializeSubtype( JsonReader reader, JsonDeserializationContext ctx, String typeInfo ) throws IOException {
+        SubtypeDeserializer<? extends T> deserializer = superclassInfo.getDeserializer( typeInfo );
+        if ( null == deserializer ) {
+            throw ctx.traceError( "No deserializer found for the type " + typeInfo );
         }
 
-        return mapper.deserializeObject( reader, ctx );
+        return deserializer.deserializeObject( reader, ctx );
     }
 
     @Override
-    public void setBackReference( String referenceName, Object reference, T value, JsonDecodingContext ctx ) {
+    public void setBackReference( String referenceName, Object reference, T value, JsonDeserializationContext ctx ) {
         if ( null == value ) {
             return;
         }
 
         if ( null != superclassInfo ) {
-            SubtypeDeserializer mapper = superclassInfo.getMapper( value.getClass() );
-            if ( null == mapper ) {
+            SubtypeDeserializer deserializer = superclassInfo.getDeserializer( value.getClass() );
+            if ( null == deserializer ) {
                 // should never happen, the generator add every subtype to the map
-                throw ctx.traceError( "Cannot find mapper for class " + value.getClass() );
+                throw ctx.traceError( "Cannot find deserializer for class " + value.getClass() );
             }
-            JsonDeserializer<T> jsonDeserializer = mapper.getDeserializer( ctx );
+            JsonDeserializer<T> jsonDeserializer = deserializer.getDeserializer( ctx );
             if ( jsonDeserializer != this ) {
-                // we test if it's not this mapper to avoid an infinite loop
+                // we test if it's not this deserializer to avoid an infinite loop
                 jsonDeserializer.setBackReference( referenceName, reference, value, ctx );
                 return;
             }
         }
 
-        BackReferenceProperty backReferenceProperty = backReferenceDecoders.get( referenceName );
+        BackReferenceProperty backReferenceProperty = backReferenceDeserializers.get( referenceName );
         if ( null == backReferenceProperty ) {
             throw ctx.traceError( "The back reference '" + referenceName + "' does not exist" );
         }

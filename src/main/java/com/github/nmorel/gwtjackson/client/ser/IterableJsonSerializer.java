@@ -3,7 +3,7 @@ package com.github.nmorel.gwtjackson.client.ser;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 
-import com.github.nmorel.gwtjackson.client.JsonEncodingContext;
+import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
@@ -39,10 +39,10 @@ public class IterableJsonSerializer<I extends Iterable<T>, T> extends JsonSerial
     }
 
     @Override
-    public void doEncode( JsonWriter writer, @Nonnull I values, JsonEncodingContext ctx ) throws IOException {
+    public void doSerialize( JsonWriter writer, @Nonnull I values, JsonSerializationContext ctx ) throws IOException {
         writer.beginArray();
         for ( T value : values ) {
-            serializer.encode( writer, value, ctx );
+            serializer.serialize( writer, value, ctx );
         }
         writer.endArray();
     }

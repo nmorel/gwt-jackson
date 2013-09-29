@@ -17,7 +17,7 @@ public class SqlTimestampJsonDeserializerTest extends AbstractJsonDeserializerTe
     }
 
     @Override
-    public void testDecodeValue() {
+    public void testDeserializeValue() {
         assertDeserialization( new Timestamp( 1377543971773l ), "1377543971773" );
         // can't do better without timezone
         assertNotNull( deserialize( "\"2012-08-18 17:45:56.543\"" ) );

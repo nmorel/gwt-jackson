@@ -5,9 +5,9 @@ import java.util.LinkedHashSet;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 
 /**
- * Default {@link com.github.nmorel.gwtjackson.client.JsonDeserializer} implementation for {@link java.util.LinkedHashSet}.
+ * Default {@link JsonDeserializer} implementation for {@link LinkedHashSet}.
  *
- * @param <T> Type of the elements inside the {@link java.util.LinkedHashSet}
+ * @param <T> Type of the elements inside the {@link LinkedHashSet}
  *
  * @author Nicolas Morel
  */

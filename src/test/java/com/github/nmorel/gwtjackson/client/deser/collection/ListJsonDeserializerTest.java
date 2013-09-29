@@ -19,7 +19,7 @@ public class ListJsonDeserializerTest extends AbstractJsonDeserializerTest<List<
     }
 
     @Override
-    public void testDecodeValue() {
+    public void testDeserializeValue() {
         assertDeserialization( Arrays.asList( "Hello", " ", "World", "!" ), "[Hello, \" \", \"World\", \"!\"]" );
         assertDeserialization( Collections.<String>emptyList(), "[]" );
     }

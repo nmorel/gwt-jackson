@@ -4,12 +4,12 @@ import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.UUID;
 
-import com.github.nmorel.gwtjackson.client.JsonEncodingContext;
+import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
 /**
- * Default {@link com.github.nmorel.gwtjackson.client.JsonSerializer} implementation for {@link java.util.UUID}.
+ * Default {@link JsonSerializer} implementation for {@link UUID}.
  *
  * @author Nicolas Morel
  */
@@ -27,7 +27,7 @@ public class UUIDJsonSerializer extends JsonSerializer<UUID> {
     private UUIDJsonSerializer() { }
 
     @Override
-    public void doEncode( JsonWriter writer, @Nonnull UUID value, JsonEncodingContext ctx ) throws IOException {
+    public void doSerialize( JsonWriter writer, @Nonnull UUID value, JsonSerializationContext ctx ) throws IOException {
         writer.value( value.toString() );
     }
 }

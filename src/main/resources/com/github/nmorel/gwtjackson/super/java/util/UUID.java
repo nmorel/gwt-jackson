@@ -27,9 +27,10 @@ public class UUID implements Serializable, Comparable<UUID> {
      * Constructs a new UUID from a string representation.
      *
      * @param name
+     *
      * @return
      */
-    public static UUID fromString(String name) {
+    public static UUID fromString( String name ) {
         UUID newUUID = new UUID();
         newUUID.uuidValue = name;
         return newUUID;
@@ -42,7 +43,7 @@ public class UUID implements Serializable, Comparable<UUID> {
      * @return
      */
     public static UUID randomUUID() {
-        return fromString(generateUUIDString());
+        return fromString( generateUUIDString() );
     }
 
     /**
@@ -51,8 +52,8 @@ public class UUID implements Serializable, Comparable<UUID> {
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     @Override
-    public int compareTo(UUID o) {
-        return uuidValue.compareTo(o.toString());
+    public int compareTo( UUID o ) {
+        return uuidValue.compareTo( o.toString() );
     }
 
     /**
@@ -71,13 +72,11 @@ public class UUID implements Serializable, Comparable<UUID> {
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
-    public boolean equals(Object obj) {
-        if ( this == obj )
-        {
+    public boolean equals( Object obj ) {
+        if ( this == obj ) {
             return true;
         }
-        if ( obj == null || getClass() != obj.getClass() )
-        {
+        if ( obj == null || getClass() != obj.getClass() ) {
             return false;
         }
         return uuidValue.equals( obj.toString() );
@@ -112,7 +111,7 @@ public class UUID implements Serializable, Comparable<UUID> {
         // Fill in random data.  At i==19 set the high bits of clock sequence as per rfc4122, sec. 4.1.5
         for (var i = 0; i < 36; i++) {
             if (!uuid[i]) {
-                r = 0 | Math.random()*16;
+                r = 0 | Math.random() * 16;
                 uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
             }
         }

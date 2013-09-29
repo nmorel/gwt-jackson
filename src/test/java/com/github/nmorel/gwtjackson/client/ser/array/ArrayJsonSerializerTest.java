@@ -14,7 +14,7 @@ public class ArrayJsonSerializerTest extends AbstractJsonSerializerTest<String[]
         return ArrayJsonSerializer.newInstance( StringJsonSerializer.getInstance() );
     }
 
-    public void testEncodeValue() {
+    public void testSerializeValue() {
         assertSerialization( "[\"Hello\",\" \",\"World\",\"!\"]", new String[]{"Hello", " ", "World", "!"} );
         assertSerialization( "[]", new String[0] );
     }

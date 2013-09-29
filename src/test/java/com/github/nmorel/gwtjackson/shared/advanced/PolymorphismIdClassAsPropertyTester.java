@@ -6,45 +6,45 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
-import com.github.nmorel.gwtjackson.shared.JsonDecoderTester;
-import com.github.nmorel.gwtjackson.shared.JsonEncoderTester;
+import com.github.nmorel.gwtjackson.shared.ObjectReaderTester;
+import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
 
-/** @author Nicolas Morel */
-public final class PolymorphismIdClassAsPropertyTester extends AbstractTester
-{
+/**
+ * @author Nicolas Morel
+ */
+public final class PolymorphismIdClassAsPropertyTester extends AbstractTester {
 
-    @JsonTypeInfo( use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY )
-    @JsonPropertyOrder( alphabetic = true )
-    public static abstract class Person
-    {
+    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY)
+    @JsonPropertyOrder(alphabetic = true)
+    public static abstract class Person {
+
         public String name;
     }
 
-    @JsonTypeInfo( use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "class")
-    public static class Employee extends Person
-    {
+    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "class")
+    public static class Employee extends Person {
+
         public int id;
+
         public String title;
     }
 
-    public static class Manager extends Employee
-    {
+    public static class Manager extends Employee {
+
         public List<Employee> managedEmployees;
     }
 
-    public static class Customer extends Person
-    {
+    public static class Customer extends Person {
+
         public int satisfaction;
     }
 
     public static final PolymorphismIdClassAsPropertyTester INSTANCE = new PolymorphismIdClassAsPropertyTester();
 
-    private PolymorphismIdClassAsPropertyTester()
-    {
+    private PolymorphismIdClassAsPropertyTester() {
     }
 
-    public void testEncoding( JsonEncoderTester<Person[]> encoder )
-    {
+    public void testSerialize( ObjectWriterTester<Person[]> writer ) {
         Person[] persons = new Person[4];
 
         Employee employee2 = new Employee();
@@ -71,7 +71,7 @@ public final class PolymorphismIdClassAsPropertyTester extends AbstractTester
         customer.satisfaction = 90;
         persons[3] = customer;
 
-        String result = encoder.encode( persons );
+        String result = writer.write( persons );
 
         String expected = "[" +
             "{" +
@@ -117,8 +117,7 @@ public final class PolymorphismIdClassAsPropertyTester extends AbstractTester
         assertEquals( expected, result );
     }
 
-    public void testDecoding( JsonDecoderTester<Person[]> decoder )
-    {
+    public void testDeserialize( ObjectReaderTester<Person[]> reader ) {
         String input = "[" +
             "{" +
             "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdClassAsPropertyTester$Employee\"," +
@@ -160,7 +159,7 @@ public final class PolymorphismIdClassAsPropertyTester extends AbstractTester
             "}" +
             "]";
 
-        Person[] result = decoder.decode( input );
+        Person[] result = reader.read( input );
         {
             // Employee
             Employee employee = (Employee) result[0];

@@ -15,7 +15,7 @@ public class ShortJsonDeserializerTest extends AbstractJsonDeserializerTest<Shor
     }
 
     @Override
-    public void testDecodeValue() {
+    public void testDeserializeValue() {
         assertDeserialization( new Short( "34" ), "34" );
         assertDeserialization( new Short( "-1" ), "\"-1\"" );
         assertDeserialization( Short.MIN_VALUE, "-32768" );

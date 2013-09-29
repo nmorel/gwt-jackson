@@ -2,15 +2,14 @@ package com.github.nmorel.gwtjackson.client.deser.collection;
 
 import java.util.AbstractSet;
 import java.util.LinkedHashSet;
+import java.util.Set;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 
 /**
- * Default {@link com.github.nmorel.gwtjackson.client.JsonDeserializer} implementation for {@link java.util.Set}. The decoding process
- * returns a
- * {@link java.util.LinkedHashSet}.
+ * Default {@link JsonDeserializer} implementation for {@link Set}. The deserialization process returns a {@link LinkedHashSet}.
  *
- * @param <T> Type of the elements inside the {@link java.util.AbstractSet}
+ * @param <T> Type of the elements inside the {@link AbstractSet}
  *
  * @author Nicolas Morel
  */

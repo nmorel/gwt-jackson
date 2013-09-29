@@ -17,7 +17,7 @@ public class BigDecimalJsonDeserializerTest extends AbstractJsonDeserializerTest
     }
 
     @Override
-    public void testDecodeValue() {
+    public void testDeserializeValue() {
         String value = "15487846511321245665435132032454.1545815468465578451323888744";
         BigDecimal expected = new BigDecimal( value );
 

@@ -2,12 +2,12 @@ package com.github.nmorel.gwtjackson.client.deser;
 
 import java.io.IOException;
 
-import com.github.nmorel.gwtjackson.client.JsonDecodingContext;
+import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 
 /**
- * Default {@link com.github.nmorel.gwtjackson.client.JsonDeserializer} implementation for {@link Enum}.
+ * Default {@link JsonDeserializer} implementation for {@link Enum}.
  *
  * @param <E> Type of the enum
  *
@@ -38,7 +38,7 @@ public class EnumJsonDeserializer<E extends Enum<E>> extends JsonDeserializer<E>
     }
 
     @Override
-    public E doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException {
+    public E doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
         return Enum.valueOf( enumClass, reader.nextString() );
     }
 }

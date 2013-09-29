@@ -9,44 +9,40 @@ import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializa
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester.UUIDNode;
 import org.junit.Test;
 
-/** @author Nicolas Morel */
-public class ObjectIdDeserializationJacksonTest extends AbstractJacksonTest
-{
+/**
+ * @author Nicolas Morel
+ */
+public class ObjectIdDeserializationJacksonTest extends AbstractJacksonTest {
+
     private ObjectIdDeserializationTester tester = ObjectIdDeserializationTester.INSTANCE;
 
     @Test
-    public void testSimpleDeserializationClass()
-    {
+    public void testSimpleDeserializationClass() {
         tester.testSimpleDeserializationClass( createMapper( Identifiable.class ) );
     }
 
     @Test
-    public void testSimpleUUIDForClassRoundTrip()
-    {
+    public void testSimpleUUIDForClassRoundTrip() {
         tester.testSimpleUUIDForClassRoundTrip( createMapper( UUIDNode.class ) );
     }
 
     @Test
-    public void testSimpleDeserializationProperty()
-    {
+    public void testSimpleDeserializationProperty() {
         tester.testSimpleDeserializationProperty( createMapper( IdWrapper.class ) );
     }
 
     @Test
-    public void testSimpleDeserWithForwardRefs()
-    {
+    public void testSimpleDeserWithForwardRefs() {
         tester.testSimpleDeserWithForwardRefs( createMapper( IdWrapper.class ) );
     }
 
     @Test
-    public void testCustomDeserializationClass()
-    {
+    public void testCustomDeserializationClass() {
         tester.testCustomDeserializationClass( createMapper( IdentifiableCustom.class ) );
     }
 
     @Test
-    public void testCustomDeserializationProperty()
-    {
+    public void testCustomDeserializationProperty() {
         tester.testCustomDeserializationProperty( createMapper( IdWrapperExt.class ) );
     }
 }

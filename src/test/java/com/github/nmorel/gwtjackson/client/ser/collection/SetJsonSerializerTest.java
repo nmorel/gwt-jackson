@@ -19,8 +19,8 @@ public class SetJsonSerializerTest extends AbstractJsonSerializerTest<Set<String
         return IterableJsonSerializer.newInstance( StringJsonSerializer.getInstance() );
     }
 
-    public void testEncodeValue() {
-        // can't predict the order so we just encode one element
+    public void testSerializeValue() {
+        // can't predict the order so we just serialize one element
         assertSerialization( "[\"Hello\"]", new HashSet<String>( Arrays.asList( "Hello", "Hello" ) ) );
         assertSerialization( "[]", Collections.<String>emptySet() );
     }

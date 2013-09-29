@@ -11,50 +11,45 @@ import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdSerializati
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdSerializationTester.TreeNode;
 import org.junit.Test;
 
-/** @author Nicolas Morel */
-public class ObjectIdSerializationJacksonTest extends AbstractJacksonTest
-{
+/**
+ * @author Nicolas Morel
+ */
+public class ObjectIdSerializationJacksonTest extends AbstractJacksonTest {
+
     private ObjectIdSerializationTester tester = ObjectIdSerializationTester.INSTANCE;
 
     @Test
-    public void testSimpleSerializationClass()
-    {
+    public void testSimpleSerializationClass() {
         tester.testSimpleSerializationClass( createMapper( Identifiable.class ) );
     }
 
     @Test
-    public void testSimpleSerializationProperty()
-    {
+    public void testSimpleSerializationProperty() {
         tester.testSimpleSerializationProperty( createMapper( IdWrapper.class ) );
     }
 
     @Test
-    public void testCustomPropertyForClass()
-    {
+    public void testCustomPropertyForClass() {
         tester.testCustomPropertyForClass( createMapper( IdentifiableWithProp.class ) );
     }
 
     @Test
-    public void testCustomPropertyViaProperty()
-    {
+    public void testCustomPropertyViaProperty() {
         tester.testCustomPropertyViaProperty( createMapper( IdWrapperCustom.class ) );
     }
 
     @Test
-    public void testAlwaysAsId()
-    {
+    public void testAlwaysAsId() {
         tester.testAlwaysAsId( createMapper( AlwaysContainer.class ) );
     }
 
     @Test
-    public void testAlwaysIdForTree()
-    {
+    public void testAlwaysIdForTree() {
         tester.testAlwaysIdForTree( createMapper( TreeNode.class ) );
     }
 
     @Test
-    public void testInvalidProp()
-    {
+    public void testInvalidProp() {
         tester.testInvalidProp( createMapper( Broken.class ) );
     }
 }

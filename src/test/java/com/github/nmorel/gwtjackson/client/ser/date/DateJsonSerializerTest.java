@@ -15,7 +15,7 @@ public class DateJsonSerializerTest extends AbstractJsonSerializerTest<Date> {
         return DateJsonSerializer.getDateInstance();
     }
 
-    public void testEncodeValue() {
+    public void testSerializeValue() {
         Date date = getUTCDate( 2012, 8, 18, 12, 45, 56, 543 );
         assertSerialization( "" + date.getTime(), date );
     }

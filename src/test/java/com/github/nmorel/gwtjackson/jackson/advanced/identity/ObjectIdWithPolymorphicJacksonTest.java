@@ -5,14 +5,15 @@ import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdWithPolymor
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdWithPolymorphicTester.Base;
 import org.junit.Test;
 
-/** @author Nicolas Morel */
-public class ObjectIdWithPolymorphicJacksonTest extends AbstractJacksonTest
-{
+/**
+ * @author Nicolas Morel
+ */
+public class ObjectIdWithPolymorphicJacksonTest extends AbstractJacksonTest {
+
     private ObjectIdWithPolymorphicTester tester = ObjectIdWithPolymorphicTester.INSTANCE;
 
     @Test
-    public void testPolymorphicRoundtrip()
-    {
+    public void testPolymorphicRoundtrip() {
         tester.testPolymorphicRoundtrip( createMapper( Base.class ) );
     }
 }

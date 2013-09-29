@@ -13,7 +13,7 @@ public class IntegerJsonSerializerTest extends AbstractJsonSerializerTest<Intege
         return NumberJsonSerializer.getIntegerInstance();
     }
 
-    public void testEncodeValue() {
+    public void testSerializeValue() {
         assertSerialization( "34", 34 );
         assertSerialization( "-1", -1 );
         assertSerialization( "-2147483648", Integer.MIN_VALUE );

@@ -3,7 +3,7 @@ package com.github.nmorel.gwtjackson.client.ser.array;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 
-import com.github.nmorel.gwtjackson.client.JsonEncodingContext;
+import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
@@ -26,7 +26,7 @@ public class PrimitiveFloatArrayJsonSerializer extends JsonSerializer<float[]> {
     private PrimitiveFloatArrayJsonSerializer() { }
 
     @Override
-    public void doEncode( JsonWriter writer, @Nonnull float[] values, JsonEncodingContext ctx ) throws IOException {
+    public void doSerialize( JsonWriter writer, @Nonnull float[] values, JsonSerializationContext ctx ) throws IOException {
         writer.beginArray();
         for ( float value : values ) {
             writer.value( value );

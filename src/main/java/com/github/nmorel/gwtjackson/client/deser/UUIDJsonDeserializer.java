@@ -3,12 +3,12 @@ package com.github.nmorel.gwtjackson.client.deser;
 import java.io.IOException;
 import java.util.UUID;
 
-import com.github.nmorel.gwtjackson.client.JsonDecodingContext;
+import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 
 /**
- * Default {@link com.github.nmorel.gwtjackson.client.JsonDeserializer} implementation for {@link java.util.UUID}.
+ * Default {@link JsonDeserializer} implementation for {@link java.util.UUID}.
  *
  * @author Nicolas Morel
  */
@@ -26,7 +26,7 @@ public class UUIDJsonDeserializer extends JsonDeserializer<UUID> {
     private UUIDJsonDeserializer() { }
 
     @Override
-    public UUID doDecode( JsonReader reader, JsonDecodingContext ctx ) throws IOException {
+    public UUID doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
         return UUID.fromString( reader.nextString() );
     }
 }

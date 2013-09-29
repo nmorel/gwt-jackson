@@ -18,7 +18,7 @@ public class CollectionJsonSerializerTest extends AbstractJsonSerializerTest<Col
         return IterableJsonSerializer.newInstance( StringJsonSerializer.getInstance() );
     }
 
-    public void testEncodeValue() {
+    public void testSerializeValue() {
         assertSerialization( "[\"Hello\",\" \",\"World\",\"!\"]", Arrays.asList( "Hello", " ", "World", "!" ) );
         assertSerialization( "[]", Collections.<String>emptyList() );
     }

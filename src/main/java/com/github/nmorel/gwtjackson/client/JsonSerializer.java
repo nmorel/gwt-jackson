@@ -3,33 +3,35 @@ package com.github.nmorel.gwtjackson.client;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 
-import com.github.nmorel.gwtjackson.client.exception.JsonEncodingException;
+import com.github.nmorel.gwtjackson.client.exception.JsonSerializationException;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
 /**
+ * Base class for all the serializer. It handles null values and exceptions. The rest is delegated to implementations.
+ *
  * @author Nicolas Morel
  */
 public abstract class JsonSerializer<T> {
 
     /**
-     * Encodes an object into JSON output.
+     * Serializes an object into JSON output.
      *
-     * @param writer {@link JsonWriter} used to write the JSON output
-     * @param value Object to encode
-     * @param ctx Context for the full encoding process
+     * @param writer {@link JsonWriter} used to write the serialized JSON
+     * @param value Object to serialize
+     * @param ctx Context for the full serialization process
      *
-     * @throws JsonEncodingException if an exception occurs while encoding the output
+     * @throws JsonSerializationException if an error occurs during the serialization
      */
-    public void encode( JsonWriter writer, T value, JsonEncodingContext ctx ) throws JsonEncodingException {
+    public void serialize( JsonWriter writer, T value, JsonSerializationContext ctx ) throws JsonSerializationException {
         try {
             if ( null == value ) {
                 writer.nullValue();
                 return;
             }
-            doEncode( writer, value, ctx );
+            doSerialize( writer, value, ctx );
         } catch ( IOException e ) {
             throw ctx.traceError( value, e );
-        } catch ( JsonEncodingException e ) {
+        } catch ( JsonSerializationException e ) {
             // already logged, we just throw it
             throw e;
         } catch ( Exception e ) {
@@ -37,5 +39,14 @@ public abstract class JsonSerializer<T> {
         }
     }
 
-    protected abstract void doEncode( JsonWriter writer, @Nonnull T value, JsonEncodingContext ctx ) throws IOException;
+    /**
+     * Serializes a non-null object into JSON output.
+     *
+     * @param writer {@link JsonWriter} used to write the serialized JSON
+     * @param value Object to serialize
+     * @param ctx Context for the full serialization process
+     *
+     * @throws IOException if an error occurs while writing the output
+     */
+    protected abstract void doSerialize( JsonWriter writer, @Nonnull T value, JsonSerializationContext ctx ) throws IOException;
 }

@@ -6,20 +6,20 @@ import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdTester.Comp
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdTester.Wrapper;
 import org.junit.Test;
 
-/** @author Nicolas Morel */
-public class ObjectIdJacksonTest extends AbstractJacksonTest
-{
+/**
+ * @author Nicolas Morel
+ */
+public class ObjectIdJacksonTest extends AbstractJacksonTest {
+
     private ObjectIdTester tester = ObjectIdTester.INSTANCE;
 
     @Test
-    public void testColumnMetadata()
-    {
+    public void testColumnMetadata() {
         tester.testColumnMetadata( createMapper( Wrapper.class ) );
     }
 
     @Test
-    public void testMixedRefsIssue188()
-    {
+    public void testMixedRefsIssue188() {
         tester.testMixedRefsIssue188( createMapper( Company.class ) );
     }
 }

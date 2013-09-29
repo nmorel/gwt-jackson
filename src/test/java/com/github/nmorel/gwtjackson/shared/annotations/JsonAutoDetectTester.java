@@ -3,51 +3,51 @@ package com.github.nmorel.gwtjackson.shared.annotations;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
-import com.github.nmorel.gwtjackson.shared.JsonDecoderTester;
-import com.github.nmorel.gwtjackson.shared.JsonEncoderTester;
+import com.github.nmorel.gwtjackson.shared.ObjectReaderTester;
+import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
 
-/** @author Nicolas Morel */
-public final class JsonAutoDetectTester extends AbstractTester
-{
-    @JsonAutoDetect( fieldVisibility = JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC, getterVisibility = JsonAutoDetect.Visibility.NONE )
-    public static class BeanOne
-    {
+/**
+ * @author Nicolas Morel
+ */
+public final class JsonAutoDetectTester extends AbstractTester {
+
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC, getterVisibility = JsonAutoDetect.Visibility.NONE)
+    public static class BeanOne {
+
         public String publicFieldVisible;
+
         protected String protectedFieldVisible;
+
         private Integer notVisibleField;
+
         private String visibleWithSetter;
+
         @JsonProperty
         private String fieldWithJsonProperty;
 
-        public String getVisibleWithSetter()
-        {
+        public String getVisibleWithSetter() {
             return visibleWithSetter;
         }
 
-        public void setVisibleWithSetter( String visibleWithSetter )
-        {
+        public void setVisibleWithSetter( String visibleWithSetter ) {
             this.visibleWithSetter = visibleWithSetter;
         }
 
-        String getFieldWithJsonProperty()
-        {
+        String getFieldWithJsonProperty() {
             return fieldWithJsonProperty;
         }
 
-        void setFieldWithJsonProperty( String fieldWithJsonProperty )
-        {
+        void setFieldWithJsonProperty( String fieldWithJsonProperty ) {
             this.fieldWithJsonProperty = fieldWithJsonProperty;
         }
     }
 
     public static final JsonAutoDetectTester INSTANCE = new JsonAutoDetectTester();
 
-    private JsonAutoDetectTester()
-    {
+    private JsonAutoDetectTester() {
     }
 
-    public void testEncodingAutoDetection( JsonEncoderTester<BeanOne> encoder )
-    {
+    public void testSerializeAutoDetection( ObjectWriterTester<BeanOne> writer ) {
         BeanOne bean = new BeanOne();
         bean.notVisibleField = 1;
         bean.setVisibleWithSetter( "Hello" );
@@ -58,20 +58,19 @@ public final class JsonAutoDetectTester extends AbstractTester
         String expected = "{\"publicFieldVisible\":\"publicField\"," +
             "\"protectedFieldVisible\":\"protectedField\"," +
             "\"fieldWithJsonProperty\":\"jsonProperty\"}";
-        String result = encoder.encode( bean );
+        String result = writer.write( bean );
 
         assertEquals( expected, result );
     }
 
-    public void testDecodingAutoDetection( JsonDecoderTester<BeanOne> decoder )
-    {
+    public void testDeserializeAutoDetection( ObjectReaderTester<BeanOne> reader ) {
         String input = "{\"visibleWithSetter\":\"Hello\"," +
             "\"publicFieldVisible\":\"publicField\"," +
             "\"protectedFieldVisible\":\"protectedField\"," +
             "\"notVisibleField\":2," +
             "\"fieldWithJsonProperty\":\"jsonProperty\"}";
 
-        BeanOne result = decoder.decode( input );
+        BeanOne result = reader.read( input );
 
         assertNull( result.notVisibleField );
         assertEquals( "Hello", result.visibleWithSetter );

@@ -5,9 +5,9 @@ import java.util.HashSet;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 
 /**
- * Default {@link com.github.nmorel.gwtjackson.client.JsonDeserializer} implementation for {@link java.util.HashSet}.
+ * Default {@link JsonDeserializer} implementation for {@link HashSet}.
  *
- * @param <T> Type of the elements inside the {@link java.util.HashSet}
+ * @param <T> Type of the elements inside the {@link HashSet}
  *
  * @author Nicolas Morel
  */

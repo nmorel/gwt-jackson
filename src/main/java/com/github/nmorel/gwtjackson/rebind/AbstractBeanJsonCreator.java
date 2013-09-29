@@ -30,10 +30,10 @@ import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounte
  */
 public abstract class AbstractBeanJsonCreator extends AbstractCreator {
 
-    protected static final String ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean" +
+    protected static final String ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean" + "" +
         ".AbstractBeanJsonDeserializer";
 
-    protected static final String ABSTRACT_BEAN_JSON_SERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean" +
+    protected static final String ABSTRACT_BEAN_JSON_SERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean" + "" +
         ".AbstractBeanJsonSerializer";
 
     protected BeanJsonMapperInfo mapperInfo;

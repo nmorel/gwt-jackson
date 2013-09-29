@@ -182,8 +182,6 @@ public final class BeanInfo {
 
     private JClassType type;
 
-    //    private String qualifiedMapperClassName;
-    //    private String mapperClassSimpleName;
     private String instanceBuilderQualifiedName;
 
     private String instanceBuilderSimpleName;
