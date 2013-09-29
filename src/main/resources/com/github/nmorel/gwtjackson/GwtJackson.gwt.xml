@@ -3,8 +3,12 @@
 
   <inherits name="com.fasterxml.jackson.annotation.JacksonAnnotation" />
 
-  <generate-with class="com.github.nmorel.gwtjackson.rebind.JsonMapperGenerator">
-    <when-type-assignable class="com.github.nmorel.gwtjackson.client.JsonMapper" />
+  <generate-with class="com.github.nmorel.gwtjackson.rebind.ObjectMapperGenerator">
+    <when-type-assignable class="com.github.nmorel.gwtjackson.client.ObjectReader" />
+  </generate-with>
+
+  <generate-with class="com.github.nmorel.gwtjackson.rebind.ObjectMapperGenerator">
+    <when-type-assignable class="com.github.nmorel.gwtjackson.client.ObjectWriter" />
   </generate-with>
 
   <source path="client" />

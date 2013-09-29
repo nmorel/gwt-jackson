@@ -21,24 +21,24 @@ import com.google.gwt.user.rebind.SourceWriter;
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findAnnotationOnAnyAccessor;
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounteredAnnotationsOnAllHierarchy;
 
-/** @author Nicolas Morel */
-public final class PropertyInfo
-{
-    public static interface AdditionalMethod
-    {
+/**
+ * @author Nicolas Morel
+ */
+public final class PropertyInfo {
+
+    public static interface AdditionalMethod {
+
         void write( SourceWriter source );
     }
 
     public static PropertyInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, FieldAccessors fieldAccessors,
-                                        BeanInfo beanInfo ) throws UnableToCompleteException
-    {
+                                        BeanJsonMapperInfo mapperInfo ) throws UnableToCompleteException {
         PropertyInfo result = new PropertyInfo();
 
         // we first check if the property is ignored
         JsonIgnore jsonIgnore = findAnnotationOnAnyAccessor( fieldAccessors, JsonIgnore.class );
         result.ignored = null != jsonIgnore && jsonIgnore.value();
-        if ( result.ignored )
-        {
+        if ( result.ignored ) {
             return result;
         }
 
@@ -46,13 +46,11 @@ public final class PropertyInfo
         result.type = findType( fieldAccessors );
 
         // if type is ignored, we ignore the property
-        if ( null != result.type.isClassOrInterface() )
-        {
+        if ( null != result.type.isClassOrInterface() ) {
             JsonIgnoreType jsonIgnoreType = findFirstEncounteredAnnotationsOnAllHierarchy( result.type
                 .isClassOrInterface(), JsonIgnoreType.class );
             result.ignored = null != jsonIgnoreType && jsonIgnoreType.value();
-            if ( result.ignored )
-            {
+            if ( result.ignored ) {
                 return result;
             }
         }
@@ -60,19 +58,15 @@ public final class PropertyInfo
         // determine the property name
         JsonProperty jsonProperty = findAnnotationOnAnyAccessor( fieldAccessors, JsonProperty.class );
         result.required = null != jsonProperty && jsonProperty.required();
-        if ( null != jsonProperty && null != jsonProperty.value() && !JsonProperty.USE_DEFAULT_NAME.equals( jsonProperty.value() ) )
-        {
+        if ( null != jsonProperty && null != jsonProperty.value() && !JsonProperty.USE_DEFAULT_NAME.equals( jsonProperty.value() ) ) {
             result.propertyName = jsonProperty.value();
-        }
-        else
-        {
+        } else {
             result.propertyName = fieldAccessors.getFieldName();
         }
 
         // now that we have the property name, we check if it's not in the ignored properties
-        result.ignored = beanInfo.getIgnoredFields().contains( result.propertyName );
-        if ( result.ignored )
-        {
+        result.ignored = mapperInfo.getBeanInfo().getIgnoredFields().contains( result.propertyName );
+        if ( result.ignored ) {
             return result;
         }
 
@@ -87,34 +81,33 @@ public final class PropertyInfo
         boolean hasAnyAnnotation = null != jsonProperty || null != jsonManagedReference || null != jsonBackReference;
 
         boolean getterAutoDetected = null != fieldAccessors.getGetter() && (hasAnyAnnotation || isGetterAutoDetected( fieldAccessors
-            .getGetter(), beanInfo ));
+            .getGetter(), mapperInfo.getBeanInfo() ));
         boolean setterAutoDetected = null != fieldAccessors.getSetter() && (hasAnyAnnotation || isSetterAutoDetected( fieldAccessors
-            .getSetter(), beanInfo ));
+            .getSetter(), mapperInfo.getBeanInfo() ));
         boolean fieldAutoDetected = null != fieldAccessors.getField() && (hasAnyAnnotation || isFieldAutoDetected( fieldAccessors
-            .getField(), beanInfo ));
+            .getField(), mapperInfo.getBeanInfo() ));
 
-        if ( !getterAutoDetected && !setterAutoDetected && !fieldAutoDetected )
-        {
+        if ( !getterAutoDetected && !setterAutoDetected && !fieldAutoDetected ) {
             // none of the field have been auto-detected, we ignore the field
             result.ignored = true;
             return result;
         }
 
-        if ( null == result.backReference )
-        {
-            determineGetter( fieldAccessors, getterAutoDetected, fieldAutoDetected, beanInfo, result );
+        if ( null == result.backReference ) {
+            determineGetter( fieldAccessors, getterAutoDetected, fieldAutoDetected, mapperInfo, result );
         }
-        determineSetter( fieldAccessors, setterAutoDetected, fieldAutoDetected, beanInfo, result );
+        determineSetter( fieldAccessors, setterAutoDetected, fieldAutoDetected, mapperInfo, result );
 
         result.identityInfo = BeanIdentityInfo.process( logger, typeOracle, result.type, fieldAccessors );
 
         return result;
     }
 
-    /** Processes and construct a {@link PropertyInfo} for a constructor parameter. */
+    /**
+     * Processes and construct a {@link PropertyInfo} for a constructor parameter.
+     */
     public static PropertyInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, String propertyName,
-                                        JParameter constructorParameter, BeanInfo beanInfo )
-    {
+                                        JParameter constructorParameter, BeanInfo beanInfo ) {
         PropertyInfo result = new PropertyInfo();
         result.type = constructorParameter.getType();
         result.required = constructorParameter.getAnnotation( JsonProperty.class ).required();
@@ -124,53 +117,39 @@ public final class PropertyInfo
         return result;
     }
 
-    private static JType findType( FieldAccessors fieldAccessors )
-    {
-        if ( null != fieldAccessors.getGetter() )
-        {
+    private static JType findType( FieldAccessors fieldAccessors ) {
+        if ( null != fieldAccessors.getGetter() ) {
             return fieldAccessors.getGetter().getReturnType();
-        }
-        else if ( null != fieldAccessors.getSetter() )
-        {
+        } else if ( null != fieldAccessors.getSetter() ) {
             return fieldAccessors.getSetter().getParameters()[0].getType();
-        }
-        else
-        {
+        } else {
             return fieldAccessors.getField().getType();
         }
     }
 
-    private static boolean isGetterAutoDetected( JMethod getter, BeanInfo info )
-    {
+    private static boolean isGetterAutoDetected( JMethod getter, BeanInfo info ) {
         JsonAutoDetect.Visibility visibility;
-        if ( getter.getName().startsWith( "is" ) )
-        {
+        if ( getter.getName().startsWith( "is" ) ) {
             visibility = info.getIsGetterVisibility();
-        }
-        else
-        {
+        } else {
             visibility = info.getGetterVisibility();
         }
         return isAutoDetected( visibility, getter.isPrivate(), getter.isProtected(), getter.isPublic(), getter.isDefaultAccess() );
     }
 
-    private static boolean isSetterAutoDetected( JMethod setter, BeanInfo info )
-    {
+    private static boolean isSetterAutoDetected( JMethod setter, BeanInfo info ) {
         return isAutoDetected( info.getSetterVisibility(), setter.isPrivate(), setter.isProtected(), setter.isPublic(), setter
             .isDefaultAccess() );
     }
 
-    private static boolean isFieldAutoDetected( JField field, BeanInfo info )
-    {
+    private static boolean isFieldAutoDetected( JField field, BeanInfo info ) {
         return isAutoDetected( info.getFieldVisibility(), field.isPrivate(), field.isProtected(), field.isPublic(), field
             .isDefaultAccess() );
     }
 
     private static boolean isAutoDetected( JsonAutoDetect.Visibility visibility, boolean isPrivate, boolean isProtected,
-                                           boolean isPublic, boolean isDefaultAccess )
-    {
-        switch ( visibility )
-        {
+                                           boolean isPublic, boolean isDefaultAccess ) {
+        switch ( visibility ) {
             case ANY:
                 return true;
             case NONE:
@@ -188,10 +167,8 @@ public final class PropertyInfo
     }
 
     private static void determineGetter( final FieldAccessors fieldAccessors, final boolean getterAutoDetect, boolean fieldAutoDetect,
-                                         final BeanInfo beanInfo, final PropertyInfo result )
-    {
-        if ( !getterAutoDetect && !fieldAutoDetect )
-        {
+                                         final BeanJsonMapperInfo mapperInfo, final PropertyInfo result ) {
+        if ( !getterAutoDetect && !fieldAutoDetect ) {
             // we can't get the value
             return;
         }
@@ -199,14 +176,13 @@ public final class PropertyInfo
         // The mapper is in same package as bean so we can directly access all fields/getters but private ones. In case
         // the getter or field is in a different package because it is on a superclass and is not public, we use jsni.
 
-        JPackage beanPackage = beanInfo.getType().getPackage();
+        JPackage beanPackage = mapperInfo.getType().getPackage();
 
         // We first test if we can use the getter
         final JMethod getter = fieldAccessors.getGetter();
         boolean getterInSamePackage = getterAutoDetect && getter.getEnclosingType().getPackage().equals( beanPackage );
 
-        if ( getterAutoDetect && ((getterInSamePackage && !getter.isPrivate()) || (!getterInSamePackage && getter.isPublic())) )
-        {
+        if ( getterAutoDetect && ((getterInSamePackage && !getter.isPrivate()) || (!getterInSamePackage && getter.isPublic())) ) {
             result.getterAccessor = "bean." + getter.getName() + "()";
             return;
         }
@@ -216,8 +192,7 @@ public final class PropertyInfo
         final JField field = fieldAccessors.getField();
         boolean fieldInSamePackage = fieldAutoDetect && field.getEnclosingType().getPackage().equals( beanPackage );
 
-        if ( fieldAutoDetect && ((fieldInSamePackage && !field.isPrivate()) || (fieldInSamePackage && field.isPublic())) )
-        {
+        if ( fieldAutoDetect && ((fieldInSamePackage && !field.isPrivate()) || (fieldInSamePackage && field.isPublic())) ) {
             result.getterAccessor = "bean." + field.getName();
             return;
         }
@@ -225,23 +200,18 @@ public final class PropertyInfo
         // field/getter has not been detected or is private or is in a different package. We use JSNI to access private getter/field.
 
         final String methodName = "get" + result.propertyName.substring( 0, 1 ).toUpperCase() + result.propertyName.substring( 1 );
-        result.getterAccessor = beanInfo.getMapperClassSimpleName() + "." + methodName + "(bean)";
+        result.getterAccessor = mapperInfo.getSimpleSerializerClassName() + "." + methodName + "(bean)";
 
-        result.addAdditionalMethod( new AdditionalMethod()
-        {
+        result.additionalSerializationMethods.add( new AdditionalMethod() {
             @Override
-            public void write( SourceWriter source )
-            {
+            public void write( SourceWriter source ) {
                 source.println( "private static native %s %s(%s bean) /*-{", result.type
-                    .getParameterizedQualifiedSourceName(), methodName, beanInfo.getType().getParameterizedQualifiedSourceName() );
+                    .getParameterizedQualifiedSourceName(), methodName, mapperInfo.getType().getParameterizedQualifiedSourceName() );
                 source.indent();
-                if ( getterAutoDetect )
-                {
-                    source.println( "return bean.@%s::%s()();", beanInfo.getType().getQualifiedSourceName(), getter.getName() );
-                }
-                else
-                {
-                    source.println( "return bean.@%s::%s;", beanInfo.getType().getQualifiedSourceName(), field.getName() );
+                if ( getterAutoDetect ) {
+                    source.println( "return bean.@%s::%s()();", mapperInfo.getType().getQualifiedSourceName(), getter.getName() );
+                } else {
+                    source.println( "return bean.@%s::%s;", mapperInfo.getType().getQualifiedSourceName(), field.getName() );
                 }
                 source.outdent();
                 source.println( "}-*/;" );
@@ -250,25 +220,22 @@ public final class PropertyInfo
     }
 
     private static void determineSetter( final FieldAccessors fieldAccessors, final boolean setterAutoDetect,
-                                         final boolean fieldAutoDetect, final BeanInfo beanInfo, final PropertyInfo result )
-    {
-        if ( !setterAutoDetect && !fieldAutoDetect )
-        {
+                                         final boolean fieldAutoDetect, final BeanJsonMapperInfo mapperInfo, final PropertyInfo result ) {
+        if ( !setterAutoDetect && !fieldAutoDetect ) {
             // we can't set the value
         }
 
         // The mapper is in same package as bean so we can directly access all fields/setters but private ones. In case
         // the setter or field is in a different package because it is on a superclass and is not public, we use jsni.
 
-        JPackage beanPackage = beanInfo.getType().getPackage();
+        JPackage beanPackage = mapperInfo.getType().getPackage();
 
         // We first test if we can use the setter
         final JMethod setter = fieldAccessors.getSetter();
         boolean setterInSamePackage = setterAutoDetect && setter.getEnclosingType().getPackage().equals( beanPackage );
 
-        if ( setterAutoDetect && ((setterInSamePackage && !setter.isPrivate()) || (!setterInSamePackage && setter.isPublic())) )
-        {
-            result.setterAccessor = AbstractJsonMapperCreator.BEAN_INSTANCE_NAME + "." + fieldAccessors.getSetter().getName() + "(%s)";
+        if ( setterAutoDetect && ((setterInSamePackage && !setter.isPrivate()) || (!setterInSamePackage && setter.isPublic())) ) {
+            result.setterAccessor = AbstractCreator.BEAN_INSTANCE_NAME + "." + fieldAccessors.getSetter().getName() + "(%s)";
             return;
         }
 
@@ -277,34 +244,28 @@ public final class PropertyInfo
         final JField field = fieldAccessors.getField();
         boolean fieldInSamePackage = fieldAutoDetect && field.getEnclosingType().getPackage().equals( beanPackage );
 
-        if ( fieldAutoDetect && ((fieldInSamePackage && !field.isPrivate()) || (fieldInSamePackage && field.isPublic())) )
-        {
-            result.setterAccessor = AbstractJsonMapperCreator.BEAN_INSTANCE_NAME + "." + fieldAccessors.getField().getName() + " = %s";
+        if ( fieldAutoDetect && ((fieldInSamePackage && !field.isPrivate()) || (fieldInSamePackage && field.isPublic())) ) {
+            result.setterAccessor = AbstractCreator.BEAN_INSTANCE_NAME + "." + fieldAccessors.getField().getName() + " = %s";
             return;
         }
 
         // field/setter has not been detected or is private or is in a different package. We use JSNI to access private setter/field.
 
         final String methodName = "set" + result.propertyName.substring( 0, 1 ).toUpperCase() + result.propertyName.substring( 1 );
-        result.setterAccessor = beanInfo
-            .getMapperClassSimpleName() + "." + methodName + "(" + AbstractJsonMapperCreator.BEAN_INSTANCE_NAME + ", %s)";
+        result.setterAccessor = mapperInfo
+            .getSimpleDeserializerClassName() + "." + methodName + "(" + AbstractCreator.BEAN_INSTANCE_NAME + ", %s)";
 
-        result.addAdditionalMethod( new AdditionalMethod()
-        {
+        result.additionalDeserializationMethods.add( new AdditionalMethod() {
             @Override
-            public void write( SourceWriter source )
-            {
-                source.println( "private static native void %s(%s bean, %s value) /*-{", methodName, beanInfo.getType()
+            public void write( SourceWriter source ) {
+                source.println( "private static native void %s(%s bean, %s value) /*-{", methodName, mapperInfo.getType()
                     .getParameterizedQualifiedSourceName(), result.type.getParameterizedQualifiedSourceName() );
                 source.indent();
-                if ( setterAutoDetect )
-                {
-                    source.println( "bean.@%s::%s(%s)(value);", beanInfo.getType().getQualifiedSourceName(), setter.getName(), result.type
+                if ( setterAutoDetect ) {
+                    source.println( "bean.@%s::%s(%s)(value);", mapperInfo.getType().getQualifiedSourceName(), setter.getName(), result.type
                         .getJNISignature() );
-                }
-                else
-                {
-                    source.println( "bean.@%s::%s = value;", beanInfo.getType().getQualifiedSourceName(), field.getName() );
+                } else {
+                    source.println( "bean.@%s::%s = value;", mapperInfo.getType().getQualifiedSourceName(), field.getName() );
                 }
                 source.outdent();
                 source.println( "}-*/;" );
@@ -313,77 +274,75 @@ public final class PropertyInfo
     }
 
     private boolean ignored;
+
     private JType type;
+
     private boolean required;
+
     private String propertyName;
+
     private String managedReference;
+
     private String backReference;
+
     private String getterAccessor;
+
     private String setterAccessor;
-    private List<AdditionalMethod> additionalMethods = new ArrayList<AdditionalMethod>();
+
+    private List<AdditionalMethod> additionalDeserializationMethods = new ArrayList<AdditionalMethod>();
+
+    private List<AdditionalMethod> additionalSerializationMethods = new ArrayList<AdditionalMethod>();
+
     private BeanIdentityInfo identityInfo;
 
-    private PropertyInfo()
-    {
+    private PropertyInfo() {
     }
 
-    public boolean isIgnored()
-    {
+    public boolean isIgnored() {
         return ignored;
     }
 
-    public JType getType()
-    {
+    public JType getType() {
         return type;
     }
 
-    public boolean isRequired()
-    {
+    public boolean isRequired() {
         return required;
     }
 
-    public String getPropertyName()
-    {
+    public String getPropertyName() {
         return propertyName;
     }
 
-    public String getManagedReference()
-    {
+    public String getManagedReference() {
         return managedReference;
     }
 
-    public String getBackReference()
-    {
+    public String getBackReference() {
         return backReference;
     }
 
-    public String getGetterAccessor()
-    {
+    public String getGetterAccessor() {
         return getterAccessor;
     }
 
-    public String getSetterAccessor()
-    {
+    public String getSetterAccessor() {
         return setterAccessor;
     }
 
-    private void addAdditionalMethod( AdditionalMethod method )
-    {
-        additionalMethods.add( method );
+    public List<AdditionalMethod> getAdditionalDeserializationMethods() {
+        return additionalDeserializationMethods;
     }
 
-    public List<AdditionalMethod> getAdditionalMethods()
-    {
-        return additionalMethods;
+    public List<AdditionalMethod> getAdditionalSerializationMethods() {
+        return additionalSerializationMethods;
     }
 
-    public void setRequired( boolean required )
-    {
+    public void setRequired( boolean required ) {
         this.required = required;
     }
 
-    public BeanIdentityInfo getIdentityInfo()
-    {
+    public BeanIdentityInfo getIdentityInfo() {
         return identityInfo;
     }
 }
