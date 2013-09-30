@@ -47,7 +47,7 @@ public abstract class NumberJsonDeserializer<N extends Number> extends JsonDeser
     private static final NumberJsonDeserializer<Byte> BYTE_INSTANCE = new NumberJsonDeserializer<Byte>() {
         @Override
         public Byte doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
-            return (byte) reader.nextDouble();
+            return (byte) reader.nextInt();
         }
     };
 

@@ -47,6 +47,7 @@ import com.github.nmorel.gwtjackson.client.deser.array.PrimitiveFloatArrayJsonDe
 import com.github.nmorel.gwtjackson.client.deser.array.PrimitiveIntegerArrayJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.array.PrimitiveLongArrayJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.array.PrimitiveShortArrayJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.array.StringArrayJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.collection.AbstractCollectionJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.collection.AbstractListJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.collection.AbstractQueueJsonDeserializer;
@@ -124,6 +125,10 @@ public class JsonDeserializationContext extends JsonMappingContext {
 
     public JsonDeserializer<short[]> getPrimitiveShortArrayJsonDeserializer() {
         return PrimitiveShortArrayJsonDeserializer.getInstance();
+    }
+
+    public JsonDeserializer<String[]> getStringArrayJsonDeserializer() {
+        return StringArrayJsonDeserializer.getInstance();
     }
 
     public JsonDeserializer<BigDecimal> getBigDecimalJsonDeserializer() {

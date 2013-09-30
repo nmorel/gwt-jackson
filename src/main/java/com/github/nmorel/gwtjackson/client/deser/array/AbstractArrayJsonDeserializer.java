@@ -29,8 +29,6 @@ public abstract class AbstractArrayJsonDeserializer<T> extends JsonDeserializer<
      */
     protected <C> List<C> deserializeIntoList( JsonReader reader, JsonDeserializationContext ctx,
                                                JsonDeserializer<C> deserializer ) throws IOException {
-        // TODO check if we can't use javascript array instead and cast them into java array. at least for primitive array
-        // cf https://code.google.com/p/gwt-in-the-air/source/browse/trunk/src/net/ltgt/gwt/jscollections/client/JsArrays.java
         List<C> list = new ArrayList<C>();
         reader.beginArray();
         while ( JsonToken.END_ARRAY != reader.peek() ) {

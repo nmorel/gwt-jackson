@@ -336,6 +336,8 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             if ( null != arrayType.getComponentType().isPrimitive() ) {
                 String boxedName = getJavaObjectTypeFor( arrayType.getComponentType().isPrimitive() );
                 return "ctx.getPrimitive" + boxedName + "ArrayJsonDeserializer()";
+            } else if ( "java.lang.String".equals( arrayType.getComponentType().getQualifiedSourceName() ) ) {
+                return "ctx.getStringArrayJsonDeserializer()";
             } else {
                 String method = "ctx.newArrayJsonDeserializer(%s, %s)";
                 String arrayCreator = "new " + ARRAY_CREATOR_CLASS + "<" + arrayType.getComponentType()

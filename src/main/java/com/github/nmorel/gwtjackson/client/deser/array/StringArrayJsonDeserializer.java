@@ -7,42 +7,40 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JsArrayNumber;
+import com.google.gwt.core.client.JsArrayString;
 
 /**
- * Default {@link JsonDeserializer} implementation for array of double.
+ * Default {@link JsonDeserializer} implementation for array of {@link String}.
  *
  * @author Nicolas Morel
  */
-public class PrimitiveDoubleArrayJsonDeserializer extends AbstractArrayJsonDeserializer<double[]> {
+public class StringArrayJsonDeserializer extends AbstractArrayJsonDeserializer<String[]> {
 
-    private static final PrimitiveDoubleArrayJsonDeserializer INSTANCE = new PrimitiveDoubleArrayJsonDeserializer();
+    private static final StringArrayJsonDeserializer INSTANCE = new StringArrayJsonDeserializer();
 
     /**
-     * @return an instance of {@link PrimitiveDoubleArrayJsonDeserializer}
+     * @return an instance of {@link StringArrayJsonDeserializer}
      */
-    public static PrimitiveDoubleArrayJsonDeserializer getInstance() {
+    public static StringArrayJsonDeserializer getInstance() {
         return INSTANCE;
     }
 
-    private static native double[] reinterpretCast( JsArrayNumber value ) /*-{
+    private static native String[] reinterpretCast( JsArrayString value ) /*-{
         return value;
     }-*/;
 
-    private static double DEFAULT;
-
-    private PrimitiveDoubleArrayJsonDeserializer() { }
+    private StringArrayJsonDeserializer() { }
 
     @Override
-    public double[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
-        JsArrayNumber jsArray = JsArrayNumber.createArray().cast();
+    public String[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+        JsArrayString jsArray = JsArrayString.createArray().cast();
         reader.beginArray();
         while ( JsonToken.END_ARRAY != reader.peek() ) {
             if ( JsonToken.NULL == reader.peek() ) {
                 reader.skipValue();
-                jsArray.push( DEFAULT );
+                jsArray.push( null );
             } else {
-                jsArray.push( reader.nextDouble() );
+                jsArray.push( reader.nextString() );
             }
         }
         reader.endArray();
@@ -51,7 +49,7 @@ public class PrimitiveDoubleArrayJsonDeserializer extends AbstractArrayJsonDeser
             return reinterpretCast( jsArray );
         } else {
             int length = jsArray.length();
-            double[] ret = new double[length];
+            String[] ret = new String[length];
             for ( int i = 0; i < length; i++ ) {
                 ret[i] = jsArray.get( i );
             }
