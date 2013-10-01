@@ -1,5 +1,7 @@
 package com.github.nmorel.gwtjackson.client.deser.bean;
 
+import java.io.IOException;
+
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
@@ -19,5 +21,15 @@ public abstract class BeanPropertyDeserializer<T, B extends InstanceBuilder<T>, 
      * @param ctx context of the deserialization process
      */
     public abstract V deserialize( JsonReader reader, B builder, JsonDeserializationContext ctx );
+
+    /**
+     * Buffers the property for later use
+     *
+     * @param reader reader
+     * @param ctx context of the deserialization process
+     */
+    public BufferedProperty<T, B, V> bufferProperty( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+        return new BufferedProperty<T, B, V>( this, reader.nextValue() );
+    }
 }
 

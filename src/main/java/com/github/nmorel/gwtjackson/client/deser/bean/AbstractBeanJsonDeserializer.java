@@ -1,7 +1,10 @@
 package com.github.nmorel.gwtjackson.client.deser.bean;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.ObjectIdGenerator.IdKey;
@@ -127,36 +130,82 @@ public abstract class AbstractBeanJsonDeserializer<T, B extends InstanceBuilder<
     public final T deserializeObject( final JsonReader reader, final JsonDeserializationContext ctx ) throws IOException {
         B builder = newInstanceBuilder( ctx );
 
+        if ( !JsonToken.NAME.equals( reader.peek() ) ) {
+            // empty object, just return a new instance with no property
+            return builder.build( ctx );
+        }
+
+        // we store any property place before the identity property to ensure that we add the instance to the identity map before
+        // resolving its children
+        // TODO do the same with JsonCreator properties
+        boolean foundIdentity;
+        List<BufferedProperty<T, B, ?>> bufferedProperties;
+        if ( null == identityInfo ) {
+            bufferedProperties = Collections.emptyList();
+            foundIdentity = true;
+        } else {
+            bufferedProperties = new ArrayList<BufferedProperty<T, B, ?>>();
+            foundIdentity = false;
+        }
+
         while ( JsonToken.NAME.equals( reader.peek() ) ) {
             String name = reader.nextName();
-            if ( JsonToken.NULL.equals( reader.peek() ) ) {
-                reader.skipValue();
-                continue;
-            }
 
-            BeanPropertyDeserializer<T, B, ?> property = deserializers.get( name );
-            if ( null != identityInfo ) {
-                final Object id;
-                if ( null == property ) {
-                    id = identityInfo.getDeserializer( ctx ).deserialize( reader, ctx );
-                } else {
-                    id = property.deserialize( reader, builder, ctx );
-                }
-                builder.addCallback( new InstanceBuilderCallback<T>() {
-                    @Override
-                    public void onInstanceCreated( T instance ) {
-                        ctx.addObjectId( identityInfo.newIdKey( id ), instance );
-                    }
-                } );
-            } else if ( null == property ) {
-                // TODO add a configuration to tell if we skip or throw an unknown property
+            if ( null != identityInfo && identityInfo.getPropertyName().equals( name ) ) {
+                readIdentityProperty( reader, ctx, builder, name );
+                foundIdentity = true;
+                flushBufferedProperties( bufferedProperties, builder, ctx );
+            } else if ( JsonToken.NULL.equals( reader.peek() ) ) {
                 reader.skipValue();
             } else {
-                property.deserialize( reader, builder, ctx );
+                BeanPropertyDeserializer<T, B, ?> property = deserializers.get( name );
+                if ( null == property ) {
+                    // TODO add a configuration to tell if we skip or throw an unknown property
+                    reader.skipValue();
+                } else if ( foundIdentity ) {
+                    property.deserialize( reader, builder, ctx );
+                } else {
+                    bufferedProperties.add( property.bufferProperty( reader, ctx ) );
+                }
             }
         }
 
+        // flush any properties left. it can happen if we expect an identity property and it's not present.
+        flushBufferedProperties( bufferedProperties, builder, ctx );
+
         return builder.build( ctx );
+    }
+
+    private void readIdentityProperty( JsonReader reader, final JsonDeserializationContext ctx, B builder,
+                                       String name ) throws IOException {
+        if ( JsonToken.NULL.equals( reader.peek() ) ) {
+            // identity property is here but empty
+            reader.skipValue();
+        } else {
+            BeanPropertyDeserializer<T, B, ?> property = deserializers.get( name );
+            final Object id;
+            if ( null == property ) {
+                id = identityInfo.getDeserializer( ctx ).deserialize( reader, ctx );
+            } else {
+                id = property.deserialize( reader, builder, ctx );
+            }
+
+            builder.addCallback( new InstanceBuilderCallback<T>() {
+                @Override
+                public void onInstanceCreated( T instance ) {
+                    ctx.addObjectId( identityInfo.newIdKey( id ), instance );
+                }
+            } );
+        }
+    }
+
+    private void flushBufferedProperties( List<BufferedProperty<T, B, ?>> bufferedProperties, B builder, JsonDeserializationContext ctx ) {
+        if ( !bufferedProperties.isEmpty() ) {
+            for ( BufferedProperty<T, B, ?> bufferedProperty : bufferedProperties ) {
+                bufferedProperty.flush( builder, ctx );
+            }
+            bufferedProperties.clear();
+        }
     }
 
     public final T deserializeSubtype( JsonReader reader, JsonDeserializationContext ctx, String typeInfo ) throws IOException {

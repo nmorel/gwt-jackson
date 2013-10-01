@@ -1557,34 +1557,105 @@ public class JsonReader
     pos += NON_EXECUTE_PREFIX.length;
   }
 
-    /**
-     * Reads characters into a portion of an array.
-     *
-     * @param      cbuf  Destination buffer
-     * @param      off   Offset at which to start writing characters
-     * @param      len   Maximum number of characters to read
-     *
-     * @return     The number of characters read, or -1 if the end of the
-     *             stream has been reached
-     *
-     * @exception  IOException  If an I/O error occurs
-     */
-    public int read(char cbuf[], int off, int len) throws IOException {
-        if ((off < 0) || (off > cbuf.length) || (len < 0) ||
-            ((off + len) > cbuf.length) || ((off + len) < 0)) {
-            throw new IndexOutOfBoundsException();
-        } else if (len == 0) {
-            return 0;
-        }
-        if (next >= length)
-            return -1;
-        int n = Math.min(length - next, len);
-        in.getChars(next, next + n, cbuf, off);
-        next += n;
-        return n;
+  /**
+   * Reads characters into a portion of an array.
+   *
+   * @param      cbuf  Destination buffer
+   * @param      off   Offset at which to start writing characters
+   * @param      len   Maximum number of characters to read
+   *
+   * @return     The number of characters read, or -1 if the end of the
+   *             stream has been reached
+   *
+   * @exception  IOException  If an I/O error occurs
+   */
+  public int read(char cbuf[], int off, int len) throws IOException {
+    if ((off < 0) || (off > cbuf.length) || (len < 0) ||
+        ((off + len) > cbuf.length) || ((off + len) < 0)) {
+      throw new IndexOutOfBoundsException();
+    } else if (len == 0) {
+      return 0;
     }
+    if (next >= length)
+      return -1;
+    int n = Math.min(length - next, len);
+    in.getChars(next, next + n, cbuf, off);
+    next += n;
+    return n;
+  }
 
-    public String getInput(){
-      return in;
-    }
+  public String getInput(){
+    return in;
+  }
+
+  /**
+   * Reads the next value recursively and returns it as a String. If it is an object or array, all nested
+   * elements are read.
+   */
+  public String nextValue() throws IOException
+  {
+    StringBuilder builder = new StringBuilder();
+    int count = 0;
+    do {
+      int p = peeked;
+      if (p == PEEKED_NONE) {
+        p = doPeek();
+      }
+
+      if (p == PEEKED_BEGIN_ARRAY) {
+        push(JsonScope.EMPTY_ARRAY);
+        count++;
+        builder.append('[');
+      } else if (p == PEEKED_BEGIN_OBJECT) {
+        push(JsonScope.EMPTY_OBJECT);
+        count++;
+        builder.append('{');
+      } else if (p == PEEKED_END_ARRAY) {
+        stackSize--;
+        count--;
+        builder.append(']');
+      } else if (p == PEEKED_END_OBJECT) {
+        stackSize--;
+        count--;
+        builder.append('}');
+      } else if (p == PEEKED_UNQUOTED_NAME) {
+        builder.append(nextUnquotedValue());
+        builder.append(':');
+      } else if (p == PEEKED_SINGLE_QUOTED_NAME) {
+        builder.append('\'');
+        builder.append(nextQuotedValue( '\'' ));
+        builder.append('\'');
+        builder.append(':');
+      } else if (p == PEEKED_DOUBLE_QUOTED_NAME) {
+        builder.append('"');
+        builder.append(nextQuotedValue( '"' ));
+        builder.append('"');
+        builder.append(':');
+      } else if (p == PEEKED_UNQUOTED) {
+        builder.append(nextUnquotedValue());
+      } else if (p == PEEKED_SINGLE_QUOTED) {
+        builder.append('\'');
+        builder.append(nextQuotedValue( '\'' ));
+        builder.append('\'');
+      } else if (p == PEEKED_DOUBLE_QUOTED) {
+        builder.append('"');
+        builder.append(nextQuotedValue( '"' ));
+        builder.append('"');
+      } else if (p == PEEKED_NUMBER) {
+        builder.append( new String(buffer, pos, peekedNumberLength) );
+        pos += peekedNumberLength;
+      } else if (p == PEEKED_TRUE) {
+        builder.append( true );
+      } else if (p == PEEKED_FALSE) {
+        builder.append( false );
+      } else if (p == PEEKED_LONG) {
+        builder.append( peekedLong );
+      } else if (p == PEEKED_BUFFERED) {
+        builder.append( peekedString );
+      }
+      peeked = PEEKED_NONE;
+    } while (count != 0);
+
+    return builder.toString();
+  }
 }
