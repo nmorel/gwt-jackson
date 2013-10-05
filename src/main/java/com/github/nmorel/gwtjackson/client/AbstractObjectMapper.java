@@ -14,19 +14,19 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
 
     @Override
     public T read( String in ) throws JsonDeserializationException {
-        JsonReader reader = new JsonReader( in );
-        return read( reader, new JsonDeserializationContext( reader ) );
+        return read( in, new JsonDeserializationContext.Builder().build() );
     }
 
     @Override
-    public T read( JsonReader reader, JsonDeserializationContext ctx ) throws JsonDeserializationException {
+    public T read( String in, JsonDeserializationContext ctx ) throws JsonDeserializationException {
+        JsonReader reader = ctx.newJsonReader( in );
         try {
             return newDeserializer( ctx ).deserialize( reader, ctx );
         } catch ( JsonDeserializationException e ) {
             // already logged, we just throw it
             throw e;
         } catch ( Exception e ) {
-            throw ctx.traceError( e );
+            throw ctx.traceError( e, reader );
         }
     }
 
@@ -41,22 +41,20 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
 
     @Override
     public String write( T value ) throws JsonSerializationException {
-        StringBuilder builder = new StringBuilder();
-        JsonWriter writer = new JsonWriter( builder );
-        writer.setSerializeNulls( false );
-        write( writer, value, new JsonSerializationContext( writer ) );
-        return builder.toString();
+        return write( value, new JsonSerializationContext.Builder().build() );
     }
 
     @Override
-    public void write( JsonWriter writer, T value, JsonSerializationContext ctx ) throws JsonSerializationException {
+    public String write( T value, JsonSerializationContext ctx ) throws JsonSerializationException {
+        JsonWriter writer = ctx.newJsonWriter();
         try {
             newSerializer( ctx ).serialize( writer, value, ctx );
+            return writer.getOutput();
         } catch ( JsonSerializationException e ) {
             // already logged, we just throw it
             throw e;
         } catch ( Exception e ) {
-            throw ctx.traceError( value, e );
+            throw ctx.traceError( value, e, writer );
         }
     }
 

@@ -1687,7 +1687,7 @@ public class JsonReaderTest extends GwtJacksonTestCase {
     /**
      * Returns a reader that returns one character at a time.
      */
-    private String reader( final String s ) {
-        return s;
+    private StringReader reader( final String s ) {
+        return new StringReader(s);
     }
 }

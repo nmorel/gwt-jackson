@@ -44,9 +44,41 @@ import com.google.gwt.logging.client.LogConfiguration;
  */
 public class JsonSerializationContext extends JsonMappingContext {
 
-    private static final Logger logger = Logger.getLogger( "JsonSerialization" );
+    public static class Builder {
 
-    private final JsonWriter writer;
+        private boolean useEqualityForObjectId = false;
+
+        private boolean serializeNulls = true;
+
+        /**
+         * Determines whether Object Identity is compared using
+         * true JVM-level identity of Object (false); or, <code>equals()</code> method.
+         * Latter is sometimes useful when dealing with Database-bound objects with
+         * ORM libraries (like Hibernate).
+         * <p/>
+         * Feature is disabled by default; meaning that strict identity is used, not
+         * <code>equals()</code>
+         */
+        public Builder useEqualityForObjectId( boolean useEqualityForObjectId ) {
+            this.useEqualityForObjectId = useEqualityForObjectId;
+            return this;
+        }
+
+        /**
+         * Sets whether object members are serialized when their value is null.
+         * This has no impact on array elements. The default is true.
+         */
+        public Builder serializeNulls( boolean serializeNulls ) {
+            this.serializeNulls = serializeNulls;
+            return this;
+        }
+
+        public JsonSerializationContext build() {
+            return new JsonSerializationContext( useEqualityForObjectId, serializeNulls );
+        }
+    }
+
+    private static final Logger logger = Logger.getLogger( "JsonSerialization" );
 
     private Map<Object, ObjectIdSerializer<?>> mapObjectId;
 
@@ -55,15 +87,24 @@ public class JsonSerializationContext extends JsonMappingContext {
     /*
      * Serialization options
      */
-    private boolean useEqualityForObjectId = false;
+    private final boolean useEqualityForObjectId;
 
-    public JsonSerializationContext( JsonWriter writer ) {
-        this.writer = writer;
+    private final boolean serializeNulls;
+
+    private JsonSerializationContext( boolean useEqualityForObjectId, boolean serializeNulls ) {
+        this.useEqualityForObjectId = useEqualityForObjectId;
+        this.serializeNulls = serializeNulls;
     }
 
     @Override
     public Logger getLogger() {
         return logger;
+    }
+
+    public JsonWriter newJsonWriter() {
+        JsonWriter writer = new JsonWriter( new StringBuilder() );
+        writer.setSerializeNulls( serializeNulls );
+        return writer;
     }
 
     public JsonSerializer<boolean[]> getPrimitiveBooleanArrayJsonSerializer() {
@@ -175,7 +216,7 @@ public class JsonSerializationContext extends JsonMappingContext {
     }
 
     /**
-     * Trace an error with current writer state and returns a corresponding exception.
+     * Trace an error and returns a corresponding exception.
      *
      * @param value current value
      * @param message error message
@@ -184,12 +225,26 @@ public class JsonSerializationContext extends JsonMappingContext {
      */
     public JsonSerializationException traceError( Object value, String message ) {
         getLogger().log( Level.SEVERE, message );
-        traceWriterInfo( value );
         return new JsonSerializationException( message );
     }
 
     /**
      * Trace an error with current writer state and returns a corresponding exception.
+     *
+     * @param value current value
+     * @param message error message
+     * @param writer current writer
+     *
+     * @return a {@link JsonSerializationException} with the given message
+     */
+    public JsonSerializationException traceError( Object value, String message, JsonWriter writer ) {
+        JsonSerializationException exception = traceError( value, message );
+        traceWriterInfo( value, writer );
+        return exception;
+    }
+
+    /**
+     * Trace an error and returns a corresponding exception.
      *
      * @param value current value
      * @param cause cause of the error
@@ -198,8 +253,22 @@ public class JsonSerializationContext extends JsonMappingContext {
      */
     public JsonSerializationException traceError( Object value, Exception cause ) {
         getLogger().log( Level.SEVERE, "Error during serialization", cause );
-        traceWriterInfo( value );
         return new JsonSerializationException( cause );
+    }
+
+    /**
+     * Trace an error with current writer state and returns a corresponding exception.
+     *
+     * @param value current value
+     * @param cause cause of the error
+     * @param writer current writer
+     *
+     * @return a {@link JsonSerializationException} with the given cause
+     */
+    public JsonSerializationException traceError( Object value, Exception cause, JsonWriter writer ) {
+        JsonSerializationException exception = traceError( value, cause );
+        traceWriterInfo( value, writer );
+        return exception;
     }
 
     /**
@@ -207,9 +276,9 @@ public class JsonSerializationContext extends JsonMappingContext {
      *
      * @param value current value
      */
-    private void traceWriterInfo( Object value ) {
+    private void traceWriterInfo( Object value, JsonWriter writer ) {
         if ( LogConfiguration.loggingIsEnabled( Level.INFO ) ) {
-            getLogger().log( Level.INFO, "Error on value <" + value + ">. Current output : <" + writer.getCurrentString() + ">" );
+            getLogger().log( Level.INFO, "Error on value <" + value + ">. Current output : <" + writer.getOutput() + ">" );
         }
     }
 
@@ -229,14 +298,6 @@ public class JsonSerializationContext extends JsonMappingContext {
             return mapObjectId.get( object );
         }
         return null;
-    }
-
-    public boolean isUseEqualityForObjectId() {
-        return useEqualityForObjectId;
-    }
-
-    public void setUseEqualityForObjectId( boolean useEqualityForObjectId ) {
-        this.useEqualityForObjectId = useEqualityForObjectId;
     }
 
     public void addGenerator( ObjectIdGenerator<?> generator ) {

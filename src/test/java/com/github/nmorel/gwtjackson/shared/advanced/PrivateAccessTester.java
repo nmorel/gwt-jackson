@@ -48,7 +48,8 @@ public final class PrivateAccessTester extends AbstractTester {
         internalBean.privateField = "IHavePrivateAccessors";
         bean.privateAccessors = internalBean;
 
-        String expected = "{\"private\":\"IAmAPrivateField\",\"privateAccessors\":{\"private\":\"IHavePrivateAccessors\"}}";
+        String expected = "{\"private\":\"IAmAPrivateField\",\"privateAccessors\":{\"private\":\"IHavePrivateAccessors\"," +
+            "\"privateAccessors\":null}}";
         String result = writer.write( bean );
 
         assertTrue( bean.usedPrivateGetter );

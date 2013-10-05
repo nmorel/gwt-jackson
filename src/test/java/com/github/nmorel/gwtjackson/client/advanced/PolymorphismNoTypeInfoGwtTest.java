@@ -1,6 +1,7 @@
 package com.github.nmorel.gwtjackson.client.advanced;
 
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
+import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;
 import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
 import com.github.nmorel.gwtjackson.shared.advanced.PolymorphismNoTypeInfoTester;
@@ -18,7 +19,7 @@ public class PolymorphismNoTypeInfoGwtTest extends GwtJacksonTestCase {
         static PolymorphismPersonMapper INSTANCE = GWT.create( PolymorphismPersonMapper.class );
     }
 
-    public interface PolymorphismEmployeeMapper extends ObjectMapper<Employee[]>, ObjectMapperTester<Employee[]> {
+    public interface PolymorphismEmployeeMapper extends ObjectMapper<Employee[]> {
 
         static PolymorphismEmployeeMapper INSTANCE = GWT.create( PolymorphismEmployeeMapper.class );
     }
@@ -34,6 +35,7 @@ public class PolymorphismNoTypeInfoGwtTest extends GwtJacksonTestCase {
     }
 
     public void testDeserializeInstantiableBean() {
-        tester.testDeserializeInstantiableBean( PolymorphismEmployeeMapper.INSTANCE );
+        tester.testDeserializeInstantiableBean( createMapper( PolymorphismEmployeeMapper.INSTANCE, new JsonDeserializationContext.Builder()
+            .failOnUnknownProperties( false ).build(), newDefaultSerializationContext() ) );
     }
 }

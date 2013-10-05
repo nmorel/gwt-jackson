@@ -268,7 +268,7 @@ public final class ObjectIdSerializationTester extends AbstractTester {
         TreeNode leaf = new TreeNode( root, 2, "leaf" );
         root.child = leaf;
         String json = writer.write( root );
-        assertEquals( "{\"id\":1,\"name\":\"root\",\"child\":{\"id\":2,\"name\":\"leaf\",\"parent\":1}}", json );
+        assertEquals( "{\"id\":1,\"name\":\"root\",\"parent\":null,\"child\":{\"id\":2,\"name\":\"leaf\",\"parent\":1,\"child\":null}}", json );
     }
 
     /*

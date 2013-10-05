@@ -1,6 +1,7 @@
 package com.github.nmorel.gwtjackson.client.annotations;
 
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
+import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;
 import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonAutoDetectTester;
@@ -24,6 +25,7 @@ public class JsonAutoDetectGwtTest extends GwtJacksonTestCase {
     }
 
     public void testDeserializeAutoDetection() {
-        tester.testDeserializeAutoDetection( JsonAutoDetectMapper.INSTANCE );
+        tester.testDeserializeAutoDetection( createMapper( JsonAutoDetectMapper.INSTANCE, new JsonDeserializationContext.Builder()
+            .failOnUnknownProperties( false ).build(), newDefaultSerializationContext() ) );
     }
 }

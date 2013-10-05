@@ -30,12 +30,12 @@ public abstract class JsonDeserializer<T> {
             }
             return doDeserialize( reader, ctx );
         } catch ( IOException e ) {
-            throw ctx.traceError( e );
+            throw ctx.traceError( e, reader );
         } catch ( JsonDeserializationException e ) {
             // already logged, we just throw it
             throw e;
         } catch ( Exception e ) {
-            throw ctx.traceError( e );
+            throw ctx.traceError( e, reader );
         }
     }
 

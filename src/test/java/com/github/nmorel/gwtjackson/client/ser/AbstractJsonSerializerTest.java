@@ -17,12 +17,11 @@ public abstract class AbstractJsonSerializerTest<T> extends GwtJacksonTestCase {
     }
 
     protected String serialize( T value ) {
-        StringBuilder builder = new StringBuilder();
-        JsonWriter writer = new JsonWriter( builder );
+        JsonSerializationContext ctx = new JsonSerializationContext.Builder().build();
+        JsonWriter writer = ctx.newJsonWriter();
         writer.setLenient( true );
-        writer.setSerializeNulls( false );
-        createSerializer().serialize( writer, value, new JsonSerializationContext( writer ) );
-        return builder.toString();
+        createSerializer().serialize( writer, value, ctx );
+        return writer.getOutput();
     }
 
     protected void assertSerialization( String expected, T value ) {

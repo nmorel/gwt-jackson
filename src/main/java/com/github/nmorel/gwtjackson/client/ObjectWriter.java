@@ -1,7 +1,6 @@
 package com.github.nmorel.gwtjackson.client;
 
 import com.github.nmorel.gwtjackson.client.exception.JsonSerializationException;
-import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 import com.google.gwt.core.client.GWT;
 
 /**
@@ -44,11 +43,10 @@ public interface ObjectWriter<T> {
     /**
      * Writes an object to JSON.
      *
-     * @param writer {@link JsonWriter} used to write the JSON output
      * @param value Object to write
      * @param ctx Context for the full writing process
      *
      * @throws JsonSerializationException if an exception occurs while writing the output
      */
-    void write( JsonWriter writer, T value, JsonSerializationContext ctx ) throws JsonSerializationException;
+    String write( T value, JsonSerializationContext ctx ) throws JsonSerializationException;
 }

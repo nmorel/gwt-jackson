@@ -149,7 +149,7 @@ public final class ObjectIdTester extends AbstractTester {
         comp.add( e2 );
 
         String json = mapper.write( comp );
-        assertEquals( "{\"employees\":[{\"id\":1,\"name\":\"First\",\"reports\":[2]},{\"id\":2,\"name\":\"Second\",\"manager\":1," +
-            "" + "\"reports\":[]}]}", json );
+        assertEquals( "{\"employees\":[{\"id\":1,\"name\":\"First\",\"manager\":null,\"reports\":[2]},{\"id\":2,\"name\":\"Second\"," +
+            "\"manager\":1,\"reports\":[]}]}", json );
     }
 }

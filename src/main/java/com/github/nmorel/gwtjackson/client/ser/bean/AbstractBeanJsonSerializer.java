@@ -54,7 +54,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
         if ( null != superclassInfo ) {
             SubtypeSerializer serializer = superclassInfo.getSerializer( value.getClass() );
             if ( null == serializer ) {
-                throw ctx.traceError( value, "Cannot find serializer for class " + value.getClass() );
+                throw ctx.traceError( value, "Cannot find serializer for class " + value.getClass(), writer );
             }
 
             if ( !superclassInfo.isIncludeTypeInfo() ) {
@@ -69,7 +69,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
             } else {
                 String typeInfo = superclassInfo.getTypeInfo( value.getClass() );
                 if ( null == typeInfo ) {
-                    throw ctx.traceError( value, "Cannot find type info for class " + value.getClass() );
+                    throw ctx.traceError( value, "Cannot find type info for class " + value.getClass(), writer );
                 }
 
                 switch ( superclassInfo.getInclude() ) {
@@ -117,7 +117,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
                         break;
 
                     default:
-                        throw ctx.traceError( value, "JsonTypeInfo.As." + superclassInfo.getInclude() + " is not supported" );
+                        throw ctx.traceError( value, "JsonTypeInfo.As." + superclassInfo.getInclude() + " is not supported", writer );
                 }
             }
         } else {

@@ -1,7 +1,6 @@
 package com.github.nmorel.gwtjackson.client;
 
 import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException;
-import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.google.gwt.core.client.GWT;
 
 /**
@@ -41,11 +40,11 @@ public interface ObjectReader<T> {
     /**
      * Reads a JSON input into an object.
      *
-     * @param reader {@link JsonReader} used to read the JSON input
+     * @param input JSON input to read
      * @param ctx Context for the full reading process
      *
      * @return the read object
      * @throws JsonDeserializationException if an exception occurs while reading the input
      */
-    T read( JsonReader reader, JsonDeserializationContext ctx ) throws JsonDeserializationException;
+    T read( String input, JsonDeserializationContext ctx ) throws JsonDeserializationException;
 }

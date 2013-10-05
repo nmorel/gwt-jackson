@@ -635,7 +635,10 @@ public class JsonWriter {
     }
   }
 
-  public String getCurrentString() {
+  /**
+   * @return the output when the serialization is over
+   */
+  public String getOutput() {
     return out.toString();
   }
 }

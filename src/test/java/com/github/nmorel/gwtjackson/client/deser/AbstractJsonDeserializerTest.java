@@ -2,6 +2,7 @@ package com.github.nmorel.gwtjackson.client.deser;
 
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
+import com.github.nmorel.gwtjackson.client.JsonDeserializationContext.Builder;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 
@@ -17,9 +18,10 @@ public abstract class AbstractJsonDeserializerTest<T> extends GwtJacksonTestCase
     }
 
     protected T deserialize( String value ) {
-        JsonReader reader = new JsonReader( value );
+        JsonDeserializationContext ctx = new Builder().build();
+        JsonReader reader = ctx.newJsonReader( value );
         reader.setLenient( true );
-        return createDeserializer().deserialize( reader, new JsonDeserializationContext( reader ) );
+        return createDeserializer().deserialize( reader, ctx );
     }
 
     protected void assertDeserialization( T expected, String value ) {

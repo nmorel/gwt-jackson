@@ -9,6 +9,7 @@ import com.github.nmorel.gwtjackson.client.advanced.PrivateAccessGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.identity.ObjectIdDeserializationGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.identity.ObjectIdGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.identity.ObjectIdSerializationGwtTest;
+import com.github.nmorel.gwtjackson.client.advanced.identity.ObjectIdWithEqualsGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.identity.ObjectIdWithPolymorphicGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonAutoDetectGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonCreatorGwtTest;
@@ -159,6 +160,7 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( ObjectIdDeserializationGwtTest.class );
         suite.addTestSuite( ObjectIdSerializationGwtTest.class );
         suite.addTestSuite( ObjectIdWithPolymorphicGwtTest.class );
+        suite.addTestSuite( ObjectIdWithEqualsGwtTest.class );
 
         return suite;
     }

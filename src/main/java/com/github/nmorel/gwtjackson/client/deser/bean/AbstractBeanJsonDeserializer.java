@@ -60,7 +60,7 @@ public abstract class AbstractBeanJsonDeserializer<T, B extends InstanceBuilder<
             IdKey id = identityInfo.getIdKey( reader, ctx );
             Object instance = ctx.getObjectWithId( id );
             if ( null == instance ) {
-                throw ctx.traceError( "Cannot find an object with id " + id );
+                throw ctx.traceError( "Cannot find an object with id " + id, reader );
             }
             return (T) instance;
         }
@@ -75,7 +75,7 @@ public abstract class AbstractBeanJsonDeserializer<T, B extends InstanceBuilder<
                     String name = reader.nextName();
                     if ( !superclassInfo.getPropertyName().equals( name ) ) {
                         // the type info is always the first value. If we don't find it, we throw an error
-                        throw ctx.traceError( "Cannot find the type info" );
+                        throw ctx.traceError( "Cannot find the type info", reader );
                     }
                     String typeInfoProperty = reader.nextString();
 
@@ -106,14 +106,14 @@ public abstract class AbstractBeanJsonDeserializer<T, B extends InstanceBuilder<
                     break;
 
                 default:
-                    throw ctx.traceError( "JsonTypeInfo.As." + superclassInfo.getInclude() + " is not supported" );
+                    throw ctx.traceError( "JsonTypeInfo.As." + superclassInfo.getInclude() + " is not supported", reader );
             }
         } else if ( isInstantiable() ) {
             reader.beginObject();
             result = deserializeObject( reader, ctx );
             reader.endObject();
         } else {
-            throw ctx.traceError( "Cannot instantiate the type" );
+            throw ctx.traceError( "Cannot instantiate the type", reader );
         }
 
         return result;
@@ -160,8 +160,11 @@ public abstract class AbstractBeanJsonDeserializer<T, B extends InstanceBuilder<
             } else {
                 BeanPropertyDeserializer<T, B, ?> property = deserializers.get( name );
                 if ( null == property ) {
-                    // TODO add a configuration to tell if we skip or throw an unknown property
-                    reader.skipValue();
+                    if ( ctx.isFailOnUnknownProperties() ) {
+                        throw ctx.traceError( "Unknown property '" + name + "'", reader );
+                    } else {
+                        reader.skipValue();
+                    }
                 } else if ( foundIdentity ) {
                     property.deserialize( reader, builder, ctx );
                 } else {
@@ -211,7 +214,7 @@ public abstract class AbstractBeanJsonDeserializer<T, B extends InstanceBuilder<
     public final T deserializeSubtype( JsonReader reader, JsonDeserializationContext ctx, String typeInfo ) throws IOException {
         SubtypeDeserializer<? extends T> deserializer = superclassInfo.getDeserializer( typeInfo );
         if ( null == deserializer ) {
-            throw ctx.traceError( "No deserializer found for the type " + typeInfo );
+            throw ctx.traceError( "No deserializer found for the type " + typeInfo, reader );
         }
 
         return deserializer.deserializeObject( reader, ctx );

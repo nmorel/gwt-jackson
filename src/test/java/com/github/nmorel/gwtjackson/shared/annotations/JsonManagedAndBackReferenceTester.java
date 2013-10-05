@@ -291,7 +291,7 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester {
         child.parent = root;
 
         String json = mapper.write( child );
-        assertEquals( "{\"name\":\"kid\"}", json );
+        assertEquals( "{\"name\":\"kid\",\"child\":null}", json );
 
         SimpleTreeNode resultNode = mapper.read( json );
         assertEquals( "kid", resultNode.name );
@@ -306,7 +306,7 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester {
         child.parent = root;
 
         String json = mapper.write( root );
-        assertEquals( "{\"name\":\"root\",\"child\":{\"name\":\"kid\"}}", json );
+        assertEquals( "{\"name\":\"root\",\"child\":{\"name\":\"kid\",\"child\":null}}", json );
 
         SimpleTreeNode resultNode = mapper.read( json );
         assertEquals( "root", resultNode.name );
@@ -324,7 +324,7 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester {
         child.parent = root;
 
         String json = mapper.write( root );
-        assertEquals( "{\"name\":\"root\",\"child\":{\"name\":\"kid\"}}", json );
+        assertEquals( "{\"name\":\"root\",\"child\":{\"name\":\"kid\",\"child\":null}}", json );
 
         SimpleTreeNode2 resultNode = mapper.read( json );
         assertEquals( "root", resultNode.name );
@@ -344,7 +344,8 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester {
         child2.prev = child1;
 
         String json = mapper.write( root );
-        assertEquals( "{\"name\":\"root\",\"firstChild\":{\"name\":\"kid1\",\"next\":{\"name\":\"kid2\"}}}", json );
+        assertEquals( "{\"name\":\"root\",\"firstChild\":{\"name\":\"kid1\",\"firstChild\":null,\"next\":{\"name\":\"kid2\"," +
+            "\"firstChild\":null,\"next\":null}},\"next\":null}", json );
 
         FullTreeNode resultNode = mapper.read( json );
         assertEquals( "root", resultNode.name );
@@ -433,7 +434,7 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester {
 
         // serialization ought to be ok
         String json = mapper.write( parent );
-        assertEquals( "{\"@type\":\"concrete\",\"id\":\"p\",\"next\":{\"@type\":\"concrete\",\"id\":\"c\"}}", json );
+        assertEquals( "{\"@type\":\"concrete\",\"id\":\"p\",\"next\":{\"@type\":\"concrete\",\"id\":\"c\",\"next\":null}}", json );
 
         AbstractNode root = mapper.read( json );
 

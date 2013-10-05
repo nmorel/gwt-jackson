@@ -220,9 +220,7 @@ public class JsonReader
   private static final int NUMBER_CHAR_EXP_DIGIT = 7;
 
   /** The input JSON. */
-  private final String in;
-  private final int length;
-  private int next = 0;
+  private final StringReader in;
 
   /** True to accept non-spec compliant JSON */
   private boolean lenient = false;
@@ -273,12 +271,11 @@ public class JsonReader
   /**
    * Creates a new instance that reads a JSON-encoded stream from {@code in}.
    */
-  public JsonReader( String in ) {
+  public JsonReader( StringReader in ) {
     if (in == null) {
       throw new NullPointerException("in == null");
     }
     this.in = in;
-    this.length = in.length();
   }
 
   /**
@@ -1282,7 +1279,7 @@ public class JsonReader
 
     pos = 0;
     int total;
-    while ((total = read(buffer, limit, buffer.length - limit)) != -1) {
+    while ((total = in.read(buffer, limit, buffer.length - limit)) != -1) {
       limit += total;
 
       // if this is the first read, consume an optional byte order mark (BOM) if it exists
@@ -1557,35 +1554,8 @@ public class JsonReader
     pos += NON_EXECUTE_PREFIX.length;
   }
 
-  /**
-   * Reads characters into a portion of an array.
-   *
-   * @param      cbuf  Destination buffer
-   * @param      off   Offset at which to start writing characters
-   * @param      len   Maximum number of characters to read
-   *
-   * @return     The number of characters read, or -1 if the end of the
-   *             stream has been reached
-   *
-   * @exception  IOException  If an I/O error occurs
-   */
-  public int read(char cbuf[], int off, int len) throws IOException {
-    if ((off < 0) || (off > cbuf.length) || (len < 0) ||
-        ((off + len) > cbuf.length) || ((off + len) < 0)) {
-      throw new IndexOutOfBoundsException();
-    } else if (len == 0) {
-      return 0;
-    }
-    if (next >= length)
-      return -1;
-    int n = Math.min(length - next, len);
-    in.getChars(next, next + n, cbuf, off);
-    next += n;
-    return n;
-  }
-
   public String getInput(){
-    return in;
+    return in.getInput();
   }
 
   /**

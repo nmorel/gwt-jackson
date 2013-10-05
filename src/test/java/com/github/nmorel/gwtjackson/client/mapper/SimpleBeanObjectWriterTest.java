@@ -1,8 +1,8 @@
 package com.github.nmorel.gwtjackson.client.mapper;
 
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
+import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.ObjectWriter;
-import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
 import com.github.nmorel.gwtjackson.shared.mapper.SimpleBeanJsonMapperTester;
 import com.github.nmorel.gwtjackson.shared.model.SimpleBean;
 import com.google.gwt.core.client.GWT;
@@ -12,7 +12,7 @@ import com.google.gwt.core.client.GWT;
  */
 public class SimpleBeanObjectWriterTest extends GwtJacksonTestCase {
 
-    public static interface SimpleBeanMapper extends ObjectWriter<SimpleBean>, ObjectWriterTester<SimpleBean> {
+    public static interface SimpleBeanMapper extends ObjectWriter<SimpleBean> {
 
         static SimpleBeanMapper INSTANCE = GWT.create( SimpleBeanMapper.class );
     }
@@ -20,10 +20,11 @@ public class SimpleBeanObjectWriterTest extends GwtJacksonTestCase {
     private SimpleBeanJsonMapperTester tester = SimpleBeanJsonMapperTester.INSTANCE;
 
     public void testSerializeValue() {
-        tester.testSerializeValue( SimpleBeanMapper.INSTANCE );
+        tester.testSerializeValue( createWriter( SimpleBeanMapper.INSTANCE ) );
     }
 
     public void testWriteBeanWithNullProperties() {
-        tester.testWriteWithNullProperties( SimpleBeanMapper.INSTANCE );
+        tester.testWriteWithNullProperties( createWriter( SimpleBeanMapper.INSTANCE, new JsonSerializationContext.Builder()
+            .serializeNulls( false ).build() ) );
     }
 }
