@@ -3,9 +3,11 @@ package com.github.nmorel.gwtjackson.client.deser.bean;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.ObjectIdGenerator.IdKey;
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
@@ -25,6 +27,8 @@ public abstract class AbstractBeanJsonDeserializer<T, B extends InstanceBuilder<
 
     private final Map<String, BackReferenceProperty<T, ?>> backReferenceDeserializers = new LinkedHashMap<String,
         BackReferenceProperty<T, ?>>();
+
+    private final Set<String> ignoredProperties = new HashSet<String>();
 
     private IdentityDeserializationInfo<?> identityInfo;
 
@@ -52,6 +56,15 @@ public abstract class AbstractBeanJsonDeserializer<T, B extends InstanceBuilder<
      */
     protected void addProperty( String referenceName, BackReferenceProperty<T, ?> backReference ) {
         backReferenceDeserializers.put( referenceName, backReference );
+    }
+
+    /**
+     * Add an ignored property
+     *
+     * @param propertyName name of the property
+     */
+    protected void addIgnoredProperty( String propertyName ) {
+        ignoredProperties.add( propertyName );
     }
 
     @Override
@@ -150,6 +163,11 @@ public abstract class AbstractBeanJsonDeserializer<T, B extends InstanceBuilder<
 
         while ( JsonToken.NAME.equals( reader.peek() ) ) {
             String name = reader.nextName();
+
+            if ( ignoredProperties.contains( name ) ) {
+                reader.skipValue();
+                continue;
+            }
 
             if ( null != identityInfo && identityInfo.getPropertyName().equals( name ) ) {
                 readIdentityProperty( reader, ctx, builder, name );

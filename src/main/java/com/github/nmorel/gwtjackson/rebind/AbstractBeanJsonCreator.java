@@ -179,8 +179,8 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
         Map<String, PropertyInfo> propertiesMap = new LinkedHashMap<String, PropertyInfo>();
         for ( FieldAccessors field : fieldsMap.values() ) {
             PropertyInfo property = PropertyInfo.process( logger, typeOracle, field, mapperInfo );
-            if ( property.isIgnored() ) {
-                logger.log( TreeLogger.Type.DEBUG, "Ignoring field " + field.getFieldName() + " of type " + info.getType() );
+            if ( !property.isVisible() ) {
+                logger.log( TreeLogger.Type.DEBUG, "Field " + field.getFieldName() + " of type " + info.getType() + " is not visible" );
             } else {
                 propertiesMap.put( property.getPropertyName(), property );
             }

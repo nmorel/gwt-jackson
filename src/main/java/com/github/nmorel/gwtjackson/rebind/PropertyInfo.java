@@ -35,25 +35,8 @@ public final class PropertyInfo {
                                         BeanJsonMapperInfo mapperInfo ) throws UnableToCompleteException {
         PropertyInfo result = new PropertyInfo();
 
-        // we first check if the property is ignored
-        JsonIgnore jsonIgnore = findAnnotationOnAnyAccessor( fieldAccessors, JsonIgnore.class );
-        result.ignored = null != jsonIgnore && jsonIgnore.value();
-        if ( result.ignored ) {
-            return result;
-        }
-
         // find the type of the property
         result.type = findType( fieldAccessors );
-
-        // if type is ignored, we ignore the property
-        if ( null != result.type.isClassOrInterface() ) {
-            JsonIgnoreType jsonIgnoreType = findFirstEncounteredAnnotationsOnAllHierarchy( result.type
-                .isClassOrInterface(), JsonIgnoreType.class );
-            result.ignored = null != jsonIgnoreType && jsonIgnoreType.value();
-            if ( result.ignored ) {
-                return result;
-            }
-        }
 
         // determine the property name
         JsonProperty jsonProperty = findAnnotationOnAnyAccessor( fieldAccessors, JsonProperty.class );
@@ -64,8 +47,7 @@ public final class PropertyInfo {
             result.propertyName = fieldAccessors.getFieldName();
         }
 
-        // now that we have the property name, we check if it's not in the ignored properties
-        result.ignored = mapperInfo.getBeanInfo().getIgnoredFields().contains( result.propertyName );
+        result.ignored = isPropertyIgnored( fieldAccessors, mapperInfo, result.type, result.propertyName );
         if ( result.ignored ) {
             return result;
         }
@@ -89,7 +71,7 @@ public final class PropertyInfo {
 
         if ( !getterAutoDetected && !setterAutoDetected && !fieldAutoDetected ) {
             // none of the field have been auto-detected, we ignore the field
-            result.ignored = true;
+            result.visible = false;
             return result;
         }
 
@@ -126,6 +108,28 @@ public final class PropertyInfo {
         } else {
             return fieldAccessors.getField().getType();
         }
+    }
+
+    private static boolean isPropertyIgnored( FieldAccessors fieldAccessors, BeanJsonMapperInfo mapperInfo, JType type,
+                                              String propertyName ) {
+        // we first check if the property is ignored
+        JsonIgnore jsonIgnore = findAnnotationOnAnyAccessor( fieldAccessors, JsonIgnore.class );
+        if ( null != jsonIgnore && jsonIgnore.value() ) {
+            return true;
+        }
+
+        // if type is ignored, we ignore the property
+        if ( null != type.isClassOrInterface() ) {
+            JsonIgnoreType jsonIgnoreType = findFirstEncounteredAnnotationsOnAllHierarchy( type
+                .isClassOrInterface(), JsonIgnoreType.class );
+            if ( null != jsonIgnoreType && jsonIgnoreType.value() ) {
+                return true;
+            }
+        }
+
+        // we check if it's not in the ignored properties
+        return mapperInfo.getBeanInfo().getIgnoredFields().contains( propertyName );
+
     }
 
     private static boolean isGetterAutoDetected( JMethod getter, BeanInfo info ) {
@@ -276,6 +280,8 @@ public final class PropertyInfo {
 
     private boolean ignored;
 
+    private boolean visible = true;
+
     private JType type;
 
     private boolean required;
@@ -301,6 +307,10 @@ public final class PropertyInfo {
 
     public boolean isIgnored() {
         return ignored;
+    }
+
+    public boolean isVisible() {
+        return visible;
     }
 
     public JType getType() {

@@ -180,7 +180,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         // we initialize a map containing the required properties
         Map<String, PropertyInfo> requiredProperties = new LinkedHashMap<String, PropertyInfo>();
         for ( PropertyInfo property : properties.values() ) {
-            if ( null == property.getBackReference() && property.isRequired() ) {
+            if ( !property.isIgnored() && null == property.getBackReference() && property.isRequired() ) {
                 String isSetName = String.format( IS_SET_FORMAT, property.getPropertyName() );
                 source.println( "private boolean %s;", isSetName );
                 requiredProperties.put( isSetName, property );
@@ -190,7 +190,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         // generate the setter for each property
         for ( PropertyInfo property : properties.values() ) {
             // backReference don't need setter and identityProperty are handled differently
-            if ( null == property.getBackReference() ) {
+            if ( !property.isIgnored() && null == property.getBackReference() ) {
                 if ( null == property.getManagedReference() ) {
                     source.println( "private void _%s(%s value, %s ctx) {", property.getPropertyName(), property.getType()
                         .getParameterizedQualifiedSourceName(), JSON_DESERIALIZATION_CONTEXT_CLASS );
@@ -515,6 +515,13 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
     private void generatePropertyDeserializers( SourceWriter source, BeanInfo info, Map<String,
         PropertyInfo> properties ) throws UnableToCompleteException {
         for ( PropertyInfo property : properties.values() ) {
+
+            if ( property.isIgnored() ) {
+                // we add the name of the property to the ignoredProperties list
+                source.println( "addIgnoredProperty(\"%s\");", property.getPropertyName() );
+                continue;
+            }
+
             String setterAccessor = property.getSetterAccessor();
             if ( null == setterAccessor ) {
                 // there is no setter visible
@@ -536,7 +543,6 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
                 source.outdent();
                 source.println( "}" );
 
-                source.indent();
                 source.println( "@Override" );
                 source.println( "public %s deserialize(%s reader, %s builder, %s ctx) {", getQualifiedClassName( property
                     .getType() ), JSON_READER_CLASS, info.getInstanceBuilderQualifiedName(), JSON_DESERIALIZATION_CONTEXT_CLASS );
@@ -549,7 +555,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
                 if ( null == property.getManagedReference() ) {
                     source.println( "builder._%s(value, ctx);", property.getPropertyName() );
                 } else {
-                    // it's a managed reference, we have to give the deserializer to the builder. It needs it to call the setBackReference
+                    // it's a managed reference, we have to give the deserializer to the builder. It needs it to call the
+                    // setBackReference
                     // method once the bean is instantiated.
                     source.println( "builder._%s(value, deserializer, ctx);", property.getPropertyName() );
                 }

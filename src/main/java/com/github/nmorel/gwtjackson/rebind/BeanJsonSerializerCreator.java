@@ -16,7 +16,7 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
 
     private static final String BEAN_PROPERTY_SERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean.BeanPropertySerializer";
 
-    private static final String SUPERCLASS_SERIALIZATION_INFO_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean" +
+    private static final String SUPERCLASS_SERIALIZATION_INFO_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean" + "" +
         ".SuperclassSerializationInfo";
 
     private static final String SUBTYPE_SERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean.SubtypeSerializer";
@@ -163,8 +163,8 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
         PropertyInfo> properties ) throws UnableToCompleteException {
         for ( PropertyInfo property : properties.values() ) {
             String getterAccessor = property.getGetterAccessor();
-            if ( null == getterAccessor ) {
-                // there is no getter visible or the property is used as identity and is handled separately
+            if ( null == getterAccessor || property.isIgnored() ) {
+                // there is no getter visible or the property is ignored
                 continue;
             }
 
