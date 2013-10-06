@@ -19,6 +19,6 @@ public class SqlDateJsonDeserializerTest extends AbstractJsonDeserializerTest<Da
     @Override
     public void testDeserializeValue() {
         assertDeserialization( new Date( 1377543971773l ), "1377543971773" );
-        assertEquals( new Date( getUTCTime( 2012, 8, 18, 12, 45, 56, 543 ) ).toString(), deserialize( "\"2012-08-18\"" ).toString() );
+        assertEquals( getUTCTime( 2012, 8, 18, 0, 0, 0, 0 ), deserialize( "\"2012-08-18\"" ).getTime() );
     }
 }
