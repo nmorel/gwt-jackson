@@ -85,7 +85,7 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
         assertEquals( '\u00e7', bean.getCharPrimitive() );
         assertEquals( new Character( '\u00e8' ), bean.getCharBoxed() );
         assertEquals( new Date( 1345304756543l ), bean.getDate() );
-        assertEquals( new java.sql.Date( 112, 7, 18 ).toString(), bean.getSqlDate().toString() );
+        assertEquals( getUTCTime( 2012, 8, 18, 0, 0, 0, 0 ), bean.getSqlDate().getTime() );
         assertEquals( new Time( 15, 45, 56 ), bean.getSqlTime() );
         assertEquals( new java.sql.Timestamp( 1345304756546l ), bean.getSqlTimestamp() );
         assertTrue( Arrays.deepEquals( new String[]{"Hello", null, "World", "!"}, bean.getStringArray() ) );

@@ -20,6 +20,8 @@ public abstract class DateJsonDeserializer<D extends Date> extends JsonDeseriali
 
     private static final DateTimeFormat DATE_FORMAT = DateTimeFormat.getFormat( DateTimeFormat.PredefinedFormat.ISO_8601 );
 
+    private static final DateTimeFormat SQL_DATE_FORMAT = DateTimeFormat.getFormat( "yyyy-MM-dd Z" );
+
     private static final DateJsonDeserializer<Date> DATE_INSTANCE = new DateJsonDeserializer<Date>() {
 
         @Override
@@ -48,7 +50,8 @@ public abstract class DateJsonDeserializer<D extends Date> extends JsonDeseriali
 
         @Override
         protected java.sql.Date deserializeString( String date ) {
-            return java.sql.Date.valueOf( date );
+            Date d = SQL_DATE_FORMAT.parse( date + " +0000" );
+            return new java.sql.Date( d.getTime() );
         }
     };
 
