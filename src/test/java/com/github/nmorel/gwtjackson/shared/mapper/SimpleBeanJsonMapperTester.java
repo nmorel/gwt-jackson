@@ -2,7 +2,9 @@ package com.github.nmorel.gwtjackson.shared.mapper;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Time;
 import java.util.Arrays;
+import java.util.Date;
 
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
 import com.github.nmorel.gwtjackson.shared.ObjectReaderTester;
@@ -22,7 +24,6 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
     }
 
     public void testDeserializeValue( ObjectReaderTester<SimpleBean> reader ) {
-        java.sql.Time time = new java.sql.Time( getUTCTime( 2012, 8, 18, 15, 45, 56, 545 ) );
 
         String input = "{" +
             "\"string\":\"toto\"," +
@@ -47,7 +48,7 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
             "\"enumProperty\":\"B\"," +
             "\"date\":1345304756543," +
             "\"sqlDate\":\"2012-08-18\"," +
-            "\"sqlTime\":\"" + time.toString() + "\"," +
+            "\"sqlTime\":\"15:45:56\"," +
             "\"sqlTimestamp\":1345304756546," +
             "\"stringArray\":[\"Hello\",null,\"World\",\"!\"]," +
             "\"booleanPrimitiveArray\":[true, null, false, 1, 0]," +
@@ -83,10 +84,10 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
         assertEquals( AnEnum.B, bean.getEnumProperty() );
         assertEquals( '\u00e7', bean.getCharPrimitive() );
         assertEquals( new Character( '\u00e8' ), bean.getCharBoxed() );
-        assertEquals( getUTCDate( 2012, 8, 18, 15, 45, 56, 543 ), bean.getDate() );
-        assertEquals( new java.sql.Date( getUTCTime( 2012, 8, 18, 15, 45, 56, 544 ) ).toString(), bean.getSqlDate().toString() );
-        assertEquals( time.toString(), bean.getSqlTime().toString() );
-        assertEquals( new java.sql.Timestamp( getUTCTime( 2012, 8, 18, 15, 45, 56, 546 ) ), bean.getSqlTimestamp() );
+        assertEquals( new Date( 1345304756543l ), bean.getDate() );
+        assertEquals( new java.sql.Date( 112, 7, 18 ).toString(), bean.getSqlDate().toString() );
+        assertEquals( new Time( 15, 45, 56 ), bean.getSqlTime() );
+        assertEquals( new java.sql.Timestamp( 1345304756546l ), bean.getSqlTimestamp() );
         assertTrue( Arrays.deepEquals( new String[]{"Hello", null, "World", "!"}, bean.getStringArray() ) );
         assertTrue( Arrays.equals( new boolean[]{true, false, false, true, false}, bean.getBooleanPrimitiveArray() ) );
         assertTrue( Arrays.equals( "Hello".getBytes(), bean.getBytePrimitiveArray() ) );
