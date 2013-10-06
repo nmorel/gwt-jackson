@@ -491,7 +491,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         source.println( "public %s<%s, ?> newDeserializer(%s ctx) {", ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS, subtype
             .getQualifiedSourceName(), JSON_DESERIALIZATION_CONTEXT_CLASS );
         source.indent();
-        String deserializer = info.getType() == subtype ? getQualifiedClassName() + ".this" : getDeserializerFromType( subtype );
+        String deserializer = info.getType() == subtype ? getQualifiedClassName() + ".this" : getJsonDeserializerFromType( subtype );
         source.println( "return %s;", deserializer );
         source.outdent();
         source.println( "}" );
@@ -539,7 +539,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
                 source.println( "protected %s<%s> newDeserializer(%s ctx) {", JSON_DESERIALIZER_CLASS, getQualifiedClassName( property
                     .getType() ), JSON_DESERIALIZATION_CONTEXT_CLASS );
                 source.indent();
-                source.println( "return %s;", getDeserializerFromType( property.getType(), property ) );
+                source.println( "return %s;", getJsonDeserializerFromType( property.getType(), property ) );
                 source.outdent();
                 source.println( "}" );
 

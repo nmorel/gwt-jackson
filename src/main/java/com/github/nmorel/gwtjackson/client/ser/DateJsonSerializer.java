@@ -9,6 +9,7 @@ import java.util.Date;
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
+import com.google.gwt.i18n.client.DateTimeFormat;
 
 /**
  * Base implementation of {@link JsonSerializer} for dates.
@@ -17,10 +18,16 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  */
 public abstract class DateJsonSerializer<D extends Date> extends JsonSerializer<D> {
 
+    private static final DateTimeFormat DATE_FORMAT = DateTimeFormat.getFormat( DateTimeFormat.PredefinedFormat.ISO_8601 );
+
     private static final DateJsonSerializer<Date> DATE_INSTANCE = new DateJsonSerializer<Date>() {
         @Override
         protected void doSerialize( JsonWriter writer, @Nonnull Date value, JsonSerializationContext ctx ) throws IOException {
-            writer.value( value.getTime() );
+            if ( ctx.isWriteDatesAsTimestamps() ) {
+                writer.value( value.getTime() );
+            } else {
+                writer.value( DATE_FORMAT.format( value ) );
+            }
         }
     };
 
@@ -62,7 +69,11 @@ public abstract class DateJsonSerializer<D extends Date> extends JsonSerializer<
     private static final DateJsonSerializer<Timestamp> SQL_TIMESTAMP_INSTANCE = new DateJsonSerializer<Timestamp>() {
         @Override
         protected void doSerialize( JsonWriter writer, @Nonnull Timestamp value, JsonSerializationContext ctx ) throws IOException {
-            writer.value( value.getTime() );
+            if ( ctx.isWriteDatesAsTimestamps() ) {
+                writer.value( value.getTime() );
+            } else {
+                writer.value( DATE_FORMAT.format( value ) );
+            }
         }
     };
 

@@ -1,6 +1,7 @@
 package com.github.nmorel.gwtjackson.client;
 
 import java.util.Date;
+import java.util.logging.Logger;
 
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
 import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
@@ -16,6 +17,11 @@ public abstract class GwtJacksonTestCase extends GWTTestCase {
     @Override
     public String getModuleName() {
         return "com.github.nmorel.gwtjackson.GwtJacksonTest";
+    }
+
+    @Override
+    protected void gwtSetUp() throws Exception {
+        Logger.getLogger( "" );
     }
 
     @SuppressWarnings( "deprecation" )

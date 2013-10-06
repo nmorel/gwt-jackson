@@ -1,38 +1,16 @@
 package com.github.nmorel.gwtjackson.client;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.ObjectIdGenerator;
 import com.github.nmorel.gwtjackson.client.exception.JsonSerializationException;
-import com.github.nmorel.gwtjackson.client.ser.BooleanJsonSerializer;
-import com.github.nmorel.gwtjackson.client.ser.CharacterJsonSerializer;
-import com.github.nmorel.gwtjackson.client.ser.DateJsonSerializer;
-import com.github.nmorel.gwtjackson.client.ser.EnumJsonSerializer;
-import com.github.nmorel.gwtjackson.client.ser.IterableJsonSerializer;
-import com.github.nmorel.gwtjackson.client.ser.NumberJsonSerializer;
-import com.github.nmorel.gwtjackson.client.ser.StringJsonSerializer;
-import com.github.nmorel.gwtjackson.client.ser.UUIDJsonSerializer;
-import com.github.nmorel.gwtjackson.client.ser.array.ArrayJsonSerializer;
-import com.github.nmorel.gwtjackson.client.ser.array.PrimitiveBooleanArrayJsonSerializer;
-import com.github.nmorel.gwtjackson.client.ser.array.PrimitiveByteArrayJsonSerializer;
-import com.github.nmorel.gwtjackson.client.ser.array.PrimitiveCharacterArrayJsonSerializer;
-import com.github.nmorel.gwtjackson.client.ser.array.PrimitiveDoubleArrayJsonSerializer;
-import com.github.nmorel.gwtjackson.client.ser.array.PrimitiveFloatArrayJsonSerializer;
-import com.github.nmorel.gwtjackson.client.ser.array.PrimitiveIntegerArrayJsonSerializer;
-import com.github.nmorel.gwtjackson.client.ser.array.PrimitiveLongArrayJsonSerializer;
-import com.github.nmorel.gwtjackson.client.ser.array.PrimitiveShortArrayJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.bean.AbstractBeanJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.ObjectIdSerializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 import com.google.gwt.logging.client.LogConfiguration;
@@ -50,13 +28,17 @@ public class JsonSerializationContext extends JsonMappingContext {
 
         private boolean serializeNulls = true;
 
+        private boolean writeDatesAsTimestamps = true;
+
+        private boolean writeDateKeysAsTimestamps = false;
+
         /**
          * Determines whether Object Identity is compared using
          * true JVM-level identity of Object (false); or, <code>equals()</code> method.
          * Latter is sometimes useful when dealing with Database-bound objects with
          * ORM libraries (like Hibernate).
          * <p/>
-         * Feature is disabled by default; meaning that strict identity is used, not
+         * Option is disabled by default; meaning that strict identity is used, not
          * <code>equals()</code>
          */
         public Builder useEqualityForObjectId( boolean useEqualityForObjectId ) {
@@ -73,8 +55,33 @@ public class JsonSerializationContext extends JsonMappingContext {
             return this;
         }
 
+        /**
+         * Determines whether {@link java.util.Date} and {@link java.sql.Timestamp} values are to be serialized as numeric timestamps
+         * (true; the default), or as textual representation.
+         * <p>If textual representation is used, the actual format is
+         * {@link com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat#ISO_8601}</p>
+         * Option is enabled by default.
+         */
+        public Builder writeDatesAsTimestamps( boolean writeDatesAsTimestamps ) {
+            this.writeDatesAsTimestamps = writeDatesAsTimestamps;
+            return this;
+        }
+
+        /**
+         * Feature that determines whether {@link java.util.Date}s and {@link java.sql.Timestamp}s used as {@link java.util.Map} keys are
+         * serialized as timestamps or as textual values.
+         * <p>If textual representation is used, the actual format is
+         * {@link com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat#ISO_8601}</p>
+         * Option is disabled by default.
+         */
+        public Builder writeDateKeysAsTimestamps( boolean writeDateKeysAsTimestamps ) {
+            this.writeDateKeysAsTimestamps = writeDateKeysAsTimestamps;
+            return this;
+        }
+
         public JsonSerializationContext build() {
-            return new JsonSerializationContext( useEqualityForObjectId, serializeNulls );
+            return new JsonSerializationContext( useEqualityForObjectId, serializeNulls, writeDatesAsTimestamps,
+                writeDateKeysAsTimestamps );
         }
     }
 
@@ -91,9 +98,16 @@ public class JsonSerializationContext extends JsonMappingContext {
 
     private final boolean serializeNulls;
 
-    private JsonSerializationContext( boolean useEqualityForObjectId, boolean serializeNulls ) {
+    private final boolean writeDatesAsTimestamps;
+
+    private final boolean writeDateKeysAsTimestamps;
+
+    private JsonSerializationContext( boolean useEqualityForObjectId, boolean serializeNulls, boolean writeDatesAsTimestamps,
+                                      boolean writeDateKeysAsTimestamps ) {
         this.useEqualityForObjectId = useEqualityForObjectId;
         this.serializeNulls = serializeNulls;
+        this.writeDatesAsTimestamps = writeDatesAsTimestamps;
+        this.writeDateKeysAsTimestamps = writeDateKeysAsTimestamps;
     }
 
     @Override
@@ -101,118 +115,24 @@ public class JsonSerializationContext extends JsonMappingContext {
         return logger;
     }
 
+    /**
+     * @see Builder#writeDatesAsTimestamps(boolean)
+     */
+    public boolean isWriteDatesAsTimestamps() {
+        return writeDatesAsTimestamps;
+    }
+
+    /**
+     * @see Builder#writeDateKeysAsTimestamps(boolean)
+     */
+    public boolean isWriteDateKeysAsTimestamps() {
+        return writeDateKeysAsTimestamps;
+    }
+
     public JsonWriter newJsonWriter() {
         JsonWriter writer = new JsonWriter( new StringBuilder() );
         writer.setSerializeNulls( serializeNulls );
         return writer;
-    }
-
-    public JsonSerializer<boolean[]> getPrimitiveBooleanArrayJsonSerializer() {
-        return PrimitiveBooleanArrayJsonSerializer.getInstance();
-    }
-
-    public JsonSerializer<byte[]> getPrimitiveByteArrayJsonSerializer() {
-        return PrimitiveByteArrayJsonSerializer.getInstance();
-    }
-
-    public JsonSerializer<char[]> getPrimitiveCharacterArrayJsonSerializer() {
-        return PrimitiveCharacterArrayJsonSerializer.getInstance();
-    }
-
-    public JsonSerializer<double[]> getPrimitiveDoubleArrayJsonSerializer() {
-        return PrimitiveDoubleArrayJsonSerializer.getInstance();
-    }
-
-    public JsonSerializer<float[]> getPrimitiveFloatArrayJsonSerializer() {
-        return PrimitiveFloatArrayJsonSerializer.getInstance();
-    }
-
-    public JsonSerializer<int[]> getPrimitiveIntegerArrayJsonSerializer() {
-        return PrimitiveIntegerArrayJsonSerializer.getInstance();
-    }
-
-    public JsonSerializer<long[]> getPrimitiveLongArrayJsonSerializer() {
-        return PrimitiveLongArrayJsonSerializer.getInstance();
-    }
-
-    public JsonSerializer<short[]> getPrimitiveShortArrayJsonSerializer() {
-        return PrimitiveShortArrayJsonSerializer.getInstance();
-    }
-
-    public JsonSerializer<BigDecimal> getBigDecimalJsonSerializer() {
-        return NumberJsonSerializer.getBigDecimalInstance();
-    }
-
-    public JsonSerializer<BigInteger> getBigIntegerJsonSerializer() {
-        return NumberJsonSerializer.getBigIntegerInstance();
-    }
-
-    public JsonSerializer<Boolean> getBooleanJsonSerializer() {
-        return BooleanJsonSerializer.getInstance();
-    }
-
-    public JsonSerializer<Byte> getByteJsonSerializer() {
-        return NumberJsonSerializer.getByteInstance();
-    }
-
-    public JsonSerializer<Character> getCharacterJsonSerializer() {
-        return CharacterJsonSerializer.getInstance();
-    }
-
-    public JsonSerializer<Date> getDateJsonSerializer() {
-        return DateJsonSerializer.getDateInstance();
-    }
-
-    public JsonSerializer<Double> getDoubleJsonSerializer() {
-        return NumberJsonSerializer.getDoubleInstance();
-    }
-
-    public JsonSerializer<Float> getFloatJsonSerializer() {
-        return NumberJsonSerializer.getFloatInstance();
-    }
-
-    public JsonSerializer<Integer> getIntegerJsonSerializer() {
-        return NumberJsonSerializer.getIntegerInstance();
-    }
-
-    public JsonSerializer<Long> getLongJsonSerializer() {
-        return NumberJsonSerializer.getLongInstance();
-    }
-
-    public JsonSerializer<Short> getShortJsonSerializer() {
-        return NumberJsonSerializer.getShortInstance();
-    }
-
-    public JsonSerializer<java.sql.Date> getSqlDateJsonSerializer() {
-        return DateJsonSerializer.getSqlDateInstance();
-    }
-
-    public JsonSerializer<Time> getSqlTimeJsonSerializer() {
-        return DateJsonSerializer.getSqlTimeInstance();
-    }
-
-    public JsonSerializer<Timestamp> getSqlTimestampJsonSerializer() {
-        return DateJsonSerializer.getSqlTimestampInstance();
-    }
-
-    public JsonSerializer<String> getStringJsonSerializer() {
-        return StringJsonSerializer.getInstance();
-    }
-
-    public JsonSerializer<UUID> getUUIDJsonSerializer() {
-        return UUIDJsonSerializer.getInstance();
-    }
-
-    public <E extends Enum<E>> JsonSerializer<E> getEnumJsonSerializer() {
-        return EnumJsonSerializer.getInstance();
-    }
-
-    public <T> JsonSerializer<T[]> newArrayJsonSerializer( JsonSerializer<T> serializer ) {
-        return ArrayJsonSerializer.newInstance( serializer );
-    }
-
-    public <I extends Iterable<T>, T> JsonSerializer<I> newIterableJsonSerializer( JsonSerializer<T> serializer ) {
-        return IterableJsonSerializer.newInstance( serializer );
     }
 
     /**
@@ -300,6 +220,12 @@ public class JsonSerializationContext extends JsonMappingContext {
         return null;
     }
 
+    /**
+     * Used by generated {@link AbstractBeanJsonSerializer}
+     *
+     * @param generator instance of generator to add
+     */
+    @SuppressWarnings( "UnusedDeclaration" )
     public void addGenerator( ObjectIdGenerator<?> generator ) {
         if ( null == generators ) {
             generators = new ArrayList<ObjectIdGenerator<?>>();
@@ -307,6 +233,12 @@ public class JsonSerializationContext extends JsonMappingContext {
         generators.add( generator );
     }
 
+    /**
+     * Used by generated {@link AbstractBeanJsonSerializer}
+     *
+     * @param gen generator used to find equivalent generator
+     */
+    @SuppressWarnings( {"UnusedDeclaration", "unchecked"} )
     public <T> ObjectIdGenerator<T> findObjectIdGenerator( ObjectIdGenerator<T> gen ) {
         if ( null != generators ) {
             for ( ObjectIdGenerator<?> generator : generators ) {

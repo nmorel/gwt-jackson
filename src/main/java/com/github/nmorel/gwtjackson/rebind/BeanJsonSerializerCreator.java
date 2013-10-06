@@ -147,7 +147,7 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
         source.println( "protected %s<%s> newSerializer( %s ctx ) {", ABSTRACT_BEAN_JSON_SERIALIZER_CLASS, subtype
             .getQualifiedSourceName(), JSON_SERIALIZATION_CONTEXT_CLASS );
         source.indent();
-        String serializer = info.getType() == subtype ? getQualifiedClassName() + ".this" : getSerializerFromType( subtype );
+        String serializer = info.getType() == subtype ? getQualifiedClassName() + ".this" : getJsonSerializerFromType( subtype );
         source.println( "return %s;", serializer );
         source.outdent();
         source.println( "}" );
@@ -180,7 +180,7 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
             source.println( "protected %s<%s> newSerializer(%s ctx) {", JSON_SERIALIZER_CLASS, getQualifiedClassName( property
                 .getType() ), JSON_SERIALIZATION_CONTEXT_CLASS );
             source.indent();
-            source.println( "return %s;", getSerializerFromType( property.getType(), property ) );
+            source.println( "return %s;", getJsonSerializerFromType( property.getType(), property ) );
             source.outdent();
             source.println( "}" );
 

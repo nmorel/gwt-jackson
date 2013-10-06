@@ -6,9 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.ObjectIdGenerator;
+import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.deser.bean.AbstractBeanJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.AbstractBeanJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.ObjectIdSerializer;
+import com.github.nmorel.gwtjackson.client.ser.map.key.KeySerializer;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.TreeLogger.Type;
@@ -119,33 +123,37 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
     }
 
     /**
-     * Build the string that instantiate a serializer for the given type. If the type is a bean,
+     * Build the string that instantiate a {@link JsonSerializer} for the given type. If the type is a bean,
      * the implementation of {@link AbstractBeanJsonSerializer} will
      * be created.
      *
      * @param type type
      *
-     * @return the code instantiating the serializer. Examples: <ul><li>ctx.getIntegerSerializer()</li><li>new org
-     *         .PersonBeanJsonSerializer()
-     *         </li></ul>
+     * @return the code instantiating the {@link JsonSerializer}. Examples:
+     *         <ul>
+     *         <li>ctx.getIntegerSerializer()</li>
+     *         <li>new org.PersonBeanJsonSerializer()</li>
+     *         </ul>
      */
-    protected String getSerializerFromType( JType type ) throws UnableToCompleteException {
-        return getSerializerFromType( type, null );
+    protected String getJsonSerializerFromType( JType type ) throws UnableToCompleteException {
+        return getJsonSerializerFromType( type, null );
     }
 
     /**
-     * Build the string that instantiate a serializer for the given type. If the type is a bean,
+     * Build the string that instantiate a {@link JsonSerializer} for the given type. If the type is a bean,
      * the implementation of {@link AbstractBeanJsonSerializer} will
      * be created.
      *
      * @param type type
      * @param propertyInfo additionnal info to gives to the serializer
      *
-     * @return the code instantiating the serializer. Examples: <ul><li>ctx.getIntegerSerializer()</li><li>new org
-     *         .PersonBeanJsonSerializer()
-     *         </li></ul>
+     * @return the code instantiating the {@link JsonSerializer}. Examples:
+     *         <ul>
+     *         <li>ctx.getIntegerSerializer()</li>
+     *         <li>new org.PersonBeanJsonSerializer()</li>
+     *         </ul>
      */
-    protected String getSerializerFromType( JType type, PropertyInfo propertyInfo ) throws UnableToCompleteException {
+    protected String getJsonSerializerFromType( JType type, PropertyInfo propertyInfo ) throws UnableToCompleteException {
         JPrimitiveType primitiveType = type.isPrimitive();
         if ( null != primitiveType ) {
             String boxedName = getJavaObjectTypeFor( primitiveType );
@@ -163,37 +171,34 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                 String boxedName = getJavaObjectTypeFor( arrayType.getComponentType().isPrimitive() );
                 return "ctx.getPrimitive" + boxedName + "ArrayJsonSerializer()";
             } else {
-                return String.format( "ctx.newArrayJsonSerializer(%s)", getSerializerFromType( arrayType
+                return String.format( "ctx.newArrayJsonSerializer(%s)", getJsonSerializerFromType( arrayType
                     .getComponentType(), propertyInfo ) );
             }
         }
 
         JParameterizedType parameterizedType = type.isParameterized();
         if ( null != parameterizedType ) {
-            String result;
 
             if ( typeOracle.isIterable( parameterizedType ) ) {
-                result = String.format( "ctx.<%s, %s>newIterableJsonSerializer", parameterizedType
-                    .getParameterizedQualifiedSourceName(), parameterizedType.getTypeArgs()[0]
-                    .getParameterizedQualifiedSourceName() ) + "(%s)";
+
+                // Iterable and Collection serializer
+                String serializer = getJsonSerializerFromType( parameterizedType.getTypeArgs()[0], propertyInfo );
+                return String.format( "ctx.new%sJsonSerializer(%s)", parameterizedType.getSimpleSourceName(), serializer );
+
             } else if ( typeOracle.isMap( parameterizedType ) ) {
-                // TODO add support for map
-                logger.log( TreeLogger.Type.ERROR, "Map are not supported yet" );
-                throw new UnableToCompleteException();
+
+                // Map serializer
+                String keySerializer = getKeySerializerFromType( parameterizedType.getTypeArgs()[0] );
+                String valueSerializer = getJsonSerializerFromType( parameterizedType.getTypeArgs()[1], propertyInfo );
+                return String.format( "ctx.new%sJsonSerializer(%s, %s)", parameterizedType
+                    .getSimpleSourceName(), keySerializer, valueSerializer );
+
             } else {
                 // TODO
                 logger.log( TreeLogger.Type.ERROR, "Parameterized type '" + parameterizedType
                     .getQualifiedSourceName() + "' is not supported" );
                 throw new UnableToCompleteException();
             }
-
-            JClassType[] args = parameterizedType.getTypeArgs();
-            String[] serializers = new String[args.length];
-            for ( int i = 0; i < args.length; i++ ) {
-                serializers[i] = getSerializerFromType( args[i], propertyInfo );
-            }
-
-            return String.format( result, serializers );
         }
 
         // TODO should we use isClassOrInterface ? need to add test for interface
@@ -258,7 +263,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         source
             .println( "protected %s<%s> newSerializer(%s ctx) {", JSON_SERIALIZER_CLASS, qualifiedType, JSON_SERIALIZATION_CONTEXT_CLASS );
         source.indent();
-        source.println( "return %s;", getSerializerFromType( identityInfo.getType() ) );
+        source.println( "return %s;", getJsonSerializerFromType( identityInfo.getType() ) );
         source.outdent();
         source.println( "}" );
         source.println();
@@ -293,7 +298,33 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
     }
 
     /**
-     * Build the string that instantiate a deserializer for the given type. If the type is a bean,
+     * Build the string that instantiate a {@link KeySerializer} for the given type.
+     *
+     * @param type type
+     *
+     * @return the code instantiating the {@link KeySerializer}.
+     */
+    protected String getKeySerializerFromType( JType type ) throws UnableToCompleteException {
+        JEnumType enumType = type.isEnum();
+        if ( null != enumType ) {
+            return String.format( "ctx.<%s>getEnumKeySerializer()", enumType.getQualifiedSourceName() );
+        }
+
+        JClassType classType = type.isClass();
+        if ( null != classType && BASE_TYPES.contains( classType.getQualifiedSourceName() ) ) {
+            if ( classType.getQualifiedSourceName().startsWith( "java.sql" ) ) {
+                return String.format( "ctx.getSql%sKeySerializer()", classType.getSimpleSourceName() );
+            } else {
+                return String.format( "ctx.get%sKeySerializer()", classType.getSimpleSourceName() );
+            }
+        }
+
+        logger.log( TreeLogger.Type.ERROR, "Type '" + type.getQualifiedSourceName() + "' is not supported as map's key" );
+        throw new UnableToCompleteException();
+    }
+
+    /**
+     * Build the string that instantiate a {@link JsonDeserializer} for the given type. If the type is a bean,
      * the implementation of {@link AbstractBeanJsonDeserializer} will
      * be created.
      *
@@ -303,12 +334,12 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      *         .PersonBeanJsonDeserializer()
      *         </li></ul>
      */
-    protected String getDeserializerFromType( JType type ) throws UnableToCompleteException {
-        return getDeserializerFromType( type, null );
+    protected String getJsonDeserializerFromType( JType type ) throws UnableToCompleteException {
+        return getJsonDeserializerFromType( type, null );
     }
 
     /**
-     * Build the string that instantiate a deserializer for the given type. If the type is a bean,
+     * Build the string that instantiate a {@link JsonDeserializer} for the given type. If the type is a bean,
      * the implementation of {@link AbstractBeanJsonDeserializer} will
      * be created.
      *
@@ -319,7 +350,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      *         .PersonBeanJsonDeserializer()
      *         </li></ul>
      */
-    protected String getDeserializerFromType( JType type, PropertyInfo propertyInfo ) throws UnableToCompleteException {
+    protected String getJsonDeserializerFromType( JType type, PropertyInfo propertyInfo ) throws UnableToCompleteException {
         JPrimitiveType primitiveType = type.isPrimitive();
         if ( null != primitiveType ) {
             String boxedName = getJavaObjectTypeFor( primitiveType );
@@ -336,8 +367,6 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             if ( null != arrayType.getComponentType().isPrimitive() ) {
                 String boxedName = getJavaObjectTypeFor( arrayType.getComponentType().isPrimitive() );
                 return "ctx.getPrimitive" + boxedName + "ArrayJsonDeserializer()";
-            } else if ( "java.lang.String".equals( arrayType.getComponentType().getQualifiedSourceName() ) ) {
-                return "ctx.getStringArrayJsonDeserializer()";
             } else {
                 String method = "ctx.newArrayJsonDeserializer(%s, %s)";
                 String arrayCreator = "new " + ARRAY_CREATOR_CLASS + "<" + arrayType.getComponentType()
@@ -347,36 +376,47 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                     "    return new " + arrayType.getComponentType().getParameterizedQualifiedSourceName() + "[length];\n" +
                     "  }\n" +
                     "}";
-                return String.format( method, getDeserializerFromType( arrayType.getComponentType(), propertyInfo ), arrayCreator );
+                return String.format( method, getJsonDeserializerFromType( arrayType.getComponentType(), propertyInfo ), arrayCreator );
             }
         }
 
         JParameterizedType parameterizedType = type.isParameterized();
         if ( null != parameterizedType ) {
-            String result;
 
-            if ( typeOracle.isEnumSet( parameterizedType ) ) {
-                result = "ctx.newEnumSetJsonDeserializer(" + parameterizedType.getTypeArgs()[0].getQualifiedSourceName() + ".class, %s)";
-            } else if ( typeOracle.isIterable( parameterizedType ) ) {
-                result = "ctx.new" + parameterizedType.getSimpleSourceName() + "JsonDeserializer(%s)";
+            if ( typeOracle.isIterable( parameterizedType ) ) {
+
+                // Iterable and Collection deserializer
+                String deserializer = getJsonDeserializerFromType( parameterizedType.getTypeArgs()[0], propertyInfo );
+
+                if ( typeOracle.isEnumSet( parameterizedType ) ) {
+                    // EnumSet needs the enum class as parameter
+                    return String.format( "ctx.newEnumSetJsonDeserializer(%s.class, %s)", parameterizedType.getTypeArgs()[0]
+                        .getQualifiedSourceName(), deserializer );
+                } else {
+                    return String.format( "ctx.new%sJsonDeserializer(%s)", parameterizedType.getSimpleSourceName(), deserializer );
+                }
+
             } else if ( typeOracle.isMap( parameterizedType ) ) {
-                // TODO add support for map
-                logger.log( TreeLogger.Type.ERROR, "Map are not supported yet" );
-                throw new UnableToCompleteException();
+
+                // Map deserializer
+                String keyDeserializer = getKeyDeserializerFromType( parameterizedType.getTypeArgs()[0] );
+                String valueDeserializer = getJsonDeserializerFromType( parameterizedType.getTypeArgs()[1], propertyInfo );
+
+                if ( typeOracle.isEnumMap( parameterizedType ) ) {
+                    // EnumMap needs the enum class as parameter
+                    return String.format( "ctx.newEnumMapJsonDeserializer(%s.class, %s, %s)", parameterizedType.getTypeArgs()[0]
+                        .getQualifiedSourceName(), keyDeserializer, valueDeserializer );
+                } else {
+                    return String.format( "ctx.new%sJsonDeserializer(%s, %s)", parameterizedType
+                        .getSimpleSourceName(), keyDeserializer, valueDeserializer );
+                }
+
             } else {
                 // TODO
                 logger.log( TreeLogger.Type.ERROR, "Parameterized type '" + parameterizedType
                     .getQualifiedSourceName() + "' is not supported" );
                 throw new UnableToCompleteException();
             }
-
-            JClassType[] args = parameterizedType.getTypeArgs();
-            String[] deserializers = new String[args.length];
-            for ( int i = 0; i < args.length; i++ ) {
-                deserializers[i] = getDeserializerFromType( args[i], propertyInfo );
-            }
-
-            return String.format( result, deserializers );
         }
 
         // TODO should we use isClassOrInterface ? need to add test for interface
@@ -442,7 +482,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             .println( "protected %s<%s> newDeserializer(%s ctx) {", JSON_DESERIALIZER_CLASS, qualifiedType,
                 JSON_DESERIALIZATION_CONTEXT_CLASS );
         source.indent();
-        source.println( "return %s;", getDeserializerFromType( identityInfo.getType() ) );
+        source.println( "return %s;", getJsonDeserializerFromType( identityInfo.getType() ) );
         source.outdent();
         source.println( "}" );
         source.println();
@@ -462,5 +502,31 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             }
             identityInfo.setProperty( property );
         }
+    }
+
+    /**
+     * Build the string that instantiate a {@link KeyDeserializer} for the given type.
+     *
+     * @param type type
+     *
+     * @return the code instantiating the {@link KeyDeserializer}.
+     */
+    protected String getKeyDeserializerFromType( JType type ) throws UnableToCompleteException {
+        JEnumType enumType = type.isEnum();
+        if ( null != enumType ) {
+            return String.format( "ctx.newEnumKeyDeserializer(%s.class)", enumType.getQualifiedSourceName() );
+        }
+
+        JClassType classType = type.isClass();
+        if ( null != classType && BASE_TYPES.contains( classType.getQualifiedSourceName() ) ) {
+            if ( classType.getQualifiedSourceName().startsWith( "java.sql" ) ) {
+                return String.format( "ctx.getSql%sKeyDeserializer()", classType.getSimpleSourceName() );
+            } else {
+                return String.format( "ctx.get%sKeyDeserializer()", classType.getSimpleSourceName() );
+            }
+        }
+
+        logger.log( TreeLogger.Type.ERROR, "Type '" + type.getQualifiedSourceName() + "' is not supported as map's key" );
+        throw new UnableToCompleteException();
     }
 }

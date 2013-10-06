@@ -26,6 +26,8 @@ public class JacksonTypeOracle {
 
     private final JClassType jMapType;
 
+    private final JClassType jEnumMapType;
+
     private final JClassType jIterableType;
 
     private final JClassType jEnumSetType;
@@ -40,6 +42,7 @@ public class JacksonTypeOracle {
         this.jObjectWriterType = typeOracle.findType( ObjectWriter.class.getName() );
         this.jEnumSetType = typeOracle.findType( "java.util.EnumSet" );
         this.jMapType = typeOracle.findType( "java.util.Map" );
+        this.jEnumMapType = typeOracle.findType( "java.util.EnumMap" );
         this.jIterableType = typeOracle.findType( "java.lang.Iterable" );
     }
 
@@ -62,6 +65,10 @@ public class JacksonTypeOracle {
 
     public boolean isEnumSet( JClassType parameterizedType ) {
         return parameterizedType.isAssignableTo( jEnumSetType );
+    }
+
+    public boolean isEnumMap( JClassType parameterizedType ) {
+        return parameterizedType.isAssignableTo( jEnumMapType );
     }
 
     public boolean isMap( JClassType parameterizedType ) {

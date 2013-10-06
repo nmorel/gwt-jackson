@@ -1,9 +1,10 @@
-package com.github.nmorel.gwtjackson.client.deser.array;
+package com.github.nmorel.gwtjackson.client.deser.array.cast;
 
 import java.io.IOException;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.array.AbstractArrayJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 import com.google.gwt.core.client.GWT;
@@ -11,6 +12,7 @@ import com.google.gwt.core.client.JsArrayString;
 
 /**
  * Default {@link JsonDeserializer} implementation for array of {@link String}.
+ * <p>Not working in production mode, cast problem. Can maybe work with disableCastChecking</p>
  *
  * @author Nicolas Morel
  */
