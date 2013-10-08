@@ -57,6 +57,15 @@ import com.github.nmorel.gwtjackson.client.ser.date.DateJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.date.SqlDateJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.date.SqlTimeJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.date.SqlTimestampJsonSerializerTest;
+import com.github.nmorel.gwtjackson.client.ser.map.key.BooleanKeySerializerTest;
+import com.github.nmorel.gwtjackson.client.ser.map.key.CharacterKeySerializerTest;
+import com.github.nmorel.gwtjackson.client.ser.map.key.DateKeySerializerTest;
+import com.github.nmorel.gwtjackson.client.ser.map.key.EnumKeySerializerTest;
+import com.github.nmorel.gwtjackson.client.ser.map.key.SqlDateKeySerializerTest;
+import com.github.nmorel.gwtjackson.client.ser.map.key.SqlTimeKeySerializerTest;
+import com.github.nmorel.gwtjackson.client.ser.map.key.SqlTimestampKeySerializerTest;
+import com.github.nmorel.gwtjackson.client.ser.map.key.StringKeySerializerTest;
+import com.github.nmorel.gwtjackson.client.ser.map.key.UUIDKeySerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.number.BigDecimalJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.number.BigIntegerJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.number.ByteJsonSerializerTest;
@@ -83,7 +92,7 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( JsonReaderTest.class );
         suite.addTestSuite( JsonWriterTest.class );
 
-        // Default serializers
+        // Default json serializers
         suite.addTestSuite( ArrayJsonSerializerTest.class );
         suite.addTestSuite( BigDecimalJsonSerializerTest.class );
         suite.addTestSuite( BigIntegerJsonSerializerTest.class );
@@ -106,6 +115,17 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( SqlTimestampJsonSerializerTest.class );
         suite.addTestSuite( StringJsonSerializerTest.class );
         suite.addTestSuite( UUIDJsonSerializerTest.class );
+
+        // Default key serializers
+        suite.addTestSuite( BooleanKeySerializerTest.class );
+        suite.addTestSuite( CharacterKeySerializerTest.class );
+        suite.addTestSuite( DateKeySerializerTest.class );
+        suite.addTestSuite( EnumKeySerializerTest.class );
+        suite.addTestSuite( SqlDateKeySerializerTest.class );
+        suite.addTestSuite( SqlTimeKeySerializerTest.class );
+        suite.addTestSuite( SqlTimestampKeySerializerTest.class );
+        suite.addTestSuite( StringKeySerializerTest.class );
+        suite.addTestSuite( UUIDKeySerializerTest.class );
 
         // Default deserializers
         suite.addTestSuite( ArrayJsonDeserializerTest.class );
