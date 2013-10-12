@@ -1,17 +1,16 @@
-package com.github.nmorel.gwtjackson.client.ser.number;
+package com.github.nmorel.gwtjackson.client.ser.map.key;
 
-import com.github.nmorel.gwtjackson.client.ser.AbstractJsonSerializerTest;
-import com.github.nmorel.gwtjackson.client.ser.NumberJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.map.key.BaseNumberKeySerializer.FloatKeySerializer;
 import com.google.gwt.core.client.GWT;
 
 /**
  * @author Nicolas Morel
  */
-public class FloatJsonSerializerTest extends AbstractJsonSerializerTest<Float> {
+public class FloatKeySerializerTest extends AbstractKeySerializerTest<Float> {
 
     @Override
-    protected NumberJsonSerializer<Float> createSerializer() {
-        return NumberJsonSerializer.getFloatInstance();
+    protected FloatKeySerializer createSerializer() {
+        return FloatKeySerializer.getInstance();
     }
 
     public void testSerializeValue() {

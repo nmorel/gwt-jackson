@@ -31,6 +31,23 @@ import com.github.nmorel.gwtjackson.client.deser.date.DateJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.date.SqlDateJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.date.SqlTimeJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.date.SqlTimestampJsonDeserializerTest;
+import com.github.nmorel.gwtjackson.client.deser.map.key.BigDecimalKeyDeserializerTest;
+import com.github.nmorel.gwtjackson.client.deser.map.key.BigIntegerKeyDeserializerTest;
+import com.github.nmorel.gwtjackson.client.deser.map.key.BooleanKeyDeserializerTest;
+import com.github.nmorel.gwtjackson.client.deser.map.key.ByteKeyDeserializerTest;
+import com.github.nmorel.gwtjackson.client.deser.map.key.CharacterKeyDeserializerTest;
+import com.github.nmorel.gwtjackson.client.deser.map.key.DateKeyDeserializerTest;
+import com.github.nmorel.gwtjackson.client.deser.map.key.DoubleKeyDeserializerTest;
+import com.github.nmorel.gwtjackson.client.deser.map.key.EnumKeyDeserializerTest;
+import com.github.nmorel.gwtjackson.client.deser.map.key.FloatKeyDeserializerTest;
+import com.github.nmorel.gwtjackson.client.deser.map.key.IntegerKeyDeserializerTest;
+import com.github.nmorel.gwtjackson.client.deser.map.key.LongKeyDeserializerTest;
+import com.github.nmorel.gwtjackson.client.deser.map.key.ShortKeyDeserializerTest;
+import com.github.nmorel.gwtjackson.client.deser.map.key.SqlDateKeyDeserializerTest;
+import com.github.nmorel.gwtjackson.client.deser.map.key.SqlTimeKeyDeserializerTest;
+import com.github.nmorel.gwtjackson.client.deser.map.key.SqlTimestampKeyDeserializerTest;
+import com.github.nmorel.gwtjackson.client.deser.map.key.StringKeyDeserializerTest;
+import com.github.nmorel.gwtjackson.client.deser.map.key.UUIDKeyDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.number.BigDecimalJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.number.BigIntegerJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.number.ByteJsonDeserializerTest;
@@ -57,10 +74,18 @@ import com.github.nmorel.gwtjackson.client.ser.date.DateJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.date.SqlDateJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.date.SqlTimeJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.date.SqlTimestampJsonSerializerTest;
+import com.github.nmorel.gwtjackson.client.ser.map.key.BigDecimalKeySerializerTest;
+import com.github.nmorel.gwtjackson.client.ser.map.key.BigIntegerKeySerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.map.key.BooleanKeySerializerTest;
+import com.github.nmorel.gwtjackson.client.ser.map.key.ByteKeySerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.map.key.CharacterKeySerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.map.key.DateKeySerializerTest;
+import com.github.nmorel.gwtjackson.client.ser.map.key.DoubleKeySerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.map.key.EnumKeySerializerTest;
+import com.github.nmorel.gwtjackson.client.ser.map.key.FloatKeySerializerTest;
+import com.github.nmorel.gwtjackson.client.ser.map.key.IntegerKeySerializerTest;
+import com.github.nmorel.gwtjackson.client.ser.map.key.LongKeySerializerTest;
+import com.github.nmorel.gwtjackson.client.ser.map.key.ShortKeySerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.map.key.SqlDateKeySerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.map.key.SqlTimeKeySerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.map.key.SqlTimestampKeySerializerTest;
@@ -126,6 +151,14 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( SqlTimestampKeySerializerTest.class );
         suite.addTestSuite( StringKeySerializerTest.class );
         suite.addTestSuite( UUIDKeySerializerTest.class );
+        suite.addTestSuite( BigDecimalKeySerializerTest.class );
+        suite.addTestSuite( BigIntegerKeySerializerTest.class );
+        suite.addTestSuite( ByteKeySerializerTest.class );
+        suite.addTestSuite( DoubleKeySerializerTest.class );
+        suite.addTestSuite( FloatKeySerializerTest.class );
+        suite.addTestSuite( IntegerKeySerializerTest.class );
+        suite.addTestSuite( LongKeySerializerTest.class );
+        suite.addTestSuite( ShortKeySerializerTest.class );
 
         // Default deserializers
         suite.addTestSuite( ArrayJsonDeserializerTest.class );
@@ -150,6 +183,25 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( SqlTimestampJsonDeserializerTest.class );
         suite.addTestSuite( StringJsonDeserializerTest.class );
         suite.addTestSuite( UUIDJsonDeserializerTest.class );
+
+        // Default key deserializers
+        suite.addTestSuite( BooleanKeyDeserializerTest.class );
+        suite.addTestSuite( CharacterKeyDeserializerTest.class );
+        suite.addTestSuite( DateKeyDeserializerTest.class );
+        suite.addTestSuite( EnumKeyDeserializerTest.class );
+        suite.addTestSuite( SqlDateKeyDeserializerTest.class );
+        suite.addTestSuite( SqlTimeKeyDeserializerTest.class );
+        suite.addTestSuite( SqlTimestampKeyDeserializerTest.class );
+        suite.addTestSuite( StringKeyDeserializerTest.class );
+        suite.addTestSuite( UUIDKeyDeserializerTest.class );
+        suite.addTestSuite( BigDecimalKeyDeserializerTest.class );
+        suite.addTestSuite( BigIntegerKeyDeserializerTest.class );
+        suite.addTestSuite( ByteKeyDeserializerTest.class );
+        suite.addTestSuite( DoubleKeyDeserializerTest.class );
+        suite.addTestSuite( FloatKeyDeserializerTest.class );
+        suite.addTestSuite( IntegerKeyDeserializerTest.class );
+        suite.addTestSuite( LongKeyDeserializerTest.class );
+        suite.addTestSuite( ShortKeyDeserializerTest.class );
 
         // Mappers
         suite.addTestSuite( SimpleBeanObjectReaderTest.class );
