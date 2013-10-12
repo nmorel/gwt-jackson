@@ -201,8 +201,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             }
         }
 
-        // TODO should we use isClassOrInterface ? need to add test for interface
-        JClassType classType = type.isClass();
+        JClassType classType = type.isClassOrInterface();
         if ( null != classType ) {
             String qualifiedSourceName = classType.getQualifiedSourceName();
             if ( BASE_TYPES.contains( qualifiedSourceName ) ) {
@@ -419,8 +418,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             }
         }
 
-        // TODO should we use isClassOrInterface ? need to add test for interface
-        JClassType classType = type.isClass();
+        JClassType classType = type.isClassOrInterface();
         if ( null != classType ) {
             String qualifiedSourceName = classType.getQualifiedSourceName();
             if ( BASE_TYPES.contains( qualifiedSourceName ) ) {

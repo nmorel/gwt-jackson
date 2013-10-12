@@ -171,6 +171,12 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
     }
 
     private Map<String, PropertyInfo> findAllProperties( BeanInfo info ) throws UnableToCompleteException {
+        Map<String, PropertyInfo> result = new LinkedHashMap<String, PropertyInfo>();
+        if ( null != info.getType().isInterface() ) {
+            // no properties on interface
+            return result;
+        }
+
         Map<String, FieldAccessors> fieldsMap = new LinkedHashMap<String, FieldAccessors>();
         parseFields( info.getType(), fieldsMap );
         parseMethods( info.getType(), fieldsMap );
@@ -197,8 +203,6 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
                 }
             }
         }
-
-        Map<String, PropertyInfo> result = new LinkedHashMap<String, PropertyInfo>();
 
         // we first add the properties defined in order
         for ( String orderedProperty : info.getPropertyOrderList() ) {
