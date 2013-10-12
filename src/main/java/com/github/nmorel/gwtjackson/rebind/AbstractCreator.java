@@ -193,12 +193,9 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                 return String.format( "ctx.new%sJsonSerializer(%s, %s)", parameterizedType
                     .getSimpleSourceName(), keySerializer, valueSerializer );
 
-            } else {
-                // TODO
-                logger.log( TreeLogger.Type.ERROR, "Parameterized type '" + parameterizedType
-                    .getQualifiedSourceName() + "' is not supported" );
-                throw new UnableToCompleteException();
             }
+
+            // other parameterized types are considered to be beans
         }
 
         JClassType classType = type.isClassOrInterface();
@@ -410,12 +407,9 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                         .getSimpleSourceName(), keyDeserializer, valueDeserializer );
                 }
 
-            } else {
-                // TODO
-                logger.log( TreeLogger.Type.ERROR, "Parameterized type '" + parameterizedType
-                    .getQualifiedSourceName() + "' is not supported" );
-                throw new UnableToCompleteException();
             }
+
+            // other parameterized types are considered to be beans
         }
 
         JClassType classType = type.isClassOrInterface();

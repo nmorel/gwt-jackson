@@ -3,6 +3,7 @@ package com.github.nmorel.gwtjackson.jackson;
 import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException;
 import com.github.nmorel.gwtjackson.client.exception.JsonSerializationException;
@@ -49,7 +50,37 @@ public abstract class AbstractJacksonTest {
         return createMapper( clazz );
     }
 
-    protected <T> ObjectReaderTester<T> createDecoder( final Class<T> clazz ) {
+    protected <T> ObjectReaderTester<T> createDecoder( Class<T> clazz ) {
         return createMapper( clazz );
+    }
+
+    protected <T> ObjectMapperTester<T> createMapper( final TypeReference<T> typeReference ) {
+        return new ObjectMapperTester<T>() {
+            @Override
+            public T read( String input ) {
+                try {
+                    return objectMapper.readValue( input, typeReference );
+                } catch ( IOException e ) {
+                    throw new JsonDeserializationException( e );
+                }
+            }
+
+            @Override
+            public String write( T input ) {
+                try {
+                    return objectMapper.writeValueAsString( input );
+                } catch ( JsonProcessingException e ) {
+                    throw new JsonSerializationException( e );
+                }
+            }
+        };
+    }
+
+    protected <T> ObjectWriterTester<T> createEncoder( TypeReference<T> typeReference ) {
+        return createMapper( typeReference );
+    }
+
+    protected <T> ObjectReaderTester<T> createDecoder( TypeReference<T> typeReference ) {
+        return createMapper( typeReference );
     }
 }
