@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
-import com.github.nmorel.gwtjackson.client.deser.NumberJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.BaseNumberJsonDeserializer.FloatJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 
 /**
@@ -28,7 +28,7 @@ public class PrimitiveFloatArrayJsonDeserializer extends AbstractArrayJsonDeseri
 
     @Override
     public float[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
-        List<Float> list = deserializeIntoList( reader, ctx, NumberJsonDeserializer.getFloatInstance() );
+        List<Float> list = deserializeIntoList( reader, ctx, FloatJsonDeserializer.getInstance() );
 
         float[] result = new float[list.size()];
         int i = 0;

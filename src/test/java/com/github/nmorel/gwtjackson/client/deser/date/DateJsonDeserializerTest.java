@@ -2,9 +2,8 @@ package com.github.nmorel.gwtjackson.client.deser.date;
 
 import java.util.Date;
 
-import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.AbstractJsonDeserializerTest;
-import com.github.nmorel.gwtjackson.client.deser.DateJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.BaseDateJsonDeserializer.DateJsonDeserializer;
 
 /**
  * @author Nicolas Morel
@@ -12,8 +11,8 @@ import com.github.nmorel.gwtjackson.client.deser.DateJsonDeserializer;
 public class DateJsonDeserializerTest extends AbstractJsonDeserializerTest<Date> {
 
     @Override
-    protected JsonDeserializer<Date> createDeserializer() {
-        return DateJsonDeserializer.getDateInstance();
+    protected DateJsonDeserializer createDeserializer() {
+        return DateJsonDeserializer.getInstance();
     }
 
     @Override

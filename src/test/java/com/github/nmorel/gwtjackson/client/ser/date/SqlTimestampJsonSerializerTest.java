@@ -3,7 +3,7 @@ package com.github.nmorel.gwtjackson.client.ser.date;
 import java.sql.Timestamp;
 
 import com.github.nmorel.gwtjackson.client.ser.AbstractJsonSerializerTest;
-import com.github.nmorel.gwtjackson.client.ser.DateJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.BaseDateJsonSerializer.SqlTimestampJsonSerializer;
 
 /**
  * @author Nicolas Morel
@@ -11,8 +11,8 @@ import com.github.nmorel.gwtjackson.client.ser.DateJsonSerializer;
 public class SqlTimestampJsonSerializerTest extends AbstractJsonSerializerTest<Timestamp> {
 
     @Override
-    protected DateJsonSerializer<Timestamp> createSerializer() {
-        return DateJsonSerializer.getSqlTimestampInstance();
+    protected SqlTimestampJsonSerializer createSerializer() {
+        return SqlTimestampJsonSerializer.getInstance();
     }
 
     public void testSerializeValue() {

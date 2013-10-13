@@ -1,8 +1,7 @@
 package com.github.nmorel.gwtjackson.client.deser.number;
 
-import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.AbstractJsonDeserializerTest;
-import com.github.nmorel.gwtjackson.client.deser.NumberJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.BaseNumberJsonDeserializer.FloatJsonDeserializer;
 import com.google.gwt.core.client.GWT;
 
 /**
@@ -11,8 +10,8 @@ import com.google.gwt.core.client.GWT;
 public class FloatJsonDeserializerTest extends AbstractJsonDeserializerTest<Float> {
 
     @Override
-    protected JsonDeserializer<Float> createDeserializer() {
-        return NumberJsonDeserializer.getFloatInstance();
+    protected FloatJsonDeserializer createDeserializer() {
+        return FloatJsonDeserializer.getInstance();
     }
 
     @Override

@@ -35,11 +35,21 @@ import java.util.UUID;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import com.github.nmorel.gwtjackson.client.deser.BaseDateJsonDeserializer.DateJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.BaseDateJsonDeserializer.SqlDateJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.BaseDateJsonDeserializer.SqlTimeJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.BaseDateJsonDeserializer.SqlTimestampJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.BaseNumberJsonDeserializer.BigDecimalJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.BaseNumberJsonDeserializer.BigIntegerJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.BaseNumberJsonDeserializer.ByteJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.BaseNumberJsonDeserializer.DoubleJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.BaseNumberJsonDeserializer.FloatJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.BaseNumberJsonDeserializer.IntegerJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.BaseNumberJsonDeserializer.LongJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.BaseNumberJsonDeserializer.ShortJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.BooleanJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.CharacterJsonDeserializer;
-import com.github.nmorel.gwtjackson.client.deser.DateJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.EnumJsonDeserializer;
-import com.github.nmorel.gwtjackson.client.deser.NumberJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.StringJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.UUIDJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.array.ArrayJsonDeserializer;
@@ -97,12 +107,22 @@ import com.github.nmorel.gwtjackson.client.deser.map.key.EnumKeyDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.map.key.StringKeyDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.map.key.UUIDKeyDeserializer;
+import com.github.nmorel.gwtjackson.client.ser.BaseDateJsonSerializer.DateJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.BaseDateJsonSerializer.SqlDateJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.BaseDateJsonSerializer.SqlTimeJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.BaseDateJsonSerializer.SqlTimestampJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.BaseNumberJsonSerializer.BigDecimalJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.BaseNumberJsonSerializer.BigIntegerJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.BaseNumberJsonSerializer.ByteJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.BaseNumberJsonSerializer.DoubleJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.BaseNumberJsonSerializer.FloatJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.BaseNumberJsonSerializer.IntegerJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.BaseNumberJsonSerializer.LongJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.BaseNumberJsonSerializer.ShortJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.BooleanJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.CharacterJsonSerializer;
-import com.github.nmorel.gwtjackson.client.ser.DateJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.EnumJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.IterableJsonSerializer;
-import com.github.nmorel.gwtjackson.client.ser.NumberJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.StringJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.UUIDJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.array.ArrayJsonSerializer;
@@ -183,11 +203,11 @@ public abstract class JsonMappingContext {
     }
 
     public JsonDeserializer<BigDecimal> getBigDecimalJsonDeserializer() {
-        return NumberJsonDeserializer.getBigDecimalInstance();
+        return BigDecimalJsonDeserializer.getInstance();
     }
 
     public JsonDeserializer<BigInteger> getBigIntegerJsonDeserializer() {
-        return NumberJsonDeserializer.getBigIntegerInstance();
+        return BigIntegerJsonDeserializer.getInstance();
     }
 
     public JsonDeserializer<Boolean> getBooleanJsonDeserializer() {
@@ -195,7 +215,7 @@ public abstract class JsonMappingContext {
     }
 
     public JsonDeserializer<Byte> getByteJsonDeserializer() {
-        return NumberJsonDeserializer.getByteInstance();
+        return ByteJsonDeserializer.getInstance();
     }
 
     public JsonDeserializer<Character> getCharacterJsonDeserializer() {
@@ -203,39 +223,39 @@ public abstract class JsonMappingContext {
     }
 
     public JsonDeserializer<Date> getDateJsonDeserializer() {
-        return DateJsonDeserializer.getDateInstance();
+        return DateJsonDeserializer.getInstance();
     }
 
     public JsonDeserializer<Double> getDoubleJsonDeserializer() {
-        return NumberJsonDeserializer.getDoubleInstance();
+        return DoubleJsonDeserializer.getInstance();
     }
 
     public JsonDeserializer<Float> getFloatJsonDeserializer() {
-        return NumberJsonDeserializer.getFloatInstance();
+        return FloatJsonDeserializer.getInstance();
     }
 
     public JsonDeserializer<Integer> getIntegerJsonDeserializer() {
-        return NumberJsonDeserializer.getIntegerInstance();
+        return IntegerJsonDeserializer.getInstance();
     }
 
     public JsonDeserializer<Long> getLongJsonDeserializer() {
-        return NumberJsonDeserializer.getLongInstance();
+        return LongJsonDeserializer.getInstance();
     }
 
     public JsonDeserializer<Short> getShortJsonDeserializer() {
-        return NumberJsonDeserializer.getShortInstance();
+        return ShortJsonDeserializer.getInstance();
     }
 
     public JsonDeserializer<java.sql.Date> getSqlDateJsonDeserializer() {
-        return DateJsonDeserializer.getSqlDateInstance();
+        return SqlDateJsonDeserializer.getInstance();
     }
 
     public JsonDeserializer<Time> getSqlTimeJsonDeserializer() {
-        return DateJsonDeserializer.getSqlTimeInstance();
+        return SqlTimeJsonDeserializer.getInstance();
     }
 
     public JsonDeserializer<Timestamp> getSqlTimestampJsonDeserializer() {
-        return DateJsonDeserializer.getSqlTimestampInstance();
+        return SqlTimestampJsonDeserializer.getInstance();
     }
 
     public JsonDeserializer<String> getStringJsonDeserializer() {
@@ -486,11 +506,11 @@ public abstract class JsonMappingContext {
     }
 
     public JsonSerializer<BigDecimal> getBigDecimalJsonSerializer() {
-        return NumberJsonSerializer.getBigDecimalInstance();
+        return BigDecimalJsonSerializer.getInstance();
     }
 
     public JsonSerializer<BigInteger> getBigIntegerJsonSerializer() {
-        return NumberJsonSerializer.getBigIntegerInstance();
+        return BigIntegerJsonSerializer.getInstance();
     }
 
     public JsonSerializer<Boolean> getBooleanJsonSerializer() {
@@ -498,7 +518,7 @@ public abstract class JsonMappingContext {
     }
 
     public JsonSerializer<Byte> getByteJsonSerializer() {
-        return NumberJsonSerializer.getByteInstance();
+        return ByteJsonSerializer.getInstance();
     }
 
     public JsonSerializer<Character> getCharacterJsonSerializer() {
@@ -506,39 +526,39 @@ public abstract class JsonMappingContext {
     }
 
     public JsonSerializer<Date> getDateJsonSerializer() {
-        return DateJsonSerializer.getDateInstance();
+        return DateJsonSerializer.getInstance();
     }
 
     public JsonSerializer<Double> getDoubleJsonSerializer() {
-        return NumberJsonSerializer.getDoubleInstance();
+        return DoubleJsonSerializer.getInstance();
     }
 
     public JsonSerializer<Float> getFloatJsonSerializer() {
-        return NumberJsonSerializer.getFloatInstance();
+        return FloatJsonSerializer.getInstance();
     }
 
     public JsonSerializer<Integer> getIntegerJsonSerializer() {
-        return NumberJsonSerializer.getIntegerInstance();
+        return IntegerJsonSerializer.getInstance();
     }
 
     public JsonSerializer<Long> getLongJsonSerializer() {
-        return NumberJsonSerializer.getLongInstance();
+        return LongJsonSerializer.getInstance();
     }
 
     public JsonSerializer<Short> getShortJsonSerializer() {
-        return NumberJsonSerializer.getShortInstance();
+        return ShortJsonSerializer.getInstance();
     }
 
     public JsonSerializer<java.sql.Date> getSqlDateJsonSerializer() {
-        return DateJsonSerializer.getSqlDateInstance();
+        return SqlDateJsonSerializer.getInstance();
     }
 
     public JsonSerializer<Time> getSqlTimeJsonSerializer() {
-        return DateJsonSerializer.getSqlTimeInstance();
+        return SqlTimeJsonSerializer.getInstance();
     }
 
     public JsonSerializer<Timestamp> getSqlTimestampJsonSerializer() {
-        return DateJsonSerializer.getSqlTimestampInstance();
+        return SqlTimestampJsonSerializer.getInstance();
     }
 
     public JsonSerializer<String> getStringJsonSerializer() {

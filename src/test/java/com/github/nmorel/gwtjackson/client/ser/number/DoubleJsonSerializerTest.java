@@ -1,7 +1,7 @@
 package com.github.nmorel.gwtjackson.client.ser.number;
 
 import com.github.nmorel.gwtjackson.client.ser.AbstractJsonSerializerTest;
-import com.github.nmorel.gwtjackson.client.ser.NumberJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.BaseNumberJsonSerializer.DoubleJsonSerializer;
 import com.google.gwt.core.client.GWT;
 
 /**
@@ -10,8 +10,8 @@ import com.google.gwt.core.client.GWT;
 public class DoubleJsonSerializerTest extends AbstractJsonSerializerTest<Double> {
 
     @Override
-    protected NumberJsonSerializer<Double> createSerializer() {
-        return NumberJsonSerializer.getDoubleInstance();
+    protected DoubleJsonSerializer createSerializer() {
+        return DoubleJsonSerializer.getInstance();
     }
 
     public void testSerializeValue() {

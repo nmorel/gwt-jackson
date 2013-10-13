@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
-import com.github.nmorel.gwtjackson.client.deser.NumberJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.BaseNumberJsonDeserializer.ShortJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 
 /**
@@ -28,7 +28,7 @@ public class PrimitiveShortArrayJsonDeserializer extends AbstractArrayJsonDeseri
 
     @Override
     public short[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
-        List<Short> list = deserializeIntoList( reader, ctx, NumberJsonDeserializer.getShortInstance() );
+        List<Short> list = deserializeIntoList( reader, ctx, ShortJsonDeserializer.getInstance() );
 
         short[] result = new short[list.size()];
         int i = 0;

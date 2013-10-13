@@ -3,7 +3,7 @@ package com.github.nmorel.gwtjackson.client.ser.number;
 import java.math.BigDecimal;
 
 import com.github.nmorel.gwtjackson.client.ser.AbstractJsonSerializerTest;
-import com.github.nmorel.gwtjackson.client.ser.NumberJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.BaseNumberJsonSerializer.BigDecimalJsonSerializer;
 
 /**
  * @author Nicolas Morel
@@ -11,8 +11,8 @@ import com.github.nmorel.gwtjackson.client.ser.NumberJsonSerializer;
 public class BigDecimalJsonSerializerTest extends AbstractJsonSerializerTest<BigDecimal> {
 
     @Override
-    protected NumberJsonSerializer<BigDecimal> createSerializer() {
-        return NumberJsonSerializer.getBigDecimalInstance();
+    protected BigDecimalJsonSerializer createSerializer() {
+        return BigDecimalJsonSerializer.getInstance();
     }
 
     public void testSerializeValue() {

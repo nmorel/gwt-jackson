@@ -3,7 +3,7 @@ package com.github.nmorel.gwtjackson.client.ser.number;
 import java.math.BigInteger;
 
 import com.github.nmorel.gwtjackson.client.ser.AbstractJsonSerializerTest;
-import com.github.nmorel.gwtjackson.client.ser.NumberJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.BaseNumberJsonSerializer.BigIntegerJsonSerializer;
 
 /**
  * @author Nicolas Morel
@@ -11,8 +11,8 @@ import com.github.nmorel.gwtjackson.client.ser.NumberJsonSerializer;
 public class BigIntegerJsonSerializerTest extends AbstractJsonSerializerTest<BigInteger> {
 
     @Override
-    protected NumberJsonSerializer<BigInteger> createSerializer() {
-        return NumberJsonSerializer.getBigIntegerInstance();
+    protected BigIntegerJsonSerializer createSerializer() {
+        return BigIntegerJsonSerializer.getInstance();
     }
 
     public void testSerializeValue() {

@@ -2,9 +2,8 @@ package com.github.nmorel.gwtjackson.client.deser.number;
 
 import java.math.BigInteger;
 
-import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.AbstractJsonDeserializerTest;
-import com.github.nmorel.gwtjackson.client.deser.NumberJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.BaseNumberJsonDeserializer.BigIntegerJsonDeserializer;
 
 /**
  * @author Nicolas Morel
@@ -12,8 +11,8 @@ import com.github.nmorel.gwtjackson.client.deser.NumberJsonDeserializer;
 public class BigIntegerJsonDeserializerTest extends AbstractJsonDeserializerTest<BigInteger> {
 
     @Override
-    protected JsonDeserializer<BigInteger> createDeserializer() {
-        return NumberJsonDeserializer.getBigIntegerInstance();
+    protected BigIntegerJsonDeserializer createDeserializer() {
+        return BigIntegerJsonDeserializer.getInstance();
     }
 
     @Override

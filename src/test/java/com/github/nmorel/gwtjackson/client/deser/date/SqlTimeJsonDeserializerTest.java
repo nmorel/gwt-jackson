@@ -2,9 +2,8 @@ package com.github.nmorel.gwtjackson.client.deser.date;
 
 import java.sql.Time;
 
-import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.AbstractJsonDeserializerTest;
-import com.github.nmorel.gwtjackson.client.deser.DateJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.BaseDateJsonDeserializer.SqlTimeJsonDeserializer;
 
 /**
  * @author Nicolas Morel
@@ -12,8 +11,8 @@ import com.github.nmorel.gwtjackson.client.deser.DateJsonDeserializer;
 public class SqlTimeJsonDeserializerTest extends AbstractJsonDeserializerTest<Time> {
 
     @Override
-    protected JsonDeserializer<Time> createDeserializer() {
-        return DateJsonDeserializer.getSqlTimeInstance();
+    protected SqlTimeJsonDeserializer createDeserializer() {
+        return SqlTimeJsonDeserializer.getInstance();
     }
 
     @Override

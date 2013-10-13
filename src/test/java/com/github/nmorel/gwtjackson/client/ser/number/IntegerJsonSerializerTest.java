@@ -1,7 +1,7 @@
 package com.github.nmorel.gwtjackson.client.ser.number;
 
 import com.github.nmorel.gwtjackson.client.ser.AbstractJsonSerializerTest;
-import com.github.nmorel.gwtjackson.client.ser.NumberJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.BaseNumberJsonSerializer.IntegerJsonSerializer;
 
 /**
  * @author Nicolas Morel
@@ -9,8 +9,8 @@ import com.github.nmorel.gwtjackson.client.ser.NumberJsonSerializer;
 public class IntegerJsonSerializerTest extends AbstractJsonSerializerTest<Integer> {
 
     @Override
-    protected NumberJsonSerializer<Integer> createSerializer() {
-        return NumberJsonSerializer.getIntegerInstance();
+    protected IntegerJsonSerializer createSerializer() {
+        return IntegerJsonSerializer.getInstance();
     }
 
     public void testSerializeValue() {

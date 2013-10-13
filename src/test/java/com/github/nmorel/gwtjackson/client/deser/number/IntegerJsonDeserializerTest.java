@@ -1,8 +1,7 @@
 package com.github.nmorel.gwtjackson.client.deser.number;
 
-import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.AbstractJsonDeserializerTest;
-import com.github.nmorel.gwtjackson.client.deser.NumberJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.BaseNumberJsonDeserializer.IntegerJsonDeserializer;
 
 /**
  * @author Nicolas Morel
@@ -10,8 +9,8 @@ import com.github.nmorel.gwtjackson.client.deser.NumberJsonDeserializer;
 public class IntegerJsonDeserializerTest extends AbstractJsonDeserializerTest<Integer> {
 
     @Override
-    protected JsonDeserializer<Integer> createDeserializer() {
-        return NumberJsonDeserializer.getIntegerInstance();
+    protected IntegerJsonDeserializer createDeserializer() {
+        return IntegerJsonDeserializer.getInstance();
     }
 
     @Override

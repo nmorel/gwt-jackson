@@ -16,13 +16,27 @@ import com.google.gwt.i18n.client.DateTimeFormat;
  *
  * @author Nicolas Morel
  */
-public abstract class DateJsonDeserializer<D extends Date> extends JsonDeserializer<D> {
+public abstract class BaseDateJsonDeserializer<D extends Date> extends JsonDeserializer<D> {
 
     private static final DateTimeFormat DATE_FORMAT = DateTimeFormat.getFormat( DateTimeFormat.PredefinedFormat.ISO_8601 );
 
     private static final DateTimeFormat SQL_DATE_FORMAT = DateTimeFormat.getFormat( "yyyy-MM-dd Z" );
 
-    private static final DateJsonDeserializer<Date> DATE_INSTANCE = new DateJsonDeserializer<Date>() {
+    /**
+     * Default implementation of {@link BaseDateJsonDeserializer} for {@link Date}
+     */
+    public static final class DateJsonDeserializer extends BaseDateJsonDeserializer<Date> {
+
+        private static final DateJsonDeserializer INSTANCE = new DateJsonDeserializer();
+
+        /**
+         * @return an instance of {@link DateJsonDeserializer}
+         */
+        public static DateJsonDeserializer getInstance() {
+            return INSTANCE;
+        }
+
+        private DateJsonDeserializer() { }
 
         @Override
         protected Date deserializeNumber( long millis ) {
@@ -33,16 +47,24 @@ public abstract class DateJsonDeserializer<D extends Date> extends JsonDeseriali
         protected Date deserializeString( String date ) {
             return DATE_FORMAT.parseStrict( date );
         }
-    };
-
-    /**
-     * @return an instance of {@link DateJsonDeserializer} that deserialize {@link Date}
-     */
-    public static DateJsonDeserializer<Date> getDateInstance() {
-        return DATE_INSTANCE;
     }
 
-    private static final DateJsonDeserializer<java.sql.Date> SQL_DATE_INSTANCE = new DateJsonDeserializer<java.sql.Date>() {
+    /**
+     * Default implementation of {@link BaseDateJsonDeserializer} for {@link java.sql.Date}
+     */
+    public static final class SqlDateJsonDeserializer extends BaseDateJsonDeserializer<java.sql.Date> {
+
+        private static final SqlDateJsonDeserializer INSTANCE = new SqlDateJsonDeserializer();
+
+        /**
+         * @return an instance of {@link SqlDateJsonDeserializer}
+         */
+        public static SqlDateJsonDeserializer getInstance() {
+            return INSTANCE;
+        }
+
+        private SqlDateJsonDeserializer() { }
+
         @Override
         protected java.sql.Date deserializeNumber( long millis ) {
             return new java.sql.Date( millis );
@@ -53,16 +75,24 @@ public abstract class DateJsonDeserializer<D extends Date> extends JsonDeseriali
             Date d = SQL_DATE_FORMAT.parse( date + " +0000" );
             return new java.sql.Date( d.getTime() );
         }
-    };
-
-    /**
-     * @return an instance of {@link DateJsonDeserializer} that deserialize {@link java.sql.Date}
-     */
-    public static DateJsonDeserializer<java.sql.Date> getSqlDateInstance() {
-        return SQL_DATE_INSTANCE;
     }
 
-    private static final DateJsonDeserializer<Time> SQL_TIME_INSTANCE = new DateJsonDeserializer<Time>() {
+    /**
+     * Default implementation of {@link BaseDateJsonDeserializer} for {@link Time}
+     */
+    public static final class SqlTimeJsonDeserializer extends BaseDateJsonDeserializer<Time> {
+
+        private static final SqlTimeJsonDeserializer INSTANCE = new SqlTimeJsonDeserializer();
+
+        /**
+         * @return an instance of {@link SqlTimeJsonDeserializer}
+         */
+        public static SqlTimeJsonDeserializer getInstance() {
+            return INSTANCE;
+        }
+
+        private SqlTimeJsonDeserializer() { }
+
         @Override
         protected Time deserializeNumber( long millis ) {
             return new Time( millis );
@@ -72,16 +102,23 @@ public abstract class DateJsonDeserializer<D extends Date> extends JsonDeseriali
         protected Time deserializeString( String date ) {
             return Time.valueOf( date );
         }
-    };
-
-    /**
-     * @return an instance of {@link DateJsonDeserializer} that deserialize {@link Time}
-     */
-    public static DateJsonDeserializer<Time> getSqlTimeInstance() {
-        return SQL_TIME_INSTANCE;
     }
 
-    private static final DateJsonDeserializer<Timestamp> SQL_TIMESTAMP_INSTANCE = new DateJsonDeserializer<Timestamp>() {
+    /**
+     * Default implementation of {@link BaseDateJsonDeserializer} for {@link Timestamp}
+     */
+    public static final class SqlTimestampJsonDeserializer extends BaseDateJsonDeserializer<Timestamp> {
+
+        private static final SqlTimestampJsonDeserializer INSTANCE = new SqlTimestampJsonDeserializer();
+
+        /**
+         * @return an instance of {@link SqlTimestampJsonDeserializer}
+         */
+        public static SqlTimestampJsonDeserializer getInstance() {
+            return INSTANCE;
+        }
+
+        private SqlTimestampJsonDeserializer() { }
 
         @Override
         protected Timestamp deserializeNumber( long millis ) {
@@ -92,13 +129,6 @@ public abstract class DateJsonDeserializer<D extends Date> extends JsonDeseriali
         protected Timestamp deserializeString( String date ) {
             return Timestamp.valueOf( date );
         }
-    };
-
-    /**
-     * @return an instance of {@link DateJsonDeserializer} that deserialize {@link Timestamp}
-     */
-    public static DateJsonDeserializer<Timestamp> getSqlTimestampInstance() {
-        return SQL_TIMESTAMP_INSTANCE;
     }
 
     @Override
