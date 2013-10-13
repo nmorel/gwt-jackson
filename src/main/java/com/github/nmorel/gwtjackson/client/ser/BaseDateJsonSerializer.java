@@ -9,7 +9,7 @@ import java.util.Date;
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
-import com.google.gwt.i18n.client.DateTimeFormat;
+import com.github.nmorel.gwtjackson.client.utils.DateFormat;
 
 /**
  * Base implementation of {@link JsonSerializer} for dates.
@@ -17,8 +17,6 @@ import com.google.gwt.i18n.client.DateTimeFormat;
  * @author Nicolas Morel
  */
 public abstract class BaseDateJsonSerializer<D extends Date> extends JsonSerializer<D> {
-
-    private static final DateTimeFormat DATE_FORMAT = DateTimeFormat.getFormat( DateTimeFormat.PredefinedFormat.ISO_8601 );
 
     /**
      * Default implementation of {@link BaseDateJsonSerializer} for {@link Date}
@@ -41,7 +39,7 @@ public abstract class BaseDateJsonSerializer<D extends Date> extends JsonSeriali
             if ( ctx.isWriteDatesAsTimestamps() ) {
                 writer.value( value.getTime() );
             } else {
-                writer.value( DATE_FORMAT.format( value ) );
+                writer.value( DateFormat.format( value ) );
             }
         }
     }
@@ -118,7 +116,7 @@ public abstract class BaseDateJsonSerializer<D extends Date> extends JsonSeriali
             if ( ctx.isWriteDatesAsTimestamps() ) {
                 writer.value( value.getTime() );
             } else {
-                writer.value( DATE_FORMAT.format( value ) );
+                writer.value( DateFormat.format( value ) );
             }
         }
     }

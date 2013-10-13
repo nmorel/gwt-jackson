@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
-import com.google.gwt.i18n.client.DateTimeFormat;
+import com.github.nmorel.gwtjackson.client.utils.DateFormat;
 
 /**
  * Base implementation of {@link KeySerializer} for dates.
@@ -14,8 +14,6 @@ import com.google.gwt.i18n.client.DateTimeFormat;
  * @author Nicolas Morel
  */
 public abstract class BaseDateKeySerializer<D extends Date> extends KeySerializer<D> {
-
-    private static final DateTimeFormat DATE_FORMAT = DateTimeFormat.getFormat( DateTimeFormat.PredefinedFormat.ISO_8601 );
 
     /**
      * Default implementation of {@link BaseDateKeySerializer} for {@link Date}
@@ -32,15 +30,6 @@ public abstract class BaseDateKeySerializer<D extends Date> extends KeySerialize
         }
 
         private DateKeySerializer() { }
-
-        @Override
-        protected String doSerialize( @Nonnull Date value, JsonSerializationContext ctx ) {
-            if ( ctx.isWriteDateKeysAsTimestamps() ) {
-                return Long.toString( value.getTime() );
-            } else {
-                return DATE_FORMAT.format( value );
-            }
-        }
     }
 
     /**
@@ -58,11 +47,6 @@ public abstract class BaseDateKeySerializer<D extends Date> extends KeySerialize
         }
 
         private SqlDateKeySerializer() { }
-
-        @Override
-        protected String doSerialize( @Nonnull java.sql.Date value, JsonSerializationContext ctx ) {
-            return value.toString();
-        }
     }
 
     /**
@@ -80,11 +64,6 @@ public abstract class BaseDateKeySerializer<D extends Date> extends KeySerialize
         }
 
         private SqlTimeKeySerializer() { }
-
-        @Override
-        protected String doSerialize( @Nonnull Time value, JsonSerializationContext ctx ) {
-            return value.toString();
-        }
     }
 
     /**
@@ -102,14 +81,14 @@ public abstract class BaseDateKeySerializer<D extends Date> extends KeySerialize
         }
 
         private SqlTimestampKeySerializer() { }
+    }
 
-        @Override
-        protected String doSerialize( @Nonnull Timestamp value, JsonSerializationContext ctx ) {
-            if ( ctx.isWriteDateKeysAsTimestamps() ) {
-                return Long.toString( value.getTime() );
-            } else {
-                return DATE_FORMAT.format( value );
-            }
+    @Override
+    protected String doSerialize( @Nonnull Date value, JsonSerializationContext ctx ) {
+        if ( ctx.isWriteDateKeysAsTimestamps() ) {
+            return Long.toString( value.getTime() );
+        } else {
+            return DateFormat.format( value );
         }
     }
 }

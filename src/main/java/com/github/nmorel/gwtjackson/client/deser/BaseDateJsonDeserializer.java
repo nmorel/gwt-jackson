@@ -9,6 +9,7 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
+import com.github.nmorel.gwtjackson.client.utils.DateFormat;
 import com.google.gwt.i18n.client.DateTimeFormat;
 
 /**
@@ -17,8 +18,6 @@ import com.google.gwt.i18n.client.DateTimeFormat;
  * @author Nicolas Morel
  */
 public abstract class BaseDateJsonDeserializer<D extends Date> extends JsonDeserializer<D> {
-
-    private static final DateTimeFormat DATE_FORMAT = DateTimeFormat.getFormat( DateTimeFormat.PredefinedFormat.ISO_8601 );
 
     private static final DateTimeFormat SQL_DATE_FORMAT = DateTimeFormat.getFormat( "yyyy-MM-dd Z" );
 
@@ -45,7 +44,7 @@ public abstract class BaseDateJsonDeserializer<D extends Date> extends JsonDeser
 
         @Override
         protected Date deserializeString( String date ) {
-            return DATE_FORMAT.parseStrict( date );
+            return DateFormat.DATE_FORMAT_STR_ISO8601.parseStrict( date );
         }
     }
 
@@ -127,7 +126,7 @@ public abstract class BaseDateJsonDeserializer<D extends Date> extends JsonDeser
 
         @Override
         protected Timestamp deserializeString( String date ) {
-            return Timestamp.valueOf( date );
+            return new Timestamp( DateFormat.DATE_FORMAT_STR_ISO8601.parse( date ).getTime() );
         }
     }
 
