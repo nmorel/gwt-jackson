@@ -62,6 +62,7 @@ import com.github.nmorel.gwtjackson.client.mapper.AllMapsObjectMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.CommonJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.SimpleBeanObjectReaderTest;
 import com.github.nmorel.gwtjackson.client.mapper.SimpleBeanObjectWriterTest;
+import com.github.nmorel.gwtjackson.client.options.IndentGwtTest;
 import com.github.nmorel.gwtjackson.client.ser.BooleanJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.CharacterJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.EnumJsonSerializerTest;
@@ -237,6 +238,9 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( ObjectIdSerializationGwtTest.class );
         suite.addTestSuite( ObjectIdWithPolymorphicGwtTest.class );
         suite.addTestSuite( ObjectIdWithEqualsGwtTest.class );
+
+        // Options
+        suite.addTestSuite( IndentGwtTest.class );
 
         return suite;
     }

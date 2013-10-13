@@ -32,6 +32,8 @@ public class JsonSerializationContext extends JsonMappingContext {
 
         private boolean writeDateKeysAsTimestamps = false;
 
+        private boolean indent = false;
+
         /**
          * Determines whether Object Identity is compared using
          * true JVM-level identity of Object (false); or, <code>equals()</code> method.
@@ -79,9 +81,19 @@ public class JsonSerializationContext extends JsonMappingContext {
             return this;
         }
 
+        /**
+         * Feature that allows enabling (or disabling) indentation
+         * for the underlying writer.
+         * <p>Feature is disabled by default.</p>
+         */
+        public Builder indent( boolean indent ) {
+            this.indent = indent;
+            return this;
+        }
+
         public JsonSerializationContext build() {
             return new JsonSerializationContext( useEqualityForObjectId, serializeNulls, writeDatesAsTimestamps,
-                writeDateKeysAsTimestamps );
+                writeDateKeysAsTimestamps, indent );
         }
     }
 
@@ -102,12 +114,15 @@ public class JsonSerializationContext extends JsonMappingContext {
 
     private final boolean writeDateKeysAsTimestamps;
 
+    private final boolean indent;
+
     private JsonSerializationContext( boolean useEqualityForObjectId, boolean serializeNulls, boolean writeDatesAsTimestamps,
-                                      boolean writeDateKeysAsTimestamps ) {
+                                      boolean writeDateKeysAsTimestamps, boolean indent ) {
         this.useEqualityForObjectId = useEqualityForObjectId;
         this.serializeNulls = serializeNulls;
         this.writeDatesAsTimestamps = writeDatesAsTimestamps;
         this.writeDateKeysAsTimestamps = writeDateKeysAsTimestamps;
+        this.indent = indent;
     }
 
     @Override
@@ -132,6 +147,9 @@ public class JsonSerializationContext extends JsonMappingContext {
     public JsonWriter newJsonWriter() {
         JsonWriter writer = new JsonWriter( new StringBuilder() );
         writer.setSerializeNulls( serializeNulls );
+        if ( indent ) {
+            writer.setIndent( "  " );
+        }
         return writer;
     }
 
@@ -225,7 +243,7 @@ public class JsonSerializationContext extends JsonMappingContext {
      *
      * @param generator instance of generator to add
      */
-    @SuppressWarnings( "UnusedDeclaration" )
+    @SuppressWarnings("UnusedDeclaration")
     public void addGenerator( ObjectIdGenerator<?> generator ) {
         if ( null == generators ) {
             generators = new ArrayList<ObjectIdGenerator<?>>();
@@ -238,7 +256,7 @@ public class JsonSerializationContext extends JsonMappingContext {
      *
      * @param gen generator used to find equivalent generator
      */
-    @SuppressWarnings( {"UnusedDeclaration", "unchecked"} )
+    @SuppressWarnings({"UnusedDeclaration", "unchecked"})
     public <T> ObjectIdGenerator<T> findObjectIdGenerator( ObjectIdGenerator<T> gen ) {
         if ( null != generators ) {
             for ( ObjectIdGenerator<?> generator : generators ) {
