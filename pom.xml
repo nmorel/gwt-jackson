@@ -4,9 +4,65 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent>
+
   <groupId>com.github.nmorel.gwtjackson</groupId>
   <artifactId>gwt-jackson</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>0.1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>gwt-jackson</name>
+  <description>gwt-jackson is a GWT JSON serializer/deserializer mechanism based on Jackson annotations</description>
+  <url>https://github.com/nmorel/gwt-jackson</url>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:git:git://github.com/nmorel/gwt-jackson.git</connection>
+    <developerConnection>scm:git:git@github.com:nmorel/gwt-jackson.git</developerConnection>
+    <url>https://github.com/nmorel/gwt-jackson</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <developers>
+    <developer>
+      <id>nmr.morel</id>
+      <name>Nicolas Morel</name>
+      <email>nmr.morel@gmail.com</email>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+  </developers>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>sonatype-nexus-snapshots</id>
+      <name>Sonatype Nexus Snapshots</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+    </snapshotRepository>
+    <repository>
+      <id>sonatype-nexus-staging</id>
+      <name>Nexus Release Repository</name>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/nmorel/gwt-jackson/issues</url>
+  </issueManagement>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -143,14 +199,12 @@
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
       <version>${jackson.version}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
       <version>${jackson.version}</version>
       <classifier>sources</classifier>
-      <scope>provided</scope>
     </dependency>
 
     <!-- Test dependencies -->
