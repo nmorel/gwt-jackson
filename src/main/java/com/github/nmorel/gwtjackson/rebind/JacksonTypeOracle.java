@@ -8,6 +8,7 @@ import com.github.nmorel.gwtjackson.client.ObjectWriter;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
+import com.google.gwt.core.ext.typeinfo.JParameterizedType;
 import com.google.gwt.core.ext.typeinfo.NotFoundException;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
 
@@ -85,5 +86,9 @@ public class JacksonTypeOracle {
 
     public void addBeanJsonMapperInfo( JClassType type, BeanJsonMapperInfo info ) {
         typeToMapperInfo.put( type, info );
+    }
+
+    public JClassType findGenericType( JParameterizedType parameterizedType ) {
+        return typeOracle.findType( parameterizedType.getQualifiedSourceName() );
     }
 }

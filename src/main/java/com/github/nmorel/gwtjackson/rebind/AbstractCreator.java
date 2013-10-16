@@ -23,6 +23,7 @@ import com.google.gwt.core.ext.typeinfo.JEnumType;
 import com.google.gwt.core.ext.typeinfo.JParameterizedType;
 import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
 import com.google.gwt.core.ext.typeinfo.JType;
+import com.google.gwt.core.ext.typeinfo.JTypeParameter;
 import com.google.gwt.user.rebind.AbstractSourceCreator;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
@@ -58,11 +59,17 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
     public static final String ARRAY_CREATOR_CLASS = "com.github.nmorel.gwtjackson.client.deser.array.ArrayJsonDeserializer.ArrayCreator";
 
-    protected static final String IDENTITY_DESERIALIZATION_INFO_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean" + "" +
+    protected static final String IDENTITY_DESERIALIZATION_INFO_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean" + "" + "" +
         ".IdentityDeserializationInfo";
 
-    protected static final String IDENTITY_SERIALIZATION_INFO_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean" + "" +
+    protected static final String IDENTITY_SERIALIZATION_INFO_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean" + "" + "" +
         ".IdentitySerializationInfo";
+
+    protected static final String TYPE_PARAMETER_PREFIX = "p_";
+
+    protected static final String TYPE_PARAMETER_DESERIALIZER_FIELD_NAME = "deserializer%d";
+
+    protected static final String TYPE_PARAMETER_SERIALIZER_FIELD_NAME = "serializer%d";
 
     /**
      * Returns the String represention of the java type for a primitive for example int/Integer, float/Float, char/Character.
@@ -154,6 +161,11 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      *         </ul>
      */
     protected String getJsonSerializerFromType( JType type, PropertyInfo propertyInfo ) throws UnableToCompleteException {
+        JTypeParameter typeParameter = type.isTypeParameter();
+        if ( null != typeParameter ) {
+            return String.format( TYPE_PARAMETER_SERIALIZER_FIELD_NAME, typeParameter.getOrdinal() );
+        }
+
         JPrimitiveType primitiveType = type.isPrimitive();
         if ( null != primitiveType ) {
             String boxedName = getJavaObjectTypeFor( primitiveType );
@@ -210,11 +222,38 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             }
 
             // it's a bean
+            JClassType baseClassType = classType;
+            if ( null != parameterizedType ) {
+                // it's a bean with generics, we create a deserializer based on generic type
+                baseClassType = typeOracle.findGenericType( parameterizedType );
+            }
             BeanJsonSerializerCreator beanJsonSerializerCreator = new BeanJsonSerializerCreator( logger
-                .branch( TreeLogger.Type.INFO, "Creating serializer for " + classType.getQualifiedSourceName() ), context, typeOracle );
-            BeanJsonMapperInfo info = beanJsonSerializerCreator.create( classType );
-            return String.format( "new %s(%s)", info
-                .getQualifiedSerializerClassName(), generateBeanJsonSerializerParameters( classType, info, propertyInfo ) );
+                .branch( TreeLogger.Type.INFO, "Creating serializer for " + baseClassType.getQualifiedSourceName() ), context, typeOracle );
+            BeanJsonMapperInfo info = beanJsonSerializerCreator.create( baseClassType );
+
+            StringBuilder joinedTypeParameters = new StringBuilder();
+            StringBuilder joinedTypeParameterSerializers = new StringBuilder();
+            if ( null != parameterizedType ) {
+                joinedTypeParameters.append( '<' );
+                for ( int i = 0; i < parameterizedType.getTypeArgs().length; i++ ) {
+                    if ( i > 0 ) {
+                        joinedTypeParameters.append( ", " );
+                        joinedTypeParameterSerializers.append( ", " );
+                    }
+                    JClassType argType = parameterizedType.getTypeArgs()[i];
+                    joinedTypeParameters.append( argType.getParameterizedQualifiedSourceName() );
+                    joinedTypeParameterSerializers.append( getJsonSerializerFromType( argType ) );
+                }
+                joinedTypeParameters.append( '>' );
+            }
+
+            String parameters = generateBeanJsonSerializerParameters( classType, info, propertyInfo );
+            String sep = "";
+            if ( joinedTypeParameterSerializers.length() > 0 && !parameters.isEmpty() ) {
+                sep = ", ";
+            }
+            return String.format( "new %s%s(%s%s%s)", info.getQualifiedSerializerClassName(), joinedTypeParameters
+                .toString(), joinedTypeParameterSerializers, sep, parameters );
         }
 
         logger.log( TreeLogger.Type.ERROR, "Type '" + type.getQualifiedSourceName() + "' is not supported" );
@@ -326,9 +365,11 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      *
      * @param type type
      *
-     * @return the code instantiating the deserializer. Examples: <ul><li>ctx.getIntegerDeserializer()</li><li>new org
-     *         .PersonBeanJsonDeserializer()
-     *         </li></ul>
+     * @return the code instantiating the deserializer. Examples:
+     *         <ul>
+     *         <li>ctx.getIntegerDeserializer()</li>
+     *         <li>new org .PersonBeanJsonDeserializer()</li>
+     *         </ul>
      */
     protected String getJsonDeserializerFromType( JType type ) throws UnableToCompleteException {
         return getJsonDeserializerFromType( type, null );
@@ -342,11 +383,18 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      * @param type type
      * @param propertyInfo additionnal info to gives to the deserializer
      *
-     * @return the code instantiating the deserializer. Examples: <ul><li>ctx.getIntegerDeserializer()</li><li>new org
-     *         .PersonBeanJsonDeserializer()
-     *         </li></ul>
+     * @return the code instantiating the deserializer. Examples:
+     *         <ul>
+     *         <li>ctx.getIntegerDeserializer()</li>
+     *         <li>new org .PersonBeanJsonDeserializer()</li>
+     *         </ul>
      */
     protected String getJsonDeserializerFromType( JType type, PropertyInfo propertyInfo ) throws UnableToCompleteException {
+        JTypeParameter typeParameter = type.isTypeParameter();
+        if ( null != typeParameter ) {
+            return String.format( TYPE_PARAMETER_DESERIALIZER_FIELD_NAME, typeParameter.getOrdinal() );
+        }
+
         JPrimitiveType primitiveType = type.isPrimitive();
         if ( null != primitiveType ) {
             String boxedName = getJavaObjectTypeFor( primitiveType );
@@ -424,11 +472,41 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             }
 
             // it's a bean
+            JClassType baseClassType = classType;
+            if ( null != parameterizedType ) {
+                // it's a bean with generics, we create a deserializer based on generic type
+                baseClassType = typeOracle.findGenericType( parameterizedType );
+            }
             BeanJsonDeserializerCreator beanJsonDeserializerCreator = new BeanJsonDeserializerCreator( logger
-                .branch( TreeLogger.Type.INFO, "Creating deserializer for " + classType.getQualifiedSourceName() ), context, typeOracle );
-            BeanJsonMapperInfo info = beanJsonDeserializerCreator.create( classType );
-            return String.format( "new %s(%s)", info
-                .getQualifiedDeserializerClassName(), generateBeanJsonDeserializerParameters( info, propertyInfo ) );
+                .branch( TreeLogger.Type.INFO, "Creating deserializer for " + baseClassType
+                    .getQualifiedSourceName() ), context, typeOracle );
+            BeanJsonMapperInfo info = beanJsonDeserializerCreator.create( baseClassType );
+
+            StringBuilder joinedTypeParameters = new StringBuilder();
+            StringBuilder joinedTypeParameterDeserializers = new StringBuilder();
+            if ( null != parameterizedType ) {
+                joinedTypeParameters.append( '<' );
+                for ( int i = 0; i < parameterizedType.getTypeArgs().length; i++ ) {
+                    if ( i > 0 ) {
+                        joinedTypeParameters.append( ", " );
+                        joinedTypeParameterDeserializers.append( ", " );
+                    }
+                    JClassType argType = parameterizedType.getTypeArgs()[i];
+                    joinedTypeParameters.append( argType.getParameterizedQualifiedSourceName() );
+                    joinedTypeParameterDeserializers.append( getJsonDeserializerFromType( argType ) );
+                }
+                joinedTypeParameters.append( '>' );
+            }
+
+            String parameters = generateBeanJsonDeserializerParameters( info, propertyInfo );
+            String sep = "";
+            if ( joinedTypeParameterDeserializers.length() > 0 && !parameters.isEmpty() ) {
+                sep = ", ";
+            }
+
+            return String.format( "new %s%s(%s%s%s)", info
+                .getQualifiedDeserializerClassName(), joinedTypeParameters, joinedTypeParameterDeserializers, sep,
+                generateBeanJsonDeserializerParameters( info, propertyInfo ) );
         }
 
         logger.log( TreeLogger.Type.ERROR, "Type '" + type.getQualifiedSourceName() + "' is not supported" );

@@ -3,6 +3,7 @@ package com.github.nmorel.gwtjackson.rebind;
 import java.util.Map;
 
 import com.google.gwt.core.ext.typeinfo.JClassType;
+import com.google.gwt.core.ext.typeinfo.JTypeParameter;
 
 /**
  * @author Nicolas Morel
@@ -19,6 +20,8 @@ public class BeanJsonMapperInfo {
 
     private final String simpleDeserializerClassName;
 
+    private final String genericClassParameters;
+
     private BeanInfo beanInfo;
 
     private Map<String, PropertyInfo> properties;
@@ -30,6 +33,22 @@ public class BeanJsonMapperInfo {
         this.simpleSerializerClassName = simpleSerializerClassName;
         this.qualifiedDeserializerClassName = qualifiedDeserializerClassName;
         this.simpleDeserializerClassName = simpleDeserializerClassName;
+
+        if ( null != type.isGenericType() ) {
+            StringBuilder builder = new StringBuilder();
+            for ( JTypeParameter parameter : type.isGenericType().getTypeParameters() ) {
+                if ( builder.length() == 0 ) {
+                    builder.append( '<' );
+                } else {
+                    builder.append( ", " );
+                }
+                builder.append( parameter.getName() );
+            }
+            builder.append( '>' );
+            genericClassParameters = builder.toString();
+        } else {
+            genericClassParameters = "";
+        }
     }
 
     public JClassType getType() {
@@ -50,6 +69,10 @@ public class BeanJsonMapperInfo {
 
     public String getSimpleDeserializerClassName() {
         return simpleDeserializerClassName;
+    }
+
+    public String getGenericClassParameters() {
+        return genericClassParameters;
     }
 
     public BeanInfo getBeanInfo() {

@@ -30,6 +30,34 @@ import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounte
  */
 public abstract class AbstractBeanJsonCreator extends AbstractCreator {
 
+    protected static class TypeParameters {
+
+        private final List<String> typeParameterMapperNames;
+
+        private final String joinedTypeParameterMappersWithType;
+
+        private final String joinedTypeParameterMappersWithoutType;
+
+        public TypeParameters( List<String> typeParameterMapperNames, String joinedTypeParameterMappersWithType,
+                               String joinedTypeParameterMappersWithoutType ) {
+            this.typeParameterMapperNames = typeParameterMapperNames;
+            this.joinedTypeParameterMappersWithType = joinedTypeParameterMappersWithType;
+            this.joinedTypeParameterMappersWithoutType = joinedTypeParameterMappersWithoutType;
+        }
+
+        public List<String> getTypeParameterMapperNames() {
+            return typeParameterMapperNames;
+        }
+
+        public String getJoinedTypeParameterMappersWithType() {
+            return joinedTypeParameterMappersWithType;
+        }
+
+        public String getJoinedTypeParameterMappersWithoutType() {
+            return joinedTypeParameterMappersWithoutType;
+        }
+    }
+
     protected static final String ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean" + "" +
         ".AbstractBeanJsonDeserializer";
 
@@ -93,10 +121,12 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
 
         String parameterizedTypes = beanType.getParameterizedQualifiedSourceName();
         if ( !isSerializer() ) {
-            parameterizedTypes = parameterizedTypes + ", " + mapperInfo.getBeanInfo().getInstanceBuilderQualifiedName();
+            parameterizedTypes = parameterizedTypes + ", " + mapperInfo.getBeanInfo()
+                .getInstanceBuilderQualifiedName() + getGenericClassParameters();
         }
 
-        SourceWriter source = getSourceWriter( printWriter, packageName, getSimpleClassName(), getSuperclass() + "<" +
+        SourceWriter source = getSourceWriter( printWriter, packageName, getSimpleClassName() + getGenericClassParameters(),
+            getSuperclass() + "<" +
             parameterizedTypes + ">" );
 
         writeClassBody( source, mapperInfo.getBeanInfo(), mapperInfo.getProperties() );
@@ -120,6 +150,10 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
         } else {
             return mapperInfo.getQualifiedDeserializerClassName();
         }
+    }
+
+    protected String getGenericClassParameters() {
+        return mapperInfo.getGenericClassParameters();
     }
 
     protected String getSuperclass() {
@@ -316,5 +350,36 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
         } else {
             return methodName.substring( 3, 4 ).toLowerCase() + methodName.substring( 4 );
         }
+    }
+
+    protected TypeParameters generateTypeParameterMapperFields( SourceWriter source, BeanInfo beanInfo, String mapperClass,
+                                                                String mapperNameFormat ) throws UnableToCompleteException {
+        if ( null == beanInfo.getParameterizedTypes() || beanInfo.getParameterizedTypes().length == 0 ) {
+            return null;
+        }
+
+        List<String> typeParameterMapperNames = new ArrayList<String>();
+        StringBuilder joinedTypeParameterMappersWithType = new StringBuilder();
+        StringBuilder joinedTypeParameterMappersWithoutType = new StringBuilder();
+
+        for ( int i = 0; i < beanInfo.getParameterizedTypes().length; i++ ) {
+            if ( i > 0 ) {
+                joinedTypeParameterMappersWithType.append( ", " );
+                joinedTypeParameterMappersWithoutType.append( ", " );
+            }
+
+            JClassType argType = beanInfo.getParameterizedTypes()[i];
+            String mapperType = String.format( "%s<%s>", mapperClass, argType.getName() );
+            String mapperName = String.format( mapperNameFormat, i );
+
+            source.println( "private final %s %s;", mapperType, mapperName );
+
+            typeParameterMapperNames.add( mapperName );
+            joinedTypeParameterMappersWithType.append( String.format( "%s %s%s", mapperType, TYPE_PARAMETER_PREFIX, mapperName ) );
+            joinedTypeParameterMappersWithoutType.append( TYPE_PARAMETER_PREFIX ).append( mapperName );
+        }
+
+        return new TypeParameters( typeParameterMapperNames, joinedTypeParameterMappersWithType
+            .toString(), joinedTypeParameterMappersWithoutType.toString() );
     }
 }

@@ -35,7 +35,14 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
         PropertyInfo> properties ) throws UnableToCompleteException {
         source.println();
 
-        generateConstructors( source, beanInfo, properties );
+        TypeParameters typeParameters = generateTypeParameterMapperFields( source, beanInfo, JSON_SERIALIZER_CLASS,
+            TYPE_PARAMETER_SERIALIZER_FIELD_NAME );
+
+        if ( null != typeParameters ) {
+            source.println();
+        }
+
+        generateConstructors( source, beanInfo, properties, typeParameters );
 
         source.println();
 
@@ -44,23 +51,44 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
         source.commit( logger );
     }
 
-    private void generateConstructors( SourceWriter source, BeanInfo beanInfo, Map<String,
-        PropertyInfo> properties ) throws UnableToCompleteException {
-        source.println( "public %s() {", getSimpleClassName() );
+    private void generateConstructors( SourceWriter source, BeanInfo beanInfo, Map<String, PropertyInfo> properties,
+                                       TypeParameters typeParameters ) throws UnableToCompleteException {
+
+        source.print( "public %s(", getSimpleClassName() );
+        if ( null != typeParameters ) {
+            source.print( typeParameters.getJoinedTypeParameterMappersWithType() );
+        }
+        source.println( ") {" );
         source.indent();
-        source.println( "this(null, null);" );
+        source.print( "this(" );
+        if ( null != typeParameters ) {
+            source.print( "%s, ", typeParameters.getJoinedTypeParameterMappersWithoutType() );
+        }
+        source.println( "null, null);" );
         source.outdent();
         source.println( "}" );
 
         source.println();
 
-        source
-            .println( "public %s(%s<%s, ?> idProperty, %s<%s> superclassInfo) {", getSimpleClassName(),
-                IDENTITY_SERIALIZATION_INFO_CLASS, beanInfo
-                .getType().getParameterizedQualifiedSourceName(), SUPERCLASS_SERIALIZATION_INFO_CLASS, beanInfo.getType()
-                .getParameterizedQualifiedSourceName() );
+        source.print( "public %s(", getSimpleClassName() );
+        if ( null != typeParameters ) {
+            source.print( "%s, ", typeParameters.getJoinedTypeParameterMappersWithType() );
+        }
+        source.println( "%s<%s, ?> idProperty, %s<%s> superclassInfo) {", IDENTITY_SERIALIZATION_INFO_CLASS, beanInfo.getType()
+            .getParameterizedQualifiedSourceName(), SUPERCLASS_SERIALIZATION_INFO_CLASS, beanInfo.getType()
+            .getParameterizedQualifiedSourceName() );
         source.indent();
         source.println( "super();" );
+
+        source.println();
+
+        if ( null != typeParameters ) {
+            for ( String parameterizedSerializer : typeParameters.getTypeParameterMapperNames() ) {
+                source.println( "this.%s = %s%s;", parameterizedSerializer, TYPE_PARAMETER_PREFIX, parameterizedSerializer );
+            }
+            source.println();
+        }
+
         if ( null != beanInfo.getIdentityInfo() ) {
             source.println( "if(null == idProperty) {" );
             source.indent();

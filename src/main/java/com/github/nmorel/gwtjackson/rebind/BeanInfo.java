@@ -36,6 +36,10 @@ public final class BeanInfo {
         BeanInfo result = new BeanInfo();
         result.type = mapperInfo.getType();
         result.hasSubtypes = mapperInfo.getType().getSubtypes().length > 0;
+
+        result.parameterizedTypes = null == mapperInfo.getType().isGenericType() ? new JClassType[0] : mapperInfo.getType().isGenericType()
+            .getTypeParameters();
+
         determineInstanceCreator( logger, mapperInfo, result );
 
         JsonTypeInfo typeInfo = findFirstEncounteredAnnotationsOnAllHierarchy( mapperInfo.getType(), JsonTypeInfo.class );
@@ -182,6 +186,8 @@ public final class BeanInfo {
 
     private JClassType type;
 
+    private JClassType[] parameterizedTypes;
+
     private String instanceBuilderQualifiedName;
 
     private String instanceBuilderSimpleName;
@@ -230,6 +236,10 @@ public final class BeanInfo {
 
     public JClassType getType() {
         return type;
+    }
+
+    public JClassType[] getParameterizedTypes() {
+        return parameterizedTypes;
     }
 
     public String getInstanceBuilderQualifiedName() {
