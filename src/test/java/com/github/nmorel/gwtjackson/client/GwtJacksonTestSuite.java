@@ -236,6 +236,8 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( PolymorphismIdNameAsWrapperObjectGwtTest.class );
         suite.addTestSuite( JsonTypeWithGenericsGwtTest.class );
         suite.addTestSuite( JsonTypeOnPropertiesGwtTest.class );
+        // TODO this class isn't working at all, the current implementation don't support JsonTypeInfo on a single type without any subtype
+        // suite.addTestSuite( VisibleTypeIdGwtTest.class );
 
         // Identity
         suite.addTestSuite( ObjectIdGwtTest.class );

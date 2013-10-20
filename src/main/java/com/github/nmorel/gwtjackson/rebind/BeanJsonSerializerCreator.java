@@ -152,14 +152,14 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
 
     private void generateSubtypeSerializers( SourceWriter source, BeanInfo info ) throws UnableToCompleteException {
         if ( info.isInstantiable() ) {
-            generateSerializer( source, info, info.getType() );
+            generateSubtypeSerializer( source, info, info.getType() );
         }
         for ( JClassType subtype : info.getType().getSubtypes() ) {
-            generateSerializer( source, info, subtype );
+            generateSubtypeSerializer( source, info, subtype );
         }
     }
 
-    private void generateSerializer( SourceWriter source, BeanInfo info, JClassType subtype ) throws UnableToCompleteException {
+    private void generateSubtypeSerializer( SourceWriter source, BeanInfo info, JClassType subtype ) throws UnableToCompleteException {
         String typeMetadata;
         if ( null == info.getTypeInfo() ) {
             typeMetadata = null;
