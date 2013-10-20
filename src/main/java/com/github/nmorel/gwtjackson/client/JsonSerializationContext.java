@@ -38,6 +38,8 @@ public class JsonSerializationContext extends JsonMappingContext {
 
         private boolean writeCharArraysAsJsonArrays = false;
 
+        private boolean writeNullMapValues = true;
+
         /**
          * Determines whether Object Identity is compared using
          * true JVM-level identity of Object (false); or, <code>equals()</code> method.
@@ -121,9 +123,20 @@ public class JsonSerializationContext extends JsonMappingContext {
             return this;
         }
 
+        /**
+         * Feature that determines whether Map entries with null values are
+         * to be serialized (true) or not (false).
+         * <p/>
+         * Feature is enabled by default.
+         */
+        public Builder writeNullMapValues( boolean writeNullMapValues ) {
+            this.writeNullMapValues = writeNullMapValues;
+            return this;
+        }
+
         public JsonSerializationContext build() {
             return new JsonSerializationContext( useEqualityForObjectId, serializeNulls, writeDatesAsTimestamps,
-                writeDateKeysAsTimestamps, indent, wrapRootValue, writeCharArraysAsJsonArrays );
+                writeDateKeysAsTimestamps, indent, wrapRootValue, writeCharArraysAsJsonArrays, writeNullMapValues );
         }
     }
 
@@ -150,9 +163,11 @@ public class JsonSerializationContext extends JsonMappingContext {
 
     private final boolean writeCharArraysAsJsonArrays;
 
+    private final boolean writeNullMapValues;
+
     private JsonSerializationContext( boolean useEqualityForObjectId, boolean serializeNulls, boolean writeDatesAsTimestamps,
                                       boolean writeDateKeysAsTimestamps, boolean indent, boolean wrapRootValue,
-                                      boolean writeCharArraysAsJsonArrays ) {
+                                      boolean writeCharArraysAsJsonArrays, boolean writeNullMapValues ) {
         this.useEqualityForObjectId = useEqualityForObjectId;
         this.serializeNulls = serializeNulls;
         this.writeDatesAsTimestamps = writeDatesAsTimestamps;
@@ -160,6 +175,7 @@ public class JsonSerializationContext extends JsonMappingContext {
         this.indent = indent;
         this.wrapRootValue = wrapRootValue;
         this.writeCharArraysAsJsonArrays = writeCharArraysAsJsonArrays;
+        this.writeNullMapValues = writeNullMapValues;
     }
 
     @Override
@@ -193,6 +209,13 @@ public class JsonSerializationContext extends JsonMappingContext {
      */
     public boolean isWriteCharArraysAsJsonArrays() {
         return writeCharArraysAsJsonArrays;
+    }
+
+    /**
+     * @see Builder#writeNullMapValues(boolean)
+     */
+    public boolean isWriteNullMapValues() {
+        return writeNullMapValues;
     }
 
     public JsonWriter newJsonWriter() {

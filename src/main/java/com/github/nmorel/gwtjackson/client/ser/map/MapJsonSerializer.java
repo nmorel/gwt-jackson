@@ -57,10 +57,25 @@ public class MapJsonSerializer<M extends Map<K, V>, K, V> extends JsonSerializer
     @Override
     public void doSerialize( JsonWriter writer, @Nonnull M values, JsonSerializationContext ctx ) throws IOException {
         writer.beginObject();
-        for ( Entry<K, V> entry : values.entrySet() ) {
-            writer.name( keySerializer.serialize( entry.getKey(), ctx ) );
-            valueSerializer.serialize( writer, entry.getValue(), ctx );
+
+        if ( ctx.isWriteNullMapValues() ) {
+
+            for ( Entry<K, V> entry : values.entrySet() ) {
+                writer.name( keySerializer.serialize( entry.getKey(), ctx ) );
+                valueSerializer.serialize( writer, entry.getValue(), ctx );
+            }
+
+        } else {
+
+            for ( Entry<K, V> entry : values.entrySet() ) {
+                if ( null != entry.getValue() ) {
+                    writer.name( keySerializer.serialize( entry.getKey(), ctx ) );
+                    valueSerializer.serialize( writer, entry.getValue(), ctx );
+                }
+            }
+
         }
+
         writer.endObject();
     }
 }
