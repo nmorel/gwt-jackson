@@ -46,11 +46,23 @@ public void test() {
 }
 ```
 
-
+Documentation
+-------------
+You can find documentation on the [wiki](https://github.com/nmorel/gwt-jackson/wiki).
 
 Maven
 -------------
-You can get maven snapshots using the following repository :
+
+```xml
+<dependency>
+  <groupId>com.github.nmorel.gwtjackson</groupId>
+  <artifactId>gwt-jackson</artifactId>
+  <version>0.1.0</version>
+  <scope>provided</scope>
+</dependency>
+```
+
+You can also get maven snapshots using the following repository :
 
 ```xml
 <repository>
@@ -62,13 +74,3 @@ You can get maven snapshots using the following repository :
 </repository>
 ```
 
-and by adding the following dependency :
-
-```xml
-<dependency>
-  <groupId>com.github.nmorel.gwtjackson</groupId>
-  <artifactId>gwt-jackson</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
-  <scope>provided</scope>
-</dependency>
-```
