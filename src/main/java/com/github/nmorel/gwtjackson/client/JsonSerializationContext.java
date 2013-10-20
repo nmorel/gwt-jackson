@@ -36,6 +36,8 @@ public class JsonSerializationContext extends JsonMappingContext {
 
         private boolean wrapRootValue = false;
 
+        private boolean writeCharArraysAsJsonArrays = false;
+
         /**
          * Determines whether Object Identity is compared using
          * true JVM-level identity of Object (false); or, <code>equals()</code> method.
@@ -106,9 +108,22 @@ public class JsonSerializationContext extends JsonMappingContext {
             return this;
         }
 
+        /**
+         * Feature that determines how type <code>char[]</code> is serialized:
+         * when enabled, will be serialized as an explict JSON array (with
+         * single-character Strings as values); when disabled, defaults to
+         * serializing them as Strings (which is more compact).
+         * <p/>
+         * Feature is disabled by default.
+         */
+        public Builder writeCharArraysAsJsonArrays( boolean writeCharArraysAsJsonArrays ) {
+            this.writeCharArraysAsJsonArrays = writeCharArraysAsJsonArrays;
+            return this;
+        }
+
         public JsonSerializationContext build() {
             return new JsonSerializationContext( useEqualityForObjectId, serializeNulls, writeDatesAsTimestamps,
-                writeDateKeysAsTimestamps, indent, wrapRootValue );
+                writeDateKeysAsTimestamps, indent, wrapRootValue, writeCharArraysAsJsonArrays );
         }
     }
 
@@ -133,14 +148,18 @@ public class JsonSerializationContext extends JsonMappingContext {
 
     private final boolean wrapRootValue;
 
+    private final boolean writeCharArraysAsJsonArrays;
+
     private JsonSerializationContext( boolean useEqualityForObjectId, boolean serializeNulls, boolean writeDatesAsTimestamps,
-                                      boolean writeDateKeysAsTimestamps, boolean indent, boolean wrapRootValue ) {
+                                      boolean writeDateKeysAsTimestamps, boolean indent, boolean wrapRootValue,
+                                      boolean writeCharArraysAsJsonArrays ) {
         this.useEqualityForObjectId = useEqualityForObjectId;
         this.serializeNulls = serializeNulls;
         this.writeDatesAsTimestamps = writeDatesAsTimestamps;
         this.writeDateKeysAsTimestamps = writeDateKeysAsTimestamps;
         this.indent = indent;
         this.wrapRootValue = wrapRootValue;
+        this.writeCharArraysAsJsonArrays = writeCharArraysAsJsonArrays;
     }
 
     @Override
@@ -169,8 +188,16 @@ public class JsonSerializationContext extends JsonMappingContext {
         return wrapRootValue;
     }
 
+    /**
+     * @see Builder#writeCharArraysAsJsonArrays(boolean)
+     */
+    public boolean isWriteCharArraysAsJsonArrays() {
+        return writeCharArraysAsJsonArrays;
+    }
+
     public JsonWriter newJsonWriter() {
         JsonWriter writer = new JsonWriter( new StringBuilder() );
+        writer.setLenient( true );
         writer.setSerializeNulls( serializeNulls );
         if ( indent ) {
             writer.setIndent( "  " );

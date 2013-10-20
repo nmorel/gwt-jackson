@@ -99,7 +99,9 @@ public class JsonDeserializationContext extends JsonMappingContext {
     }
 
     public JsonReader newJsonReader( String input ) {
-        return new JsonReader( new StringReader( input ) );
+        JsonReader reader = new JsonReader( new StringReader( input ) );
+        reader.setLenient( true );
+        return reader;
     }
 
     /**
