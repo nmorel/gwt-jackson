@@ -27,6 +27,11 @@ public class PrimitiveBooleanArrayJsonSerializer extends JsonSerializer<boolean[
 
     @Override
     public void doSerialize( JsonWriter writer, @Nonnull boolean[] values, JsonSerializationContext ctx ) throws IOException {
+        if ( !ctx.isWriteEmptyJsonArrays() && values.length == 0 ) {
+            writer.cancelName();
+            return;
+        }
+
         writer.beginArray();
         for ( boolean value : values ) {
             writer.value( value );

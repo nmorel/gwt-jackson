@@ -28,6 +28,11 @@ public class PrimitiveByteArrayJsonSerializer extends JsonSerializer<byte[]> {
 
     @Override
     public void doSerialize( JsonWriter writer, @Nonnull byte[] values, JsonSerializationContext ctx ) throws IOException {
+        if ( !ctx.isWriteEmptyJsonArrays() && values.length == 0 ) {
+            writer.cancelName();
+            return;
+        }
+
         writer.value( Base64.encode( new String( values ) ) );
     }
 }

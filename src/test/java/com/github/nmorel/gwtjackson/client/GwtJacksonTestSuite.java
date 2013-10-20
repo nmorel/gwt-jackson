@@ -68,6 +68,7 @@ import com.github.nmorel.gwtjackson.client.mapper.SimpleBeanObjectWriterTest;
 import com.github.nmorel.gwtjackson.client.options.CharArrayOptionGwtTest;
 import com.github.nmorel.gwtjackson.client.options.DateOptionsGwtTest;
 import com.github.nmorel.gwtjackson.client.options.IndentGwtTest;
+import com.github.nmorel.gwtjackson.client.options.WriteEmptyJsonArraysOptionGwtTest;
 import com.github.nmorel.gwtjackson.client.options.WriteNullMapValuesOptionGwtTest;
 import com.github.nmorel.gwtjackson.client.ser.BooleanJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.CharacterJsonSerializerTest;
@@ -255,6 +256,7 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( DateOptionsGwtTest.class );
         suite.addTestSuite( CharArrayOptionGwtTest.class );
         suite.addTestSuite( WriteNullMapValuesOptionGwtTest.class );
+        suite.addTestSuite( WriteEmptyJsonArraysOptionGwtTest.class );
 
         return suite;
     }

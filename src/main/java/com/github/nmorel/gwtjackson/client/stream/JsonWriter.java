@@ -445,6 +445,13 @@ public class JsonWriter {
     return this;
   }
 
+  public JsonWriter cancelName() {
+    if (deferredName != null) {
+      deferredName = null;
+    }
+    return this;
+  }
+
   /**
    * Encodes {@code value}.
    *

@@ -27,6 +27,11 @@ public class PrimitiveDoubleArrayJsonSerializer extends JsonSerializer<double[]>
 
     @Override
     public void doSerialize( JsonWriter writer, @Nonnull double[] values, JsonSerializationContext ctx ) throws IOException {
+        if ( !ctx.isWriteEmptyJsonArrays() && values.length == 0 ) {
+            writer.cancelName();
+            return;
+        }
+
         writer.beginArray();
         for ( double value : values ) {
             writer.value( value );

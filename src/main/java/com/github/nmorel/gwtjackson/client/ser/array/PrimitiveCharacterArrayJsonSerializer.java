@@ -27,6 +27,11 @@ public class PrimitiveCharacterArrayJsonSerializer extends JsonSerializer<char[]
 
     @Override
     public void doSerialize( JsonWriter writer, @Nonnull char[] values, JsonSerializationContext ctx ) throws IOException {
+        if ( !ctx.isWriteEmptyJsonArrays() && values.length == 0 ) {
+            writer.cancelName();
+            return;
+        }
+
         if ( ctx.isWriteCharArraysAsJsonArrays() ) {
             writer.beginArray();
             for ( char value : values ) {

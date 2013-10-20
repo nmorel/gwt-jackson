@@ -27,6 +27,11 @@ public class PrimitiveIntegerArrayJsonSerializer extends JsonSerializer<int[]> {
 
     @Override
     public void doSerialize( JsonWriter writer, @Nonnull int[] values, JsonSerializationContext ctx ) throws IOException {
+        if ( !ctx.isWriteEmptyJsonArrays() && values.length == 0 ) {
+            writer.cancelName();
+            return;
+        }
+
         writer.beginArray();
         for ( int value : values ) {
             writer.value( value );

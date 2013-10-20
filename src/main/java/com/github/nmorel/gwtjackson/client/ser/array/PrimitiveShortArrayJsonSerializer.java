@@ -27,6 +27,11 @@ public class PrimitiveShortArrayJsonSerializer extends JsonSerializer<short[]> {
 
     @Override
     public void doSerialize( JsonWriter writer, @Nonnull short[] values, JsonSerializationContext ctx ) throws IOException {
+        if ( !ctx.isWriteEmptyJsonArrays() && values.length == 0 ) {
+            writer.cancelName();
+            return;
+        }
+
         writer.beginArray();
         for ( short value : values ) {
             writer.value( value );

@@ -40,6 +40,11 @@ public class ArrayJsonSerializer<T> extends JsonSerializer<T[]> {
 
     @Override
     public void doSerialize( JsonWriter writer, @Nonnull T[] values, JsonSerializationContext ctx ) throws IOException {
+        if ( !ctx.isWriteEmptyJsonArrays() && values.length == 0 ) {
+            writer.cancelName();
+            return;
+        }
+
         writer.beginArray();
         for ( T value : values ) {
             serializer.serialize( writer, value, ctx );

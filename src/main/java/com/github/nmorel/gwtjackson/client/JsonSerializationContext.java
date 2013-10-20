@@ -40,6 +40,8 @@ public class JsonSerializationContext extends JsonMappingContext {
 
         private boolean writeNullMapValues = true;
 
+        private boolean writeEmptyJsonArrays = true;
+
         /**
          * Determines whether Object Identity is compared using
          * true JVM-level identity of Object (false); or, <code>equals()</code> method.
@@ -134,9 +136,25 @@ public class JsonSerializationContext extends JsonMappingContext {
             return this;
         }
 
+        /**
+         * Feature that determines whether Container properties (POJO properties
+         * with declared value of Collection or array; i.e. things that produce JSON
+         * arrays) that are empty (have no elements)
+         * will be serialized as empty JSON arrays (true), or suppressed from output (false).
+         * <p/>
+         * Note that this does not change behavior of {@link java.util.Map}s, or
+         * "Collection-like" types.
+         * <p/>
+         * Feature is enabled by default.
+         */
+        public Builder writeEmptyJsonArrays( boolean writeEmptyJsonArrays ) {
+            this.writeEmptyJsonArrays = writeEmptyJsonArrays;
+            return this;
+        }
+
         public JsonSerializationContext build() {
             return new JsonSerializationContext( useEqualityForObjectId, serializeNulls, writeDatesAsTimestamps,
-                writeDateKeysAsTimestamps, indent, wrapRootValue, writeCharArraysAsJsonArrays, writeNullMapValues );
+                writeDateKeysAsTimestamps, indent, wrapRootValue, writeCharArraysAsJsonArrays, writeNullMapValues, writeEmptyJsonArrays );
         }
     }
 
@@ -165,9 +183,11 @@ public class JsonSerializationContext extends JsonMappingContext {
 
     private final boolean writeNullMapValues;
 
+    private final boolean writeEmptyJsonArrays;
+
     private JsonSerializationContext( boolean useEqualityForObjectId, boolean serializeNulls, boolean writeDatesAsTimestamps,
                                       boolean writeDateKeysAsTimestamps, boolean indent, boolean wrapRootValue,
-                                      boolean writeCharArraysAsJsonArrays, boolean writeNullMapValues ) {
+                                      boolean writeCharArraysAsJsonArrays, boolean writeNullMapValues, boolean writeEmptyJsonArrays ) {
         this.useEqualityForObjectId = useEqualityForObjectId;
         this.serializeNulls = serializeNulls;
         this.writeDatesAsTimestamps = writeDatesAsTimestamps;
@@ -176,6 +196,7 @@ public class JsonSerializationContext extends JsonMappingContext {
         this.wrapRootValue = wrapRootValue;
         this.writeCharArraysAsJsonArrays = writeCharArraysAsJsonArrays;
         this.writeNullMapValues = writeNullMapValues;
+        this.writeEmptyJsonArrays = writeEmptyJsonArrays;
     }
 
     @Override
@@ -216,6 +237,13 @@ public class JsonSerializationContext extends JsonMappingContext {
      */
     public boolean isWriteNullMapValues() {
         return writeNullMapValues;
+    }
+
+    /**
+     * @see Builder#writeEmptyJsonArrays(boolean)
+     */
+    public boolean isWriteEmptyJsonArrays() {
+        return writeEmptyJsonArrays;
     }
 
     public JsonWriter newJsonWriter() {

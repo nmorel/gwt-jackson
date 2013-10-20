@@ -27,6 +27,11 @@ public class PrimitiveFloatArrayJsonSerializer extends JsonSerializer<float[]> {
 
     @Override
     public void doSerialize( JsonWriter writer, @Nonnull float[] values, JsonSerializationContext ctx ) throws IOException {
+        if ( !ctx.isWriteEmptyJsonArrays() && values.length == 0 ) {
+            writer.cancelName();
+            return;
+        }
+
         writer.beginArray();
         for ( float value : values ) {
             writer.value( value );

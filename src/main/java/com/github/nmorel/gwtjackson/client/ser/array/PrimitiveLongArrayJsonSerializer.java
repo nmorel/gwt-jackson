@@ -27,6 +27,11 @@ public class PrimitiveLongArrayJsonSerializer extends JsonSerializer<long[]> {
 
     @Override
     public void doSerialize( JsonWriter writer, @Nonnull long[] values, JsonSerializationContext ctx ) throws IOException {
+        if ( !ctx.isWriteEmptyJsonArrays() && values.length == 0 ) {
+            writer.cancelName();
+            return;
+        }
+
         writer.beginArray();
         for ( long value : values ) {
             writer.value( value );

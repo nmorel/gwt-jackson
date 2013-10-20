@@ -2,6 +2,7 @@ package com.github.nmorel.gwtjackson.client.ser;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.Iterator;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
@@ -40,9 +41,16 @@ public class IterableJsonSerializer<I extends Iterable<T>, T> extends JsonSerial
 
     @Override
     public void doSerialize( JsonWriter writer, @Nonnull I values, JsonSerializationContext ctx ) throws IOException {
+        Iterator<T> iterator = values.iterator();
+
+        if ( !ctx.isWriteEmptyJsonArrays() && !iterator.hasNext() ) {
+            writer.cancelName();
+            return;
+        }
+
         writer.beginArray();
-        for ( T value : values ) {
-            serializer.serialize( writer, value, ctx );
+        while ( iterator.hasNext() ) {
+            serializer.serialize( writer, iterator.next(), ctx );
         }
         writer.endArray();
     }
