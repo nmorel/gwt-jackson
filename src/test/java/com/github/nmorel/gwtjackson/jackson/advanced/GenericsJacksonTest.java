@@ -14,44 +14,43 @@ public class GenericsJacksonTest extends AbstractJacksonTest {
 
     @Test
     public void testSerializeString() {
-        GenericsTester.INSTANCE.testSerializeString( createEncoder( new TypeReference<GenericOneType<String>>() {} ) );
+        GenericsTester.INSTANCE.testSerializeString( createWriter( new TypeReference<GenericOneType<String>>() {} ) );
     }
 
     @Test
     public void testDeserializeString() {
-        GenericsTester.INSTANCE.testDeserializeString( createDecoder( new TypeReference<GenericOneType<String>>() {} ) );
+        GenericsTester.INSTANCE.testDeserializeString( createReader( new TypeReference<GenericOneType<String>>() {} ) );
     }
 
     @Test
     public void testSerializeStringString() {
-        GenericsTester.INSTANCE.testSerializeStringString( createEncoder( new TypeReference<GenericTwoType<String, String>>() {} ) );
+        GenericsTester.INSTANCE.testSerializeStringString( createWriter( new TypeReference<GenericTwoType<String, String>>() {} ) );
     }
 
     @Test
     public void testDeserializeStringString() {
-        GenericsTester.INSTANCE.testDeserializeStringString( createDecoder( new TypeReference<GenericTwoType<String, String>>() {} ) );
+        GenericsTester.INSTANCE.testDeserializeStringString( createReader( new TypeReference<GenericTwoType<String, String>>() {} ) );
     }
 
     @Test
     public void testSerializeIntegerString() {
-        GenericsTester.INSTANCE.testSerializeIntegerString( createEncoder( new TypeReference<GenericTwoType<Integer, String>>() {} ) );
+        GenericsTester.INSTANCE.testSerializeIntegerString( createWriter( new TypeReference<GenericTwoType<Integer, String>>() {} ) );
     }
 
     @Test
     public void testDeserializeIntegerString() {
-        GenericsTester.INSTANCE.testDeserializeIntegerString( createDecoder( new TypeReference<GenericTwoType<Integer, String>>() {} ) );
+        GenericsTester.INSTANCE.testDeserializeIntegerString( createReader( new TypeReference<GenericTwoType<Integer, String>>() {} ) );
     }
 
     @Test
     public void testSerializeIntegerGenericString() {
         GenericsTester.INSTANCE
-            .testSerializeIntegerGenericString( createEncoder( new TypeReference<GenericTwoType<Integer, GenericOneType<String>>>() {} ) );
+            .testSerializeIntegerGenericString( createWriter( new TypeReference<GenericTwoType<Integer, GenericOneType<String>>>() {} ) );
     }
 
     @Test
     public void testDeserializeIntegerGenericString() {
         GenericsTester.INSTANCE
-            .testDeserializeIntegerGenericString( createDecoder( new TypeReference<GenericTwoType<Integer,
-                GenericOneType<String>>>() {} ) );
+            .testDeserializeIntegerGenericString( createReader( new TypeReference<GenericTwoType<Integer, GenericOneType<String>>>() {} ) );
     }
 }

@@ -22,6 +22,8 @@ public class JsonDeserializationContext extends JsonMappingContext {
 
         private boolean failOnUnknownProperties = true;
 
+        private boolean unwrapRootValue = false;
+
         /**
          * Determines whether encountering of unknown
          * properties (ones that do not map to a property, and there is
@@ -41,8 +43,23 @@ public class JsonDeserializationContext extends JsonMappingContext {
             return this;
         }
 
+        /**
+         * Feature to allow "unwrapping" root-level JSON value, to match setting of
+         * {@link JsonSerializationContext.Builder#wrapRootValue(boolean)} used for serialization.
+         * Will verify that the root JSON value is a JSON Object, and that it has
+         * a single property with expected root name. If not, a
+         * {@link JsonDeserializationException} is thrown; otherwise value of the wrapped property
+         * will be deserialized as if it was the root value.
+         * <p/>
+         * Feature is disabled by default.
+         */
+        public Builder unwrapRootValue( boolean unwrapRootValue ) {
+            this.unwrapRootValue = unwrapRootValue;
+            return this;
+        }
+
         public JsonDeserializationContext build() {
-            return new JsonDeserializationContext( failOnUnknownProperties );
+            return new JsonDeserializationContext( failOnUnknownProperties, unwrapRootValue );
         }
     }
 
@@ -55,8 +72,11 @@ public class JsonDeserializationContext extends JsonMappingContext {
      */
     private final boolean failOnUnknownProperties;
 
-    private JsonDeserializationContext( boolean failOnUnknownProperties ) {
+    private final boolean unwrapRootValue;
+
+    private JsonDeserializationContext( boolean failOnUnknownProperties, boolean unwrapRootValue ) {
         this.failOnUnknownProperties = failOnUnknownProperties;
+        this.unwrapRootValue = unwrapRootValue;
     }
 
     @Override
@@ -64,8 +84,18 @@ public class JsonDeserializationContext extends JsonMappingContext {
         return logger;
     }
 
+    /**
+     * @see Builder#failOnUnknownProperties(boolean)
+     */
     public boolean isFailOnUnknownProperties() {
         return failOnUnknownProperties;
+    }
+
+    /**
+     * @see Builder#unwrapRootValue(boolean)
+     */
+    public boolean isUnwrapRootValue() {
+        return unwrapRootValue;
     }
 
     public JsonReader newJsonReader( String input ) {

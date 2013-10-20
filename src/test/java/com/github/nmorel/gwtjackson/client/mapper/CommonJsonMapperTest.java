@@ -23,7 +23,7 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 public class CommonJsonMapperTest extends GwtJacksonTestCase {
 
     public void testDeserializeUnexpectedException() {
-        ObjectReader<String[]> reader = new AbstractObjectReader<String[]>() {
+        ObjectReader<String[]> reader = new AbstractObjectReader<String[]>( null ) {
             @Override
             protected JsonDeserializer<String[]> newDeserializer( JsonDeserializationContext ctx ) {
                 return new JsonDeserializer<String[]>() {
@@ -43,7 +43,7 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
     }
 
     public void testDeserializeIOException() {
-        ObjectReader<String[]> reader = new AbstractObjectReader<String[]>() {
+        ObjectReader<String[]> reader = new AbstractObjectReader<String[]>( null ) {
             @Override
             protected JsonDeserializer<String[]> newDeserializer( JsonDeserializationContext ctx ) {
                 return new JsonDeserializer<String[]>() {
@@ -64,7 +64,7 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
 
     public void testDeserializeDecodingException() {
         final JsonDeserializationException jsonDeserializationException = new JsonDeserializationException();
-        ObjectReader<String[]> reader = new AbstractObjectReader<String[]>() {
+        ObjectReader<String[]> reader = new AbstractObjectReader<String[]>( null ) {
             @Override
             protected JsonDeserializer<String[]> newDeserializer( JsonDeserializationContext ctx ) {
                 return new JsonDeserializer<String[]>() {
@@ -84,7 +84,7 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
     }
 
     public void testSerializeUnexpectedException() {
-        ObjectWriter<String> writer = new AbstractObjectWriter<String>() {
+        ObjectWriter<String> writer = new AbstractObjectWriter<String>( null ) {
             @Override
             protected JsonSerializer<String> newSerializer( JsonSerializationContext ctx ) {
                 return new JsonSerializer<String>() {
@@ -105,7 +105,7 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
     }
 
     public void testSerializeIOException() {
-        ObjectWriter<String> writer = new AbstractObjectWriter<String>() {
+        ObjectWriter<String> writer = new AbstractObjectWriter<String>( null ) {
             @Override
             protected JsonSerializer<String> newSerializer( JsonSerializationContext ctx ) {
                 return new JsonSerializer<String>() {
@@ -127,7 +127,7 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
 
     public void testSerializeEncodingException() {
         final JsonSerializationException jsonSerializationException = new JsonSerializationException();
-        ObjectWriter<String> writer = new AbstractObjectWriter<String>() {
+        ObjectWriter<String> writer = new AbstractObjectWriter<String>( null ) {
             @Override
             protected JsonSerializer<String> newSerializer( JsonSerializationContext ctx ) {
                 return new JsonSerializer<String>() {

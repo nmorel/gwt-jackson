@@ -11,11 +11,11 @@ public class JsonIgnoreJacksonTest extends AbstractJacksonTest {
 
     @Test
     public void testSerialize() {
-        JsonIgnoreTester.INSTANCE.testSerialize( createEncoder( JsonIgnoreTester.BeanWithIgnoredProperties.class ) );
+        JsonIgnoreTester.INSTANCE.testSerialize( createWriter( JsonIgnoreTester.BeanWithIgnoredProperties.class ) );
     }
 
     @Test
     public void testDeserialize() {
-        JsonIgnoreTester.INSTANCE.testDeserialize( createDecoder( JsonIgnoreTester.BeanWithIgnoredProperties.class ) );
+        JsonIgnoreTester.INSTANCE.testDeserialize( createReader( JsonIgnoreTester.BeanWithIgnoredProperties.class ) );
     }
 }

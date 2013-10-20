@@ -15,23 +15,23 @@ public class DateOptionsJacksonTest extends AbstractJacksonTest {
     public void testSerializeDatesAsTimestamps() {
         objectMapper.configure( SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true );
         objectMapper.configure( SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, true );
-        DateOptionsTester.INSTANCE.testSerializeDatesAsTimestamps( createEncoder( BeanWithDates.class ) );
+        DateOptionsTester.INSTANCE.testSerializeDatesAsTimestamps( createWriter( BeanWithDates.class ) );
     }
 
     @Test
     public void testDeserializeDatesAsTimestamps() {
-        DateOptionsTester.INSTANCE.testDeserializeDatesAsTimestamps( createDecoder( BeanWithDates.class ) );
+        DateOptionsTester.INSTANCE.testDeserializeDatesAsTimestamps( createReader( BeanWithDates.class ) );
     }
 
     @Test
     public void testSerializeDatesNotAsTimestamps() {
         objectMapper.configure( SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false );
         objectMapper.configure( SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, false );
-        DateOptionsTester.INSTANCE.testSerializeDatesNotAsTimestamps( createEncoder( BeanWithDates.class ) );
+        DateOptionsTester.INSTANCE.testSerializeDatesNotAsTimestamps( createWriter( BeanWithDates.class ) );
     }
 
     @Test
     public void testDeserializeDatesNotAsTimestamps() {
-        DateOptionsTester.INSTANCE.testDeserializeDatesNotAsTimestamps( createDecoder( BeanWithDates.class ) );
+        DateOptionsTester.INSTANCE.testDeserializeDatesNotAsTimestamps( createReader( BeanWithDates.class ) );
     }
 }

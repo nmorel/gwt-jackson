@@ -8,6 +8,10 @@ package com.github.nmorel.gwtjackson.client;
  */
 public abstract class AbstractObjectWriter<T> extends AbstractObjectMapper<T> implements ObjectWriter<T> {
 
+    public AbstractObjectWriter( String rootName ) {
+        super( rootName );
+    }
+
     @Override
     protected final JsonDeserializer<T> newDeserializer( JsonDeserializationContext ctx ) {
         throw new UnsupportedOperationException( "ObjectWriter doesn't support deserialization" );

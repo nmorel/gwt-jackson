@@ -2,6 +2,7 @@ package com.github.nmorel.gwtjackson.rebind;
 
 import java.io.PrintWriter;
 
+import com.fasterxml.jackson.annotation.JsonRootName;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
@@ -9,6 +10,8 @@ import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JParameterizedType;
 import com.google.gwt.user.rebind.SourceWriter;
+
+import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounteredAnnotationsOnAllHierarchy;
 
 /**
  * @author Nicolas Morel
@@ -78,7 +81,7 @@ public class ObjectMapperCreator extends AbstractCreator {
         SourceWriter source = getSourceWriter( printWriter, packageName, mapperClassSimpleName, abstractClass + "<" +
             mappedTypeClass.getParameterizedQualifiedSourceName() + ">", interfaceName );
 
-        writeClassBody( source, mappedTypeClass, reader, writer );
+        writeClassBody( source, mapperClassSimpleName, mappedTypeClass, reader, writer );
 
         return qualifiedMapperClassName;
     }
@@ -130,10 +133,25 @@ public class ObjectMapperCreator extends AbstractCreator {
      *
      * @throws UnableToCompleteException
      */
-    private void writeClassBody( SourceWriter source, JClassType mappedTypeClass, boolean reader,
+    private void writeClassBody( SourceWriter source, String mapperClassSimpleName, JClassType mappedTypeClass, boolean reader,
                                  boolean writer ) throws UnableToCompleteException {
         source.println();
+
+        JsonRootName jsonRootName = findFirstEncounteredAnnotationsOnAllHierarchy( mappedTypeClass, JsonRootName.class );
+        String rootName;
+        if ( null == jsonRootName || jsonRootName.value().isEmpty() ) {
+            rootName = mappedTypeClass.getSimpleSourceName();
+        } else {
+            rootName = jsonRootName.value();
+        }
+
+        source.println( "public %s() {", mapperClassSimpleName );
         source.indent();
+        source.println( "super(\"%s\");", rootName );
+        source.outdent();
+        source.println( "}" );
+
+        source.println();
 
         if ( reader ) {
             source.println( "@Override" );

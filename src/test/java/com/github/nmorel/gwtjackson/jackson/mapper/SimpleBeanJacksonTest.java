@@ -13,17 +13,17 @@ public class SimpleBeanJacksonTest extends AbstractJacksonTest {
 
     @Test
     public void testSerializeValue() {
-        SimpleBeanJsonMapperTester.INSTANCE.testSerializeValue( createEncoder( SimpleBean.class ) );
+        SimpleBeanJsonMapperTester.INSTANCE.testSerializeValue( createWriter( SimpleBean.class ) );
     }
 
     @Test
     public void testDeserializeValue() {
-        SimpleBeanJsonMapperTester.INSTANCE.testDeserializeValue( createDecoder( SimpleBean.class ) );
+        SimpleBeanJsonMapperTester.INSTANCE.testDeserializeValue( createReader( SimpleBean.class ) );
     }
 
     @Test
     public void testWriteBeanWithNullProperties() {
         objectMapper.setSerializationInclusion( JsonInclude.Include.NON_NULL );
-        SimpleBeanJsonMapperTester.INSTANCE.testWriteWithNullProperties( createEncoder( SimpleBean.class ) );
+        SimpleBeanJsonMapperTester.INSTANCE.testWriteWithNullProperties( createWriter( SimpleBean.class ) );
     }
 }

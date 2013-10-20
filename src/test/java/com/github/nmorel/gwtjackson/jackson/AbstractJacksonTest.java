@@ -46,11 +46,11 @@ public abstract class AbstractJacksonTest {
         };
     }
 
-    protected <T> ObjectWriterTester<T> createEncoder( Class<T> clazz ) {
+    protected <T> ObjectWriterTester<T> createWriter( Class<T> clazz ) {
         return createMapper( clazz );
     }
 
-    protected <T> ObjectReaderTester<T> createDecoder( Class<T> clazz ) {
+    protected <T> ObjectReaderTester<T> createReader( Class<T> clazz ) {
         return createMapper( clazz );
     }
 
@@ -76,11 +76,11 @@ public abstract class AbstractJacksonTest {
         };
     }
 
-    protected <T> ObjectWriterTester<T> createEncoder( TypeReference<T> typeReference ) {
+    protected <T> ObjectWriterTester<T> createWriter( TypeReference<T> typeReference ) {
         return createMapper( typeReference );
     }
 
-    protected <T> ObjectReaderTester<T> createDecoder( TypeReference<T> typeReference ) {
+    protected <T> ObjectReaderTester<T> createReader( TypeReference<T> typeReference ) {
         return createMapper( typeReference );
     }
 }

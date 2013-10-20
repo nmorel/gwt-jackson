@@ -20,6 +20,6 @@ public class JsonTypeWithGenericsJacksonTest extends AbstractJacksonTest {
 
     @Test
     public void testWrapperWithField() {
-        JsonTypeWithGenericsTester.INSTANCE.testWrapperWithField( createEncoder( new TypeReference<ContainerWithField<Animal>>() {} ) );
+        JsonTypeWithGenericsTester.INSTANCE.testWrapperWithField( createWriter( new TypeReference<ContainerWithField<Animal>>() {} ) );
     }
 }

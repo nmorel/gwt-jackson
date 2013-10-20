@@ -34,6 +34,8 @@ public class JsonSerializationContext extends JsonMappingContext {
 
         private boolean indent = false;
 
+        private boolean wrapRootValue = false;
+
         /**
          * Determines whether Object Identity is compared using
          * true JVM-level identity of Object (false); or, <code>equals()</code> method.
@@ -91,9 +93,22 @@ public class JsonSerializationContext extends JsonMappingContext {
             return this;
         }
 
+        /**
+         * Feature that can be enabled to make root value (usually JSON
+         * Object but can be any type) wrapped within a single property
+         * JSON object, where key as the "root name", as determined by
+         * annotation introspector or fallback (non-qualified
+         * class name).
+         * <p>Feature is disabled by default.</p>
+         */
+        public Builder wrapRootValue( boolean wrapRootValue ) {
+            this.wrapRootValue = wrapRootValue;
+            return this;
+        }
+
         public JsonSerializationContext build() {
             return new JsonSerializationContext( useEqualityForObjectId, serializeNulls, writeDatesAsTimestamps,
-                writeDateKeysAsTimestamps, indent );
+                writeDateKeysAsTimestamps, indent, wrapRootValue );
         }
     }
 
@@ -116,13 +131,16 @@ public class JsonSerializationContext extends JsonMappingContext {
 
     private final boolean indent;
 
+    private final boolean wrapRootValue;
+
     private JsonSerializationContext( boolean useEqualityForObjectId, boolean serializeNulls, boolean writeDatesAsTimestamps,
-                                      boolean writeDateKeysAsTimestamps, boolean indent ) {
+                                      boolean writeDateKeysAsTimestamps, boolean indent, boolean wrapRootValue ) {
         this.useEqualityForObjectId = useEqualityForObjectId;
         this.serializeNulls = serializeNulls;
         this.writeDatesAsTimestamps = writeDatesAsTimestamps;
         this.writeDateKeysAsTimestamps = writeDateKeysAsTimestamps;
         this.indent = indent;
+        this.wrapRootValue = wrapRootValue;
     }
 
     @Override
@@ -142,6 +160,13 @@ public class JsonSerializationContext extends JsonMappingContext {
      */
     public boolean isWriteDateKeysAsTimestamps() {
         return writeDateKeysAsTimestamps;
+    }
+
+    /**
+     * @see Builder#wrapRootValue(boolean)
+     */
+    public boolean isWrapRootValue() {
+        return wrapRootValue;
     }
 
     public JsonWriter newJsonWriter() {
@@ -243,7 +268,7 @@ public class JsonSerializationContext extends JsonMappingContext {
      *
      * @param generator instance of generator to add
      */
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings( "UnusedDeclaration" )
     public void addGenerator( ObjectIdGenerator<?> generator ) {
         if ( null == generators ) {
             generators = new ArrayList<ObjectIdGenerator<?>>();
@@ -256,7 +281,7 @@ public class JsonSerializationContext extends JsonMappingContext {
      *
      * @param gen generator used to find equivalent generator
      */
-    @SuppressWarnings({"UnusedDeclaration", "unchecked"})
+    @SuppressWarnings( {"UnusedDeclaration", "unchecked"} )
     public <T> ObjectIdGenerator<T> findObjectIdGenerator( ObjectIdGenerator<T> gen ) {
         if ( null != generators ) {
             for ( ObjectIdGenerator<?> generator : generators ) {

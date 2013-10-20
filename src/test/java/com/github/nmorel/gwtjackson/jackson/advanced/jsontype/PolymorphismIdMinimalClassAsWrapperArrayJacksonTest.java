@@ -12,12 +12,12 @@ public class PolymorphismIdMinimalClassAsWrapperArrayJacksonTest extends Abstrac
     @Test
     public void testSerialize() {
         PolymorphismIdMinimalClassAsWrapperArrayTester.INSTANCE
-            .testSerialize( createEncoder( PolymorphismIdMinimalClassAsWrapperArrayTester.Person[].class ) );
+            .testSerialize( createWriter( PolymorphismIdMinimalClassAsWrapperArrayTester.Person[].class ) );
     }
 
     @Test
     public void testDeserialize() {
         PolymorphismIdMinimalClassAsWrapperArrayTester.INSTANCE
-            .testDeserialize( createDecoder( PolymorphismIdMinimalClassAsWrapperArrayTester.Person[].class ) );
+            .testDeserialize( createReader( PolymorphismIdMinimalClassAsWrapperArrayTester.Person[].class ) );
     }
 }

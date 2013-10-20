@@ -12,19 +12,19 @@ public class PolymorphismNoTypeInfoJacksonTest extends AbstractJacksonTest {
 
     @Test
     public void testSerialize() {
-        PolymorphismNoTypeInfoTester.INSTANCE.testSerialize( createEncoder( PolymorphismNoTypeInfoTester.Person[].class ) );
+        PolymorphismNoTypeInfoTester.INSTANCE.testSerialize( createWriter( PolymorphismNoTypeInfoTester.Person[].class ) );
     }
 
     @Test
     public void testDeserializeNonInstantiableBean() {
         PolymorphismNoTypeInfoTester.INSTANCE
-            .testDeserializeNonInstantiableBean( createDecoder( PolymorphismNoTypeInfoTester.Person[].class ) );
+            .testDeserializeNonInstantiableBean( createReader( PolymorphismNoTypeInfoTester.Person[].class ) );
     }
 
     @Test
     public void testDeserializeInstantiableBean() {
         objectMapper.configure( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false );
         PolymorphismNoTypeInfoTester.INSTANCE
-            .testDeserializeInstantiableBean( createDecoder( PolymorphismNoTypeInfoTester.Employee[].class ) );
+            .testDeserializeInstantiableBean( createReader( PolymorphismNoTypeInfoTester.Employee[].class ) );
     }
 }

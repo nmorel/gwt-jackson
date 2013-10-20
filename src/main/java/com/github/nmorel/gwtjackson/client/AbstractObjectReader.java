@@ -8,6 +8,10 @@ package com.github.nmorel.gwtjackson.client;
  */
 public abstract class AbstractObjectReader<T> extends AbstractObjectMapper<T> implements ObjectReader<T> {
 
+    public AbstractObjectReader( String rootName ) {
+        super( rootName );
+    }
+
     @Override
     protected final JsonSerializer<T> newSerializer( JsonSerializationContext ctx ) {
         throw new UnsupportedOperationException( "ObjectReader doesn't support serialization" );

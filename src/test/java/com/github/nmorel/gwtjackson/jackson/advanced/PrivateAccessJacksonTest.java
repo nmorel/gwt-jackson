@@ -11,11 +11,11 @@ public class PrivateAccessJacksonTest extends AbstractJacksonTest {
 
     @Test
     public void testSerializePrivateField() {
-        PrivateAccessTester.INSTANCE.testSerializePrivateField( createEncoder( PrivateAccessTester.PrivateBean.class ) );
+        PrivateAccessTester.INSTANCE.testSerializePrivateField( createWriter( PrivateAccessTester.PrivateBean.class ) );
     }
 
     @Test
     public void testDeserializePrivateField() {
-        PrivateAccessTester.INSTANCE.testDeserializePrivateField( createDecoder( PrivateAccessTester.PrivateBean.class ) );
+        PrivateAccessTester.INSTANCE.testDeserializePrivateField( createReader( PrivateAccessTester.PrivateBean.class ) );
     }
 }

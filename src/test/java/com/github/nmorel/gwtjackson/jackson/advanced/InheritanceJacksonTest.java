@@ -11,11 +11,11 @@ public class InheritanceJacksonTest extends AbstractJacksonTest {
 
     @Test
     public void testSerializePrivateField() {
-        InheritanceTester.INSTANCE.testSerialize( createEncoder( InheritanceTester.ChildBean.class ) );
+        InheritanceTester.INSTANCE.testSerialize( createWriter( InheritanceTester.ChildBean.class ) );
     }
 
     @Test
     public void testDeserializePrivateField() {
-        InheritanceTester.INSTANCE.testDeserialize( createDecoder( InheritanceTester.ChildBean.class ) );
+        InheritanceTester.INSTANCE.testDeserialize( createReader( InheritanceTester.ChildBean.class ) );
     }
 }

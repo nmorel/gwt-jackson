@@ -11,11 +11,11 @@ public class PolymorphismIdClassAsPropertyJacksonTest extends AbstractJacksonTes
 
     @Test
     public void testSerialize() {
-        PolymorphismIdClassAsPropertyTester.INSTANCE.testSerialize( createEncoder( PolymorphismIdClassAsPropertyTester.Person[].class ) );
+        PolymorphismIdClassAsPropertyTester.INSTANCE.testSerialize( createWriter( PolymorphismIdClassAsPropertyTester.Person[].class ) );
     }
 
     @Test
     public void testDeserialize() {
-        PolymorphismIdClassAsPropertyTester.INSTANCE.testDeserialize( createDecoder( PolymorphismIdClassAsPropertyTester.Person[].class ) );
+        PolymorphismIdClassAsPropertyTester.INSTANCE.testDeserialize( createReader( PolymorphismIdClassAsPropertyTester.Person[].class ) );
     }
 }

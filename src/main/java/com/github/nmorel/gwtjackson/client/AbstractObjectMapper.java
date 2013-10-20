@@ -3,6 +3,7 @@ package com.github.nmorel.gwtjackson.client;
 import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException;
 import com.github.nmorel.gwtjackson.client.exception.JsonSerializationException;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
+import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
 /**
@@ -12,6 +13,12 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  */
 public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
 
+    private final String rootName;
+
+    protected AbstractObjectMapper( String rootName ) {
+        this.rootName = rootName;
+    }
+
     @Override
     public T read( String in ) throws JsonDeserializationException {
         return read( in, new JsonDeserializationContext.Builder().build() );
@@ -20,8 +27,33 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
     @Override
     public T read( String in, JsonDeserializationContext ctx ) throws JsonDeserializationException {
         JsonReader reader = ctx.newJsonReader( in );
+
         try {
-            return newDeserializer( ctx ).deserialize( reader, ctx );
+
+            if ( ctx.isUnwrapRootValue() ) {
+
+                if ( JsonToken.BEGIN_OBJECT != reader.peek() ) {
+                    throw ctx.traceError( "Unwrap root value is enabled but the input is not a JSON Object", reader );
+                }
+                reader.beginObject();
+                if ( JsonToken.END_OBJECT == reader.peek() ) {
+                    throw ctx.traceError( "Unwrap root value is enabled but the JSON Object is empty", reader );
+                }
+                String name = reader.nextName();
+                if ( !name.equals( rootName ) ) {
+                    throw ctx.traceError( "Unwrap root value is enabled but the name '" + name + "' don't match the expected rootName " +
+                        "'" + rootName + "'", reader );
+                }
+                T result = newDeserializer( ctx ).deserialize( reader, ctx );
+                reader.endObject();
+                return result;
+
+            } else {
+
+                return newDeserializer( ctx ).deserialize( reader, ctx );
+
+            }
+
         } catch ( JsonDeserializationException e ) {
             // already logged, we just throw it
             throw e;
@@ -48,7 +80,14 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
     public String write( T value, JsonSerializationContext ctx ) throws JsonSerializationException {
         JsonWriter writer = ctx.newJsonWriter();
         try {
-            newSerializer( ctx ).serialize( writer, value, ctx );
+            if ( ctx.isWrapRootValue() ) {
+                writer.beginObject();
+                writer.name( rootName );
+                newSerializer( ctx ).serialize( writer, value, ctx );
+                writer.endObject();
+            } else {
+                newSerializer( ctx ).serialize( writer, value, ctx );
+            }
             return writer.getOutput();
         } catch ( JsonSerializationException e ) {
             // already logged, we just throw it
