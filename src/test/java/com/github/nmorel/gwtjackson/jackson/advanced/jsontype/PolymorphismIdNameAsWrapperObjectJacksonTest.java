@@ -1,7 +1,7 @@
-package com.github.nmorel.gwtjackson.jackson.advanced;
+package com.github.nmorel.gwtjackson.jackson.advanced.jsontype;
 
 import com.github.nmorel.gwtjackson.jackson.AbstractJacksonTest;
-import com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdNameAsWrapperObjectTester;
+import com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdNameAsWrapperObjectTester;
 import org.junit.Ignore;
 import org.junit.Test;
 

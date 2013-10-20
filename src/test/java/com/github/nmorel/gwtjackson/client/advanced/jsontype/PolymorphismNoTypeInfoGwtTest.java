@@ -1,12 +1,12 @@
-package com.github.nmorel.gwtjackson.client.advanced;
+package com.github.nmorel.gwtjackson.client.advanced.jsontype;
 
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;
 import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
-import com.github.nmorel.gwtjackson.shared.advanced.PolymorphismNoTypeInfoTester;
-import com.github.nmorel.gwtjackson.shared.advanced.PolymorphismNoTypeInfoTester.Employee;
-import com.github.nmorel.gwtjackson.shared.advanced.PolymorphismNoTypeInfoTester.Person;
+import com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismNoTypeInfoTester;
+import com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismNoTypeInfoTester.Employee;
+import com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismNoTypeInfoTester.Person;
 import com.google.gwt.core.client.GWT;
 
 /**

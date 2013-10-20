@@ -1,12 +1,10 @@
-package com.github.nmorel.gwtjackson.shared.advanced;
+package com.github.nmorel.gwtjackson.shared.advanced.jsontype;
 
 import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
 import com.github.nmorel.gwtjackson.shared.ObjectReaderTester;
 import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
@@ -14,11 +12,10 @@ import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
 /**
  * @author Nicolas Morel
  */
-public final class PolymorphismIdNameAsWrapperObjectTester extends AbstractTester {
+public final class PolymorphismIdMinimalClassAsWrapperArrayTester extends AbstractTester {
 
-    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
+    @JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY)
     @JsonPropertyOrder(alphabetic = true)
-    @JsonSubTypes({@JsonSubTypes.Type(value = Employee.class, name = "Employee")})
     public static abstract class Person {
 
         public String name;
@@ -31,7 +28,6 @@ public final class PolymorphismIdNameAsWrapperObjectTester extends AbstractTeste
         public String title;
     }
 
-    @JsonTypeName("Manager")
     public static class Manager extends Employee {
 
         public List<Employee> managedEmployees;
@@ -42,9 +38,9 @@ public final class PolymorphismIdNameAsWrapperObjectTester extends AbstractTeste
         public int satisfaction;
     }
 
-    public static final PolymorphismIdNameAsWrapperObjectTester INSTANCE = new PolymorphismIdNameAsWrapperObjectTester();
+    public static final PolymorphismIdMinimalClassAsWrapperArrayTester INSTANCE = new PolymorphismIdMinimalClassAsWrapperArrayTester();
 
-    private PolymorphismIdNameAsWrapperObjectTester() {
+    private PolymorphismIdMinimalClassAsWrapperArrayTester() {
     }
 
     public void testSerialize( ObjectWriterTester<Person[]> writer ) {
@@ -77,56 +73,56 @@ public final class PolymorphismIdNameAsWrapperObjectTester extends AbstractTeste
         String result = writer.write( persons );
 
         String expected = "[" +
-            "{" +
-            "\"Employee\":" +
+            "[" +
+            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
             "{" +
             "\"id\":2," +
             "\"name\":\"Thomas\"," +
             "\"title\":\"Waiter\"" +
             "}" +
-            "}," +
-            "{" +
-            "\"Employee\":" +
+            "]," +
+            "[" +
+            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
             "{" +
             "\"id\":3," +
             "\"name\":\"Patricia\"," +
             "\"title\":\"Cook\"" +
             "}" +
-            "}," +
-            "{" +
-            "\"Manager\":" +
+            "]," +
+            "[" +
+            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Manager\"," +
             "{" +
             "\"id\":1," +
             "\"managedEmployees\":" +
             "[" +
-            "{" +
-            "\"Employee\":" +
+            "[" +
+            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
             "{" +
             "\"id\":2," +
             "\"name\":\"Thomas\"," +
             "\"title\":\"Waiter\"" +
             "}" +
-            "}," +
-            "{" +
-            "\"Employee\":" +
+            "]," +
+            "[" +
+            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
             "{" +
             "\"id\":3," +
             "\"name\":\"Patricia\"," +
             "\"title\":\"Cook\"" +
             "}" +
-            "}" +
+            "]" +
             "]," +
             "\"name\":\"Bob\"," +
             "\"title\":\"Boss\"" +
             "}" +
-            "}," +
-            "{" +
-            "\"PolymorphismIdNameAsWrapperObjectTester$Customer\":" +
+            "]," +
+            "[" +
+            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Customer\"," +
             "{" +
             "\"name\":\"Brad\"," +
             "\"satisfaction\":90" +
             "}" +
-            "}" +
+            "]" +
             "]";
 
         assertEquals( expected, result );
@@ -134,56 +130,56 @@ public final class PolymorphismIdNameAsWrapperObjectTester extends AbstractTeste
 
     public void testDeserialize( ObjectReaderTester<Person[]> reader ) {
         String input = "[" +
-            "{" +
-            "\"Employee\":" +
+            "[" +
+            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
             "{" +
             "\"id\":2," +
             "\"name\":\"Thomas\"," +
             "\"title\":\"Waiter\"" +
             "}" +
-            "}," +
-            "{" +
-            "\"Employee\":" +
+            "]," +
+            "[" +
+            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
             "{" +
             "\"id\":3," +
             "\"name\":\"Patricia\"," +
             "\"title\":\"Cook\"" +
             "}" +
-            "}," +
-            "{" +
-            "\"Manager\":" +
+            "]," +
+            "[" +
+            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Manager\"," +
             "{" +
             "\"id\":1," +
             "\"managedEmployees\":" +
             "[" +
-            "{" +
-            "\"Employee\":" +
+            "[" +
+            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
             "{" +
             "\"id\":2," +
             "\"name\":\"Thomas\"," +
             "\"title\":\"Waiter\"" +
             "}" +
-            "}," +
-            "{" +
-            "\"Employee\":" +
+            "]," +
+            "[" +
+            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
             "{" +
             "\"id\":3," +
             "\"name\":\"Patricia\"," +
             "\"title\":\"Cook\"" +
             "}" +
-            "}" +
+            "]" +
             "]," +
             "\"name\":\"Bob\"," +
             "\"title\":\"Boss\"" +
             "}" +
-            "}," +
-            "{" +
-            "\"PolymorphismIdNameAsWrapperObjectTester$Customer\":" +
+            "]," +
+            "[" +
+            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Customer\"," +
             "{" +
             "\"name\":\"Brad\"," +
             "\"satisfaction\":90" +
             "}" +
-            "}" +
+            "]" +
             "]";
 
         Person[] result = reader.read( input );

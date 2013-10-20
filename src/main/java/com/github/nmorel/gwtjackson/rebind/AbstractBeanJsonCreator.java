@@ -125,7 +125,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
                 .getInstanceBuilderQualifiedName() + getGenericClassParameters();
         }
 
-        SourceWriter source = getSourceWriter( printWriter, packageName, getSimpleClassName() + getGenericClassParameters(),
+        SourceWriter source = getSourceWriter( printWriter, packageName, getSimpleClassName() + getGenericClassBoundedParameters(),
             getSuperclass() + "<" +
             parameterizedTypes + ">" );
 
@@ -150,6 +150,10 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
         } else {
             return mapperInfo.getQualifiedDeserializerClassName();
         }
+    }
+
+    protected String getGenericClassBoundedParameters() {
+        return mapperInfo.getGenericClassBoundedParameters();
     }
 
     protected String getGenericClassParameters() {

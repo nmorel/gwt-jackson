@@ -1,4 +1,4 @@
-package com.github.nmorel.gwtjackson.shared.advanced;
+package com.github.nmorel.gwtjackson.shared.advanced.jsontype;
 
 import java.util.Arrays;
 import java.util.List;
@@ -75,30 +75,30 @@ public final class PolymorphismIdClassAsPropertyTester extends AbstractTester {
 
         String expected = "[" +
             "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdClassAsPropertyTester$Employee\"," +
+            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Employee\"," +
             "\"id\":2," +
             "\"name\":\"Thomas\"," +
             "\"title\":\"Waiter\"" +
             "}," +
             "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdClassAsPropertyTester$Employee\"," +
+            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Employee\"," +
             "\"id\":3," +
             "\"name\":\"Patricia\"," +
             "\"title\":\"Cook\"" +
             "}," +
             "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdClassAsPropertyTester$Manager\"," +
+            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Manager\"," +
             "\"id\":1," +
             "\"managedEmployees\":" +
             "[" +
             "{" +
-            "\"class\":\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdClassAsPropertyTester$Employee\"," +
+            "\"class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Employee\"," +
             "\"id\":2," +
             "\"name\":\"Thomas\"," +
             "\"title\":\"Waiter\"" +
             "}," +
             "{" +
-            "\"class\":\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdClassAsPropertyTester$Employee\"," +
+            "\"class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Employee\"," +
             "\"id\":3," +
             "\"name\":\"Patricia\"," +
             "\"title\":\"Cook\"" +
@@ -108,7 +108,7 @@ public final class PolymorphismIdClassAsPropertyTester extends AbstractTester {
             "\"title\":\"Boss\"" +
             "}," +
             "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdClassAsPropertyTester$Customer\"," +
+            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Customer\"," +
             "\"name\":\"Brad\"," +
             "\"satisfaction\":90" +
             "}" +
@@ -120,30 +120,30 @@ public final class PolymorphismIdClassAsPropertyTester extends AbstractTester {
     public void testDeserialize( ObjectReaderTester<Person[]> reader ) {
         String input = "[" +
             "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdClassAsPropertyTester$Employee\"," +
+            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Employee\"," +
             "\"id\":2," +
             "\"name\":\"Thomas\"," +
             "\"title\":\"Waiter\"" +
             "}," +
             "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdClassAsPropertyTester$Employee\"," +
+            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Employee\"," +
             "\"id\":3," +
             "\"name\":\"Patricia\"," +
             "\"title\":\"Cook\"" +
             "}," +
             "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdClassAsPropertyTester$Manager\"," +
+            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Manager\"," +
             "\"id\":1," +
             "\"managedEmployees\":" +
             "[" +
             "{" +
-            "\"class\":\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdClassAsPropertyTester$Employee\"," +
+            "\"class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Employee\"," +
             "\"id\":2," +
             "\"name\":\"Thomas\"," +
             "\"title\":\"Waiter\"" +
             "}," +
             "{" +
-            "\"class\":\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdClassAsPropertyTester$Employee\"," +
+            "\"class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Employee\"," +
             "\"id\":3," +
             "\"name\":\"Patricia\"," +
             "\"title\":\"Cook\"" +
@@ -153,7 +153,7 @@ public final class PolymorphismIdClassAsPropertyTester extends AbstractTester {
             "\"title\":\"Boss\"" +
             "}," +
             "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.PolymorphismIdClassAsPropertyTester$Customer\"," +
+            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Customer\"," +
             "\"name\":\"Brad\"," +
             "\"satisfaction\":90" +
             "}" +

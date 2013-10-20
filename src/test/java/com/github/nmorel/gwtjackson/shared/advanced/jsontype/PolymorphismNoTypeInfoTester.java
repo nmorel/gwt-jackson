@@ -1,10 +1,10 @@
-package com.github.nmorel.gwtjackson.shared.advanced;
+package com.github.nmorel.gwtjackson.shared.advanced.jsontype;
 
 import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
 import com.github.nmorel.gwtjackson.shared.ObjectReaderTester;
 import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
@@ -12,20 +12,33 @@ import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
 /**
  * @author Nicolas Morel
  */
-public final class PolymorphismIdMinimalClassAsWrapperArrayTester extends AbstractTester {
+public final class PolymorphismNoTypeInfoTester extends AbstractTester {
 
-    @JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY)
-    @JsonPropertyOrder(alphabetic = true)
-    public static abstract class Person {
+    @JsonPropertyOrder( alphabetic = true )
+    public static interface Person {
 
-        public String name;
+        String getName();
+
+        void setName( String name );
     }
 
-    public static class Employee extends Person {
+    public static class Employee implements Person {
+
+        private String name;
 
         public int id;
 
         public String title;
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public void setName( String name ) {
+            this.name = name;
+        }
     }
 
     public static class Manager extends Employee {
@@ -33,153 +46,180 @@ public final class PolymorphismIdMinimalClassAsWrapperArrayTester extends Abstra
         public List<Employee> managedEmployees;
     }
 
-    public static class Customer extends Person {
+    public static class Customer implements Person {
+
+        private String name;
 
         public int satisfaction;
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public void setName( String name ) {
+            this.name = name;
+        }
     }
 
-    public static final PolymorphismIdMinimalClassAsWrapperArrayTester INSTANCE = new PolymorphismIdMinimalClassAsWrapperArrayTester();
+    public static final PolymorphismNoTypeInfoTester INSTANCE = new PolymorphismNoTypeInfoTester();
 
-    private PolymorphismIdMinimalClassAsWrapperArrayTester() {
+    private PolymorphismNoTypeInfoTester() {
     }
 
     public void testSerialize( ObjectWriterTester<Person[]> writer ) {
         Person[] persons = new Person[4];
 
         Employee employee2 = new Employee();
-        employee2.name = "Thomas";
+        employee2.setName( "Thomas" );
         employee2.id = 2;
         employee2.title = "Waiter";
         persons[0] = employee2;
 
         Employee employee3 = new Employee();
-        employee3.name = "Patricia";
+        employee3.setName( "Patricia" );
         employee3.id = 3;
         employee3.title = "Cook";
         persons[1] = employee3;
 
         Manager manager = new Manager();
-        manager.name = "Bob";
+        manager.setName( "Bob" );
         manager.id = 1;
         manager.title = "Boss";
         manager.managedEmployees = Arrays.asList( employee2, employee3 );
         persons[2] = manager;
 
         Customer customer = new Customer();
-        customer.name = "Brad";
+        customer.setName( "Brad" );
         customer.satisfaction = 90;
         persons[3] = customer;
 
         String result = writer.write( persons );
 
         String expected = "[" +
-            "[" +
-            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
             "{" +
             "\"id\":2," +
             "\"name\":\"Thomas\"," +
             "\"title\":\"Waiter\"" +
-            "}" +
-            "]," +
-            "[" +
-            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
+            "}," +
             "{" +
             "\"id\":3," +
             "\"name\":\"Patricia\"," +
             "\"title\":\"Cook\"" +
-            "}" +
-            "]," +
-            "[" +
-            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Manager\"," +
+            "}," +
             "{" +
             "\"id\":1," +
             "\"managedEmployees\":" +
             "[" +
-            "[" +
-            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
             "{" +
             "\"id\":2," +
             "\"name\":\"Thomas\"," +
             "\"title\":\"Waiter\"" +
-            "}" +
-            "]," +
-            "[" +
-            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
+            "}," +
             "{" +
             "\"id\":3," +
             "\"name\":\"Patricia\"," +
             "\"title\":\"Cook\"" +
             "}" +
-            "]" +
             "]," +
             "\"name\":\"Bob\"," +
             "\"title\":\"Boss\"" +
-            "}" +
-            "]," +
-            "[" +
-            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Customer\"," +
+            "}," +
             "{" +
             "\"name\":\"Brad\"," +
             "\"satisfaction\":90" +
             "}" +
-            "]" +
             "]";
 
         assertEquals( expected, result );
     }
 
-    public void testDeserialize( ObjectReaderTester<Person[]> reader ) {
+    /**
+     * There is no information about the type to use and the superclass is not instantiable so we can't do anything, an exception is
+     * thrown.
+     *
+     * @param reader GWT or Jackson reader
+     */
+    public void testDeserializeNonInstantiableBean( ObjectReaderTester<Person[]> reader ) {
         String input = "[" +
-            "[" +
-            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
             "{" +
             "\"id\":2," +
             "\"name\":\"Thomas\"," +
             "\"title\":\"Waiter\"" +
-            "}" +
-            "]," +
-            "[" +
-            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
+            "}," +
             "{" +
             "\"id\":3," +
             "\"name\":\"Patricia\"," +
             "\"title\":\"Cook\"" +
-            "}" +
-            "]," +
-            "[" +
-            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Manager\"," +
+            "}," +
             "{" +
             "\"id\":1," +
             "\"managedEmployees\":" +
             "[" +
-            "[" +
-            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
             "{" +
             "\"id\":2," +
             "\"name\":\"Thomas\"," +
             "\"title\":\"Waiter\"" +
-            "}" +
-            "]," +
-            "[" +
-            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
+            "}," +
             "{" +
             "\"id\":3," +
             "\"name\":\"Patricia\"," +
             "\"title\":\"Cook\"" +
             "}" +
-            "]" +
             "]," +
             "\"name\":\"Bob\"," +
             "\"title\":\"Boss\"" +
-            "}" +
-            "]," +
-            "[" +
-            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Customer\"," +
+            "}," +
             "{" +
             "\"name\":\"Brad\"," +
             "\"satisfaction\":90" +
             "}" +
-            "]" +
+            "]";
+
+        try {
+            reader.read( input );
+            fail();
+        } catch ( JsonDeserializationException e ) {
+            // it's the normal behaviour
+        }
+    }
+
+    /**
+     * There is no information about the type to use but the superclass is instantiable so we can instantiate it and set its attributes.
+     *
+     * @param reader GWT or Jackson reader
+     */
+    public void testDeserializeInstantiableBean( ObjectReaderTester<Employee[]> reader ) {
+        String input = "[" +
+            "{" +
+            "\"id\":2," +
+            "\"name\":\"Thomas\"," +
+            "\"title\":\"Waiter\"" +
+            "}," +
+            "{" +
+            "\"id\":3," +
+            "\"name\":\"Patricia\"," +
+            "\"title\":\"Cook\"" +
+            "}," +
+            "{" +
+            "\"id\":1," +
+            "\"managedEmployees\":" +
+            "[" +
+            "{" +
+            "\"id\":2," +
+            "\"name\":\"Thomas\"," +
+            "\"title\":\"Waiter\"" +
+            "}," +
+            "{" +
+            "\"id\":3," +
+            "\"name\":\"Patricia\"," +
+            "\"title\":\"Cook\"" +
+            "}" +
+            "]," +
+            "\"name\":\"Bob\"," +
+            "\"title\":\"Boss\"" +
+            "}" +
             "]";
 
         Person[] result = reader.read( input );
@@ -188,38 +228,22 @@ public final class PolymorphismIdMinimalClassAsWrapperArrayTester extends Abstra
             Employee employee = (Employee) result[0];
             assertEquals( 2, employee.id );
             assertEquals( "Waiter", employee.title );
-            assertEquals( "Thomas", employee.name );
+            assertEquals( "Thomas", employee.getName() );
         }
         {
             // Employee
             Employee employee = (Employee) result[1];
             assertEquals( 3, employee.id );
             assertEquals( "Cook", employee.title );
-            assertEquals( "Patricia", employee.name );
+            assertEquals( "Patricia", employee.getName() );
         }
         {
             // Manager
-            Manager manager = (Manager) result[2];
+            Employee manager = (Employee) result[2];
             assertEquals( 1, manager.id );
             assertEquals( "Boss", manager.title );
-            assertEquals( "Bob", manager.name );
-            assertEquals( 2, manager.managedEmployees.size() );
-
-            Employee employee1 = manager.managedEmployees.get( 0 );
-            assertEquals( 2, employee1.id );
-            assertEquals( "Waiter", employee1.title );
-            assertEquals( "Thomas", employee1.name );
-
-            Employee employee2 = manager.managedEmployees.get( 1 );
-            assertEquals( 3, employee2.id );
-            assertEquals( "Cook", employee2.title );
-            assertEquals( "Patricia", employee2.name );
-        }
-        {
-            // Customer
-            Customer customer = (Customer) result[3];
-            assertEquals( "Brad", customer.name );
-            assertEquals( 90, customer.satisfaction );
+            assertEquals( "Bob", manager.getName() );
+            assertFalse( manager instanceof Manager );
         }
     }
 

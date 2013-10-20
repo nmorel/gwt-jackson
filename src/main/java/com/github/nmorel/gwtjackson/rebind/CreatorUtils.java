@@ -75,7 +75,7 @@ public final class CreatorUtils {
      *
      * @param type type to extract the bean type
      *
-     * @return
+     * @return the extracted type
      */
     public static JClassType extractBeanType( JacksonTypeOracle typeOracle, JType type ) {
         JClassType classType = type.isClassOrInterface();

@@ -174,7 +174,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
     private void generateInstanceBuilderClass( SourceWriter source, BeanInfo info, Map<String,
         PropertyInfo> properties ) throws UnableToCompleteException {
         source.println( "static class %s%s implements %s<%s> {", info
-            .getInstanceBuilderSimpleName(), getGenericClassParameters(), INSTANCE_BUILDER_CLASS, info.getType()
+            .getInstanceBuilderSimpleName(), getGenericClassBoundedParameters(), INSTANCE_BUILDER_CLASS, info.getType()
             .getParameterizedQualifiedSourceName() );
         source.indent();
 

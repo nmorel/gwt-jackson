@@ -22,6 +22,8 @@ public class BeanJsonMapperInfo {
 
     private final String genericClassParameters;
 
+    private final String genericClassBoundedParameters;
+
     private BeanInfo beanInfo;
 
     private Map<String, PropertyInfo> properties;
@@ -35,19 +37,39 @@ public class BeanJsonMapperInfo {
         this.simpleDeserializerClassName = simpleDeserializerClassName;
 
         if ( null != type.isGenericType() ) {
-            StringBuilder builder = new StringBuilder();
+            StringBuilder genericClassParametersBuilder = new StringBuilder();
+            StringBuilder genericClassBoundedParametersBuilder = new StringBuilder();
             for ( JTypeParameter parameter : type.isGenericType().getTypeParameters() ) {
-                if ( builder.length() == 0 ) {
-                    builder.append( '<' );
+                if ( genericClassParametersBuilder.length() == 0 ) {
+                    genericClassParametersBuilder.append( '<' );
+                    genericClassBoundedParametersBuilder.append( '<' );
                 } else {
-                    builder.append( ", " );
+                    genericClassParametersBuilder.append( ", " );
+                    genericClassBoundedParametersBuilder.append( ", " );
                 }
-                builder.append( parameter.getName() );
+                genericClassParametersBuilder.append( parameter.getName() );
+
+                genericClassBoundedParametersBuilder.append( parameter.getName() );
+                if ( !(parameter.getBounds().length == 1 && parameter.getBounds()[0].getQualifiedSourceName().equals( Object.class
+                    .getName() )) ) {
+                    for ( int i = 0; i < parameter.getBounds().length; i++ ) {
+                        if ( i == 0 ) {
+                            genericClassBoundedParametersBuilder.append( " extends " );
+                        } else {
+                            genericClassBoundedParametersBuilder.append( " & " );
+                        }
+                        JClassType bound = parameter.getBounds()[i];
+                        genericClassBoundedParametersBuilder.append( bound.getParameterizedQualifiedSourceName() );
+                    }
+                }
             }
-            builder.append( '>' );
-            genericClassParameters = builder.toString();
+            genericClassParametersBuilder.append( '>' );
+            genericClassBoundedParametersBuilder.append( '>' );
+            genericClassParameters = genericClassParametersBuilder.toString();
+            genericClassBoundedParameters = genericClassBoundedParametersBuilder.toString();
         } else {
             genericClassParameters = "";
+            genericClassBoundedParameters = "";
         }
     }
 
@@ -73,6 +95,10 @@ public class BeanJsonMapperInfo {
 
     public String getGenericClassParameters() {
         return genericClassParameters;
+    }
+
+    public String getGenericClassBoundedParameters() {
+        return genericClassBoundedParameters;
     }
 
     public BeanInfo getBeanInfo() {

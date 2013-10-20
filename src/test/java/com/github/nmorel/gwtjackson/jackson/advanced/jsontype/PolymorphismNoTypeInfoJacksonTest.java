@@ -1,8 +1,8 @@
-package com.github.nmorel.gwtjackson.jackson.advanced;
+package com.github.nmorel.gwtjackson.jackson.advanced.jsontype;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.github.nmorel.gwtjackson.jackson.AbstractJacksonTest;
-import com.github.nmorel.gwtjackson.shared.advanced.PolymorphismNoTypeInfoTester;
+import com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismNoTypeInfoTester;
 import org.junit.Test;
 
 /**
