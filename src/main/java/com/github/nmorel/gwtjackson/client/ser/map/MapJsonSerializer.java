@@ -4,6 +4,8 @@ import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
@@ -58,24 +60,30 @@ public class MapJsonSerializer<M extends Map<K, V>, K, V> extends JsonSerializer
     public void doSerialize( JsonWriter writer, @Nonnull M values, JsonSerializationContext ctx ) throws IOException {
         writer.beginObject();
 
-        if ( ctx.isWriteNullMapValues() ) {
-
-            for ( Entry<K, V> entry : values.entrySet() ) {
-                writer.name( keySerializer.serialize( entry.getKey(), ctx ) );
-                valueSerializer.serialize( writer, entry.getValue(), ctx );
+        if ( !values.isEmpty() ) {
+            Map<K, V> map = values;
+            if ( ctx.isOrderMapEntriesByKeys() && !(values instanceof SortedMap<?, ?>) ) {
+                map = new TreeMap<K, V>( map );
             }
 
-        } else {
+            if ( ctx.isWriteNullMapValues() ) {
 
-            for ( Entry<K, V> entry : values.entrySet() ) {
-                if ( null != entry.getValue() ) {
+                for ( Entry<K, V> entry : map.entrySet() ) {
                     writer.name( keySerializer.serialize( entry.getKey(), ctx ) );
                     valueSerializer.serialize( writer, entry.getValue(), ctx );
                 }
+
+            } else {
+
+                for ( Entry<K, V> entry : map.entrySet() ) {
+                    if ( null != entry.getValue() ) {
+                        writer.name( keySerializer.serialize( entry.getKey(), ctx ) );
+                        valueSerializer.serialize( writer, entry.getValue(), ctx );
+                    }
+                }
+
             }
-
         }
-
         writer.endObject();
     }
 }

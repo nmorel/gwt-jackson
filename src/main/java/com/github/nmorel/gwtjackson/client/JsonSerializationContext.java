@@ -42,6 +42,8 @@ public class JsonSerializationContext extends JsonMappingContext {
 
         private boolean writeEmptyJsonArrays = true;
 
+        private boolean orderMapEntriesByKeys = false;
+
         /**
          * Determines whether Object Identity is compared using
          * true JVM-level identity of Object (false); or, <code>equals()</code> method.
@@ -152,9 +154,23 @@ public class JsonSerializationContext extends JsonMappingContext {
             return this;
         }
 
+        /**
+         * Feature that determines whether {@link java.util.Map} entries are first
+         * sorted by key before serialization or not: if enabled, additional sorting
+         * step is performed if necessary (not necessary for {@link java.util.SortedMap}s),
+         * if disabled, no additional sorting is needed.
+         * <p/>
+         * Feature is disabled by default.
+         */
+        public Builder orderMapEntriesByKeys( boolean orderMapEntriesByKeys ) {
+            this.orderMapEntriesByKeys = orderMapEntriesByKeys;
+            return this;
+        }
+
         public JsonSerializationContext build() {
             return new JsonSerializationContext( useEqualityForObjectId, serializeNulls, writeDatesAsTimestamps,
-                writeDateKeysAsTimestamps, indent, wrapRootValue, writeCharArraysAsJsonArrays, writeNullMapValues, writeEmptyJsonArrays );
+                writeDateKeysAsTimestamps, indent, wrapRootValue, writeCharArraysAsJsonArrays, writeNullMapValues, writeEmptyJsonArrays,
+                orderMapEntriesByKeys );
         }
     }
 
@@ -185,9 +201,12 @@ public class JsonSerializationContext extends JsonMappingContext {
 
     private final boolean writeEmptyJsonArrays;
 
+    private final boolean orderMapEntriesByKeys;
+
     private JsonSerializationContext( boolean useEqualityForObjectId, boolean serializeNulls, boolean writeDatesAsTimestamps,
                                       boolean writeDateKeysAsTimestamps, boolean indent, boolean wrapRootValue,
-                                      boolean writeCharArraysAsJsonArrays, boolean writeNullMapValues, boolean writeEmptyJsonArrays ) {
+                                      boolean writeCharArraysAsJsonArrays, boolean writeNullMapValues, boolean writeEmptyJsonArrays,
+                                      boolean orderMapEntriesByKeys ) {
         this.useEqualityForObjectId = useEqualityForObjectId;
         this.serializeNulls = serializeNulls;
         this.writeDatesAsTimestamps = writeDatesAsTimestamps;
@@ -197,6 +216,7 @@ public class JsonSerializationContext extends JsonMappingContext {
         this.writeCharArraysAsJsonArrays = writeCharArraysAsJsonArrays;
         this.writeNullMapValues = writeNullMapValues;
         this.writeEmptyJsonArrays = writeEmptyJsonArrays;
+        this.orderMapEntriesByKeys = orderMapEntriesByKeys;
     }
 
     @Override
@@ -244,6 +264,13 @@ public class JsonSerializationContext extends JsonMappingContext {
      */
     public boolean isWriteEmptyJsonArrays() {
         return writeEmptyJsonArrays;
+    }
+
+    /**
+     * @see Builder#orderMapEntriesByKeys(boolean)
+     */
+    public boolean isOrderMapEntriesByKeys() {
+        return orderMapEntriesByKeys;
     }
 
     public JsonWriter newJsonWriter() {
@@ -346,7 +373,7 @@ public class JsonSerializationContext extends JsonMappingContext {
      *
      * @param generator instance of generator to add
      */
-    @SuppressWarnings( "UnusedDeclaration" )
+    @SuppressWarnings("UnusedDeclaration")
     public void addGenerator( ObjectIdGenerator<?> generator ) {
         if ( null == generators ) {
             generators = new ArrayList<ObjectIdGenerator<?>>();
@@ -359,7 +386,7 @@ public class JsonSerializationContext extends JsonMappingContext {
      *
      * @param gen generator used to find equivalent generator
      */
-    @SuppressWarnings( {"UnusedDeclaration", "unchecked"} )
+    @SuppressWarnings({"UnusedDeclaration", "unchecked"})
     public <T> ObjectIdGenerator<T> findObjectIdGenerator( ObjectIdGenerator<T> gen ) {
         if ( null != generators ) {
             for ( ObjectIdGenerator<?> generator : generators ) {
