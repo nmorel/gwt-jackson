@@ -37,14 +37,25 @@ public class IterableJsonDeserializer<T> extends BaseIterableJsonDeserializer<It
 
     @Override
     public Iterable<T> doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
-        Collection<T> result = new ArrayList<T>();
+        if ( JsonToken.BEGIN_ARRAY == reader.peek() ) {
 
-        reader.beginArray();
-        while ( JsonToken.END_ARRAY != reader.peek() ) {
+            Collection<T> result = new ArrayList<T>();
+
+            reader.beginArray();
+            while ( JsonToken.END_ARRAY != reader.peek() ) {
+                result.add( deserializer.deserialize( reader, ctx ) );
+            }
+            reader.endArray();
+            return result;
+
+        } else if ( ctx.isAcceptSingleValueAsArray() ) {
+
+            Collection<T> result = new ArrayList<T>();
             result.add( deserializer.deserialize( reader, ctx ) );
-        }
-        reader.endArray();
+            return result;
 
-        return result;
+        } else {
+            throw ctx.traceError( "Cannot deserialize a java.lang.Iterable out of " + reader.peek() + " token", reader );
+        }
     }
 }

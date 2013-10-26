@@ -27,7 +27,7 @@ public class PrimitiveLongArrayJsonDeserializer extends AbstractArrayJsonDeseria
     private PrimitiveLongArrayJsonDeserializer() { }
 
     @Override
-    public long[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+    public long[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
         List<Long> list = deserializeIntoList( reader, ctx, LongJsonDeserializer.getInstance() );
 
         long[] result = new long[list.size()];
@@ -39,5 +39,10 @@ public class PrimitiveLongArrayJsonDeserializer extends AbstractArrayJsonDeseria
             i++;
         }
         return result;
+    }
+
+    @Override
+    protected long[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+        return new long[]{LongJsonDeserializer.getInstance().deserialize( reader, ctx )};
     }
 }

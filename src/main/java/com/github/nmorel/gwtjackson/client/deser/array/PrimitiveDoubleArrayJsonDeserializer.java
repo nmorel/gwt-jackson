@@ -27,7 +27,7 @@ public class PrimitiveDoubleArrayJsonDeserializer extends AbstractArrayJsonDeser
     private PrimitiveDoubleArrayJsonDeserializer() { }
 
     @Override
-    public double[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+    public double[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
         List<Double> list = deserializeIntoList( reader, ctx, DoubleJsonDeserializer.getInstance() );
 
         double[] result = new double[list.size()];
@@ -39,5 +39,10 @@ public class PrimitiveDoubleArrayJsonDeserializer extends AbstractArrayJsonDeser
             i++;
         }
         return result;
+    }
+
+    @Override
+    protected double[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+        return new double[]{DoubleJsonDeserializer.getInstance().deserialize( reader, ctx )};
     }
 }

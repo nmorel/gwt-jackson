@@ -43,15 +43,39 @@ public class IterableJsonSerializer<I extends Iterable<T>, T> extends JsonSerial
     public void doSerialize( JsonWriter writer, @Nonnull I values, JsonSerializationContext ctx ) throws IOException {
         Iterator<T> iterator = values.iterator();
 
-        if ( !ctx.isWriteEmptyJsonArrays() && !iterator.hasNext() ) {
-            writer.cancelName();
+        if ( !iterator.hasNext() ) {
+            if ( ctx.isWriteEmptyJsonArrays() ) {
+                writer.beginArray();
+                writer.endArray();
+            } else {
+                writer.cancelName();
+            }
             return;
         }
 
-        writer.beginArray();
-        while ( iterator.hasNext() ) {
-            serializer.serialize( writer, iterator.next(), ctx );
+        if ( ctx.isWriteSingleElemArraysUnwrapped() ) {
+
+            T first = iterator.next();
+
+            if ( iterator.hasNext() ) {
+                // there is more than one element, we write the array normally
+                writer.beginArray();
+                serializer.serialize( writer, first, ctx );
+                while ( iterator.hasNext() ) {
+                    serializer.serialize( writer, iterator.next(), ctx );
+                }
+                writer.endArray();
+            } else {
+                // there is only one element, we write it directly
+                serializer.serialize( writer, first, ctx );
+            }
+
+        } else {
+            writer.beginArray();
+            while ( iterator.hasNext() ) {
+                serializer.serialize( writer, iterator.next(), ctx );
+            }
+            writer.endArray();
         }
-        writer.endArray();
     }
 }

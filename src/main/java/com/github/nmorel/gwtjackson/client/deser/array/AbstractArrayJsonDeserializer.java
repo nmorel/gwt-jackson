@@ -16,6 +16,27 @@ import com.github.nmorel.gwtjackson.client.stream.JsonToken;
  */
 public abstract class AbstractArrayJsonDeserializer<T> extends JsonDeserializer<T> {
 
+    @Override
+    public T doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+        if ( JsonToken.BEGIN_ARRAY == reader.peek() ) {
+            return doDeserializeArray( reader, ctx );
+        } else {
+            return doDeserializeNonArray( reader, ctx );
+        }
+    }
+
+    protected abstract T doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException;
+
+    protected T doDeserializeNonArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+        if ( ctx.isAcceptSingleValueAsArray() ) {
+            return doDeserializeSingleArray( reader, ctx );
+        } else {
+            throw ctx.traceError( "Cannot deserialize an array out of " + reader.peek() + " token", reader );
+        }
+    }
+
+    protected abstract T doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException;
+
     /**
      * Deserializes the array into a {@link List}. We need the length of the array before creating it.
      *

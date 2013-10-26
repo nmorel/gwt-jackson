@@ -32,7 +32,7 @@ public class PrimitiveCharacterArrayJsonSerializer extends JsonSerializer<char[]
             return;
         }
 
-        if ( ctx.isWriteCharArraysAsJsonArrays() ) {
+        if ( ctx.isWriteCharArraysAsJsonArrays() && !(ctx.isWriteSingleElemArraysUnwrapped() && values.length == 1) ) {
             writer.beginArray();
             for ( char value : values ) {
                 writer.value( Character.toString( value ) );

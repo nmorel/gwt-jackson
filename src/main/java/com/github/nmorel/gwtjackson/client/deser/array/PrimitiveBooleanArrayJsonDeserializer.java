@@ -27,7 +27,7 @@ public class PrimitiveBooleanArrayJsonDeserializer extends AbstractArrayJsonDese
     private PrimitiveBooleanArrayJsonDeserializer() { }
 
     @Override
-    public boolean[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+    public boolean[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
         List<Boolean> list = deserializeIntoList( reader, ctx, BooleanJsonDeserializer.getInstance() );
 
         boolean[] result = new boolean[list.size()];
@@ -39,5 +39,10 @@ public class PrimitiveBooleanArrayJsonDeserializer extends AbstractArrayJsonDese
             i++;
         }
         return result;
+    }
+
+    @Override
+    protected boolean[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+        return new boolean[]{BooleanJsonDeserializer.getInstance().deserialize( reader, ctx )};
     }
 }

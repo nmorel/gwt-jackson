@@ -45,10 +45,14 @@ public class ArrayJsonSerializer<T> extends JsonSerializer<T[]> {
             return;
         }
 
-        writer.beginArray();
-        for ( T value : values ) {
-            serializer.serialize( writer, value, ctx );
+        if ( ctx.isWriteSingleElemArraysUnwrapped() && values.length == 1 ) {
+            serializer.serialize( writer, values[0], ctx );
+        } else {
+            writer.beginArray();
+            for ( T value : values ) {
+                serializer.serialize( writer, value, ctx );
+            }
+            writer.endArray();
         }
-        writer.endArray();
     }
 }

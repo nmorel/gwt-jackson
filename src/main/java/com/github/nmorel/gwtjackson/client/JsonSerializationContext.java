@@ -44,6 +44,8 @@ public class JsonSerializationContext extends JsonMappingContext {
 
         private boolean orderMapEntriesByKeys = false;
 
+        private boolean writeSingleElemArraysUnwrapped = false;
+
         /**
          * Determines whether Object Identity is compared using
          * true JVM-level identity of Object (false); or, <code>equals()</code> method.
@@ -167,10 +169,36 @@ public class JsonSerializationContext extends JsonMappingContext {
             return this;
         }
 
+        /**
+         * Feature added for interoperability, to work with oddities of
+         * so-called "BadgerFish" convention.
+         * Feature determines handling of single element {@link java.util.Collection}s
+         * and arrays: if enabled, {@link java.util.Collection}s and arrays that contain exactly
+         * one element will be serialized as if that element itself was serialized.
+         * <p/>
+         * When enabled, a POJO with array that normally looks like this:
+         * <pre>
+         *  { "arrayProperty" : [ 1 ] }
+         * </pre>
+         * will instead be serialized as
+         * <pre>
+         *  { "arrayProperty" : 1 }
+         * </pre>
+         * <p/>
+         * Note that this feature is counterpart to {@link JsonDeserializationContext.Builder#acceptSingleValueAsArray(boolean)}
+         * (that is, usually both are enabled, or neither is).
+         * <p/>
+         * Feature is disabled by default, so that no special handling is done.
+         */
+        public Builder writeSingleElemArraysUnwrapped( boolean writeSingleElemArraysUnwrapped ) {
+            this.writeSingleElemArraysUnwrapped = writeSingleElemArraysUnwrapped;
+            return this;
+        }
+
         public JsonSerializationContext build() {
             return new JsonSerializationContext( useEqualityForObjectId, serializeNulls, writeDatesAsTimestamps,
                 writeDateKeysAsTimestamps, indent, wrapRootValue, writeCharArraysAsJsonArrays, writeNullMapValues, writeEmptyJsonArrays,
-                orderMapEntriesByKeys );
+                orderMapEntriesByKeys, writeSingleElemArraysUnwrapped );
         }
     }
 
@@ -203,10 +231,12 @@ public class JsonSerializationContext extends JsonMappingContext {
 
     private final boolean orderMapEntriesByKeys;
 
+    private final boolean writeSingleElemArraysUnwrapped;
+
     private JsonSerializationContext( boolean useEqualityForObjectId, boolean serializeNulls, boolean writeDatesAsTimestamps,
                                       boolean writeDateKeysAsTimestamps, boolean indent, boolean wrapRootValue,
                                       boolean writeCharArraysAsJsonArrays, boolean writeNullMapValues, boolean writeEmptyJsonArrays,
-                                      boolean orderMapEntriesByKeys ) {
+                                      boolean orderMapEntriesByKeys, boolean writeSingleElemArraysUnwrapped ) {
         this.useEqualityForObjectId = useEqualityForObjectId;
         this.serializeNulls = serializeNulls;
         this.writeDatesAsTimestamps = writeDatesAsTimestamps;
@@ -217,6 +247,7 @@ public class JsonSerializationContext extends JsonMappingContext {
         this.writeNullMapValues = writeNullMapValues;
         this.writeEmptyJsonArrays = writeEmptyJsonArrays;
         this.orderMapEntriesByKeys = orderMapEntriesByKeys;
+        this.writeSingleElemArraysUnwrapped = writeSingleElemArraysUnwrapped;
     }
 
     @Override
@@ -271,6 +302,13 @@ public class JsonSerializationContext extends JsonMappingContext {
      */
     public boolean isOrderMapEntriesByKeys() {
         return orderMapEntriesByKeys;
+    }
+
+    /**
+     * @see Builder#writeSingleElemArraysUnwrapped(boolean)
+     */
+    public boolean isWriteSingleElemArraysUnwrapped() {
+        return writeSingleElemArraysUnwrapped;
     }
 
     public JsonWriter newJsonWriter() {

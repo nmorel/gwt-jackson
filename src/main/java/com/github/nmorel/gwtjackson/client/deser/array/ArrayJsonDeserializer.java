@@ -51,9 +51,16 @@ public class ArrayJsonDeserializer<T> extends AbstractArrayJsonDeserializer<T[]>
     }
 
     @Override
-    public T[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+    public T[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
         List<T> list = deserializeIntoList( reader, ctx, deserializer );
         return list.toArray( arrayCreator.create( list.size() ) );
+    }
+
+    @Override
+    protected T[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+        T[] result = arrayCreator.create( 1 );
+        result[0] = deserializer.deserialize( reader, ctx );
+        return result;
     }
 
     @Override

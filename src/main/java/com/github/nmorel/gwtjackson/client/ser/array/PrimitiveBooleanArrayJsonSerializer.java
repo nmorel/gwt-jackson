@@ -32,10 +32,14 @@ public class PrimitiveBooleanArrayJsonSerializer extends JsonSerializer<boolean[
             return;
         }
 
-        writer.beginArray();
-        for ( boolean value : values ) {
-            writer.value( value );
+        if ( ctx.isWriteSingleElemArraysUnwrapped() && values.length == 1 ) {
+            writer.value( values[0] );
+        } else {
+            writer.beginArray();
+            for ( boolean value : values ) {
+                writer.value( value );
+            }
+            writer.endArray();
         }
-        writer.endArray();
     }
 }

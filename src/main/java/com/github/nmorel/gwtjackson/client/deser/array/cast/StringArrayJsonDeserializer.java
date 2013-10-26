@@ -34,7 +34,7 @@ public class StringArrayJsonDeserializer extends AbstractArrayJsonDeserializer<S
     private StringArrayJsonDeserializer() { }
 
     @Override
-    public String[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+    public String[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
         JsArrayString jsArray = JsArrayString.createArray().cast();
         reader.beginArray();
         while ( JsonToken.END_ARRAY != reader.peek() ) {
@@ -57,5 +57,10 @@ public class StringArrayJsonDeserializer extends AbstractArrayJsonDeserializer<S
             }
             return ret;
         }
+    }
+
+    @Override
+    protected String[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+        return new String[]{reader.nextString()};
     }
 }

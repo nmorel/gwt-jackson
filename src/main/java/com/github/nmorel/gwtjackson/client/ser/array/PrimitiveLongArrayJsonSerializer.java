@@ -32,10 +32,14 @@ public class PrimitiveLongArrayJsonSerializer extends JsonSerializer<long[]> {
             return;
         }
 
-        writer.beginArray();
-        for ( long value : values ) {
-            writer.value( value );
+        if ( ctx.isWriteSingleElemArraysUnwrapped() && values.length == 1 ) {
+            writer.value( values[0] );
+        } else {
+            writer.beginArray();
+            for ( long value : values ) {
+                writer.value( value );
+            }
+            writer.endArray();
         }
-        writer.endArray();
     }
 }

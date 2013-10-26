@@ -27,7 +27,7 @@ public class PrimitiveFloatArrayJsonDeserializer extends AbstractArrayJsonDeseri
     private PrimitiveFloatArrayJsonDeserializer() { }
 
     @Override
-    public float[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+    public float[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
         List<Float> list = deserializeIntoList( reader, ctx, FloatJsonDeserializer.getInstance() );
 
         float[] result = new float[list.size()];
@@ -39,5 +39,10 @@ public class PrimitiveFloatArrayJsonDeserializer extends AbstractArrayJsonDeseri
             i++;
         }
         return result;
+    }
+
+    @Override
+    protected float[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+        return new float[]{FloatJsonDeserializer.getInstance().deserialize( reader, ctx )};
     }
 }

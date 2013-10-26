@@ -24,6 +24,8 @@ public class JsonDeserializationContext extends JsonMappingContext {
 
         private boolean unwrapRootValue = false;
 
+        private boolean acceptSingleValueAsArray = false;
+
         /**
          * Determines whether encountering of unknown
          * properties (ones that do not map to a property, and there is
@@ -58,8 +60,24 @@ public class JsonDeserializationContext extends JsonMappingContext {
             return this;
         }
 
+        /**
+         * Feature that determines whether it is acceptable to coerce non-array
+         * (in JSON) values to work with Java collection (arrays, java.util.Collection)
+         * types. If enabled, collection deserializers will try to handle non-array
+         * values as if they had "implicit" surrounding JSON array.
+         * This feature is meant to be used for compatibility/interoperability reasons,
+         * to work with packages (such as XML-to-JSON converters) that leave out JSON
+         * array in cases where there is just a single element in array.
+         * <p/>
+         * Feature is disabled by default.
+         */
+        public Builder acceptSingleValueAsArray( boolean acceptSingleValueAsArray ) {
+            this.acceptSingleValueAsArray = acceptSingleValueAsArray;
+            return this;
+        }
+
         public JsonDeserializationContext build() {
-            return new JsonDeserializationContext( failOnUnknownProperties, unwrapRootValue );
+            return new JsonDeserializationContext( failOnUnknownProperties, unwrapRootValue, acceptSingleValueAsArray );
         }
     }
 
@@ -74,9 +92,12 @@ public class JsonDeserializationContext extends JsonMappingContext {
 
     private final boolean unwrapRootValue;
 
-    private JsonDeserializationContext( boolean failOnUnknownProperties, boolean unwrapRootValue ) {
+    private final boolean acceptSingleValueAsArray;
+
+    private JsonDeserializationContext( boolean failOnUnknownProperties, boolean unwrapRootValue, boolean acceptSingleValueAsArray ) {
         this.failOnUnknownProperties = failOnUnknownProperties;
         this.unwrapRootValue = unwrapRootValue;
+        this.acceptSingleValueAsArray = acceptSingleValueAsArray;
     }
 
     @Override
@@ -96,6 +117,13 @@ public class JsonDeserializationContext extends JsonMappingContext {
      */
     public boolean isUnwrapRootValue() {
         return unwrapRootValue;
+    }
+
+    /**
+     * @see Builder#acceptSingleValueAsArray(boolean)
+     */
+    public boolean isAcceptSingleValueAsArray() {
+        return acceptSingleValueAsArray;
     }
 
     public JsonReader newJsonReader( String input ) {

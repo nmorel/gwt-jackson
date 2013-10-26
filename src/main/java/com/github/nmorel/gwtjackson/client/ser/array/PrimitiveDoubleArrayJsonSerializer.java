@@ -32,10 +32,14 @@ public class PrimitiveDoubleArrayJsonSerializer extends JsonSerializer<double[]>
             return;
         }
 
-        writer.beginArray();
-        for ( double value : values ) {
-            writer.value( value );
+        if ( ctx.isWriteSingleElemArraysUnwrapped() && values.length == 1 ) {
+            writer.value( values[0] );
+        } else {
+            writer.beginArray();
+            for ( double value : values ) {
+                writer.value( value );
+            }
+            writer.endArray();
         }
-        writer.endArray();
     }
 }

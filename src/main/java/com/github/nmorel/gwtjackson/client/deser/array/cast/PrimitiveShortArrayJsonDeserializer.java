@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.BaseNumberJsonDeserializer.ShortJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.array.AbstractArrayJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
@@ -35,7 +36,7 @@ public class PrimitiveShortArrayJsonDeserializer extends AbstractArrayJsonDeseri
     private PrimitiveShortArrayJsonDeserializer() { }
 
     @Override
-    public short[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+    public short[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
         JsArrayInteger jsArray = JsArrayInteger.createArray().cast();
         reader.beginArray();
         while ( JsonToken.END_ARRAY != reader.peek() ) {
@@ -58,5 +59,10 @@ public class PrimitiveShortArrayJsonDeserializer extends AbstractArrayJsonDeseri
             }
             return ret;
         }
+    }
+
+    @Override
+    protected short[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+        return new short[]{ShortJsonDeserializer.getInstance().deserialize( reader, ctx )};
     }
 }

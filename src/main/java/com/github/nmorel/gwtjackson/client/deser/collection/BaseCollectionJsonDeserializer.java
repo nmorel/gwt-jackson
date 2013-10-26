@@ -27,18 +27,30 @@ public abstract class BaseCollectionJsonDeserializer<C extends Collection<T>, T>
 
     @Override
     public C doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
-        C result = newCollection();
+        if ( JsonToken.BEGIN_ARRAY == reader.peek() ) {
 
-        reader.beginArray();
-        while ( JsonToken.END_ARRAY != reader.peek() ) {
-            T element = deserializer.deserialize( reader, ctx );
-            if ( isNullValueAllowed() || null != element ) {
-                result.add( element );
+            C result = newCollection();
+
+            reader.beginArray();
+            while ( JsonToken.END_ARRAY != reader.peek() ) {
+                T element = deserializer.deserialize( reader, ctx );
+                if ( isNullValueAllowed() || null != element ) {
+                    result.add( element );
+                }
             }
-        }
-        reader.endArray();
+            reader.endArray();
 
-        return result;
+            return result;
+
+        } else if ( ctx.isAcceptSingleValueAsArray() ) {
+
+            C result = newCollection();
+            result.add( deserializer.deserialize( reader, ctx ) );
+            return result;
+
+        } else {
+            throw ctx.traceError( "Cannot deserialize a java.util.Collection out of " + reader.peek() + " token", reader );
+        }
     }
 
     /**

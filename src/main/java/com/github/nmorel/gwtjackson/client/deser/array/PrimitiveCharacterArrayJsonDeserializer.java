@@ -28,21 +28,33 @@ public class PrimitiveCharacterArrayJsonDeserializer extends AbstractArrayJsonDe
     private PrimitiveCharacterArrayJsonDeserializer() { }
 
     @Override
-    public char[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
-        if ( JsonToken.BEGIN_ARRAY == reader.peek() ) {
-            List<Character> list = deserializeIntoList( reader, ctx, CharacterJsonDeserializer.getInstance() );
+    public char[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+        List<Character> list = deserializeIntoList( reader, ctx, CharacterJsonDeserializer.getInstance() );
 
-            char[] result = new char[list.size()];
-            int i = 0;
-            for ( Character value : list ) {
-                if ( null != value ) {
-                    result[i] = value;
-                }
-                i++;
+        char[] result = new char[list.size()];
+        int i = 0;
+        for ( Character value : list ) {
+            if ( null != value ) {
+                result[i] = value;
             }
-            return result;
-        } else {
-            return reader.nextString().toCharArray();
+            i++;
         }
+        return result;
+    }
+
+    @Override
+    protected char[] doDeserializeNonArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+        if ( JsonToken.STRING == reader.peek() ) {
+            return reader.nextString().toCharArray();
+        } else if ( ctx.isAcceptSingleValueAsArray() ) {
+            return doDeserializeSingleArray( reader, ctx );
+        } else {
+            throw ctx.traceError( "Cannot deserialize a char[] out of " + reader.peek() + " token", reader );
+        }
+    }
+
+    @Override
+    protected char[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+        return new char[]{CharacterJsonDeserializer.getInstance().deserialize( reader, ctx )};
     }
 }

@@ -1,0 +1,150 @@
+package com.github.nmorel.gwtjackson.client.options;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
+import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
+import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
+import com.github.nmorel.gwtjackson.client.ObjectReader;
+import com.github.nmorel.gwtjackson.client.ObjectWriter;
+import com.github.nmorel.gwtjackson.client.deser.array.ArrayJsonDeserializer.ArrayCreator;
+import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
+import com.google.gwt.core.client.GWT;
+
+/**
+ * @author Nicolas Morel
+ */
+public class SingleArrayOptionGwtTest extends GwtJacksonTestCase {
+
+    public interface StringListBeanWriter extends ObjectWriter<StringListBean> {
+
+        static StringListBeanWriter INSTANCE = GWT.create( StringListBeanWriter.class );
+    }
+
+    public interface ListXBeanReader extends ObjectReader<List<XBean>> {
+
+        static ListXBeanReader INSTANCE = GWT.create( ListXBeanReader.class );
+    }
+
+    public interface ArrayXBeanReader extends ObjectReader<XBean[]> {
+
+        static ArrayXBeanReader INSTANCE = GWT.create( ArrayXBeanReader.class );
+    }
+
+    static class StringListBean {
+
+        @SuppressWarnings( "unused" )
+        public Collection<String> values;
+
+        public StringListBean( Collection<String> v ) { values = v; }
+
+    }
+
+    static class XBean {
+
+        public int x;
+    }
+
+    private JsonSerializationContext createSerializationContext() {
+        return new JsonSerializationContext.Builder().writeSingleElemArraysUnwrapped( true ).build();
+    }
+
+    public void testSerialize() throws IOException {
+        JsonSerializationContext context = createSerializationContext();
+
+        // Lists:
+        ArrayList<String> strs = new ArrayList<String>();
+        strs.add( "xyz" );
+        JsonWriter writer = context.newJsonWriter();
+        context.newArrayListJsonSerializer( context.getStringJsonSerializer() ).serialize( writer, strs, context );
+        assertEquals( ("\"xyz\""), writer.getOutput() );
+
+        ArrayList<Integer> ints = new ArrayList<Integer>();
+        ints.add( 13 );
+        writer = context.newJsonWriter();
+        context.newArrayListJsonSerializer( context.getIntegerJsonSerializer() ).serialize( writer, ints, context );
+        assertEquals( "13", writer.getOutput() );
+
+        // other Collections, like Sets:
+        HashSet<Long> longs = new HashSet<Long>();
+        longs.add( 42L );
+        writer = context.newJsonWriter();
+        context.newHashSetJsonSerializer( context.getLongJsonSerializer() ).serialize( writer, longs, context );
+        assertEquals( "42", writer.getOutput() );
+
+        // [Issue#180]
+        final String EXP_STRINGS = "{\"values\":\"foo\"}";
+        assertEquals( EXP_STRINGS, StringListBeanWriter.INSTANCE.write( new StringListBean( Collections
+            .singletonList( "foo" ) ), createSerializationContext() ) );
+
+        final Set<String> SET = new HashSet<String>();
+        SET.add( "foo" );
+        assertEquals( EXP_STRINGS, StringListBeanWriter.INSTANCE.write( new StringListBean( SET ), createSerializationContext() ) );
+
+        // arrays:
+        writer = context.newJsonWriter();
+        context.getPrimitiveBooleanArrayJsonSerializer().serialize( writer, new boolean[]{true}, context );
+        assertEquals( "true", writer.getOutput() );
+
+        writer = context.newJsonWriter();
+        context.newArrayJsonSerializer( context.getBooleanJsonSerializer() ).serialize( writer, new Boolean[]{Boolean.TRUE}, context );
+        assertEquals( "true", writer.getOutput() );
+
+        writer = context.newJsonWriter();
+        context.getPrimitiveIntegerArrayJsonSerializer().serialize( writer, new int[]{3}, context );
+        assertEquals( "3", writer.getOutput() );
+
+        writer = context.newJsonWriter();
+        context.newArrayJsonSerializer( context.getStringJsonSerializer() ).serialize( writer, new String[]{"foo"}, context );
+        assertEquals( "\"foo\"", writer.getOutput() );
+    }
+
+    private JsonDeserializationContext createDeserializationContext() {
+        return new JsonDeserializationContext.Builder().acceptSingleValueAsArray( true ).build();
+    }
+
+    public void testDeserialize() {
+        JsonDeserializationContext context = createDeserializationContext();
+
+        // first with simple scalar types (numbers), with collections
+        List<Integer> ints = context.newListJsonDeserializer( context.getIntegerJsonDeserializer() ).deserialize( context
+            .newJsonReader( "4" ), context );
+        assertEquals( 1, ints.size() );
+        assertEquals( Integer.valueOf( 4 ), ints.get( 0 ) );
+
+        List<String> strings = context.newListJsonDeserializer( context.getStringJsonDeserializer() ).deserialize( context
+            .newJsonReader( "\"abc\"" ), context );
+        assertEquals( 1, strings.size() );
+        assertEquals( "abc", strings.get( 0 ) );
+
+        // and arrays:
+        int[] intArray = context.getPrimitiveIntegerArrayJsonDeserializer().deserialize( context.newJsonReader( "-7" ), context );
+        assertEquals( 1, intArray.length );
+        assertEquals( -7, intArray[0] );
+
+        String[] stringArray = context.newArrayJsonDeserializer( context.getStringJsonDeserializer(), new ArrayCreator<String>() {
+            @Override
+            public String[] create( int length ) {
+                return new String[length];
+            }
+        } ).deserialize( context.newJsonReader( "\"xyz\"" ), context );
+        assertEquals( 1, stringArray.length );
+        assertEquals( "xyz", stringArray[0] );
+
+        // and then with Beans:
+        List<XBean> xbeanList = ListXBeanReader.INSTANCE.read( "{\"x\":4}", createDeserializationContext() );
+        assertEquals( 1, xbeanList.size() );
+        assertEquals( XBean.class, xbeanList.get( 0 ).getClass() );
+
+        XBean[] xbeanArray = ArrayXBeanReader.INSTANCE.read( "{\"x\":29}", createDeserializationContext() );
+        assertEquals( 1, xbeanArray.length );
+        assertEquals( XBean.class, xbeanArray[0].getClass() );
+    }
+
+}
