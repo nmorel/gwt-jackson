@@ -517,6 +517,22 @@ public class JsonWriter {
   }
 
   /**
+   * Encodes {@code value}.toString() as is.
+   *
+   * @param value a value .
+   * @return this writer.
+   */
+  public JsonWriter rawValue(Object value) throws IOException {
+    if (value == null) {
+      return nullValue();
+    }
+    writeDeferredName();
+    beforeValue(false);
+    out.append(value.toString());
+    return this;
+  }
+
+  /**
    * Ensures all buffered data is written to the underlying {@link StringBuilder}
    * and flushes that writer.
    */

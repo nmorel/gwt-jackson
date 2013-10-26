@@ -123,6 +123,7 @@ import com.github.nmorel.gwtjackson.client.ser.BooleanJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.CharacterJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.EnumJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.IterableJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.RawValueJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.StringJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.UUIDJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.array.ArrayJsonSerializer;
@@ -159,7 +160,7 @@ import com.github.nmorel.gwtjackson.client.ser.map.key.UUIDKeySerializer;
  *
  * @author Nicolas Morel
  */
-@SuppressWarnings( "UnusedDeclaration" )
+@SuppressWarnings("UnusedDeclaration")
 public abstract class JsonMappingContext {
 
     public abstract Logger getLogger();
@@ -543,6 +544,10 @@ public abstract class JsonMappingContext {
 
     public JsonSerializer<Long> getLongJsonSerializer() {
         return LongJsonSerializer.getInstance();
+    }
+
+    public <T> JsonSerializer<T> getRawValueJsonSerializer() {
+        return RawValueJsonSerializer.getInstance();
     }
 
     public JsonSerializer<Short> getShortJsonSerializer() {

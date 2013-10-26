@@ -161,6 +161,10 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      *         </ul>
      */
     protected String getJsonSerializerFromType( JType type, PropertyInfo propertyInfo ) throws UnableToCompleteException {
+        if ( null != propertyInfo && propertyInfo.isRawValue() ) {
+            return String.format( "ctx.<%s>getRawValueJsonSerializer()", type.getParameterizedQualifiedSourceName() );
+        }
+
         JTypeParameter typeParameter = type.isTypeParameter();
         if ( null != typeParameter ) {
             return String.format( TYPE_PARAMETER_SERIALIZER_FIELD_NAME, typeParameter.getOrdinal() );

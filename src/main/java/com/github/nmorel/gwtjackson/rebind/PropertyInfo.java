@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JField;
@@ -77,6 +78,9 @@ public final class PropertyInfo {
 
         if ( null == result.backReference ) {
             determineGetter( fieldAccessors, getterAutoDetected, fieldAutoDetected, mapperInfo, result );
+
+            JsonRawValue jsonRawValue = findAnnotationOnAnyAccessor( fieldAccessors, JsonRawValue.class );
+            result.rawValue = null != jsonRawValue && jsonRawValue.value();
         }
         determineSetter( fieldAccessors, setterAutoDetected, fieldAutoDetected, mapperInfo, result );
 
@@ -288,6 +292,8 @@ public final class PropertyInfo {
 
     private String propertyName;
 
+    private boolean rawValue;
+
     private String managedReference;
 
     private String backReference;
@@ -323,6 +329,10 @@ public final class PropertyInfo {
 
     public String getPropertyName() {
         return propertyName;
+    }
+
+    public boolean isRawValue() {
+        return rawValue;
     }
 
     public String getManagedReference() {
