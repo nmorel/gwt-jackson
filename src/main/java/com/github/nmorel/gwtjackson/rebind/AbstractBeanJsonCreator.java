@@ -311,7 +311,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
                 // might be a setter
                 if ( method.getParameters().length == 1 ) {
                     String methodName = method.getName();
-                    if ( methodName.startsWith( "set" ) && methodName.length() > 3 ) {
+                    if ( (methodName.startsWith( "set" ) && methodName.length() > 3) || method.isAnnotationPresent( JsonProperty.class ) ) {
                         // it's a setter method
                         String fieldName = extractFieldNameFromGetterSetterMethodName( methodName );
                         FieldAccessors property = propertiesMap.get( fieldName );
@@ -327,7 +327,8 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
                 if ( method.getParameters().length == 0 ) {
                     String methodName = method.getName();
                     if ( (methodName.startsWith( "get" ) && methodName.length() > 3) || (methodName.startsWith( "is" ) && methodName
-                        .length() > 2 && null != returnType.isPrimitive() && JPrimitiveType.BOOLEAN.equals( returnType.isPrimitive() )) ) {
+                        .length() > 2 && null != returnType.isPrimitive() && JPrimitiveType.BOOLEAN.equals( returnType
+                        .isPrimitive() )) || method.isAnnotationPresent( JsonProperty.class ) ) {
                         // it's a getter method
                         String fieldName = extractFieldNameFromGetterSetterMethodName( methodName );
                         FieldAccessors property = propertiesMap.get( fieldName );
@@ -351,8 +352,10 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
     private String extractFieldNameFromGetterSetterMethodName( String methodName ) {
         if ( methodName.startsWith( "is" ) ) {
             return methodName.substring( 2, 3 ).toLowerCase() + methodName.substring( 3 );
-        } else {
+        } else if ( methodName.startsWith( "get" ) || methodName.startsWith( "set" ) ) {
             return methodName.substring( 3, 4 ).toLowerCase() + methodName.substring( 4 );
+        } else {
+            return methodName;
         }
     }
 
