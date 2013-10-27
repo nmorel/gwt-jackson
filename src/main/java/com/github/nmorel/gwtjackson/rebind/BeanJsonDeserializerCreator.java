@@ -1,9 +1,17 @@
 package com.github.nmorel.gwtjackson.rebind;
 
-import java.util.LinkedHashMap;
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
@@ -12,7 +20,13 @@ import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JConstructor;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JParameter;
+import com.google.gwt.thirdparty.guava.common.base.Function;
+import com.google.gwt.thirdparty.guava.common.base.Joiner;
+import com.google.gwt.thirdparty.guava.common.collect.Collections2;
 import com.google.gwt.user.rebind.SourceWriter;
+
+import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.QUOTED_FUNCTION;
+import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.getDefaultValueForType;
 
 /**
  * @author Nicolas Morel
@@ -21,7 +35,17 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
     public static final String INSTANCE_BUILDER_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean.InstanceBuilder";
 
-    private static final String INSTANCE_BUILDER_CALLBACK_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean.InstanceBuilderCallback";
+    public static final String INSTANCE_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean.Instance";
+
+    public static final Function<String, String> FORMAT_VARIABLE = new Function<String, String>() {
+        @Override
+        public String apply( @Nullable String s ) {
+            if ( null == s ) {
+                return null;
+            }
+            return "v_" + s;
+        }
+    };
 
     private static final String BEAN_PROPERTY_DESERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean" + "" +
         ".BeanPropertyDeserializer";
@@ -47,12 +71,6 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         PropertyInfo> properties ) throws UnableToCompleteException {
         source.println();
 
-        if ( beanInfo.isInstantiable() ) {
-            generateInstanceBuilderClass( source, beanInfo, properties );
-        }
-
-        source.println();
-
         TypeParameters typeParameters = generateTypeParameterMapperFields( source, beanInfo, JSON_DESERIALIZER_CLASS,
             TYPE_PARAMETER_DESERIALIZER_FIELD_NAME );
 
@@ -63,28 +81,6 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         generateConstructors( source, beanInfo, properties, typeParameters );
 
         source.println();
-
-        // tell if the class is instantiable
-        source.println( "@Override" );
-        source.println( "protected boolean isInstantiable() {" );
-        source.indent();
-        source.println( "return %s;", beanInfo.isInstantiable() );
-        source.outdent();
-        source.println( "}" );
-        source.println();
-
-        source.println( "@Override" );
-        source.println( "protected %s%s newInstanceBuilder(%s ctx) {", beanInfo
-            .getInstanceBuilderQualifiedName(), getGenericClassParameters(), JSON_DESERIALIZATION_CONTEXT_CLASS );
-        source.indent();
-        generateNewInstanceBuilderBody( source, beanInfo );
-        source.outdent();
-        source.println( "}" );
-
-        if ( beanInfo.isInstantiable() ) {
-            source.println();
-            generateNewInstanceMethod( source, beanInfo, properties );
-        }
 
         source.println();
         generateAdditionalMethods( source, properties );
@@ -114,9 +110,10 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         if ( null != typeParameters ) {
             source.print( "%s, ", typeParameters.getJoinedTypeParameterMappersWithType() );
         }
-        source.println( "%s<?> idProperty, %s<%s> superclassInfo) {", IDENTITY_DESERIALIZATION_INFO_CLASS,
-            SUPERCLASS_DESERIALIZATION_INFO_CLASS, beanInfo.getType()
-            .getParameterizedQualifiedSourceName() );
+        source
+            .println( "%s<?> idProperty, %s<%s> superclassInfo) {", IDENTITY_DESERIALIZATION_INFO_CLASS,
+                SUPERCLASS_DESERIALIZATION_INFO_CLASS, beanInfo
+                .getType().getParameterizedQualifiedSourceName() );
         source.indent();
         source.println( "super();" );
 
@@ -126,6 +123,13 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
             for ( String parameterizedDeserializer : typeParameters.getTypeParameterMapperNames() ) {
                 source.println( "this.%s = %s%s;", parameterizedDeserializer, TYPE_PARAMETER_PREFIX, parameterizedDeserializer );
             }
+            source.println();
+        }
+
+        if ( beanInfo.isInstantiable() ) {
+            source.print( "setInstanceBuilder(" );
+            generateInstanceBuilderClass( source, beanInfo, properties );
+            source.println( ");" );
             source.println();
         }
 
@@ -171,24 +175,28 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         source.println( "}" );
     }
 
-    private void generateInstanceBuilderClass( SourceWriter source, BeanInfo info, Map<String,
+    private void generateInstanceBuilderClass( SourceWriter source, BeanInfo beanInfo, Map<String,
         PropertyInfo> properties ) throws UnableToCompleteException {
-        source.println( "static class %s%s implements %s<%s> {", info
-            .getInstanceBuilderSimpleName(), getGenericClassBoundedParameters(), INSTANCE_BUILDER_CLASS, info.getType()
-            .getParameterizedQualifiedSourceName() );
+
+        source.println( "new %s<%s>() {", INSTANCE_BUILDER_CLASS, beanInfo.getType().getParameterizedQualifiedSourceName() );
+        source.indent();
+        source.println( "@Override" );
+        source.println( "public %s<%s> newInstance( %s reader, %s ctx ) throws %s {", INSTANCE_CLASS, beanInfo.getType()
+            .getParameterizedQualifiedSourceName(), JSON_READER_CLASS, JSON_DESERIALIZATION_CONTEXT_CLASS, IOException.class.getName() );
         source.indent();
 
-        if ( info.isCreatorDefaultConstructor() ) {
-            generateInstanceBuilderClassBodyForDefaultConstructor( source, info, properties );
-        } else if ( info.isCreatorDelegation() ) {
-            generateInstanceBuilderClassBodyForConstructorOrFactoryMethodDelegation( source, info, properties );
+        if ( beanInfo.isCreatorDefaultConstructor() ) {
+            generateInstanceBuilderForDefaultConstructor( source, beanInfo, properties );
+        } else if ( beanInfo.isCreatorDelegation() ) {
+            generateInstanceBuilderForConstructorOrFactoryMethodDelegation( source, beanInfo, properties );
         } else {
-            generateInstanceBuilderClassBodyForConstructorOrFactoryMethod( source, info, properties );
+            generateInstanceBuilderForConstructorOrFactoryMethod( source, beanInfo, properties );
         }
 
-        source.println();
+        source.outdent();
+        source.println( "}" );
 
-        generateNewInstanceMethod( source, info, properties );
+        generateInstanceBuilderCreateMethod( source, beanInfo, properties );
 
         source.outdent();
         source.println( "}" );
@@ -199,74 +207,13 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
      * set the properties to it
      *
      * @param source writer
-     * @param info info on bean
+     * @param beanInfo info on bean
      * @param properties list of properties
      */
-    private void generateInstanceBuilderClassBodyForDefaultConstructor( SourceWriter source, BeanInfo info, Map<String,
+    private void generateInstanceBuilderForDefaultConstructor( SourceWriter source, BeanInfo beanInfo, Map<String,
         PropertyInfo> properties ) {
-        // when using default constructor, we can create the instance at the builder instantiation.
-        source.println();
-        source.println( "private %s %s = newInstance();", info.getType().getParameterizedQualifiedSourceName(), BEAN_INSTANCE_NAME );
-        source.println();
-
-        // we initialize a map containing the required properties
-        Map<String, PropertyInfo> requiredProperties = new LinkedHashMap<String, PropertyInfo>();
-        for ( PropertyInfo property : properties.values() ) {
-            if ( !property.isIgnored() && null == property.getBackReference() && property.isRequired() ) {
-                String isSetName = String.format( IS_SET_FORMAT, property.getPropertyName() );
-                source.println( "private boolean %s;", isSetName );
-                requiredProperties.put( isSetName, property );
-            }
-        }
-
-        // generate the setter for each property
-        for ( PropertyInfo property : properties.values() ) {
-            // backReference don't need setter and identityProperty are handled differently
-            if ( !property.isIgnored() && null == property.getBackReference() ) {
-                if ( null == property.getManagedReference() ) {
-                    source.println( "private void _%s(%s value, %s ctx) {", property.getPropertyName(), property.getType()
-                        .getParameterizedQualifiedSourceName(), JSON_DESERIALIZATION_CONTEXT_CLASS );
-                } else {
-                    source.println( "private void _%s(%s value, %s<%s> deserializer, %s ctx) {", property.getPropertyName(), property
-                        .getType().getParameterizedQualifiedSourceName(), JSON_DESERIALIZER_CLASS, property.getType()
-                        .getParameterizedQualifiedSourceName(), JSON_DESERIALIZATION_CONTEXT_CLASS );
-                }
-
-                source.indent();
-                generateInstanceBuilderSetterBodyForDefaultConstructor( source, property );
-                source.outdent();
-                source.println( "}" );
-                source.println();
-            }
-        }
-
-        source.println( "@Override" );
-        source.println( "public void addCallback(%s callback) {", INSTANCE_BUILDER_CALLBACK_CLASS );
-        source.indent();
-        source.println( "callback.onInstanceCreated(%s);", BEAN_INSTANCE_NAME );
-        source.outdent();
-        source.println( "}" );
-
-        source.println();
-
-        source.println( "@Override" );
-        source.println( "public %s build(%s ctx) {", info.getType()
-            .getParameterizedQualifiedSourceName(), JSON_DESERIALIZATION_CONTEXT_CLASS );
-        source.indent();
-        generateRequiredPropertiesCheck( source, requiredProperties );
-        source.println( "return %s;", BEAN_INSTANCE_NAME );
-        source.outdent();
-        source.println( "}" );
-    }
-
-    private void generateInstanceBuilderSetterBodyForDefaultConstructor( SourceWriter source, PropertyInfo property ) {
-        source.println( property.getSetterAccessor() + ";", "value" );
-        if ( property.isRequired() ) {
-            source.println( "this.%s = true;", String.format( IS_SET_FORMAT, property.getPropertyName() ) );
-        }
-        if ( null != property.getManagedReference() ) {
-            source.println( "deserializer.setBackReference(\"%s\", %s, value, ctx);", property.getManagedReference(), BEAN_INSTANCE_NAME );
-        }
+        source.println( "return new %s<%s>(create());", INSTANCE_CLASS, beanInfo.getType().getParameterizedQualifiedSourceName(), beanInfo
+            .getType().getParameterizedQualifiedSourceName() );
     }
 
     /**
@@ -277,166 +224,80 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
      * @param info info on bean
      * @param properties list of properties
      */
-    private void generateInstanceBuilderClassBodyForConstructorOrFactoryMethod( SourceWriter source, BeanInfo info, Map<String,
-        PropertyInfo> properties ) {
-        // will contain the instance once created
-        source.println();
-        source.println( "private %s %s;", info.getType()
-            .getParameterizedQualifiedSourceName(), BEAN_INSTANCE_NAME, getQualifiedClassName() );
+    private void generateInstanceBuilderForConstructorOrFactoryMethod( SourceWriter source, BeanInfo info, Map<String,
+        PropertyInfo> properties ) throws UnableToCompleteException {
 
-        // contains the callback to called when the instance is created
-        source.println();
-        source
-            .println( "private final java.util.List<%s<%s>> callbacks = new java.util.ArrayList<%s<%s>>();",
-                INSTANCE_BUILDER_CALLBACK_CLASS, info
-                .getType().getParameterizedQualifiedSourceName(), INSTANCE_BUILDER_CALLBACK_CLASS, info.getType()
-                .getParameterizedQualifiedSourceName() );
+        source.println( "%s<%s, %s> bufferedProperties = new %s<%s, %s>();", Map.class.getName(), String.class.getName(), String.class
+            .getName(), HashMap.class.getName(), String.class.getName(), String.class.getName() );
 
-        // we initialize a map containing the required properties
-        Map<String, PropertyInfo> requiredProperties = new LinkedHashMap<String, PropertyInfo>();
-        // generating the builder's fields used to hold the values before we instantiate the result
-        for ( PropertyInfo property : properties.values() ) {
-            if ( null == property.getBackReference() ) {
-                source.println();
-                source.println( "private %s _%s;", property.getType().getParameterizedQualifiedSourceName(), property.getPropertyName() );
-                String isSetName = String.format( IS_SET_FORMAT, property.getPropertyName() );
-                source.println( "private boolean %s;", isSetName );
-                if ( property.isRequired() ) {
-                    requiredProperties.put( isSetName, property );
-                }
-                if ( null != property.getManagedReference() ) {
-                    source.println( "private %s<%s> %s;", JSON_DESERIALIZER_CLASS, property.getType()
-                        .getParameterizedQualifiedSourceName(), String.format( BUILDER_DESERIALIZER_FORMAT, property.getPropertyName() ) );
-                }
+        source.println();
+
+        List<String> requiredProperties = new ArrayList<String>();
+        for ( String name : info.getCreatorParameters().keySet() ) {
+            PropertyInfo propertyInfo = properties.get( name );
+
+            source.println( "%s %s = %s;", propertyInfo.getType().getParameterizedQualifiedSourceName(), FORMAT_VARIABLE
+                .apply( name ), getDefaultValueForType( propertyInfo.getType() ) );
+
+            if ( propertyInfo.isRequired() ) {
+                requiredProperties.add( name );
             }
         }
 
         source.println();
 
-        for ( PropertyInfo property : properties.values() ) {
-            if ( null == property.getBackReference() ) {
-                if ( null == property.getManagedReference() ) {
-                    source.println( "private void _%s(%s value, %s ctx) {", property.getPropertyName(), property.getType()
-                        .getParameterizedQualifiedSourceName(), JSON_DESERIALIZATION_CONTEXT_CLASS );
-                } else {
-                    source.println( "private void _%s(%s value, %s<%s> deserializer, %s ctx) {", property.getPropertyName(), property
-                        .getType().getParameterizedQualifiedSourceName(), JSON_DESERIALIZER_CLASS, property.getType()
-                        .getParameterizedQualifiedSourceName(), JSON_DESERIALIZATION_CONTEXT_CLASS );
-                }
+        source.println( "int nbParamToFind = %d;", info.getCreatorParameters().size() );
 
-                source.indent();
-                generateInstanceBuilderSetterBodyForConstructorOrFactoryMethod( source, info, property.getPropertyName(), info
-                    .getCreatorParameters().containsKey( property.getPropertyName() ) );
-                if ( null != property.getManagedReference() ) {
-                    source.println( "this.%s = deserializer;", String.format( BUILDER_DESERIALIZER_FORMAT, property.getPropertyName() ) );
-                }
-                source.outdent();
-                source.println( "}" );
-                source.println();
-            }
+        if ( !requiredProperties.isEmpty() ) {
+            String requiredList = Joiner.on( ", " ).join( Collections2.transform( requiredProperties, QUOTED_FUNCTION ) );
+            source.println( "%s<%s> requiredProperties = new %s<%s>(%s.asList(%s));", Set.class.getName(), String.class
+                .getName(), HashSet.class.getName(), String.class.getName(), Arrays.class.getName(), requiredList );
         }
-
-        source.println( "@Override" );
-        source.println( "public void addCallback(%s callback) {", INSTANCE_BUILDER_CALLBACK_CLASS );
-        source.indent();
-        source.println( "if(null == this.%s) {", BEAN_INSTANCE_NAME );
-        source.indent();
-        source.println( "callbacks.add(callback);" );
-        source.outdent();
-        source.println( "} else {" );
-        source.indent();
-        source.println( "callback.onInstanceCreated(%s);", BEAN_INSTANCE_NAME );
-        source.outdent();
-        source.println( "}" );
-        source.outdent();
-        source.println( "}" );
 
         source.println();
 
-        generateInstanceBuilderCreateInstanceForConstructorOrFactoryMethod( source, info );
-
-        source.println( "@Override" );
-        source.println( "public %s build(%s ctx) {", info.getType()
-            .getParameterizedQualifiedSourceName(), JSON_DESERIALIZATION_CONTEXT_CLASS );
+        source.println( "while (nbParamToFind > 0 && %s.NAME == reader.peek()) {", JsonToken.class.getName() );
         source.indent();
 
-        generateRequiredPropertiesCheck( source, requiredProperties );
+        source.println( "String name = reader.nextName();" );
+        source.println();
 
-        source.println( "if(null == this.%s) {", BEAN_INSTANCE_NAME );
-        source.indent();
-        source.println( "createInstance(ctx);" );
-        source.outdent();
-        source.println( "}" );
+        for ( String name : info.getCreatorParameters().keySet() ) {
+            PropertyInfo propertyInfo = properties.get( name );
 
-        // Writing the rest of the properties
-        for ( Map.Entry<String, PropertyInfo> propertyEntry : properties.entrySet() ) {
-            if ( !info.getCreatorParameters().containsKey( propertyEntry.getKey() ) && null == propertyEntry.getValue()
-                .getBackReference() ) {
-                source.println( "if (this.%s) {", String.format( IS_SET_FORMAT, propertyEntry.getKey() ) );
-                source.indent();
-                source.println( propertyEntry.getValue().getSetterAccessor() + ";", "this._" + propertyEntry.getKey() );
-                if ( null != propertyEntry.getValue().getManagedReference() ) {
-                    source.println( "%s.setBackReference(%s, %s, this._%s, ctx);", String.format( BUILDER_DESERIALIZER_FORMAT, propertyEntry
-                        .getKey() ), propertyEntry.getKey(), propertyEntry.getValue()
-                        .getManagedReference(), BEAN_INSTANCE_NAME, propertyEntry.getKey() );
-                }
-                source.outdent();
-                source.println( "}" );
-            }
-        }
-        source.println( "return %s;", BEAN_INSTANCE_NAME );
-
-        source.outdent();
-        source.println( "}" );
-    }
-
-    private void generateInstanceBuilderSetterBodyForConstructorOrFactoryMethod( SourceWriter source, BeanInfo info, String fieldName,
-                                                                                 boolean creatorOrIdentityProperty ) {
-        source.println( "this._%s = value;", fieldName );
-        source.println( "this.%s = true;", String.format( IS_SET_FORMAT, fieldName ) );
-        if ( creatorOrIdentityProperty ) {
-            StringBuilder ifBuilder = new StringBuilder();
-            for ( Map.Entry<String, JParameter> parameterEntry : info.getCreatorParameters().entrySet() ) {
-                if ( ifBuilder.length() > 0 ) {
-                    ifBuilder.append( " && " );
-                }
-                ifBuilder.append( String.format( IS_SET_FORMAT, parameterEntry.getKey() ) );
-            }
-            source.println( "if(null == this.%s && %s) {", BEAN_INSTANCE_NAME, ifBuilder.toString() );
+            source.println( "if(\"%s\".equals(name)) {", name );
             source.indent();
-            source.println( "createInstance(ctx);" );
+            source.println( "%s = %s.deserialize(reader, ctx);", FORMAT_VARIABLE.apply( name ), getJsonDeserializerFromType( propertyInfo
+                .getType(), propertyInfo ) );
+            source.println( "nbParamToFind--;" );
+            if ( propertyInfo.isRequired() ) {
+                source.println( "requiredProperties.remove(\"%s\");", name );
+            }
+            source.println( "continue;" );
             source.outdent();
             source.println( "}" );
         }
-    }
 
-    private void generateInstanceBuilderCreateInstanceForConstructorOrFactoryMethod( SourceWriter source, BeanInfo info ) {
-        // we compute the creator args
-        StringBuilder parametersBuilder = new StringBuilder();
-        for ( Map.Entry<String, JParameter> parameterEntry : info.getCreatorParameters().entrySet() ) {
-            if ( parametersBuilder.length() > 0 ) {
-                parametersBuilder.append( ", " );
-            }
-            parametersBuilder.append( "_" ).append( parameterEntry.getKey() );
+        source.println();
+        source.println( "bufferedProperties.put( name, reader.nextValue() );" );
+
+        source.outdent();
+        source.println( "}" );
+
+        source.println();
+
+        if ( !requiredProperties.isEmpty() ) {
+            source.println( "if(!requiredProperties.isEmpty()) {" );
+            source.indent();
+            source.println( "throw ctx.traceError( \"Required properties are missing : \" + requiredProperties, reader );" );
+            source.outdent();
+            source.println( "}" );
+            source.println();
         }
 
-        source.println( "private void createInstance(%s ctx) {", JSON_DESERIALIZATION_CONTEXT_CLASS );
-        source.indent();
-        source.println( "this.%s = newInstance(%s);", BEAN_INSTANCE_NAME, parametersBuilder.toString() );
-        source.println( "if(!callbacks.isEmpty()) {" );
-        source.indent();
-        source.println( "for(%s<%s> callback : callbacks) {", INSTANCE_BUILDER_CALLBACK_CLASS, info.getType()
-            .getParameterizedQualifiedSourceName() );
-        source.indent();
-        source.println( "callback.onInstanceCreated(this.%s);", BEAN_INSTANCE_NAME );
-        source.outdent();
-        source.println( "}" );
-        source.println( "callbacks.clear();" );
-        source.outdent();
-        source.println( "}" );
-        source.outdent();
-        source.println( "}" );
-        source.println();
+        String parameters = Joiner.on( ", " ).join( Collections2.transform( info.getCreatorParameters().keySet(), FORMAT_VARIABLE ) );
+        source.println( "return new %s<%s>( create(%s), bufferedProperties );", INSTANCE_CLASS, info.getType()
+            .getParameterizedQualifiedSourceName(), parameters );
     }
 
     /**
@@ -446,37 +307,61 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
      * @param info info on bean
      * @param properties list of properties
      */
-    private void generateInstanceBuilderClassBodyForConstructorOrFactoryMethodDelegation( SourceWriter source, BeanInfo info, Map<String,
+    private void generateInstanceBuilderForConstructorOrFactoryMethodDelegation( SourceWriter source, BeanInfo info, Map<String,
         PropertyInfo> properties ) throws UnableToCompleteException {
         // FIXME @JsonCreator with delegation
         logger.log( TreeLogger.Type.ERROR, "The delegation is not supported yet" );
         throw new UnableToCompleteException();
     }
 
-    /**
-     * Generates the if statement for required properties.
-     */
-    private void generateRequiredPropertiesCheck( SourceWriter source, Map<String, PropertyInfo> requiredProperties ) {
-        if ( requiredProperties.isEmpty() ) {
-            return;
+    private void generateInstanceBuilderCreateMethod( SourceWriter source, BeanInfo info, Map<String, PropertyInfo> properties ) {
+        JAbstractMethod method = info.getCreatorMethod();
+
+        StringBuilder parametersBuilder = new StringBuilder();
+        StringBuilder parametersNameBuilder = new StringBuilder();
+        for ( Map.Entry<String, JParameter> parameterEntry : info.getCreatorParameters().entrySet() ) {
+            if ( parametersBuilder.length() > 0 ) {
+                parametersBuilder.append( ", " );
+                parametersNameBuilder.append( ", " );
+            }
+            PropertyInfo property = properties.get( parameterEntry.getKey() );
+
+            parametersBuilder.append( property.getType().getParameterizedQualifiedSourceName() ).append( " " ).append( property
+                .getPropertyName() );
+            parametersNameBuilder.append( property.getPropertyName() );
         }
 
-        source.print( "if(" );
-        boolean first = true;
-        for ( String isSetName : requiredProperties.keySet() ) {
-            if ( !first ) {
-                source.print( " || " );
+        if ( method.isPrivate() ) {
+            // private method, we use jsni
+            source.println( "private native %s create(%s) /*-{", info.getType().getParameterizedQualifiedSourceName(), parametersBuilder
+                .toString() );
+            source.indent();
+
+            if ( null != method.isConstructor() ) {
+                JConstructor constructor = method.isConstructor();
+                source.println( "return %s(%s);", constructor.getJsniSignature(), parametersNameBuilder.toString() );
+            } else {
+                JMethod factory = method.isMethod();
+                source.println( "return %s(%s);", factory.getJsniSignature(), parametersNameBuilder.toString() );
             }
-            source.print( "!" );
-            source.print( isSetName );
-            first = false;
+
+            source.outdent();
+            source.println( "}-*/;" );
+        } else {
+            source.println( "private %s create(%s) {", info.getType().getParameterizedQualifiedSourceName(), parametersBuilder.toString() );
+            source.indent();
+
+            if ( null != method.isConstructor() ) {
+                source.println( "return new %s(%s);", info.getType().getParameterizedQualifiedSourceName(), parametersNameBuilder
+                    .toString() );
+            } else {
+                source.println( "return %s.%s(%s);", info.getType().getQualifiedSourceName(), method.getName(), parametersNameBuilder
+                    .toString() );
+            }
+
+            source.outdent();
+            source.println( "}" );
         }
-        source.println( ") {" );
-        source.indent();
-        // TODO we could specify the name of the missing properties
-        source.println( "throw ctx.traceError(\"A required property is missing\");" );
-        source.outdent();
-        source.println( "}" );
     }
 
     private void generateDefaultSuperclassInfo( SourceWriter source, BeanInfo info ) throws UnableToCompleteException {
@@ -520,7 +405,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         source.indent();
 
         source.println( "@Override" );
-        source.println( "public %s<%s, ?> newDeserializer(%s ctx) {", ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS, subtype
+        source.println( "public %s<%s> newDeserializer(%s ctx) {", ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS, subtype
             .getQualifiedSourceName(), JSON_DESERIALIZATION_CONTEXT_CLASS );
         source.indent();
         String deserializer = info.getType() == subtype ? getQualifiedClassName() + ".this" : getJsonDeserializerFromType( subtype );
@@ -535,18 +420,13 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         source.outdent();
     }
 
-    private void generateNewInstanceBuilderBody( SourceWriter source, BeanInfo info ) {
-        if ( info.isInstantiable() ) {
-            source.println( "return new %s%s();", info.getInstanceBuilderQualifiedName(), getGenericClassParameters() );
-        } else {
-            source.println( "throw ctx.traceError(\"Cannot instantiate the type \" + %s.class.getName());", info.getType()
-                .getQualifiedSourceName() );
-        }
-    }
-
     private void generatePropertyDeserializers( SourceWriter source, BeanInfo info, Map<String,
         PropertyInfo> properties ) throws UnableToCompleteException {
         for ( PropertyInfo property : properties.values() ) {
+            if ( null != info.getCreatorParameters() && info.getCreatorParameters().containsKey( property.getPropertyName() ) ) {
+                // properties used in constructor are deserialized inside instance builder
+                continue;
+            }
 
             if ( property.isIgnored() ) {
                 // we add the name of the property to the ignoredProperties list
@@ -562,9 +442,9 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
             if ( null == property.getBackReference() ) {
                 // this is not a back reference, we add the default deserializer
-                source.println( "addProperty(\"%s\", new " + BEAN_PROPERTY_DESERIALIZER_CLASS + "<%s, %s%s, %s>() {", property
-                    .getPropertyName(), info.getType().getParameterizedQualifiedSourceName(), info
-                    .getInstanceBuilderQualifiedName(), getGenericClassParameters(), getQualifiedClassName( property.getType() ) );
+                source.println( "addProperty(\"%s\", %s, new " + BEAN_PROPERTY_DESERIALIZER_CLASS + "<%s, %s>() {", property
+                    .getPropertyName(), property.isRequired(), info.getType()
+                    .getParameterizedQualifiedSourceName(), getQualifiedClassName( property.getType() ) );
 
                 source.indent();
                 source.println( "@Override" );
@@ -576,22 +456,18 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
                 source.println( "}" );
 
                 source.println( "@Override" );
-                source.println( "public %s deserialize(%s reader, %s%s builder, %s ctx) {", getQualifiedClassName( property
-                    .getType() ), JSON_READER_CLASS, info
-                    .getInstanceBuilderQualifiedName(), getGenericClassParameters(), JSON_DESERIALIZATION_CONTEXT_CLASS );
+                source.println( "public %s deserialize(%s reader, %s bean, %s ctx) {", getQualifiedClassName( property
+                    .getType() ), JSON_READER_CLASS, info.getType()
+                    .getParameterizedQualifiedSourceName(), JSON_DESERIALIZATION_CONTEXT_CLASS );
                 source.indent();
 
                 source.println( "%s<%s> deserializer = getDeserializer(ctx);", JSON_DESERIALIZER_CLASS, getQualifiedClassName( property
                     .getType() ) );
                 source.println( "%s value = deserializer.deserialize(reader, ctx);", property.getType()
                     .getParameterizedQualifiedSourceName() );
-                if ( null == property.getManagedReference() ) {
-                    source.println( "builder._%s(value, ctx);", property.getPropertyName() );
-                } else {
-                    // it's a managed reference, we have to give the deserializer to the builder. It needs it to call the
-                    // setBackReference
-                    // method once the bean is instantiated.
-                    source.println( "builder._%s(value, deserializer, ctx);", property.getPropertyName() );
+                source.println( property.getSetterAccessor() + ";", "value" );
+                if ( null != property.getManagedReference() ) {
+                    source.println( "deserializer.setBackReference(\"%s\", bean, value, ctx);", property.getManagedReference() );
                 }
                 source.println( "return value;" );
             } else {
@@ -602,8 +478,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
                 source.indent();
                 source.println( "@Override" );
-                source.println( "public void setBackReference(%s %s, %s reference, %s ctx) {", info.getType()
-                    .getParameterizedQualifiedSourceName(), BEAN_INSTANCE_NAME, property.getType()
+                source.println( "public void setBackReference(%s bean, %s reference, %s ctx) {", info.getType()
+                    .getParameterizedQualifiedSourceName(), property.getType()
                     .getParameterizedQualifiedSourceName(), JSON_DESERIALIZATION_CONTEXT_CLASS );
                 source.indent();
 
@@ -624,57 +500,6 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
                 method.write( source );
                 source.println();
             }
-        }
-    }
-
-    private void generateNewInstanceMethod( SourceWriter source, BeanInfo info, Map<String, PropertyInfo> properties ) {
-        JAbstractMethod method = info.getCreatorMethod();
-
-        StringBuilder parametersBuilder = new StringBuilder();
-        StringBuilder parametersNameBuilder = new StringBuilder();
-        for ( Map.Entry<String, JParameter> parameterEntry : info.getCreatorParameters().entrySet() ) {
-            if ( parametersBuilder.length() > 0 ) {
-                parametersBuilder.append( ", " );
-                parametersNameBuilder.append( ", " );
-            }
-            PropertyInfo property = properties.get( parameterEntry.getKey() );
-
-            parametersBuilder.append( property.getType().getParameterizedQualifiedSourceName() ).append( " " ).append( property
-                .getPropertyName() );
-            parametersNameBuilder.append( property.getPropertyName() );
-        }
-
-        if ( method.isPrivate() ) {
-            // private method, we use jsni
-            source.println( "private native %s newInstance(%s) /*-{", info.getType()
-                .getParameterizedQualifiedSourceName(), parametersBuilder.toString() );
-            source.indent();
-
-            if ( null != method.isConstructor() ) {
-                JConstructor constructor = method.isConstructor();
-                source.println( "return %s(%s);", constructor.getJsniSignature(), parametersNameBuilder.toString() );
-            } else {
-                JMethod factory = method.isMethod();
-                source.println( "return %s(%s);", factory.getJsniSignature(), parametersNameBuilder.toString() );
-            }
-
-            source.outdent();
-            source.println( "}-*/;" );
-        } else {
-            source.println( "private %s newInstance(%s) {", info.getType().getParameterizedQualifiedSourceName(), parametersBuilder
-                .toString() );
-            source.indent();
-
-            if ( null != method.isConstructor() ) {
-                source.println( "return new %s(%s);", info.getType().getParameterizedQualifiedSourceName(), parametersNameBuilder
-                    .toString() );
-            } else {
-                source.println( "return %s.%s(%s);", info.getType().getQualifiedSourceName(), method.getName(), parametersNameBuilder
-                    .toString() );
-            }
-
-            source.outdent();
-            source.println( "}" );
         }
     }
 }

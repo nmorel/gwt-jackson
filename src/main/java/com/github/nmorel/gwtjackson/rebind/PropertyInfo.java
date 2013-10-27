@@ -244,7 +244,7 @@ public final class PropertyInfo {
         boolean setterInSamePackage = setterAutoDetect && setter.getEnclosingType().getPackage().equals( beanPackage );
 
         if ( setterAutoDetect && ((setterInSamePackage && !setter.isPrivate()) || (!setterInSamePackage && setter.isPublic())) ) {
-            result.setterAccessor = AbstractCreator.BEAN_INSTANCE_NAME + "." + fieldAccessors.getSetter().getName() + "(%s)";
+            result.setterAccessor = "bean." + fieldAccessors.getSetter().getName() + "(%s)";
             return;
         }
 
@@ -254,7 +254,7 @@ public final class PropertyInfo {
         boolean fieldInSamePackage = fieldAutoDetect && field.getEnclosingType().getPackage().equals( beanPackage );
 
         if ( fieldAutoDetect && ((fieldInSamePackage && !field.isPrivate()) || (fieldInSamePackage && field.isPublic())) ) {
-            result.setterAccessor = AbstractCreator.BEAN_INSTANCE_NAME + "." + fieldAccessors.getField().getName() + " = %s";
+            result.setterAccessor = "bean." + fieldAccessors.getField().getName() + " = %s";
             return;
         }
 
@@ -262,7 +262,7 @@ public final class PropertyInfo {
 
         final String methodName = "set" + result.propertyName.substring( 0, 1 ).toUpperCase() + result.propertyName.substring( 1 );
         result.setterAccessor = mapperInfo
-            .getSimpleDeserializerClassName() + "." + methodName + "(" + AbstractCreator.BEAN_INSTANCE_NAME + ", %s)";
+            .getSimpleDeserializerClassName() + "." + methodName + "(bean, %s)";
 
         result.additionalDeserializationMethods.add( new AdditionalMethod() {
             @Override

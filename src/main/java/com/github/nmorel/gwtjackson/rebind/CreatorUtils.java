@@ -1,15 +1,28 @@
 package com.github.nmorel.gwtjackson.rebind;
 
+import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JMethod;
+import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
 import com.google.gwt.core.ext.typeinfo.JType;
+import com.google.gwt.thirdparty.guava.common.base.Function;
 
 /**
  * @author Nicolas Morel
  */
 public final class CreatorUtils {
+
+    public static final Function<Object, String> QUOTED_FUNCTION = new Function<Object, String>() {
+        @Override
+        public String apply( @Nullable Object o ) {
+            if ( null == o ) {
+                return null;
+            }
+            return "\"" + o + "\"";
+        }
+    };
 
     /**
      * Browse all the hierarchy of the type and return the first corresponding annotation it found
@@ -66,9 +79,6 @@ public final class CreatorUtils {
         return null;
     }
 
-    private CreatorUtils() {
-    }
-
     /**
      * Extract the bean type from the type given in parameter. For {@link java.util.Collection}, it gives the bounded type. For {@link
      * java.util.Map}, it gives the second bounded type. Otherwise, it gives the type given in parameter.
@@ -88,5 +98,29 @@ public final class CreatorUtils {
         } else {
             return classType;
         }
+    }
+
+    /**
+     * Returns the default value of the given type.
+     * <ul>
+     * <li>{@link Object} : null</li>
+     * <li>char : '\u0000'</li>
+     * <li>boolean : false</li>
+     * <li>other primitive : 0</li>
+     * </ul>
+     *
+     * @param type type to find the default value
+     *
+     * @return the default value of the type.
+     */
+    public static String getDefaultValueForType( JType type ) {
+        JPrimitiveType primitiveType = type.isPrimitive();
+        if ( null != primitiveType ) {
+            return primitiveType.getUninitializedFieldExpression();
+        }
+        return "null";
+    }
+
+    private CreatorUtils() {
     }
 }

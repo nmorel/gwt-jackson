@@ -154,9 +154,6 @@ public final class BeanInfo {
         info.creatorParameters = new LinkedHashMap<String, JParameter>();
 
         if ( info.instantiable ) {
-            info.instanceBuilderSimpleName = info.getType().getSimpleSourceName() + "InstanceBuilder";
-            info.instanceBuilderQualifiedName = mapperInfo.getQualifiedDeserializerClassName() + "." + info.instanceBuilderSimpleName;
-
             if ( !info.isCreatorDefaultConstructor() ) {
                 if ( info.creatorMethod
                     .getParameters().length == 1 && !isAllParametersAnnotatedWith( info.creatorMethod, JsonProperty.class ) ) {
@@ -168,9 +165,6 @@ public final class BeanInfo {
                     }
                 }
             }
-        } else {
-            info.instanceBuilderQualifiedName = BeanJsonDeserializerCreator.INSTANCE_BUILDER_CLASS + "<" + info.getType()
-                .getParameterizedQualifiedSourceName() + ">";
         }
     }
 
@@ -187,10 +181,6 @@ public final class BeanInfo {
     private JClassType type;
 
     private JClassType[] parameterizedTypes;
-
-    private String instanceBuilderQualifiedName;
-
-    private String instanceBuilderSimpleName;
 
     /*####  Instantiation properties  ####*/
     private boolean instantiable;
@@ -240,14 +230,6 @@ public final class BeanInfo {
 
     public JClassType[] getParameterizedTypes() {
         return parameterizedTypes;
-    }
-
-    public String getInstanceBuilderQualifiedName() {
-        return instanceBuilderQualifiedName;
-    }
-
-    public String getInstanceBuilderSimpleName() {
-        return instanceBuilderSimpleName;
     }
 
     public boolean isInstantiable() {

@@ -120,10 +120,6 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
         }
 
         String parameterizedTypes = beanType.getParameterizedQualifiedSourceName();
-        if ( !isSerializer() ) {
-            parameterizedTypes = parameterizedTypes + ", " + mapperInfo.getBeanInfo()
-                .getInstanceBuilderQualifiedName() + getGenericClassParameters();
-        }
 
         SourceWriter source = getSourceWriter( printWriter, packageName, getSimpleClassName() + getGenericClassBoundedParameters(),
             getSuperclass() + "<" +
