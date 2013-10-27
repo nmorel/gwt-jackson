@@ -32,7 +32,7 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
 
     private InstanceBuilder<T> instanceBuilder;
 
-    private IdentityDeserializationInfo<?> identityInfo;
+    private IdentityDeserializationInfo<T, ?> identityInfo;
 
     private SuperclassDeserializationInfo<T> superclassInfo;
 
@@ -71,7 +71,7 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
     @Override
     public T doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
         if ( null != identityInfo && !JsonToken.BEGIN_OBJECT.equals( reader.peek() ) ) {
-            IdKey id = identityInfo.getIdKey( reader, ctx );
+            IdKey id = identityInfo.readIdKey( reader, ctx );
             Object instance = ctx.getObjectWithId( id );
             if ( null == instance ) {
                 throw ctx.traceError( "Cannot find an object with id " + id, reader );
@@ -214,16 +214,7 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
         }
 
         if ( null != identityReader ) {
-            BeanPropertyDeserializer<T, ?> property = deserializers.get( identityInfo.getPropertyName() );
-            final Object id;
-            if ( null == property ) {
-                id = identityInfo.getDeserializer( ctx ).deserialize( identityReader, ctx );
-            } else {
-                id = property.deserialize( identityReader, instance.getInstance(), ctx );
-            }
-            if ( null != id ) {
-                ctx.addObjectId( identityInfo.newIdKey( id ), instance.getInstance() );
-            }
+            identityInfo.readAndAddIdToContext( identityReader, instance.getInstance(), ctx );
         }
     }
 
@@ -301,11 +292,11 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
         this.instanceBuilder = instanceBuilder;
     }
 
-    protected final IdentityDeserializationInfo<?> getIdentityInfo() {
+    protected final IdentityDeserializationInfo<T, ?> getIdentityInfo() {
         return identityInfo;
     }
 
-    protected final void setIdentityInfo( IdentityDeserializationInfo<?> identityInfo ) {
+    protected final void setIdentityInfo( IdentityDeserializationInfo<T, ?> identityInfo ) {
         this.identityInfo = identityInfo;
     }
 

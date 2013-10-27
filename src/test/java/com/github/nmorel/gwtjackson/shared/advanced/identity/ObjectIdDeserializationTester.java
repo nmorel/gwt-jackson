@@ -1,6 +1,7 @@
 package com.github.nmorel.gwtjackson.shared.advanced.identity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
 import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
@@ -119,6 +120,7 @@ public final class ObjectIdDeserializationTester extends AbstractTester {
 
         public IdWrapperExt next;
 
+        @JsonProperty
         private int customId;
 
         public ValueNodeExt() {
@@ -127,10 +129,6 @@ public final class ObjectIdDeserializationTester extends AbstractTester {
 
         public ValueNodeExt( int v ) {
             value = v;
-        }
-
-        public void setCustomId( int i ) {
-            customId = i;
         }
     }
 

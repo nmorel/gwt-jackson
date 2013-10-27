@@ -3,6 +3,7 @@ package com.github.nmorel.gwtjackson.rebind;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.github.nmorel.gwtjackson.rebind.FieldAccessor.Accessor;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
@@ -45,8 +46,6 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
         generateConstructors( source, beanInfo, properties, typeParameters );
 
         source.println();
-
-        generateAdditionalMethods( source, properties );
 
         source.commit( logger );
     }
@@ -190,11 +189,12 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
     private void generatePropertySerializers( SourceWriter source, BeanInfo beanInfo, Map<String,
         PropertyInfo> properties ) throws UnableToCompleteException {
         for ( PropertyInfo property : properties.values() ) {
-            String getterAccessor = property.getGetterAccessor();
-            if ( null == getterAccessor || property.isIgnored() ) {
+            if ( !property.getGetterAccessor().isPresent() || property.isIgnored() ) {
                 // there is no getter visible or the property is ignored
                 continue;
             }
+
+            Accessor getterAccessor = property.getGetterAccessor().get().getAccessor( "bean", true );
 
             source.println( "if(null == getIdentityInfo() || !getIdentityInfo().getPropertyName().equals(\"%s\")) {", property
                 .getPropertyName() );
@@ -212,28 +212,26 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
             source.outdent();
             source.println( "}" );
 
+            source.println();
+
             source.println( "@Override" );
             source.println( "protected %s getValue(%s bean, %s ctx) {", getQualifiedClassName( property
                 .getType() ), getQualifiedClassName( beanInfo.getType() ), JSON_SERIALIZATION_CONTEXT_CLASS );
             source.indent();
-            source.println( "return %s;", getterAccessor );
+            source.println( "return %s;", getterAccessor.getAccessor() );
             source.outdent();
             source.println( "}" );
 
-            source.outdent();
-            source.println( "} );" );
-
-            source.outdent();
-            source.println( "}" );
-        }
-    }
-
-    private void generateAdditionalMethods( SourceWriter source, Map<String, PropertyInfo> properties ) {
-        for ( PropertyInfo property : properties.values() ) {
-            for ( PropertyInfo.AdditionalMethod method : property.getAdditionalSerializationMethods() ) {
-                method.write( source );
+            if ( getterAccessor.getAdditionalMethod().isPresent() ) {
                 source.println();
+                getterAccessor.getAdditionalMethod().get().write( source );
             }
+
+            source.outdent();
+            source.println( "});" );
+
+            source.outdent();
+            source.println( "}" );
         }
     }
 }

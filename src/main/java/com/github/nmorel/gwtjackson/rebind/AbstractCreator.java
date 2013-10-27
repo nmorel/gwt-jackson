@@ -13,6 +13,8 @@ import com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.AbstractBeanJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.ObjectIdSerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.key.KeySerializer;
+import com.github.nmorel.gwtjackson.rebind.FieldAccessor.Accessor;
+import com.github.nmorel.gwtjackson.rebind.PropertyInfo.AdditionalMethod;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.TreeLogger.Type;
@@ -24,6 +26,7 @@ import com.google.gwt.core.ext.typeinfo.JParameterizedType;
 import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.core.ext.typeinfo.JTypeParameter;
+import com.google.gwt.thirdparty.guava.common.base.Optional;
 import com.google.gwt.user.rebind.AbstractSourceCreator;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
@@ -291,7 +294,6 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         source.println( "new %s(%s, \"%s\") {", identityPropertyClass, identityInfo.isAlwaysAsId(), identityInfo.getPropertyName() );
         source.indent();
 
-        source.println();
         source.println( "@Override" );
         source
             .println( "protected %s<%s> newSerializer(%s ctx) {", JSON_SERIALIZER_CLASS, qualifiedType, JSON_SERIALIZATION_CONTEXT_CLASS );
@@ -300,6 +302,8 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         source.outdent();
         source.println( "}" );
         source.println();
+
+        Optional<AdditionalMethod> additionalMethod = Optional.absent();
 
         source.println( "@Override" );
         source.println( "public %s<%s> getObjectId(%s bean, %s ctx) {", ObjectIdSerializer.class.getName(), qualifiedType, type
@@ -319,15 +323,21 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             source.println( "return new %s<%s>(scopedGen.generateId(bean), getSerializer(ctx));", ObjectIdSerializer.class
                 .getName(), qualifiedType );
         } else {
-            source.println( "return new %s<%s>(%s, getSerializer(ctx));", ObjectIdSerializer.class.getName(), qualifiedType, identityInfo
-                .getProperty().getGetterAccessor() );
+            Accessor accessor = identityInfo.getProperty().getGetterAccessor().get().getAccessor( "bean", false );
+            additionalMethod = accessor.getAdditionalMethod();
+            source.println( "return new %s<%s>(%s, getSerializer(ctx));", ObjectIdSerializer.class.getName(), qualifiedType, accessor
+                .getAccessor() );
         }
         source.outdent();
         source.println( "}" );
-        source.println();
+
+        if ( additionalMethod.isPresent() ) {
+            source.println();
+            additionalMethod.get().write( source );
+        }
 
         source.outdent();
-        source.println( "}" );
+        source.print( "}" );
     }
 
     /**
@@ -523,7 +533,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             sourceWriter.print( "null" );
         } else {
             findIdPropertyInfo( info.getProperties(), propertyInfo.getIdentityInfo() );
-            generateIdentifierDeserializationInfo( sourceWriter, propertyInfo.getIdentityInfo() );
+            generateIdentifierDeserializationInfo( sourceWriter, info.getBeanInfo(), propertyInfo.getIdentityInfo() );
         }
 
         sourceWriter.print( ", " );
@@ -534,17 +544,17 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         return sourceWriter.toString();
     }
 
-    protected void generateIdentifierDeserializationInfo( SourceWriter source, BeanIdentityInfo identityInfo ) throws
-        UnableToCompleteException {
+    protected void generateIdentifierDeserializationInfo( SourceWriter source, BeanInfo beanInfo,
+                                                          BeanIdentityInfo identityInfo ) throws UnableToCompleteException {
         String qualifiedType = getQualifiedClassName( identityInfo.getType() );
 
-        String identityPropertyClass = String.format( "%s<%s>", IDENTITY_DESERIALIZATION_INFO_CLASS, qualifiedType );
+        String identityPropertyClass = String.format( "%s<%s, %s>", IDENTITY_DESERIALIZATION_INFO_CLASS, beanInfo.getType()
+            .getParameterizedQualifiedSourceName(), qualifiedType );
 
         source.println( "new %s(\"%s\", %s.class, %s.class) {", identityPropertyClass, identityInfo.getPropertyName(), identityInfo
             .getGenerator().getCanonicalName(), identityInfo.getScope().getCanonicalName() );
         source.indent();
 
-        source.println();
         source.println( "@Override" );
         source
             .println( "protected %s<%s> newDeserializer(%s ctx) {", JSON_DESERIALIZER_CLASS, qualifiedType,
@@ -555,8 +565,25 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         source.println( "}" );
         source.println();
 
+        if ( identityInfo.isIdABeanProperty() ) {
+            Accessor accessor = identityInfo.getProperty().getSetterAccessor().get().getAccessor( "bean", false );
+
+            source.println( "@Override" );
+            source.println( "protected void setIdToBean(%s bean, %s id) {", beanInfo.getType()
+                .getParameterizedQualifiedSourceName(), qualifiedType );
+            source.indent();
+            source.println( accessor.getAccessor() + ";", "id" );
+            source.outdent();
+            source.println( "}" );
+
+            if ( accessor.getAdditionalMethod().isPresent() ) {
+                source.println();
+                accessor.getAdditionalMethod().get().write( source );
+            }
+        }
+
         source.outdent();
-        source.println( "}" );
+        source.print( "}" );
     }
 
     protected void findIdPropertyInfo( Map<String, PropertyInfo> properties, BeanIdentityInfo identityInfo ) throws

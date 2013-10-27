@@ -11,7 +11,7 @@ import com.github.nmorel.gwtjackson.client.stream.JsonReader;
  *
  * @author Nicolas Morel
  */
-public abstract class IdentityDeserializationInfo<T> extends HasDeserializer<T, JsonDeserializer<T>> {
+public abstract class IdentityDeserializationInfo<T, V> extends HasDeserializer<V, JsonDeserializer<V>> {
 
     /**
      * Name of the property holding the identity
@@ -34,15 +34,48 @@ public abstract class IdentityDeserializationInfo<T> extends HasDeserializer<T, 
         this.scope = scope;
     }
 
-    public String getPropertyName() {
+    public final String getPropertyName() {
         return propertyName;
     }
 
-    public IdKey getIdKey( JsonReader reader, JsonDeserializationContext ctx ) {
-        return newIdKey( getDeserializer( ctx ).deserialize( reader, ctx ) );
+    /**
+     * Reads the id and returns an {@link IdKey} to the context.
+     *
+     * @param reader reader
+     * @param ctx context of the deserialization process
+     *
+     * @return an {@link IdKey}
+     */
+    public final IdKey readIdKey( JsonReader reader, JsonDeserializationContext ctx ) {
+        return new IdKey( type, scope, readId( reader, ctx ) );
     }
 
-    public IdKey newIdKey( Object id ) {
-        return new IdKey( type, scope, id );
+    /**
+     * Reads the id and adds an {@link IdKey} to the context.
+     *
+     * @param reader reader
+     * @param bean the bean to associate the id to
+     * @param ctx context of the deserialization process
+     */
+    public final void readAndAddIdToContext( JsonReader reader, T bean, JsonDeserializationContext ctx ) {
+        V id = readId( reader, ctx );
+        if ( null != id ) {
+            setIdToBean( bean, id );
+            ctx.addObjectId( new IdKey( type, scope, id ), bean );
+        }
+    }
+
+    private V readId( JsonReader reader, JsonDeserializationContext ctx ) {
+        return getDeserializer( ctx ).deserialize( reader, ctx );
+    }
+
+    /**
+     * Override this method to set the id into the bean
+     *
+     * @param bean the bean to associate the id to
+     * @param id id
+     */
+    protected void setIdToBean( T bean, V id ) {
+        // by default, we do nothing. The child has to override this method if the id is a property of the bean and need to be set
     }
 }

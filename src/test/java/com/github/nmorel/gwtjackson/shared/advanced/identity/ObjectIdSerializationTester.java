@@ -2,6 +2,7 @@ package com.github.nmorel.gwtjackson.shared.advanced.identity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.github.nmorel.gwtjackson.client.exception.JsonSerializationException;
@@ -100,6 +101,7 @@ public final class ObjectIdSerializationTester extends AbstractTester {
 
         public IdWrapperCustom next;
 
+        @JsonProperty
         private int id;
 
         public ValueNodeCustom() {
@@ -109,10 +111,6 @@ public final class ObjectIdSerializationTester extends AbstractTester {
         public ValueNodeCustom( int id, int value ) {
             this.id = id;
             this.value = value;
-        }
-
-        public int getId() {
-            return id;
         }
     }
 
