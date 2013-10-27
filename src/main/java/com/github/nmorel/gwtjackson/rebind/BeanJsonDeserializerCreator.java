@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -33,11 +34,11 @@ import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.getDefaultValueFo
  */
 public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
-    public static final String INSTANCE_BUILDER_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean.InstanceBuilder";
+    private static final String INSTANCE_BUILDER_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean.InstanceBuilder";
 
-    public static final String INSTANCE_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean.Instance";
+    private static final String INSTANCE_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean.Instance";
 
-    public static final Function<String, String> FORMAT_VARIABLE = new Function<String, String>() {
+    private static final Function<String, String> FORMAT_VARIABLE = new Function<String, String>() {
         @Override
         public String apply( @Nullable String s ) {
             if ( null == s ) {
@@ -46,6 +47,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
             return "v_" + s;
         }
     };
+
+    private static final String INSTANCE_BUILDER_DESERIALIZER_FORMAT = "deserializer_%s";
 
     private static final String BEAN_PROPERTY_DESERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean" + "" +
         ".BeanPropertyDeserializer";
@@ -180,6 +183,15 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
         source.println( "new %s<%s>() {", INSTANCE_BUILDER_CLASS, beanInfo.getType().getParameterizedQualifiedSourceName() );
         source.indent();
+
+        if ( null != beanInfo.getCreatorParameters() && !beanInfo.getCreatorParameters().isEmpty() ) {
+            for ( Entry<String, JParameter> entry : beanInfo.getCreatorParameters().entrySet() ) {
+                source.println( "private %s<%s> %s;", JSON_DESERIALIZER_CLASS, getQualifiedClassName( entry.getValue().getType() ), String
+                    .format( INSTANCE_BUILDER_DESERIALIZER_FORMAT, entry.getKey() ) );
+            }
+            source.println();
+        }
+
         source.println( "@Override" );
         source.println( "public %s<%s> newInstance( %s reader, %s ctx ) throws %s {", INSTANCE_CLASS, beanInfo.getType()
             .getParameterizedQualifiedSourceName(), JSON_READER_CLASS, JSON_DESERIALIZATION_CONTEXT_CLASS, IOException.class.getName() );
@@ -195,11 +207,12 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
         source.outdent();
         source.println( "}" );
+        source.println();
 
         generateInstanceBuilderCreateMethod( source, beanInfo, properties );
 
         source.outdent();
-        source.println( "}" );
+        source.print( "}" );
     }
 
     /**
@@ -267,8 +280,15 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
             source.println( "if(\"%s\".equals(name)) {", name );
             source.indent();
-            source.println( "%s = %s.deserialize(reader, ctx);", FORMAT_VARIABLE.apply( name ), getJsonDeserializerFromType( propertyInfo
+            source.println( "if(null == %s) {", String.format( INSTANCE_BUILDER_DESERIALIZER_FORMAT, name ) );
+            source.indent();
+            source.println( "%s = %s;", String
+                .format( INSTANCE_BUILDER_DESERIALIZER_FORMAT, name ), getJsonDeserializerFromType( propertyInfo
                 .getType(), propertyInfo ) );
+            source.outdent();
+            source.println( "}" );
+            source.println( "%s = %s.deserialize(reader, ctx);", FORMAT_VARIABLE.apply( name ), String
+                .format( INSTANCE_BUILDER_DESERIALIZER_FORMAT, name ) );
             source.println( "nbParamToFind--;" );
             if ( propertyInfo.isRequired() ) {
                 source.println( "requiredProperties.remove(\"%s\");", name );
