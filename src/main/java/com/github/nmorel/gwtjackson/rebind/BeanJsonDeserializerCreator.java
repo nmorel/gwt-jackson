@@ -11,14 +11,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 import com.github.nmorel.gwtjackson.rebind.FieldAccessor.Accessor;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JAbstractMethod;
-import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JConstructor;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JParameter;
@@ -55,11 +53,6 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         ".BeanPropertyDeserializer";
 
     private static final String BACK_REFERENCE_PROPERTY_BEAN_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean.BackReferenceProperty";
-
-    private static final String SUPERCLASS_DESERIALIZATION_INFO_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean" + "" +
-        ".SuperclassDeserializationInfo";
-
-    private static final String SUBTYPE_DESERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean.SubtypeDeserializer";
 
     public BeanJsonDeserializerCreator( TreeLogger logger, GeneratorContext context, JacksonTypeOracle typeOracle ) {
         super( logger, context, typeOracle );
@@ -149,11 +142,13 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         source.outdent();
         source.println( "}" );
 
-        if ( beanInfo.isHasSubtypes() ) {
+        source.println();
+
+        if ( beanInfo.getTypeInfo().isPresent() || beanInfo.getType().getSubtypes().length > 0 ) {
             source.println( "if(null == superclassInfo) {" );
             source.indent();
             source.print( "setSuperclassInfo(" );
-            generateDefaultSuperclassInfo( source, beanInfo );
+            generateSuperclassDeserializationInfo( source, beanInfo, beanInfo.getTypeInfo() );
             source.println( ");" );
             source.outdent();
             source.println( "} else {" );
@@ -379,62 +374,6 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
             source.outdent();
             source.println( "}" );
         }
-    }
-
-    private void generateDefaultSuperclassInfo( SourceWriter source, BeanInfo info ) throws UnableToCompleteException {
-        source.print( "new %s(", SUPERCLASS_DESERIALIZATION_INFO_CLASS );
-        // gives the information about how to read and write the type info
-        if ( null != info.getTypeInfo() ) {
-            String typeInfoProperty = null;
-            if ( JsonTypeInfo.As.PROPERTY.equals( info.getTypeInfo().include() ) ) {
-                typeInfoProperty = "\"" + (info.getTypeInfo().property().isEmpty() ? info.getTypeInfo().use()
-                    .getDefaultPropertyName() : info.getTypeInfo().property()) + "\"";
-            }
-            source.print( "com.fasterxml.jackson.annotation.JsonTypeInfo.As.%s, %s", info.getTypeInfo().include(), typeInfoProperty );
-        }
-        source.println( ")" );
-        source.indent();
-
-        generateSubtypeDeserializers( source, info );
-
-        source.outdent();
-    }
-
-    private void generateSubtypeDeserializers( SourceWriter source, BeanInfo info ) throws UnableToCompleteException {
-        if ( info.isInstantiable() ) {
-            generateSubtypeDeserializer( source, info, info.getType() );
-        }
-        for ( JClassType subtype : info.getType().getSubtypes() ) {
-            generateSubtypeDeserializer( source, info, subtype );
-        }
-    }
-
-    private void generateSubtypeDeserializer( SourceWriter source, BeanInfo info, JClassType subtype ) throws UnableToCompleteException {
-        String typeMetadata;
-        if ( null == info.getTypeInfo() ) {
-            typeMetadata = null;
-        } else {
-            typeMetadata = "\"" + extractTypeMetadata( info, subtype ) + "\"";
-        }
-
-        source.println( ".addSubtypeDeserializer( new %s<%s>() {", SUBTYPE_DESERIALIZER_CLASS, subtype.getQualifiedSourceName() );
-        source.indent();
-        source.indent();
-
-        source.println( "@Override" );
-        source.println( "public %s<%s> newDeserializer(%s ctx) {", ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS, subtype
-            .getQualifiedSourceName(), JSON_DESERIALIZATION_CONTEXT_CLASS );
-        source.indent();
-        String deserializer = info.getType() == subtype ? getQualifiedClassName() + ".this" : getJsonDeserializerFromType( subtype );
-        source.println( "return %s;", deserializer );
-        source.outdent();
-        source.println( "}" );
-
-        source.outdent();
-        source.println( "}, %s.class, %s )", subtype.getQualifiedSourceName(), typeMetadata );
-        source.println();
-
-        source.outdent();
     }
 
     private void generatePropertyDeserializers( SourceWriter source, BeanInfo info, Map<String,

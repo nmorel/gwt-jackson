@@ -20,7 +20,7 @@ public final class JsonTypeOnPropertiesTester extends AbstractTester {
 
     public static class FieldWrapperBean {
 
-        @JsonTypeInfo( use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY )
+        @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY)
         public StringWrapper value;
 
         public FieldWrapperBean() { }
@@ -30,7 +30,7 @@ public final class JsonTypeOnPropertiesTester extends AbstractTester {
 
     public static class FieldWrapperBeanList {
 
-        @JsonTypeInfo( use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY )
+        @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY)
         public ArrayList<FieldWrapperBean> beans;
 
         public FieldWrapperBeanList() { }
@@ -40,7 +40,7 @@ public final class JsonTypeOnPropertiesTester extends AbstractTester {
 
     public static class FieldWrapperBeanMap {
 
-        @JsonTypeInfo( use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY )
+        @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY)
         public HashMap<String, FieldWrapperBean> beans;
 
         public FieldWrapperBeanMap() { }
@@ -50,7 +50,7 @@ public final class JsonTypeOnPropertiesTester extends AbstractTester {
 
     public static class FieldWrapperBeanArray {
 
-        @JsonTypeInfo( use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY )
+        @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY)
         public FieldWrapperBean[] beans;
 
         public FieldWrapperBeanArray() { }
@@ -66,10 +66,10 @@ public final class JsonTypeOnPropertiesTester extends AbstractTester {
 
         public MethodWrapperBean( IntWrapper o ) { value = o; }
 
-        @JsonTypeInfo( use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY )
+        @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY)
         public IntWrapper getValue() { return value; }
 
-        @JsonTypeInfo( use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY )
+        @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY)
         public void setValue( IntWrapper v ) { value = v; }
     }
 
@@ -81,10 +81,10 @@ public final class JsonTypeOnPropertiesTester extends AbstractTester {
 
         public MethodWrapperBeanList( ArrayList<MethodWrapperBean> beans ) { this.beans = beans; }
 
-        @JsonTypeInfo( use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY )
+        @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY)
         public ArrayList<MethodWrapperBean> getValue() { return beans; }
 
-        @JsonTypeInfo( use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY )
+        @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY)
         public void setValue( ArrayList<MethodWrapperBean> v ) { beans = v; }
     }
 
@@ -96,10 +96,10 @@ public final class JsonTypeOnPropertiesTester extends AbstractTester {
 
         public MethodWrapperBeanMap( HashMap<String, MethodWrapperBean> beans ) { this.beans = beans; }
 
-        @JsonTypeInfo( use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY )
+        @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY)
         public HashMap<String, MethodWrapperBean> getValue() { return beans; }
 
-        @JsonTypeInfo( use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY )
+        @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY)
         public void setValue( HashMap<String, MethodWrapperBean> v ) { beans = v; }
     }
 
@@ -111,10 +111,10 @@ public final class JsonTypeOnPropertiesTester extends AbstractTester {
 
         public MethodWrapperBeanArray( MethodWrapperBean[] beans ) { this.beans = beans; }
 
-        @JsonTypeInfo( use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY )
+        @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY)
         public MethodWrapperBean[] getValue() { return beans; }
 
-        @JsonTypeInfo( use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY )
+        @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY)
         public void setValue( MethodWrapperBean[] v ) { beans = v; }
     }
 
@@ -131,6 +131,15 @@ public final class JsonTypeOnPropertiesTester extends AbstractTester {
 
     public void testSimpleField( ObjectMapperTester<FieldWrapperBean> mapper ) {
         String json = mapper.write( new FieldWrapperBean( new StringWrapper( "foo" ) ) );
+        String expected = "{" +
+            "\"value\":" +
+            "[" +
+            "\"com.github.nmorel.gwtjackson.shared.AbstractTester$StringWrapper\"" +
+            "," +
+            "{\"str\":\"foo\"}" +
+            "]" +
+            "}";
+        assertEquals( expected, json );
 
         FieldWrapperBean bean = mapper.read( json );
         assertNotNull( bean.value );
@@ -139,6 +148,15 @@ public final class JsonTypeOnPropertiesTester extends AbstractTester {
 
     public void testSimpleMethod( ObjectMapperTester<MethodWrapperBean> mapper ) {
         String json = mapper.write( new MethodWrapperBean( new IntWrapper( 10 ) ) );
+        String expected = "{" +
+            "\"value\":" +
+            "[" +
+            "\"com.github.nmorel.gwtjackson.shared.AbstractTester$IntWrapper\"" +
+            "," +
+            "{\"i\":10}" +
+            "]" +
+            "}";
+        assertEquals( expected, json );
 
         MethodWrapperBean bean = mapper.read( json );
         assertNotNull( bean.value );
@@ -151,6 +169,24 @@ public final class JsonTypeOnPropertiesTester extends AbstractTester {
         FieldWrapperBeanList beanList = new FieldWrapperBeanList( list );
 
         String json = mapper.write( beanList );
+        String expected = "{" +
+            "\"beans\":" +
+            "[" +
+            "[" +
+            "\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.JsonTypeOnPropertiesTester$FieldWrapperBean\"" +
+            "," +
+            "{" +
+            "\"value\":" +
+            "[" +
+            "\"com.github.nmorel.gwtjackson.shared.AbstractTester$StringWrapper\"" +
+            "," +
+            "{\"str\":\"foo\"}" +
+            "]" +
+            "}" +
+            "]" +
+            "]" +
+            "}";
+        assertEquals( expected, json );
 
         FieldWrapperBeanList result = mapper.read( json );
         assertNotNull( result );
@@ -167,6 +203,50 @@ public final class JsonTypeOnPropertiesTester extends AbstractTester {
         MethodWrapperBeanList beanList = new MethodWrapperBeanList( list );
 
         String json = mapper.write( beanList );
+        String expected = "{" +
+            "\"value\":" +
+            "[" +
+            "[" +
+            "\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.JsonTypeOnPropertiesTester$MethodWrapperBean\"" +
+            "," +
+            "{" +
+            "\"value\":" +
+            "[" +
+            "\"com.github.nmorel.gwtjackson.shared.AbstractTester$IntWrapper\"" +
+            "," +
+            "{\"i\":1}" +
+            "]" +
+            "}" +
+            "]" +
+            "," +
+            "[" +
+            "\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.JsonTypeOnPropertiesTester$MethodWrapperBean\"" +
+            "," +
+            "{" +
+            "\"value\":" +
+            "[" +
+            "\"com.github.nmorel.gwtjackson.shared.AbstractTester$IntWrapper\"" +
+            "," +
+            "{\"i\":2}" +
+            "]" +
+            "}" +
+            "]" +
+            "," +
+            "[" +
+            "\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.JsonTypeOnPropertiesTester$MethodWrapperBean\"" +
+            "," +
+            "{" +
+            "\"value\":" +
+            "[" +
+            "\"com.github.nmorel.gwtjackson.shared.AbstractTester$IntWrapper\"" +
+            "," +
+            "{\"i\":3}" +
+            "]" +
+            "}" +
+            "]" +
+            "]" +
+            "}";
+        assertEquals( expected, json );
 
         MethodWrapperBeanList result = mapper.read( json );
         assertNotNull( result );
@@ -181,6 +261,24 @@ public final class JsonTypeOnPropertiesTester extends AbstractTester {
         )} );
 
         String json = mapper.write( array );
+        String expected = "{" +
+            "\"beans\":" +
+            "[" +
+            "[" +
+            "\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.JsonTypeOnPropertiesTester$FieldWrapperBean\"" +
+            "," +
+            "{" +
+            "\"value\":" +
+            "[" +
+            "\"com.github.nmorel.gwtjackson.shared.AbstractTester$StringWrapper\"" +
+            "," +
+            "{\"str\":\"foo\"}" +
+            "]" +
+            "}" +
+            "]" +
+            "]" +
+            "}";
+        assertEquals( expected, json );
 
         FieldWrapperBeanArray result = mapper.read( json );
         assertNotNull( result );
@@ -194,6 +292,24 @@ public final class JsonTypeOnPropertiesTester extends AbstractTester {
         MethodWrapperBeanArray array = new MethodWrapperBeanArray( new MethodWrapperBean[]{new MethodWrapperBean( new IntWrapper( 15 ) )} );
 
         String json = mapper.write( array );
+        String expected = "{" +
+            "\"value\":" +
+            "[" +
+            "[" +
+            "\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.JsonTypeOnPropertiesTester$MethodWrapperBean\"" +
+            "," +
+            "{" +
+            "\"value\":" +
+            "[" +
+            "\"com.github.nmorel.gwtjackson.shared.AbstractTester$IntWrapper\"" +
+            "," +
+            "{\"i\":15}" +
+            "]" +
+            "}" +
+            "]" +
+            "]" +
+            "}";
+        assertEquals( expected, json );
 
         MethodWrapperBeanArray result = mapper.read( json );
         assertNotNull( result );
@@ -209,6 +325,25 @@ public final class JsonTypeOnPropertiesTester extends AbstractTester {
         FieldWrapperBeanMap beanMap = new FieldWrapperBeanMap( map );
 
         String json = mapper.write( beanMap );
+        String expected = "{" +
+            "\"beans\":" +
+            "{" +
+            "\"foo\":" +
+            "[" +
+            "\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.JsonTypeOnPropertiesTester$FieldWrapperBean\"" +
+            "," +
+            "{" +
+            "\"value\":" +
+            "[" +
+            "\"com.github.nmorel.gwtjackson.shared.AbstractTester$StringWrapper\"" +
+            "," +
+            "{\"str\":\"bar\"}" +
+            "]" +
+            "}" +
+            "]" +
+            "}" +
+            "}";
+        assertEquals( expected, json );
 
         FieldWrapperBeanMap result = mapper.read( json );
         assertNotNull( result );
@@ -224,6 +359,25 @@ public final class JsonTypeOnPropertiesTester extends AbstractTester {
         MethodWrapperBeanMap beanMap = new MethodWrapperBeanMap( map );
 
         String json = mapper.write( beanMap );
+        String expected = "{" +
+            "\"value\":" +
+            "{" +
+            "\"xyz\":" +
+            "[" +
+            "\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.JsonTypeOnPropertiesTester$MethodWrapperBean\"" +
+            "," +
+            "{" +
+            "\"value\":" +
+            "[" +
+            "\"com.github.nmorel.gwtjackson.shared.AbstractTester$IntWrapper\"" +
+            "," +
+            "{\"i\":105}" +
+            "]" +
+            "}" +
+            "]" +
+            "}" +
+            "}";
+        assertEquals( expected, json );
 
         MethodWrapperBeanMap result = mapper.read( json );
         assertNotNull( result );

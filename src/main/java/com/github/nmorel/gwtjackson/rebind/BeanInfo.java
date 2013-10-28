@@ -15,7 +15,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JAbstractMethod;
@@ -23,6 +22,7 @@ import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JConstructor;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JParameter;
+import com.google.gwt.thirdparty.guava.common.base.Optional;
 
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounteredAnnotationsOnAllHierarchy;
 
@@ -35,17 +35,11 @@ public final class BeanInfo {
         UnableToCompleteException {
         BeanInfo result = new BeanInfo();
         result.type = mapperInfo.getType();
-        result.hasSubtypes = mapperInfo.getType().getSubtypes().length > 0;
 
         result.parameterizedTypes = null == mapperInfo.getType().isGenericType() ? new JClassType[0] : mapperInfo.getType().isGenericType()
             .getTypeParameters();
 
         determineInstanceCreator( logger, mapperInfo, result );
-
-        JsonTypeInfo typeInfo = findFirstEncounteredAnnotationsOnAllHierarchy( mapperInfo.getType(), JsonTypeInfo.class );
-        if ( null != typeInfo && !JsonTypeInfo.Id.NONE.equals( typeInfo.use() ) ) {
-            result.typeInfo = typeInfo;
-        }
 
         JsonAutoDetect jsonAutoDetect = findFirstEncounteredAnnotationsOnAllHierarchy( mapperInfo.getType(), JsonAutoDetect.class );
         if ( null != jsonAutoDetect ) {
@@ -77,6 +71,7 @@ public final class BeanInfo {
         result.propertyOrderAlphabetic = null != jsonPropertyOrder && jsonPropertyOrder.alphabetic();
 
         result.identityInfo = BeanIdentityInfo.process( logger, typeOracle, mapperInfo.getType() );
+        result.typeInfo = Optional.fromNullable( BeanTypeInfo.process( logger, typeOracle, mapperInfo.getType() ) );
 
         return result;
     }
@@ -193,9 +188,7 @@ public final class BeanInfo {
 
     private boolean creatorDelegation;
 
-    private JsonTypeInfo typeInfo;
-
-    private boolean hasSubtypes;
+    private Optional<BeanTypeInfo> typeInfo = Optional.absent();
 
     /*####  Visibility properties  ####*/
     private Set<String> ignoredFields = new HashSet<String>();
@@ -252,12 +245,8 @@ public final class BeanInfo {
         return creatorDelegation;
     }
 
-    public JsonTypeInfo getTypeInfo() {
+    public Optional<BeanTypeInfo> getTypeInfo() {
         return typeInfo;
-    }
-
-    public boolean isHasSubtypes() {
-        return hasSubtypes;
     }
 
     public Set<String> getIgnoredFields() {

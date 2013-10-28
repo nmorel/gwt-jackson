@@ -82,6 +82,7 @@ public final class PropertyInfo {
         determineSetter( fieldAccessors, setterAutoDetected, fieldAutoDetected, result );
 
         result.identityInfo = BeanIdentityInfo.process( logger, typeOracle, result.type, fieldAccessors );
+        result.typeInfo = Optional.fromNullable( BeanTypeInfo.process( logger, typeOracle, result.type, fieldAccessors ) );
 
         return result;
     }
@@ -207,6 +208,8 @@ public final class PropertyInfo {
 
     private BeanIdentityInfo identityInfo;
 
+    private Optional<BeanTypeInfo> typeInfo = Optional.absent();
+
     private PropertyInfo() {
     }
 
@@ -256,5 +259,9 @@ public final class PropertyInfo {
 
     public BeanIdentityInfo getIdentityInfo() {
         return identityInfo;
+    }
+
+    public Optional<BeanTypeInfo> getTypeInfo() {
+        return typeInfo;
     }
 }

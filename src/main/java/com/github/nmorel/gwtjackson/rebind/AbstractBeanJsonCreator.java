@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.github.nmorel.gwtjackson.client.ser.bean.AbstractBeanJsonSerializer;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
@@ -22,8 +20,6 @@ import com.google.gwt.core.ext.typeinfo.JParameter;
 import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.user.rebind.SourceWriter;
-
-import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounteredAnnotationsOnAllHierarchy;
 
 /**
  * @author Nicolas Morel
@@ -57,12 +53,6 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
             return joinedTypeParameterMappersWithoutType;
         }
     }
-
-    protected static final String ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean" + "" +
-        ".AbstractBeanJsonDeserializer";
-
-    protected static final String ABSTRACT_BEAN_JSON_SERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean" + "" +
-        ".AbstractBeanJsonSerializer";
 
     protected BeanJsonMapperInfo mapperInfo;
 
@@ -166,43 +156,6 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
 
     protected abstract void writeClassBody( SourceWriter source, BeanInfo info, Map<String,
         PropertyInfo> properties ) throws UnableToCompleteException;
-
-    protected String extractTypeMetadata( BeanInfo info, JClassType subtype ) throws UnableToCompleteException {
-        switch ( info.getTypeInfo().use() ) {
-            case NAME:
-                JsonSubTypes jsonSubTypes = findFirstEncounteredAnnotationsOnAllHierarchy( info.getType(), JsonSubTypes.class );
-                if ( null != jsonSubTypes && jsonSubTypes.value().length > 0 ) {
-                    for ( JsonSubTypes.Type type : jsonSubTypes.value() ) {
-                        if ( !type.name().isEmpty() && type.value().getName().equals( subtype.getQualifiedBinaryName() ) ) {
-                            return type.name();
-                        }
-                    }
-                }
-                JsonTypeName typeName = findFirstEncounteredAnnotationsOnAllHierarchy( subtype, JsonTypeName.class );
-                if ( null != typeName && null != typeName.value() && !typeName.value().isEmpty() ) {
-                    return typeName.value();
-                } else {
-                    String simpleBinaryName = subtype.getQualifiedBinaryName();
-                    int indexLastDot = simpleBinaryName.lastIndexOf( '.' );
-                    if ( indexLastDot != -1 ) {
-                        simpleBinaryName = simpleBinaryName.substring( indexLastDot + 1 );
-                    }
-                    return simpleBinaryName;
-                }
-            case MINIMAL_CLASS:
-                if ( !info.getType().getPackage().isDefault() ) {
-                    String basePackage = info.getType().getPackage().getName();
-                    if ( subtype.getQualifiedBinaryName().startsWith( basePackage + "." ) ) {
-                        return subtype.getQualifiedBinaryName().substring( basePackage.length() );
-                    }
-                }
-            case CLASS:
-                return subtype.getQualifiedBinaryName();
-            default:
-                logger.log( TreeLogger.Type.ERROR, "JsonTypeInfo.Id." + info.getTypeInfo().use() + " is not supported" );
-                throw new UnableToCompleteException();
-        }
-    }
 
     private Map<String, PropertyInfo> findAllProperties( BeanInfo info ) throws UnableToCompleteException {
         Map<String, PropertyInfo> result = new LinkedHashMap<String, PropertyInfo>();

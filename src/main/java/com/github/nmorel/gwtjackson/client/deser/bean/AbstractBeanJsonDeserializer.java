@@ -270,7 +270,7 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
                 throw ctx.traceError( "Cannot find deserializer for class " + value.getClass() );
             }
             JsonDeserializer<T> jsonDeserializer = deserializer.getDeserializer( ctx );
-            if ( jsonDeserializer != this ) {
+            if ( jsonDeserializer.getClass() != getClass() ) {
                 // we test if it's not this deserializer to avoid an infinite loop
                 jsonDeserializer.setBackReference( referenceName, reference, value, ctx );
                 return;

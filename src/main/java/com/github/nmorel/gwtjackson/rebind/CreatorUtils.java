@@ -3,6 +3,7 @@ package com.github.nmorel.gwtjackson.rebind;
 import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 
+import com.google.gwt.core.ext.typeinfo.JArrayType;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
@@ -88,6 +89,11 @@ public final class CreatorUtils {
      * @return the extracted type
      */
     public static JClassType extractBeanType( JacksonTypeOracle typeOracle, JType type ) {
+        JArrayType arrayType = type.isArray();
+        if ( null != arrayType ) {
+            return extractBeanType( typeOracle, arrayType.getComponentType() );
+        }
+
         JClassType classType = type.isClassOrInterface();
         if ( null == classType ) {
             return null;
