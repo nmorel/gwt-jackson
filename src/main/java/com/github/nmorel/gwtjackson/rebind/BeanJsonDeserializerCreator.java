@@ -119,18 +119,18 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
             source.println();
         }
 
-        if ( beanInfo.isInstantiable() ) {
+        if ( beanInfo.getCreatorMethod().isPresent() ) {
             source.print( "setInstanceBuilder(" );
             generateInstanceBuilderClass( source, beanInfo, properties );
             source.println( ");" );
             source.println();
         }
 
-        if ( null != beanInfo.getIdentityInfo() ) {
+        if ( beanInfo.getIdentityInfo().isPresent() ) {
             source.println( "if(null == idProperty) {" );
             source.indent();
             source.print( "setIdentityInfo(" );
-            generateIdentifierDeserializationInfo( source, beanInfo, beanInfo.getIdentityInfo() );
+            generateIdentifierDeserializationInfo( source, beanInfo, beanInfo.getIdentityInfo().get() );
             source.println( ");" );
             source.outdent();
             source.println( "} else {" );
@@ -148,7 +148,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
             source.println( "if(null == superclassInfo) {" );
             source.indent();
             source.print( "setSuperclassInfo(" );
-            generateSuperclassDeserializationInfo( source, beanInfo, beanInfo.getTypeInfo() );
+            generateSuperclassInfo( source, beanInfo, beanInfo.getTypeInfo(), false );
             source.println( ");" );
             source.outdent();
             source.println( "} else {" );
@@ -162,7 +162,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
         source.println();
 
-        if ( beanInfo.isInstantiable() ) {
+        if ( beanInfo.getCreatorMethod().isPresent() ) {
             generatePropertyDeserializers( source, beanInfo, properties );
         }
 
@@ -327,7 +327,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
     }
 
     private void generateInstanceBuilderCreateMethod( SourceWriter source, BeanInfo info, Map<String, PropertyInfo> properties ) {
-        JAbstractMethod method = info.getCreatorMethod();
+        JAbstractMethod method = info.getCreatorMethod().get();
 
         StringBuilder parametersBuilder = new StringBuilder();
         StringBuilder parametersNameBuilder = new StringBuilder();
@@ -384,7 +384,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
                 continue;
             }
 
-            if ( null != info.getIdentityInfo() && info.getIdentityInfo().isIdABeanProperty() && info.getIdentityInfo()
+            if ( info.getIdentityInfo().isPresent() && info.getIdentityInfo().get().isIdABeanProperty() && info.getIdentityInfo().get()
                 .getProperty() == property ) {
                 // the id property is handled by identity process
                 continue;
@@ -403,7 +403,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
             Accessor accessor = property.getSetterAccessor().get().getAccessor( "bean", true );
 
-            if ( null == property.getBackReference() ) {
+            if ( !property.getBackReference().isPresent() ) {
                 // this is not a back reference, we add the default deserializer
                 source.println( "addProperty(\"%s\", %s, new " + BEAN_PROPERTY_DESERIALIZER_CLASS + "<%s, %s>() {", property
                     .getPropertyName(), property.isRequired(), info.getType()
@@ -430,13 +430,13 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
                 source.println( "%s value = deserializer.deserialize(reader, ctx);", property.getType()
                     .getParameterizedQualifiedSourceName() );
                 source.println( accessor.getAccessor() + ";", "value" );
-                if ( null != property.getManagedReference() ) {
-                    source.println( "deserializer.setBackReference(\"%s\", bean, value, ctx);", property.getManagedReference() );
+                if ( property.getManagedReference().isPresent() ) {
+                    source.println( "deserializer.setBackReference(\"%s\", bean, value, ctx);", property.getManagedReference().get() );
                 }
             } else {
                 // this is a back reference, we add the special back reference property that will be called by the parent
                 source.println( "addProperty(\"%s\", new " + BACK_REFERENCE_PROPERTY_BEAN_CLASS + "<%s, %s>() {", property
-                    .getBackReference(), info.getType().getParameterizedQualifiedSourceName(), getQualifiedClassName( property
+                    .getBackReference().get(), info.getType().getParameterizedQualifiedSourceName(), getQualifiedClassName( property
                     .getType() ) );
 
                 source.indent();

@@ -39,7 +39,7 @@ public final class BeanInfo {
         result.parameterizedTypes = null == mapperInfo.getType().isGenericType() ? new JClassType[0] : mapperInfo.getType().isGenericType()
             .getTypeParameters();
 
-        determineInstanceCreator( logger, mapperInfo, result );
+        determineInstanceCreator( logger, result );
 
         JsonAutoDetect jsonAutoDetect = findFirstEncounteredAnnotationsOnAllHierarchy( mapperInfo.getType(), JsonAutoDetect.class );
         if ( null != jsonAutoDetect ) {
@@ -70,7 +70,7 @@ public final class BeanInfo {
         }
         result.propertyOrderAlphabetic = null != jsonPropertyOrder && jsonPropertyOrder.alphabetic();
 
-        result.identityInfo = BeanIdentityInfo.process( logger, typeOracle, mapperInfo.getType() );
+        result.identityInfo = Optional.fromNullable( BeanIdentityInfo.process( logger, typeOracle, mapperInfo.getType() ) );
         result.typeInfo = Optional.fromNullable( BeanTypeInfo.process( logger, typeOracle, mapperInfo.getType() ) );
 
         return result;
@@ -83,79 +83,75 @@ public final class BeanInfo {
      * @param logger logger
      * @param info current bean info
      */
-    private static void determineInstanceCreator( TreeLogger logger, BeanJsonMapperInfo mapperInfo, BeanInfo info ) {
+    private static void determineInstanceCreator( TreeLogger logger, BeanInfo info ) {
         if ( null != info.getType().isInterface() || info.getType().isAbstract() ) {
-            info.instantiable = false;
-        } else {
-            // we search for @JsonCreator annotation
-            JConstructor creatorDefaultConstructor = null;
-            JConstructor creatorConstructor = null;
-            for ( JConstructor constructor : info.getType().getConstructors() ) {
-                if ( constructor.getParameters().length == 0 ) {
-                    creatorDefaultConstructor = constructor;
-                    continue;
-                }
-
-                // A constructor is considered as a creator if
-                // - he is annotated with JsonCreator and
-                //   * all its parameters are annotated with JsonProperty
-                //   * or it has only one parameter
-                // - or all its parameters are annotated with JsonProperty
-                boolean isAllParametersAnnotatedWithJsonProperty = isAllParametersAnnotatedWith( constructor, JsonProperty.class );
-                if ( (constructor.isAnnotationPresent( JsonCreator.class ) && ((isAllParametersAnnotatedWithJsonProperty) || (constructor
-                    .getParameters().length == 1))) || isAllParametersAnnotatedWithJsonProperty ) {
-                    if ( null != creatorConstructor ) {
-                        // Jackson fails with an ArrayIndexOutOfBoundsException when it's the case, let's be more flexible
-                        logger.log( TreeLogger.Type.WARN, "More than one constructor annotated with @JsonCreator, " +
-                            "we use " + creatorConstructor );
-                        break;
-                    } else {
-                        creatorConstructor = constructor;
-                    }
-                }
-            }
-
-            JMethod creatorFactory = null;
-            if ( null == creatorConstructor ) {
-                // searching for factory method
-                for ( JMethod method : info.getType().getMethods() ) {
-                    if ( method.isStatic() && method.isAnnotationPresent( JsonCreator.class ) && (method
-                        .getParameters().length == 1 || isAllParametersAnnotatedWith( method, JsonProperty.class )) ) {
-                        if ( null != creatorFactory ) {
-
-                            // Jackson fails with an ArrayIndexOutOfBoundsException when it's the case, let's be more flexible
-                            logger.log( TreeLogger.Type.WARN, "More than one factory method annotated with @JsonCreator, " +
-                                "we use " + creatorFactory );
-                            break;
-                        } else {
-                            creatorFactory = method;
-                        }
-                    }
-                }
-            }
-
-            if ( null != creatorConstructor ) {
-                info.creatorMethod = creatorConstructor;
-            } else if ( null != creatorFactory ) {
-                info.creatorMethod = creatorFactory;
-            } else if ( null != creatorDefaultConstructor ) {
-                info.creatorDefaultConstructor = true;
-                info.creatorMethod = creatorDefaultConstructor;
-            }
-
-            info.instantiable = null != info.creatorMethod;
+            return;
         }
 
-        info.creatorParameters = new LinkedHashMap<String, JParameter>();
+        // we search for @JsonCreator annotation
+        JConstructor creatorDefaultConstructor = null;
+        JConstructor creatorConstructor = null;
+        for ( JConstructor constructor : info.getType().getConstructors() ) {
+            if ( constructor.getParameters().length == 0 ) {
+                creatorDefaultConstructor = constructor;
+                continue;
+            }
 
-        if ( info.instantiable ) {
+            // A constructor is considered as a creator if
+            // - he is annotated with JsonCreator and
+            //   * all its parameters are annotated with JsonProperty
+            //   * or it has only one parameter
+            // - or all its parameters are annotated with JsonProperty
+            boolean isAllParametersAnnotatedWithJsonProperty = isAllParametersAnnotatedWith( constructor, JsonProperty.class );
+            if ( (constructor.isAnnotationPresent( JsonCreator.class ) && ((isAllParametersAnnotatedWithJsonProperty) || (constructor
+                .getParameters().length == 1))) || isAllParametersAnnotatedWithJsonProperty ) {
+                if ( null != creatorConstructor ) {
+                    // Jackson fails with an ArrayIndexOutOfBoundsException when it's the case, let's be more flexible
+                    logger.log( TreeLogger.Type.WARN, "More than one constructor annotated with @JsonCreator, " +
+                        "we use " + creatorConstructor );
+                    break;
+                } else {
+                    creatorConstructor = constructor;
+                }
+            }
+        }
+
+        JMethod creatorFactory = null;
+        if ( null == creatorConstructor ) {
+            // searching for factory method
+            for ( JMethod method : info.getType().getMethods() ) {
+                if ( method.isStatic() && method.isAnnotationPresent( JsonCreator.class ) && (method
+                    .getParameters().length == 1 || isAllParametersAnnotatedWith( method, JsonProperty.class )) ) {
+                    if ( null != creatorFactory ) {
+
+                        // Jackson fails with an ArrayIndexOutOfBoundsException when it's the case, let's be more flexible
+                        logger.log( TreeLogger.Type.WARN, "More than one factory method annotated with @JsonCreator, " +
+                            "we use " + creatorFactory );
+                        break;
+                    } else {
+                        creatorFactory = method;
+                    }
+                }
+            }
+        }
+
+        if ( null != creatorConstructor ) {
+            info.creatorMethod = Optional.<JAbstractMethod>of( creatorConstructor );
+        } else if ( null != creatorFactory ) {
+            info.creatorMethod = Optional.<JAbstractMethod>of( creatorFactory );
+        } else if ( null != creatorDefaultConstructor ) {
+            info.creatorDefaultConstructor = true;
+            info.creatorMethod = Optional.<JAbstractMethod>of( creatorDefaultConstructor );
+        }
+
+        if ( info.creatorMethod.isPresent() ) {
             if ( !info.isCreatorDefaultConstructor() ) {
-                if ( info.creatorMethod
-                    .getParameters().length == 1 && !isAllParametersAnnotatedWith( info.creatorMethod, JsonProperty.class ) ) {
+                if ( info.creatorMethod.get().getParameters().length == 1 && !isAllParametersAnnotatedWith( info.creatorMethod
+                    .get(), JsonProperty.class ) ) {
                     // delegation constructor
                     info.creatorDelegation = true;
                 } else {
-                    for ( JParameter parameter : info.creatorMethod.getParameters() ) {
+                    for ( JParameter parameter : info.creatorMethod.get().getParameters() ) {
                         info.creatorParameters.put( parameter.getAnnotation( JsonProperty.class ).value(), parameter );
                     }
                 }
@@ -178,11 +174,9 @@ public final class BeanInfo {
     private JClassType[] parameterizedTypes;
 
     /*####  Instantiation properties  ####*/
-    private boolean instantiable;
+    private Optional<JAbstractMethod> creatorMethod = Optional.absent();
 
-    private JAbstractMethod creatorMethod;
-
-    private Map<String, JParameter> creatorParameters;
+    private Map<String, JParameter> creatorParameters = new LinkedHashMap<String, JParameter>();
 
     private boolean creatorDefaultConstructor;
 
@@ -211,7 +205,7 @@ public final class BeanInfo {
     private boolean propertyOrderAlphabetic;
 
     /*####  Identity info  ####*/
-    private BeanIdentityInfo identityInfo;
+    private Optional<BeanIdentityInfo> identityInfo = Optional.absent();
 
     private BeanInfo() {
 
@@ -225,15 +219,11 @@ public final class BeanInfo {
         return parameterizedTypes;
     }
 
-    public boolean isInstantiable() {
-        return instantiable;
-    }
-
     public boolean isCreatorDefaultConstructor() {
         return creatorDefaultConstructor;
     }
 
-    public JAbstractMethod getCreatorMethod() {
+    public Optional<JAbstractMethod> getCreatorMethod() {
         return creatorMethod;
     }
 
@@ -289,7 +279,7 @@ public final class BeanInfo {
         return propertyOrderAlphabetic;
     }
 
-    public BeanIdentityInfo getIdentityInfo() {
+    public Optional<BeanIdentityInfo> getIdentityInfo() {
         return identityInfo;
     }
 }

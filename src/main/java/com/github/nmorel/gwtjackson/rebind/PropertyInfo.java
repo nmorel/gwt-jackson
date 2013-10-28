@@ -51,10 +51,10 @@ public final class PropertyInfo {
         }
 
         JsonManagedReference jsonManagedReference = findAnnotationOnAnyAccessor( fieldAccessors, JsonManagedReference.class );
-        result.managedReference = null == jsonManagedReference ? null : jsonManagedReference.value();
+        result.managedReference = Optional.fromNullable( null == jsonManagedReference ? null : jsonManagedReference.value() );
 
         JsonBackReference jsonBackReference = findAnnotationOnAnyAccessor( fieldAccessors, JsonBackReference.class );
-        result.backReference = null == jsonBackReference ? null : jsonBackReference.value();
+        result.backReference = Optional.fromNullable( null == jsonBackReference ? null : jsonBackReference.value() );
 
         // if an accessor has jackson annotation, the property is considered auto detected.
         // TODO can we do a search on @JacksonAnnotation instead of enumerating all of them ?
@@ -73,7 +73,7 @@ public final class PropertyInfo {
             return result;
         }
 
-        if ( null == result.backReference ) {
+        if ( !result.backReference.isPresent() ) {
             determineGetter( fieldAccessors, getterAutoDetected, fieldAutoDetected, result );
 
             JsonRawValue jsonRawValue = findAnnotationOnAnyAccessor( fieldAccessors, JsonRawValue.class );
@@ -81,7 +81,7 @@ public final class PropertyInfo {
         }
         determineSetter( fieldAccessors, setterAutoDetected, fieldAutoDetected, result );
 
-        result.identityInfo = BeanIdentityInfo.process( logger, typeOracle, result.type, fieldAccessors );
+        result.identityInfo = Optional.fromNullable( BeanIdentityInfo.process( logger, typeOracle, result.type, fieldAccessors ) );
         result.typeInfo = Optional.fromNullable( BeanTypeInfo.process( logger, typeOracle, result.type, fieldAccessors ) );
 
         return result;
@@ -198,15 +198,15 @@ public final class PropertyInfo {
 
     private boolean rawValue;
 
-    private String managedReference;
+    private Optional<String> managedReference = Optional.absent();
 
-    private String backReference;
+    private Optional<String> backReference = Optional.absent();
 
     private Optional<FieldReadAccessor> getterAccessor = Optional.absent();
 
     private Optional<FieldWriteAccessor> setterAccessor = Optional.absent();
 
-    private BeanIdentityInfo identityInfo;
+    private Optional<BeanIdentityInfo> identityInfo = Optional.absent();
 
     private Optional<BeanTypeInfo> typeInfo = Optional.absent();
 
@@ -241,11 +241,11 @@ public final class PropertyInfo {
         return rawValue;
     }
 
-    public String getManagedReference() {
+    public Optional<String> getManagedReference() {
         return managedReference;
     }
 
-    public String getBackReference() {
+    public Optional<String> getBackReference() {
         return backReference;
     }
 
@@ -257,7 +257,7 @@ public final class PropertyInfo {
         return setterAccessor;
     }
 
-    public BeanIdentityInfo getIdentityInfo() {
+    public Optional<BeanIdentityInfo> getIdentityInfo() {
         return identityInfo;
     }
 

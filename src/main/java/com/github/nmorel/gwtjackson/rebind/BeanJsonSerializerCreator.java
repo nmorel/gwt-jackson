@@ -81,11 +81,11 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
             source.println();
         }
 
-        if ( null != beanInfo.getIdentityInfo() ) {
+        if ( beanInfo.getIdentityInfo().isPresent() ) {
             source.println( "if(null == idProperty) {" );
             source.indent();
             source.print( "setIdentityInfo(" );
-            generateIdentifierSerializationInfo( source, beanInfo.getType(), beanInfo.getIdentityInfo() );
+            generateIdentifierSerializationInfo( source, beanInfo.getType(), beanInfo.getIdentityInfo().get() );
             source.println( ");" );
             source.outdent();
             source.println( "} else {" );
@@ -103,7 +103,7 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
             source.println( "if(null == superclassInfo) {" );
             source.indent();
             source.print( "setSuperclassInfo(" );
-            generateSuperclassSerializationInfo( source, beanInfo, beanInfo.getTypeInfo() );
+            generateSuperclassInfo( source, beanInfo, beanInfo.getTypeInfo(), true );
             source.println( ");" );
             source.outdent();
             source.println( "} else {" );
