@@ -1,8 +1,9 @@
 gwt-jackson [![Build Status](https://nmorel.ci.cloudbees.com/buildStatus/icon?job=gwt-jackson)](https://nmorel.ci.cloudbees.com/job/gwt-jackson/)
 =====
-gwt-jackson is a [GWT](http://www.gwtproject.org/) JSON serializer/deserializer mechanism based on [Jackson annotations](https://github.com/FasterXML/jackson-annotations).
+gwt-jackson is a [GWT](http://www.gwtproject.org/) JSON serializer/deserializer mechanism based on [Jackson 2.x annotations](https://github
+.com/FasterXML/jackson-annotations). Jackson 1.x annotations (`org.codehaus.jackson.*`) are not supported.
 
-It is currently under development but lots of stuff is already working. You can find many use cases in the [tests](https://github.com/nmorel/gwt-jackson/tree/master/src/test/java/com/github/nmorel/gwtjackson).
+It is currently under development but lots of stuff is already working. You can find many use cases in the [tests](src/test/java/com/github/nmorel/gwtjackson).
 
 Quick start
 -------------
@@ -13,36 +14,41 @@ Then just create an interface extending `ObjectReader`, `ObjectWriter` or `Objec
 Here's an example :
 
 ```java
-public static interface PersonMapper extends ObjectMapper<Person> {}
+public class TestEntryPoint implements EntryPoint {
 
-public static class Person {
+    public static interface PersonMapper extends ObjectMapper<Person> {}
 
-    private String firstName;
-    private String lastName;
+    public static class Person {
 
-    @JsonCreator
-    public Person( @JsonProperty( "firstName" ) String firstName, @JsonProperty( "lastName" ) String lastName ) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+        private final String firstName;
+        private final String lastName;
+
+        @JsonCreator
+        public Person( @JsonProperty( "firstName" ) String firstName,
+                       @JsonProperty( "lastName" ) String lastName ) {
+            this.firstName = firstName;
+            this.lastName = lastName;
+        }
+
+        public String getFirstName() {
+            return firstName;
+        }
+
+        public String getLastName() {
+            return lastName;
+        }
     }
 
-    public String getFirstName() {
-        return firstName;
+    @Override
+    public void onModuleLoad() {
+        PersonMapper mapper = GWT.create( PersonMapper.class );
+
+        String json = mapper.write( new Person( "John", "Doe" ) );
+        GWT.log( json ); // > {"firstName":"John","lastName":"Doe"}
+
+        Person person = mapper.read( json );
+        GWT.log( person.getFirstName() + " " + person.getLastName() ); // > John Doe
     }
-
-    public String getLastName() {
-        return lastName;
-    }
-}
-
-public void test() {
-    PersonMapper mapper = GWT.create( PersonMapper.class );
-
-    String json = mapper.write( new Person( "John", "Doe" ) );
-    System.out.println( json ); // > {"firstName":"John","lastName":"Doe"}
-
-    Person person = mapper.read( json );
-    System.out.println( person.getFirstName() + " " + person.getLastName() ); // > John Doe
 }
 ```
 
