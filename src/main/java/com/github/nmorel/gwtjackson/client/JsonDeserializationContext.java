@@ -25,7 +25,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerator.IdKey;
 import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.StringReader;
-import com.google.gwt.logging.client.LogConfiguration;
 
 /**
  * Context for the deserialization process.
@@ -204,7 +203,7 @@ public class JsonDeserializationContext extends JsonMappingContext {
      * Trace the current reader state
      */
     private void traceReaderInfo( JsonReader reader ) {
-        if ( LogConfiguration.loggingIsEnabled( Level.INFO ) ) {
+        if ( getLogger().isLoggable( Level.INFO ) ) {
             getLogger().log( Level.INFO, "Error at line " + reader.getLineNumber() + " and column " + reader
                 .getColumnNumber() + " of input <" + reader.getInput() + ">" );
         }

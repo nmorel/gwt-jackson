@@ -29,7 +29,6 @@ import com.github.nmorel.gwtjackson.client.exception.JsonSerializationException;
 import com.github.nmorel.gwtjackson.client.ser.bean.AbstractBeanJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.ObjectIdSerializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
-import com.google.gwt.logging.client.LogConfiguration;
 
 /**
  * Context for the serialization process.
@@ -399,7 +398,7 @@ public class JsonSerializationContext extends JsonMappingContext {
      * @param value current value
      */
     private void traceWriterInfo( Object value, JsonWriter writer ) {
-        if ( LogConfiguration.loggingIsEnabled( Level.INFO ) ) {
+        if ( getLogger().isLoggable( Level.INFO ) ) {
             getLogger().log( Level.INFO, "Error on value <" + value + ">. Current output : <" + writer.getOutput() + ">" );
         }
     }
