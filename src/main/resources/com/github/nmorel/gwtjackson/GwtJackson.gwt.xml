@@ -17,6 +17,11 @@
 
 <module>
 
+  <!-- GWT modules -->
+  <inherits name="com.google.gwt.core.Core"/>
+  <inherits name="com.google.gwt.i18n.I18N"/>
+
+  <!-- Jackson annotations -->
   <inherits name="com.fasterxml.jackson.annotation.JacksonAnnotation" />
 
   <generate-with class="com.github.nmorel.gwtjackson.rebind.ObjectMapperGenerator">
