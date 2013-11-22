@@ -74,3 +74,7 @@ You can also get maven snapshots using the following repository :
 </repository>
 ```
 
+Copyright and license
+-------------
+
+Copyright 2013 Nicolas Morel under the [Apache 2.0 license](LICENSE).
