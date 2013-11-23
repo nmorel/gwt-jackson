@@ -77,14 +77,17 @@ public final class BeanInfo {
 
         JsonPropertyOrder jsonPropertyOrder = findFirstEncounteredAnnotationsOnAllHierarchy( mapperInfo
             .getType(), JsonPropertyOrder.class );
+        result.propertyOrderAlphabetic = null != jsonPropertyOrder && jsonPropertyOrder.alphabetic();
         if ( null != jsonPropertyOrder && jsonPropertyOrder.value().length > 0 ) {
             result.propertyOrderList = Arrays.asList( jsonPropertyOrder.value() );
         } else if ( !result.creatorParameters.isEmpty() ) {
             result.propertyOrderList = new ArrayList<String>( result.creatorParameters.keySet() );
+            if ( result.propertyOrderAlphabetic ) {
+                Collections.sort( result.propertyOrderList );
+            }
         } else {
             result.propertyOrderList = Collections.emptyList();
         }
-        result.propertyOrderAlphabetic = null != jsonPropertyOrder && jsonPropertyOrder.alphabetic();
 
         result.identityInfo = Optional.fromNullable( BeanIdentityInfo.process( logger, typeOracle, mapperInfo.getType() ) );
         result.typeInfo = Optional.fromNullable( BeanTypeInfo.process( logger, typeOracle, mapperInfo.getType() ) );

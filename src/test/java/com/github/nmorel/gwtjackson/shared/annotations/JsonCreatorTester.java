@@ -349,8 +349,8 @@ public final class JsonCreatorTester extends AbstractTester {
 
         // There is an alphabetic order asked but the order of properties in factory method is stronger
 
-        String expected = "{\"stringProperty\":\"IAmAString\"," +
-            "\"intProperty\":15," +
+        String expected = "{\"intProperty\":15," +
+            "\"stringProperty\":\"IAmAString\"," +
             "\"booleanProperty\":true}";
         String result = writer.write( bean );
 
@@ -405,7 +405,8 @@ public final class JsonCreatorTester extends AbstractTester {
         assertEquals( expected, result );
     }
 
-    public void testDeserializeBeanWithPropertiesOnlyPresentOnConstructor( ObjectReaderTester<BeanWithPropertiesOnlyPresentOnConstructor> reader ) {
+    public void testDeserializeBeanWithPropertiesOnlyPresentOnConstructor( ObjectReaderTester<BeanWithPropertiesOnlyPresentOnConstructor>
+                                                                               reader ) {
         String input = "{\"x\":15,\"y\":10}";
 
         BeanWithPropertiesOnlyPresentOnConstructor result = reader.read( input );
