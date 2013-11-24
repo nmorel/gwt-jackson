@@ -5,6 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.fasterxml.jackson.annotation.JacksonAnnotation;
+
 /**
  * Super source for {@link com.fasterxml.jackson.annotation.JsonAutoDetect} to remove the use of java.lang.reflect.* classes
  */

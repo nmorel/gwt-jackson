@@ -15,7 +15,8 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -25,11 +26,16 @@
   </parent>
 
   <groupId>com.github.nmorel.gwtjackson</groupId>
-  <artifactId>gwt-jackson</artifactId>
+  <artifactId>gwt-jackson-parent</artifactId>
   <version>0.2.0-SNAPSHOT</version>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
 
-  <name>gwt-jackson</name>
+  <modules>
+    <module>gwt-jackson</module>
+    <module>examples</module>
+  </modules>
+
+  <name>gwt-jackson :: Parent</name>
   <description>gwt-jackson is a GWT JSON serializer/deserializer mechanism based on Jackson annotations</description>
   <url>https://github.com/nmorel/gwt-jackson</url>
 
@@ -67,160 +73,33 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jdk>1.6</jdk>
 
     <!-- Plugins version -->
     <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
     <maven-surefire-plugin.version>2.16</maven-surefire-plugin.version>
     <gwt-maven-plugin.version>2.5.1</gwt-maven-plugin.version>
-
-    <!-- Dependencies version -->
-    <gwt.version>2.5.1</gwt.version>
-    <jackson.version>2.3.0</jackson.version>
-    <junit.version>4.11</junit.version>
   </properties>
 
   <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>${maven-compiler-plugin.version}</version>
-        <configuration>
-          <source>${jdk}</source>
-          <target>${jdk}</target>
-          <encoding>${project.build.sourceEncoding}</encoding>
-        </configuration>
-      </plugin>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${maven-compiler-plugin.version}</version>
+        </plugin>
 
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>${maven-surefire-plugin.version}</version>
-        <configuration>
-          <excludes>
-            <exclude>**/client/**/*Test.java</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${maven-surefire-plugin.version}</version>
+        </plugin>
 
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>gwt-maven-plugin</artifactId>
-        <version>${gwt-maven-plugin.version}</version>
-        <configuration>
-          <extra>${project.build.directory}/gwt/extra</extra>
-          <gen>${project.build.directory}/gwt/gen</gen>
-          <persistentunitcachedir>${project.build.directory}/gwt/cache</persistentunitcachedir>
-          <treeLogger>true</treeLogger>
-        </configuration>
-        <executions>
-          <execution>
-            <id>packaging</id>
-            <goals>
-              <goal>resources</goal>
-            </goals>
-            <configuration>
-              <modules>
-                <module>com.github.nmorel.gwtjackson.GwtJackson</module>
-              </modules>
-            </configuration>
-          </execution>
-          <execution>
-            <id>test-dev-mode</id>
-            <phase>test</phase>
-            <goals>
-              <goal>test</goal>
-            </goals>
-            <configuration>
-              <mode>htmlunit</mode>
-              <module>com.github.nmorel.gwtjackson.GwtJacksonTest</module>
-              <out>${project.build.directory}/gwt/test/dev</out>
-              <userAgents>gecko1_8</userAgents>
-              <testTimeOut>300</testTimeOut>
-            </configuration>
-          </execution>
-          <execution>
-            <id>test-prod</id>
-            <phase>test</phase>
-            <goals>
-              <goal>test</goal>
-            </goals>
-            <configuration>
-              <mode>htmlunit</mode>
-              <module>com.github.nmorel.gwtjackson.GwtJacksonTest</module>
-              <out>${project.build.directory}/gwt/test/prod</out>
-              <productionMode>true</productionMode>
-              <userAgents>gecko1_8</userAgents>
-              <testTimeOut>300</testTimeOut>
-            </configuration>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-user</artifactId>
-            <version>${gwt.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-dev</artifactId>
-            <version>${gwt.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-servlet</artifactId>
-            <version>${gwt.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-codeserver</artifactId>
-            <version>${gwt.version}</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-    </plugins>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>gwt-maven-plugin</artifactId>
+          <version>${gwt-maven-plugin.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
-
-  <dependencies>
-    <!-- GWT dependencies -->
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-user</artifactId>
-      <version>${gwt.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-dev</artifactId>
-      <version>${gwt.version}</version>
-      <scope>provided</scope>
-    </dependency>
-
-    <!-- Jackson annotation dependencies -->
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-      <version>${jackson.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-      <version>${jackson.version}</version>
-      <classifier>sources</classifier>
-    </dependency>
-
-    <!-- Test dependencies -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>${jackson.version}</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
 
 </project>
