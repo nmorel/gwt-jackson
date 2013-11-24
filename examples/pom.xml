@@ -32,11 +32,15 @@
 
   <modules>
     <module>minimal</module>
+    <module>hello</module>
   </modules>
 
   <properties>
     <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>
+
+    <!-- Plugins version -->
+    <jetty.version>9.0.6.v20130930</jetty.version>
 
     <!-- Dependencies version -->
     <gwt.version>2.6.0-rc1</gwt.version>
@@ -95,9 +99,26 @@
             </dependency>
           </dependencies>
         </plugin>
+
+        <plugin>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-maven-plugin</artifactId>
+          <version>${jetty.version}</version>
+          <configuration>
+            <webApp>
+              <contextPath>/gwt-jackson/</contextPath>
+            </webApp>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
-  </build>
 
+    <plugins>
+      <plugin>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

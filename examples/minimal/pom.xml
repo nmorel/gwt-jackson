@@ -26,6 +26,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>minimal</artifactId>
+  <packaging>war</packaging>
+
   <name>gwt-jackson :: Examples :: Minimal</name>
   <description>Minimal example that just follow the instruction on README</description>
 
