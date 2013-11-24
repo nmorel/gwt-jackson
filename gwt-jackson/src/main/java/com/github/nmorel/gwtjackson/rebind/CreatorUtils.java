@@ -19,6 +19,9 @@ package com.github.nmorel.gwtjackson.rebind;
 import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 
+import com.google.gwt.core.ext.TreeLogger;
+import com.google.gwt.core.ext.TreeLogger.Type;
+import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JArrayType;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JMethod;
@@ -104,19 +107,28 @@ public final class CreatorUtils {
      *
      * @return the extracted type
      */
-    public static JClassType extractBeanType( JacksonTypeOracle typeOracle, JType type ) {
+    public static JClassType extractBeanType( TreeLogger logger, JacksonTypeOracle typeOracle,
+                                              JType type ) throws UnableToCompleteException {
         JArrayType arrayType = type.isArray();
         if ( null != arrayType ) {
-            return extractBeanType( typeOracle, arrayType.getComponentType() );
+            return extractBeanType( logger, typeOracle, arrayType.getComponentType() );
         }
 
         JClassType classType = type.isClassOrInterface();
         if ( null == classType ) {
             return null;
         } else if ( typeOracle.isIterable( classType ) ) {
-            return extractBeanType( typeOracle, classType.isParameterized().getTypeArgs()[0] );
+            if ( null == classType.isParameterized() || classType.isParameterized().getTypeArgs().length != 1 ) {
+                logger.log( Type.ERROR, "Wrong number of argument for a java.lang.Iterable implementation" );
+                throw new UnableToCompleteException();
+            }
+            return extractBeanType( logger, typeOracle, classType.isParameterized().getTypeArgs()[0] );
         } else if ( typeOracle.isMap( classType ) ) {
-            return extractBeanType( typeOracle, classType.isParameterized().getTypeArgs()[1] );
+            if ( null == classType.isParameterized() || classType.isParameterized().getTypeArgs().length != 2 ) {
+                logger.log( Type.ERROR, "Wrong number of argument for a java.util.Map implementation" );
+                throw new UnableToCompleteException();
+            }
+            return extractBeanType( logger, typeOracle, classType.isParameterized().getTypeArgs()[1] );
         } else {
             return classType;
         }

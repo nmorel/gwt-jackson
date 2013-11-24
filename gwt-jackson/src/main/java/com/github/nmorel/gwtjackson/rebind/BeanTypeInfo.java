@@ -47,7 +47,7 @@ public class BeanTypeInfo {
 
     public static BeanTypeInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, JType type,
                                         FieldAccessors fieldAccessors ) throws UnableToCompleteException {
-        JClassType classType = extractBeanType( typeOracle, type );
+        JClassType classType = extractBeanType( logger, typeOracle, type );
         if ( null == classType ) {
             return null;
         } else {

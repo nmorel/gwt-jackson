@@ -192,6 +192,11 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      *         </ul>
      */
     protected String getJsonSerializerFromType( JType type, PropertyInfo propertyInfo ) throws UnableToCompleteException {
+        if ( typeOracle.isObject( type ) ) {
+            logger.log( Type.ERROR, "java.lang.Object is not a supported type" );
+            throw new UnableToCompleteException();
+        }
+
         if ( null != propertyInfo && propertyInfo.isRawValue() ) {
             return String.format( "ctx.<%s>getRawValueJsonSerializer()", type.getParameterizedQualifiedSourceName() );
         }
@@ -259,11 +264,11 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             // it's a bean
             JClassType baseClassType = classType;
             if ( null != parameterizedType ) {
-                // it's a bean with generics, we create a deserializer based on generic type
+                // it's a bean with generics, we create a serializer based on generic type
                 baseClassType = typeOracle.findGenericType( parameterizedType );
             }
             BeanJsonSerializerCreator beanJsonSerializerCreator = new BeanJsonSerializerCreator( logger
-                .branch( TreeLogger.Type.INFO, "Creating serializer for " + baseClassType.getQualifiedSourceName() ), context, typeOracle );
+                .branch( Type.DEBUG, "Creating serializer for " + baseClassType.getQualifiedSourceName() ), context, typeOracle );
             BeanJsonMapperInfo info = beanJsonSerializerCreator.create( baseClassType );
 
             StringBuilder joinedTypeParameters = new StringBuilder();
@@ -435,6 +440,11 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      *         </ul>
      */
     protected String getJsonDeserializerFromType( JType type, PropertyInfo propertyInfo ) throws UnableToCompleteException {
+        if ( typeOracle.isObject( type ) ) {
+            logger.log( Type.ERROR, "java.lang.Object is not a supported type" );
+            throw new UnableToCompleteException();
+        }
+
         JTypeParameter typeParameter = type.isTypeParameter();
         if ( null != typeParameter ) {
             return String.format( TYPE_PARAMETER_DESERIALIZER_FIELD_NAME, typeParameter.getOrdinal() );
@@ -523,7 +533,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                 baseClassType = typeOracle.findGenericType( parameterizedType );
             }
             BeanJsonDeserializerCreator beanJsonDeserializerCreator = new BeanJsonDeserializerCreator( logger
-                .branch( TreeLogger.Type.INFO, "Creating deserializer for " + baseClassType
+                .branch( Type.DEBUG, "Creating deserializer for " + baseClassType
                     .getQualifiedSourceName() ), context, typeOracle );
             BeanJsonMapperInfo info = beanJsonDeserializerCreator.create( baseClassType );
 

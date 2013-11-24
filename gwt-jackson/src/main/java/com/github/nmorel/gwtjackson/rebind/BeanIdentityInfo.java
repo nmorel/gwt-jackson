@@ -46,7 +46,7 @@ public class BeanIdentityInfo {
 
     public static BeanIdentityInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, JType type,
                                             FieldAccessors fieldAccessors ) throws UnableToCompleteException {
-        JClassType classType = extractBeanType( typeOracle, type );
+        JClassType classType = extractBeanType( logger, typeOracle, type );
         if ( null == classType ) {
             return null;
         } else {
@@ -136,13 +136,13 @@ public class BeanIdentityInfo {
         return scope;
     }
 
+    public PropertyInfo getProperty() {
+        return property;
+    }
+
     public void setProperty( PropertyInfo property ) {
         this.property = property;
         this.type = property.getType();
-    }
-
-    public PropertyInfo getProperty() {
-        return property;
     }
 
     public JType getType() {
