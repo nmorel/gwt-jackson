@@ -244,6 +244,10 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
         }
 
         for ( JField field : type.getFields() ) {
+            if ( field.isStatic() ) {
+                continue;
+            }
+
             String fieldName = field.getName();
             FieldAccessors property = propertiesMap.get( fieldName );
             if ( null == property ) {
