@@ -68,6 +68,7 @@ import com.github.nmorel.gwtjackson.client.deser.CharacterJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.EnumJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.StringJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.UUIDJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.VoidJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.array.ArrayJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.array.PrimitiveBooleanArrayJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.array.PrimitiveByteArrayJsonDeserializer;
@@ -142,6 +143,7 @@ import com.github.nmorel.gwtjackson.client.ser.IterableJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.RawValueJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.StringJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.UUIDJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.VoidJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.array.ArrayJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.array.PrimitiveBooleanArrayJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.array.PrimitiveByteArrayJsonSerializer;
@@ -281,6 +283,10 @@ public abstract class JsonMappingContext {
 
     public JsonDeserializer<UUID> getUUIDJsonDeserializer() {
         return UUIDJsonDeserializer.getInstance();
+    }
+
+    public JsonDeserializer<Void> getVoidJsonDeserializer() {
+        return VoidJsonDeserializer.getInstance();
     }
 
     public <T> JsonDeserializer<T[]> newArrayJsonDeserializer( JsonDeserializer<T> deserializer,
@@ -588,6 +594,10 @@ public abstract class JsonMappingContext {
 
     public JsonSerializer<UUID> getUUIDJsonSerializer() {
         return UUIDJsonSerializer.getInstance();
+    }
+
+    public JsonSerializer<Void> getVoidJsonSerializer() {
+        return VoidJsonSerializer.getInstance();
     }
 
     public <E extends Enum<E>> JsonSerializer<E> getEnumJsonSerializer() {

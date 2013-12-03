@@ -90,6 +90,8 @@ public class SimpleBean {
 
     private short[] shortPrimitiveArray;
 
+    private Void voidProperty;
+
     public String getString() {
         return string;
     }
@@ -352,5 +354,13 @@ public class SimpleBean {
 
     public void setShortPrimitiveArray( short[] shortPrimitiveArray ) {
         this.shortPrimitiveArray = shortPrimitiveArray;
+    }
+
+    public Void getVoidProperty() {
+        return voidProperty;
+    }
+
+    public void setVoidProperty( Void voidProperty ) {
+        this.voidProperty = voidProperty;
     }
 }

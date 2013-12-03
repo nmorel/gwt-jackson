@@ -44,6 +44,7 @@ import com.github.nmorel.gwtjackson.client.deser.CharacterJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.EnumJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.StringJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.UUIDJsonDeserializerTest;
+import com.github.nmorel.gwtjackson.client.deser.VoidJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.array.ArrayJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.collection.CollectionJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.collection.IterableJsonDeserializerTest;
@@ -95,6 +96,7 @@ import com.github.nmorel.gwtjackson.client.ser.CharacterJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.EnumJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.StringJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.UUIDJsonSerializerTest;
+import com.github.nmorel.gwtjackson.client.ser.VoidJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.array.ArrayJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.collection.CollectionJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.collection.IterableJsonSerializerTest;
@@ -170,6 +172,7 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( SqlTimestampJsonSerializerTest.class );
         suite.addTestSuite( StringJsonSerializerTest.class );
         suite.addTestSuite( UUIDJsonSerializerTest.class );
+        suite.addTestSuite( VoidJsonSerializerTest.class );
 
         // Default key serializers
         suite.addTestSuite( BooleanKeySerializerTest.class );
@@ -213,6 +216,7 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( SqlTimestampJsonDeserializerTest.class );
         suite.addTestSuite( StringJsonDeserializerTest.class );
         suite.addTestSuite( UUIDJsonDeserializerTest.class );
+        suite.addTestSuite( VoidJsonDeserializerTest.class );
 
         // Default key deserializers
         suite.addTestSuite( BooleanKeyDeserializerTest.class );

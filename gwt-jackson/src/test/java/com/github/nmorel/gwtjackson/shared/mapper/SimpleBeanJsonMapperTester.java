@@ -74,7 +74,8 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
             "\"floatPrimitiveArray\":[null]," +
             "\"integerPrimitiveArray\":[4,5,6,null,7,8]," +
             "\"longPrimitiveArray\":[9223372036854775807,null,-9223372036854775808]," +
-            "\"shortPrimitiveArray\":[9,null,7,8,15]" +
+            "\"shortPrimitiveArray\":[9,null,7,8,15]," +
+            "\"voidProperty\":\"null\"" +
             "}";
 
         SimpleBean bean = reader.read( input );
@@ -113,6 +114,7 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
         assertTrue( Arrays.equals( new int[]{4, 5, 6, 0, 7, 8}, bean.getIntegerPrimitiveArray() ) );
         assertTrue( Arrays.equals( new long[]{Long.MAX_VALUE, 0l, Long.MIN_VALUE}, bean.getLongPrimitiveArray() ) );
         assertTrue( Arrays.equals( new short[]{9, 0, 7, 8, 15}, bean.getShortPrimitiveArray() ) );
+        assertNull( bean.getVoidProperty() );
     }
 
     public void testSerializeValue( ObjectWriterTester<SimpleBean> writer ) {
@@ -150,6 +152,7 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
         bean.setIntegerPrimitiveArray( new int[]{4, 5, 6, 7, 8} );
         bean.setLongPrimitiveArray( new long[]{Long.MAX_VALUE, Long.MIN_VALUE} );
         bean.setShortPrimitiveArray( new short[]{9, 7, 8, 15} );
+        bean.setVoidProperty( null );
 
         String expected = "{" +
             "\"string\":\"toto\"," +
@@ -184,7 +187,8 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
             "\"floatPrimitiveArray\":[]," +
             "\"integerPrimitiveArray\":[4,5,6,7,8]," +
             "\"longPrimitiveArray\":[9223372036854775807,-9223372036854775808]," +
-            "\"shortPrimitiveArray\":[9,7,8,15]" +
+            "\"shortPrimitiveArray\":[9,7,8,15]," +
+            "\"voidProperty\":null" +
             "}";
 
         assertEquals( expected, writer.write( bean ) );
