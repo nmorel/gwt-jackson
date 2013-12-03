@@ -75,7 +75,7 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
             "\"integerPrimitiveArray\":[4,5,6,null,7,8]," +
             "\"longPrimitiveArray\":[9223372036854775807,null,-9223372036854775808]," +
             "\"shortPrimitiveArray\":[9,null,7,8,15]," +
-            "\"voidProperty\":\"null\"" +
+            "\"voidProperty\":null" +
             "}";
 
         SimpleBean bean = reader.read( input );
