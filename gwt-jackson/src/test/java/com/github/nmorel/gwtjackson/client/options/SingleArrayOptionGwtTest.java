@@ -29,7 +29,20 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.ObjectReader;
 import com.github.nmorel.gwtjackson.client.ObjectWriter;
+import com.github.nmorel.gwtjackson.client.deser.BaseNumberJsonDeserializer.IntegerJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.StringJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.array.ArrayJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.array.ArrayJsonDeserializer.ArrayCreator;
+import com.github.nmorel.gwtjackson.client.deser.array.PrimitiveIntegerArrayJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.collection.ListJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.ser.BaseNumberJsonSerializer.IntegerJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.BaseNumberJsonSerializer.LongJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.BooleanJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.IterableJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.StringJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.array.ArrayJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.array.PrimitiveBooleanArrayJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.array.PrimitiveIntegerArrayJsonSerializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 import com.google.gwt.core.client.GWT;
 
@@ -78,20 +91,20 @@ public class SingleArrayOptionGwtTest extends GwtJacksonTestCase {
         ArrayList<String> strs = new ArrayList<String>();
         strs.add( "xyz" );
         JsonWriter writer = context.newJsonWriter();
-        context.newArrayListJsonSerializer( context.getStringJsonSerializer() ).serialize( writer, strs, context );
+        IterableJsonSerializer.newInstance( StringJsonSerializer.getInstance() ).serialize( writer, strs, context );
         assertEquals( ("\"xyz\""), writer.getOutput() );
 
         ArrayList<Integer> ints = new ArrayList<Integer>();
         ints.add( 13 );
         writer = context.newJsonWriter();
-        context.newArrayListJsonSerializer( context.getIntegerJsonSerializer() ).serialize( writer, ints, context );
+        IterableJsonSerializer.newInstance( IntegerJsonSerializer.getInstance() ).serialize( writer, ints, context );
         assertEquals( "13", writer.getOutput() );
 
         // other Collections, like Sets:
         HashSet<Long> longs = new HashSet<Long>();
         longs.add( 42L );
         writer = context.newJsonWriter();
-        context.newHashSetJsonSerializer( context.getLongJsonSerializer() ).serialize( writer, longs, context );
+        IterableJsonSerializer.newInstance( LongJsonSerializer.getInstance() ).serialize( writer, longs, context );
         assertEquals( "42", writer.getOutput() );
 
         // [Issue#180]
@@ -105,19 +118,19 @@ public class SingleArrayOptionGwtTest extends GwtJacksonTestCase {
 
         // arrays:
         writer = context.newJsonWriter();
-        context.getPrimitiveBooleanArrayJsonSerializer().serialize( writer, new boolean[]{true}, context );
+        PrimitiveBooleanArrayJsonSerializer.getInstance().serialize( writer, new boolean[]{true}, context );
         assertEquals( "true", writer.getOutput() );
 
         writer = context.newJsonWriter();
-        context.newArrayJsonSerializer( context.getBooleanJsonSerializer() ).serialize( writer, new Boolean[]{Boolean.TRUE}, context );
+        ArrayJsonSerializer.newInstance( BooleanJsonSerializer.getInstance() ).serialize( writer, new Boolean[]{Boolean.TRUE}, context );
         assertEquals( "true", writer.getOutput() );
 
         writer = context.newJsonWriter();
-        context.getPrimitiveIntegerArrayJsonSerializer().serialize( writer, new int[]{3}, context );
+        PrimitiveIntegerArrayJsonSerializer.getInstance().serialize( writer, new int[]{3}, context );
         assertEquals( "3", writer.getOutput() );
 
         writer = context.newJsonWriter();
-        context.newArrayJsonSerializer( context.getStringJsonSerializer() ).serialize( writer, new String[]{"foo"}, context );
+        ArrayJsonSerializer.newInstance( StringJsonSerializer.getInstance() ).serialize( writer, new String[]{"foo"}, context );
         assertEquals( "\"foo\"", writer.getOutput() );
     }
 
@@ -129,22 +142,22 @@ public class SingleArrayOptionGwtTest extends GwtJacksonTestCase {
         JsonDeserializationContext context = createDeserializationContext();
 
         // first with simple scalar types (numbers), with collections
-        List<Integer> ints = context.newListJsonDeserializer( context.getIntegerJsonDeserializer() ).deserialize( context
+        List<Integer> ints = ListJsonDeserializer.newInstance( IntegerJsonDeserializer.getInstance() ).deserialize( context
             .newJsonReader( "4" ), context );
         assertEquals( 1, ints.size() );
         assertEquals( Integer.valueOf( 4 ), ints.get( 0 ) );
 
-        List<String> strings = context.newListJsonDeserializer( context.getStringJsonDeserializer() ).deserialize( context
+        List<String> strings = ListJsonDeserializer.newInstance( StringJsonDeserializer.getInstance() ).deserialize( context
             .newJsonReader( "\"abc\"" ), context );
         assertEquals( 1, strings.size() );
         assertEquals( "abc", strings.get( 0 ) );
 
         // and arrays:
-        int[] intArray = context.getPrimitiveIntegerArrayJsonDeserializer().deserialize( context.newJsonReader( "-7" ), context );
+        int[] intArray = PrimitiveIntegerArrayJsonDeserializer.getInstance().deserialize( context.newJsonReader( "-7" ), context );
         assertEquals( 1, intArray.length );
         assertEquals( -7, intArray[0] );
 
-        String[] stringArray = context.newArrayJsonDeserializer( context.getStringJsonDeserializer(), new ArrayCreator<String>() {
+        String[] stringArray = ArrayJsonDeserializer.newInstance(StringJsonDeserializer.getInstance(), new ArrayCreator<String>() {
             @Override
             public String[] create( int length ) {
                 return new String[length];
