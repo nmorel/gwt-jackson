@@ -72,8 +72,9 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
 
     protected BeanJsonMapperInfo mapperInfo;
 
-    public AbstractBeanJsonCreator( TreeLogger logger, GeneratorContext context, JacksonTypeOracle typeOracle ) {
-        super( logger, context, typeOracle );
+    public AbstractBeanJsonCreator( TreeLogger logger, GeneratorContext context, RebindConfiguration configuration,
+                                    JacksonTypeOracle typeOracle ) {
+        super( logger, context, configuration, typeOracle );
     }
 
     /**

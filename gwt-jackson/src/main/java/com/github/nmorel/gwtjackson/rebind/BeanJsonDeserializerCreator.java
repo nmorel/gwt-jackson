@@ -70,8 +70,9 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
     private static final String BACK_REFERENCE_PROPERTY_BEAN_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean.BackReferenceProperty";
 
-    public BeanJsonDeserializerCreator( TreeLogger logger, GeneratorContext context, JacksonTypeOracle typeOracle ) {
-        super( logger, context, typeOracle );
+    public BeanJsonDeserializerCreator( TreeLogger logger, GeneratorContext context, RebindConfiguration configuration,
+                                        JacksonTypeOracle typeOracle ) {
+        super( logger, context, configuration, typeOracle );
     }
 
     @Override

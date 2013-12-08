@@ -16,11 +16,17 @@
 
 package com.github.nmorel.gwtjackson.rebind;
 
+import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.ObjectReader;
 import com.github.nmorel.gwtjackson.client.ObjectWriter;
+import com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer;
+import com.github.nmorel.gwtjackson.client.ser.map.key.KeySerializer;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
@@ -42,6 +48,14 @@ public class JacksonTypeOracle {
 
     private final JClassType jObjectWriterType;
 
+    private final JClassType jKeySerializerType;
+
+    private final JClassType jKeyDeserializerType;
+
+    private final JClassType jJsonSerializerType;
+
+    private final JClassType jJsonDeserializerType;
+
     private final JClassType jMapType;
 
     private final JClassType jEnumMapType;
@@ -56,12 +70,16 @@ public class JacksonTypeOracle {
         this.logger = logger;
         this.typeOracle = typeOracle;
 
-        this.jObjectReaderType = typeOracle.findType( ObjectReader.class.getName() );
-        this.jObjectWriterType = typeOracle.findType( ObjectWriter.class.getName() );
-        this.jEnumSetType = typeOracle.findType( "java.util.EnumSet" );
-        this.jMapType = typeOracle.findType( "java.util.Map" );
-        this.jEnumMapType = typeOracle.findType( "java.util.EnumMap" );
-        this.jIterableType = typeOracle.findType( "java.lang.Iterable" );
+        this.jObjectReaderType = typeOracle.findType( ObjectReader.class.getCanonicalName() );
+        this.jObjectWriterType = typeOracle.findType( ObjectWriter.class.getCanonicalName() );
+        this.jKeySerializerType = typeOracle.findType( KeySerializer.class.getCanonicalName() );
+        this.jKeyDeserializerType = typeOracle.findType( KeyDeserializer.class.getCanonicalName() );
+        this.jJsonSerializerType = typeOracle.findType( JsonSerializer.class.getCanonicalName() );
+        this.jJsonDeserializerType = typeOracle.findType( JsonDeserializer.class.getCanonicalName() );
+        this.jEnumSetType = typeOracle.findType( EnumSet.class.getCanonicalName() );
+        this.jMapType = typeOracle.findType( Map.class.getCanonicalName() );
+        this.jEnumMapType = typeOracle.findType( EnumMap.class.getCanonicalName() );
+        this.jIterableType = typeOracle.findType( Iterable.class.getCanonicalName() );
     }
 
     public JClassType getType( String type ) throws UnableToCompleteException {
@@ -99,6 +117,22 @@ public class JacksonTypeOracle {
 
     public boolean isObject( JType type ) {
         return typeOracle.getJavaLangObject().equals( type );
+    }
+
+    public boolean isKeySerializer( JType type ) {
+        return null != type.isClass() && type.isClass().isAssignableTo( jKeySerializerType );
+    }
+
+    public boolean isKeyDeserializer( JType type ) {
+        return null != type.isClass() && type.isClass().isAssignableTo( jKeyDeserializerType );
+    }
+
+    public boolean isJsonSerializer( JType type ) {
+        return null != type.isClass() && type.isClass().isAssignableTo( jJsonSerializerType );
+    }
+
+    public boolean isJsonDeserializer( JType type ) {
+        return null != type.isClass() && type.isClass().isAssignableTo( jJsonDeserializerType );
     }
 
     public BeanJsonMapperInfo getBeanJsonMapperInfo( JClassType type ) {

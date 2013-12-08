@@ -46,7 +46,7 @@ public class ObjectMapperCreator extends AbstractCreator {
 
     private static final String ABSTRACT_OBJECT_WRITER_CLASS = "com.github.nmorel.gwtjackson.client.AbstractObjectWriter";
 
-    public ObjectMapperCreator( TreeLogger logger, GeneratorContext context ) {
+    public ObjectMapperCreator( TreeLogger logger, GeneratorContext context ) throws UnableToCompleteException {
         super( logger, context );
     }
 
