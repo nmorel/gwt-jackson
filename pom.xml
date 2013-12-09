@@ -31,6 +31,7 @@
 
   <modules>
     <module>gwt-jackson</module>
+    <module>extensions</module>
     <module>examples</module>
   </modules>
 
@@ -73,12 +74,65 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+    <!-- the api has to be compatible with minimal jdk version supported by GWT -->
+    <maven.compiler.source>1.6</maven.compiler.source>
+    <maven.compiler.target>1.6</maven.compiler.target>
+
     <!-- Plugins version -->
     <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
     <maven-surefire-plugin.version>2.16</maven-surefire-plugin.version>
     <maven-deploy-plugin.version>2.8.1</maven-deploy-plugin.version>
     <gwt-maven-plugin.version>2.5.1</gwt-maven-plugin.version>
+
+    <!-- Dependencies version -->
+    <gwt.version>2.5.1</gwt.version>
+    <jackson.version>2.3.0</jackson.version>
+    <junit.version>4.11</junit.version>
   </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- GWT dependencies -->
+      <dependency>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-user</artifactId>
+        <version>${gwt.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-dev</artifactId>
+        <version>${gwt.version}</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <!-- Jackson dependencies -->
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${jackson.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+
+      <!-- Test dependencies -->
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <build>
     <pluginManagement>
@@ -102,6 +156,36 @@
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>gwt-maven-plugin</artifactId>
           <version>${gwt-maven-plugin.version}</version>
+          <configuration>
+            <extra>${project.build.directory}/gwt/extra</extra>
+            <gen>${project.build.directory}/gwt/gen</gen>
+            <persistentunitcachedir>${project.build.directory}/gwt/cache</persistentunitcachedir>
+            <mode>htmlunit</mode>
+            <userAgents>gecko1_8</userAgents>
+            <testTimeOut>300</testTimeOut>
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>com.google.gwt</groupId>
+              <artifactId>gwt-user</artifactId>
+              <version>${gwt.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>com.google.gwt</groupId>
+              <artifactId>gwt-dev</artifactId>
+              <version>${gwt.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>com.google.gwt</groupId>
+              <artifactId>gwt-servlet</artifactId>
+              <version>${gwt.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>com.google.gwt</groupId>
+              <artifactId>gwt-codeserver</artifactId>
+              <version>${gwt.version}</version>
+            </dependency>
+          </dependencies>
         </plugin>
       </plugins>
     </pluginManagement>

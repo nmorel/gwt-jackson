@@ -41,7 +41,7 @@ public abstract class JsonSerializer<T> {
     public void serialize( JsonWriter writer, T value, JsonSerializationContext ctx ) throws JsonSerializationException {
         try {
             if ( null == value ) {
-                writer.nullValue();
+                serializeNullValue( writer, ctx );
                 return;
             }
             doSerialize( writer, value, ctx );
@@ -53,6 +53,18 @@ public abstract class JsonSerializer<T> {
         } catch ( Exception e ) {
             throw ctx.traceError( value, e, writer );
         }
+    }
+
+    /**
+     * Serialize the null value. This method allows children to override the default behaviour.
+     *
+     * @param writer {@link JsonWriter} used to write the serialized JSON
+     * @param ctx Context for the full serialization process
+     *
+     * @throws IOException if an error occurs while writing the output
+     */
+    protected void serializeNullValue( JsonWriter writer, JsonSerializationContext ctx ) throws IOException {
+        writer.nullValue();
     }
 
     /**

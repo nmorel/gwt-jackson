@@ -41,8 +41,7 @@ public abstract class JsonDeserializer<T> {
     public T deserialize( JsonReader reader, JsonDeserializationContext ctx ) throws JsonDeserializationException {
         try {
             if ( JsonToken.NULL.equals( reader.peek() ) ) {
-                reader.skipValue();
-                return null;
+                return deserializeNullValue( reader, ctx );
             }
             return doDeserialize( reader, ctx );
         } catch ( IOException e ) {
@@ -53,6 +52,20 @@ public abstract class JsonDeserializer<T> {
         } catch ( Exception e ) {
             throw ctx.traceError( e, reader );
         }
+    }
+
+    /**
+     * Deserialize the null value. This method allows children to override the default behaviour.
+     *
+     * @param reader {@link JsonReader} used to read the JSON input
+     * @param ctx Context for the full deserialization process
+     *
+     * @return the deserialized object
+     * @throws IOException if an error occurs reading the input
+     */
+    protected T deserializeNullValue( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+        reader.skipValue();
+        return null;
     }
 
     /**

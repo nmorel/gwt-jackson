@@ -15,7 +15,8 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -30,18 +31,25 @@
   <description>gwt-jackson is a GWT JSON serializer/deserializer mechanism based on Jackson annotations</description>
   <url>https://github.com/nmorel/gwt-jackson</url>
 
-  <properties>
-    <!-- the api has to be compatible with minimal jdk version supported by GWT -->
-    <maven.compiler.source>1.6</maven.compiler.source>
-    <maven.compiler.target>1.6</maven.compiler.target>
-
-    <!-- Dependencies version -->
-    <gwt.version>2.5.1</gwt.version>
-    <jackson.version>2.3.0</jackson.version>
-    <junit.version>4.11</junit.version>
-  </properties>
-
   <build>
+
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+      </testResource>
+      <testResource>
+        <directory>src/test/java</directory>
+        <includes>
+          <include>**/client/GwtJacksonTestCase*</include>
+          <include>**/jackson/AbstractJacksonTest*</include>
+          <include>**/shared/AbstractTester*</include>
+          <include>**/shared/ObjectMapperTester*</include>
+          <include>**/shared/ObjectReaderTester*</include>
+          <include>**/shared/ObjectWriterTester*</include>
+        </includes>
+      </testResource>
+    </testResources>
+
     <plugins>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -59,7 +67,6 @@
           <extra>${project.build.directory}/gwt/extra</extra>
           <gen>${project.build.directory}/gwt/gen</gen>
           <persistentunitcachedir>${project.build.directory}/gwt/cache</persistentunitcachedir>
-          <treeLogger>true</treeLogger>
         </configuration>
         <executions>
           <execution>
@@ -80,11 +87,8 @@
               <goal>test</goal>
             </goals>
             <configuration>
-              <mode>htmlunit</mode>
               <module>com.github.nmorel.gwtjackson.GwtJacksonTest</module>
               <out>${project.build.directory}/gwt/test/dev</out>
-              <userAgents>gecko1_8</userAgents>
-              <testTimeOut>300</testTimeOut>
             </configuration>
           </execution>
           <execution>
@@ -94,37 +98,36 @@
               <goal>test</goal>
             </goals>
             <configuration>
-              <mode>htmlunit</mode>
               <module>com.github.nmorel.gwtjackson.GwtJacksonTest</module>
               <out>${project.build.directory}/gwt/test/prod</out>
               <productionMode>true</productionMode>
-              <userAgents>gecko1_8</userAgents>
-              <testTimeOut>300</testTimeOut>
             </configuration>
           </execution>
         </executions>
-        <dependencies>
-          <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-user</artifactId>
-            <version>${gwt.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-dev</artifactId>
-            <version>${gwt.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-servlet</artifactId>
-            <version>${gwt.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-codeserver</artifactId>
-            <version>${gwt.version}</version>
-          </dependency>
-        </dependencies>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.4</version>
+        <executions>
+          <execution>
+            <id>testJar</id>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+            <configuration>
+              <includes>
+                <include>**/client/GwtJacksonTestCase*</include>
+                <include>**/jackson/AbstractJacksonTest*</include>
+                <include>**/shared/AbstractTester*</include>
+                <include>**/shared/ObjectMapperTester*</include>
+                <include>**/shared/ObjectReaderTester*</include>
+                <include>**/shared/ObjectWriterTester*</include>
+                <include>**/GwtJacksonTest.gwt.xml</include>
+              </includes>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
@@ -134,26 +137,20 @@
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <version>${gwt.version}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-dev</artifactId>
-      <version>${gwt.version}</version>
-      <scope>provided</scope>
     </dependency>
 
     <!-- Jackson annotation dependencies -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>${jackson.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>${jackson.version}</version>
       <classifier>sources</classifier>
     </dependency>
 
@@ -161,13 +158,10 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>${jackson.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
