@@ -44,25 +44,25 @@ public class JacksonTypeOracle {
 
     private final TypeOracle typeOracle;
 
-    private final JClassType jObjectReaderType;
+    private final JClassType objectReaderType;
 
-    private final JClassType jObjectWriterType;
+    private final JClassType objectWriterType;
 
-    private final JClassType jKeySerializerType;
+    private final JClassType keySerializerType;
 
-    private final JClassType jKeyDeserializerType;
+    private final JClassType keyDeserializerType;
 
-    private final JClassType jJsonSerializerType;
+    private final JClassType jsonSerializerType;
 
-    private final JClassType jJsonDeserializerType;
+    private final JClassType jsonDeserializerType;
 
-    private final JClassType jMapType;
+    private final JClassType mapType;
 
-    private final JClassType jEnumMapType;
+    private final JClassType enumMapType;
 
-    private final JClassType jIterableType;
+    private final JClassType iterableType;
 
-    private final JClassType jEnumSetType;
+    private final JClassType enumSetType;
 
     private final Map<JClassType, BeanJsonMapperInfo> typeToMapperInfo = new HashMap<JClassType, BeanJsonMapperInfo>();
 
@@ -70,16 +70,16 @@ public class JacksonTypeOracle {
         this.logger = logger;
         this.typeOracle = typeOracle;
 
-        this.jObjectReaderType = typeOracle.findType( ObjectReader.class.getCanonicalName() );
-        this.jObjectWriterType = typeOracle.findType( ObjectWriter.class.getCanonicalName() );
-        this.jKeySerializerType = typeOracle.findType( KeySerializer.class.getCanonicalName() );
-        this.jKeyDeserializerType = typeOracle.findType( KeyDeserializer.class.getCanonicalName() );
-        this.jJsonSerializerType = typeOracle.findType( JsonSerializer.class.getCanonicalName() );
-        this.jJsonDeserializerType = typeOracle.findType( JsonDeserializer.class.getCanonicalName() );
-        this.jEnumSetType = typeOracle.findType( EnumSet.class.getCanonicalName() );
-        this.jMapType = typeOracle.findType( Map.class.getCanonicalName() );
-        this.jEnumMapType = typeOracle.findType( EnumMap.class.getCanonicalName() );
-        this.jIterableType = typeOracle.findType( Iterable.class.getCanonicalName() );
+        this.objectReaderType = typeOracle.findType( ObjectReader.class.getCanonicalName() );
+        this.objectWriterType = typeOracle.findType( ObjectWriter.class.getCanonicalName() );
+        this.keySerializerType = typeOracle.findType( KeySerializer.class.getCanonicalName() );
+        this.keyDeserializerType = typeOracle.findType( KeyDeserializer.class.getCanonicalName() );
+        this.jsonSerializerType = typeOracle.findType( JsonSerializer.class.getCanonicalName() );
+        this.jsonDeserializerType = typeOracle.findType( JsonDeserializer.class.getCanonicalName() );
+        this.enumSetType = typeOracle.findType( EnumSet.class.getCanonicalName() );
+        this.mapType = typeOracle.findType( Map.class.getCanonicalName() );
+        this.enumMapType = typeOracle.findType( EnumMap.class.getCanonicalName() );
+        this.iterableType = typeOracle.findType( Iterable.class.getCanonicalName() );
     }
 
     public JClassType getType( String type ) throws UnableToCompleteException {
@@ -92,27 +92,27 @@ public class JacksonTypeOracle {
     }
 
     public boolean isObjectReader( JClassType type ) {
-        return type.isAssignableTo( jObjectReaderType );
+        return type.isAssignableTo( objectReaderType );
     }
 
     public boolean isObjectWriter( JClassType type ) {
-        return type.isAssignableTo( jObjectWriterType );
+        return type.isAssignableTo( objectWriterType );
     }
 
     public boolean isEnumSet( JClassType parameterizedType ) {
-        return parameterizedType.isAssignableTo( jEnumSetType );
+        return parameterizedType.isAssignableTo( enumSetType );
     }
 
     public boolean isEnumMap( JClassType parameterizedType ) {
-        return parameterizedType.isAssignableTo( jEnumMapType );
+        return parameterizedType.isAssignableTo( enumMapType );
     }
 
     public boolean isMap( JClassType parameterizedType ) {
-        return parameterizedType.isAssignableTo( jMapType );
+        return parameterizedType.isAssignableTo( mapType );
     }
 
     public boolean isIterable( JClassType parameterizedType ) {
-        return parameterizedType.isAssignableTo( jIterableType );
+        return parameterizedType.isAssignableTo( iterableType );
     }
 
     public boolean isObject( JType type ) {
@@ -120,19 +120,19 @@ public class JacksonTypeOracle {
     }
 
     public boolean isKeySerializer( JType type ) {
-        return null != type.isClass() && type.isClass().isAssignableTo( jKeySerializerType );
+        return null != type.isClass() && type.isClass().isAssignableTo( keySerializerType );
     }
 
     public boolean isKeyDeserializer( JType type ) {
-        return null != type.isClass() && type.isClass().isAssignableTo( jKeyDeserializerType );
+        return null != type.isClass() && type.isClass().isAssignableTo( keyDeserializerType );
     }
 
     public boolean isJsonSerializer( JType type ) {
-        return null != type.isClass() && type.isClass().isAssignableTo( jJsonSerializerType );
+        return null != type.isClass() && type.isClass().isAssignableTo( jsonSerializerType );
     }
 
     public boolean isJsonDeserializer( JType type ) {
-        return null != type.isClass() && type.isClass().isAssignableTo( jJsonDeserializerType );
+        return null != type.isClass() && type.isClass().isAssignableTo( jsonDeserializerType );
     }
 
     public BeanJsonMapperInfo getBeanJsonMapperInfo( JClassType type ) {

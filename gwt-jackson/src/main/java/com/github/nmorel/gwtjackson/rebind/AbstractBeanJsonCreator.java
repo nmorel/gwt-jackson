@@ -147,20 +147,8 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
         }
     }
 
-    protected String getQualifiedClassName() {
-        if ( isSerializer() ) {
-            return mapperInfo.getQualifiedSerializerClassName();
-        } else {
-            return mapperInfo.getQualifiedDeserializerClassName();
-        }
-    }
-
     protected String getGenericClassBoundedParameters() {
         return mapperInfo.getGenericClassBoundedParameters();
-    }
-
-    protected String getGenericClassParameters() {
-        return mapperInfo.getGenericClassParameters();
     }
 
     protected String getSuperclass() {

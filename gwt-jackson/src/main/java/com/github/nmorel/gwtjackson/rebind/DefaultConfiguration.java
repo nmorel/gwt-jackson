@@ -163,6 +163,8 @@ import com.github.nmorel.gwtjackson.client.ser.map.key.StringKeySerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.key.UUIDKeySerializer;
 
 /**
+ * {@link AbstractConfiguration} implementation containing all the default serializers and deserializers.
+ *
  * @author Nicolas Morel
  */
 public final class DefaultConfiguration extends AbstractConfiguration {

@@ -17,8 +17,6 @@
 package com.github.nmorel.gwtjackson.rebind;
 
 import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.ObjectIdGenerator;
@@ -32,7 +30,7 @@ import com.github.nmorel.gwtjackson.client.ser.map.key.KeySerializer;
 import com.github.nmorel.gwtjackson.rebind.FieldAccessor.Accessor;
 import com.github.nmorel.gwtjackson.rebind.PropertyInfo.AdditionalMethod;
 import com.github.nmorel.gwtjackson.rebind.RebindConfiguration.MapperInstance;
-import com.github.nmorel.gwtjackson.rebind.RebindConfiguration.ParameterType;
+import com.github.nmorel.gwtjackson.rebind.RebindConfiguration.MapperType;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.TreeLogger.Type;
@@ -56,18 +54,11 @@ import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.QUOTED_FUNCTION;
  */
 public abstract class AbstractCreator extends AbstractSourceCreator {
 
-    public static final List<String> BASE_TYPES = Arrays
-        .asList( "java.math.BigDecimal", "java.math.BigInteger", "java.lang.Boolean", "java.lang.Byte", "java.lang.Character",
-            "java.util.Date", "java.lang.Double", "java.lang.Float", "java.lang.Integer", "java.lang.Long", "java.lang.Short",
-            "java.sql.Date", "java.sql.Time", "java.sql.Timestamp", "java.lang.String", "java.util.UUID", "java.lang.Void" );
-
     public static final String JSON_DESERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.JsonDeserializer";
 
     public static final String JSON_SERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.JsonSerializer";
 
     public static final String JSON_READER_CLASS = "com.github.nmorel.gwtjackson.client.stream.JsonReader";
-
-    public static final String JSON_WRITER_CLASS = "com.github.nmorel.gwtjackson.client.stream.JsonWriter";
 
     public static final String JSON_DESERIALIZATION_CONTEXT_CLASS = "com.github.nmorel.gwtjackson.client.JsonDeserializationContext";
 
@@ -110,13 +101,6 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
     protected final RebindConfiguration configuration;
 
     protected final JacksonTypeOracle typeOracle;
-
-    protected AbstractCreator( TreeLogger logger, GeneratorContext context ) throws UnableToCompleteException {
-        this.logger = logger;
-        this.context = context;
-        this.typeOracle = new JacksonTypeOracle( logger, context.getTypeOracle() );
-        this.configuration = new RebindConfiguration( logger, context, typeOracle );
-    }
 
     protected AbstractCreator( TreeLogger logger, GeneratorContext context, RebindConfiguration configuration,
                                JacksonTypeOracle typeOracle ) {
@@ -196,7 +180,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             if ( null != type.isParameterized() ) {
                 String[] params = new String[type.isParameterized().getTypeArgs().length];
                 for ( int i = 0; i < params.length; i++ ) {
-                    if ( ParameterType.KEY_SERIALIZER == configuredSerializer.get().getParameters()[i] ) {
+                    if ( MapperType.KEY_SERIALIZER == configuredSerializer.get().getParameters()[i] ) {
                         params[i] = getKeySerializerFromType( type.isParameterized().getTypeArgs()[i] );
                     } else {
                         params[i] = getJsonSerializerFromType( type.isParameterized().getTypeArgs()[i], propertyInfo );
@@ -413,7 +397,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             if ( null != type.isParameterized() ) {
                 String[] params = new String[type.isParameterized().getTypeArgs().length];
                 for ( int i = 0; i < params.length; i++ ) {
-                    if ( ParameterType.KEY_DESERIALIZER == configuredDeserializer.get().getParameters()[i] ) {
+                    if ( MapperType.KEY_DESERIALIZER == configuredDeserializer.get().getParameters()[i] ) {
                         params[i] = getKeyDeserializerFromType( type.isParameterized().getTypeArgs()[i] );
                     } else {
                         params[i] = getJsonDeserializerFromType( type.isParameterized().getTypeArgs()[i], propertyInfo );

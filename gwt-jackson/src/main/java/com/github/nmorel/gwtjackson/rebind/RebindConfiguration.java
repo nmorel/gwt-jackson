@@ -48,17 +48,56 @@ import com.google.gwt.thirdparty.guava.common.collect.ImmutableList;
  */
 public final class RebindConfiguration {
 
-    public enum ParameterType {
-        KEY_SERIALIZER, KEY_DESERIALIZER, JSON_SERIALIZER, JSON_DESERIALIZER
+    public enum MapperType {
+        KEY_SERIALIZER( true, true ) {
+            @Override
+            protected Map<Class, Class> getMapperTypeConfiguration( AbstractConfiguration configuration ) {
+                return configuration.getMapTypeToKeySerializer();
+            }
+        }, KEY_DESERIALIZER( false, true ) {
+            @Override
+            protected Map<Class, Class> getMapperTypeConfiguration( AbstractConfiguration configuration ) {
+                return configuration.getMapTypeToKeyDeserializer();
+            }
+        }, JSON_SERIALIZER( true, false ) {
+            @Override
+            protected Map<Class, Class> getMapperTypeConfiguration( AbstractConfiguration configuration ) {
+                return configuration.getMapTypeToSerializer();
+            }
+        }, JSON_DESERIALIZER( false, false ) {
+            @Override
+            protected Map<Class, Class> getMapperTypeConfiguration( AbstractConfiguration configuration ) {
+                return configuration.getMapTypeToDeserializer();
+            }
+        };
+
+        private final boolean serializer;
+
+        private final boolean key;
+
+        private MapperType( boolean serializer, boolean key ) {
+            this.serializer = serializer;
+            this.key = key;
+        }
+
+        abstract Map<Class, Class> getMapperTypeConfiguration( final AbstractConfiguration configuration );
+
+        boolean isSerializer() {
+            return serializer;
+        }
+
+        boolean isKey() {
+            return key;
+        }
     }
 
     public static class MapperInstance {
 
         private final String instanceCreation;
 
-        private final ParameterType[] parameters;
+        private final MapperType[] parameters;
 
-        public MapperInstance( String instanceCreation, ParameterType[] parameters ) {
+        public MapperInstance( String instanceCreation, MapperType[] parameters ) {
             this.instanceCreation = instanceCreation;
             this.parameters = parameters;
         }
@@ -67,7 +106,7 @@ public final class RebindConfiguration {
             return instanceCreation;
         }
 
-        public ParameterType[] getParameters() {
+        public MapperType[] getParameters() {
             return parameters;
         }
     }
@@ -97,10 +136,9 @@ public final class RebindConfiguration {
         List<AbstractConfiguration> configurations = getAllConfigurations();
 
         for ( AbstractConfiguration configuration : configurations ) {
-            addMappers( configuration, true, false );
-            addMappers( configuration, false, false );
-            addMappers( configuration, true, true );
-            addMappers( configuration, false, true );
+            for ( MapperType mapperType : MapperType.values() ) {
+                addMappers( configuration, mapperType );
+            }
         }
     }
 
@@ -135,24 +173,10 @@ public final class RebindConfiguration {
      * Parse the configured serializer/deserializer configuration and put them into the corresponding map
      *
      * @param configuration configuration
-     * @param isSerializers true if it's serializers, false if deserializers
-     * @param isKeys true if it's key serializers/deserializers
+     * @param mapperType type of the mapper
      */
-    private void addMappers( AbstractConfiguration configuration, boolean isSerializers, boolean isKeys ) {
-        Map<Class, Class> configuredMapper;
-        if ( isSerializers ) {
-            if ( isKeys ) {
-                configuredMapper = configuration.getMapTypeToKeySerializer();
-            } else {
-                configuredMapper = configuration.getMapTypeToSerializer();
-            }
-        } else {
-            if ( isKeys ) {
-                configuredMapper = configuration.getMapTypeToKeyDeserializer();
-            } else {
-                configuredMapper = configuration.getMapTypeToDeserializer();
-            }
-        }
+    private void addMappers( final AbstractConfiguration configuration, final MapperType mapperType ) {
+        Map<Class, Class> configuredMapper = mapperType.getMapperTypeConfiguration( configuration );
 
         for ( Entry<Class, Class> entry : configuredMapper.entrySet() ) {
 
@@ -166,17 +190,17 @@ public final class RebindConfiguration {
                 continue;
             }
 
-            if ( isKeys ) {
+            if ( mapperType.isKey() ) {
                 String keyMapperInstance = getKeyInstance( mapperClassType );
-                if ( isSerializers ) {
+                if ( mapperType.isSerializer() ) {
                     keySerializers.put( mappedType.getQualifiedSourceName(), keyMapperInstance );
                 } else {
                     keyDeserializers.put( mappedType.getQualifiedSourceName(), keyMapperInstance );
                 }
             } else {
-                MapperInstance mapperInstance = getInstance( mappedType, mapperClassType, isSerializers );
+                MapperInstance mapperInstance = getInstance( mappedType, mapperClassType, mapperType.isSerializer() );
                 if ( null != mapperInstance ) {
-                    if ( isSerializers ) {
+                    if ( mapperType.isSerializer() ) {
                         serializers.put( mappedType.getQualifiedSourceName(), mapperInstance );
                     } else {
                         deserializers.put( mappedType.getQualifiedSourceName(), mapperInstance );
@@ -239,7 +263,7 @@ public final class RebindConfiguration {
             // method must be public static, return the instance type and take no parameters
             if ( method.isStatic() && method.getReturnType().getQualifiedSourceName().equals( classType.getQualifiedSourceName() ) && method
                 .getParameters().length == nbParam && method.isPublic() ) {
-                ParameterType[] parameters = getParameters( method, isSerializers );
+                MapperType[] parameters = getParameters( method, isSerializers );
                 if ( null == parameters ) {
                     continue;
                 }
@@ -261,7 +285,7 @@ public final class RebindConfiguration {
         // then we search the default constructor
         for ( JConstructor constructor : classType.getConstructors() ) {
             if ( constructor.isPublic() && constructor.getParameters().length == nbParam ) {
-                ParameterType[] parameters = getParameters( constructor, isSerializers );
+                MapperType[] parameters = getParameters( constructor, isSerializers );
                 if ( null == parameters ) {
                     continue;
                 }
@@ -286,24 +310,24 @@ public final class RebindConfiguration {
         return null;
     }
 
-    private ParameterType[] getParameters( JAbstractMethod method, boolean isSerializers ) {
-        ParameterType[] parameters = new ParameterType[method.getParameters().length];
+    private MapperType[] getParameters( JAbstractMethod method, boolean isSerializers ) {
+        MapperType[] parameters = new MapperType[method.getParameters().length];
         for ( int i = 0; i < method.getParameters().length; i++ ) {
             JParameter parameter = method.getParameters()[i];
             if ( isSerializers ) {
                 if ( typeOracle.isKeySerializer( parameter.getType() ) ) {
-                    parameters[i] = ParameterType.KEY_SERIALIZER;
+                    parameters[i] = MapperType.KEY_SERIALIZER;
                 } else if ( typeOracle.isJsonSerializer( parameter.getType() ) ) {
-                    parameters[i] = ParameterType.JSON_SERIALIZER;
+                    parameters[i] = MapperType.JSON_SERIALIZER;
                 } else {
                     // the parameter is unknown, we ignore this method
                     return null;
                 }
             } else {
                 if ( typeOracle.isKeyDeserializer( parameter.getType() ) ) {
-                    parameters[i] = ParameterType.KEY_DESERIALIZER;
+                    parameters[i] = MapperType.KEY_DESERIALIZER;
                 } else if ( typeOracle.isJsonDeserializer( parameter.getType() ) ) {
-                    parameters[i] = ParameterType.JSON_DESERIALIZER;
+                    parameters[i] = MapperType.JSON_DESERIALIZER;
                 } else {
                     // the parameter is unknown, we ignore this method
                     return null;

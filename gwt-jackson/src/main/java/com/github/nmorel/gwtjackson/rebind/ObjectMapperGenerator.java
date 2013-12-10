@@ -28,7 +28,9 @@ public class ObjectMapperGenerator extends Generator {
 
     @Override
     public String generate( TreeLogger logger, GeneratorContext context, String typeName ) throws UnableToCompleteException {
-        ObjectMapperCreator creator = new ObjectMapperCreator( logger, context );
+        JacksonTypeOracle typeOracle = new JacksonTypeOracle( logger, context.getTypeOracle() );
+        RebindConfiguration configuration = new RebindConfiguration( logger, context, typeOracle );
+        ObjectMapperCreator creator = new ObjectMapperCreator( logger, context, configuration, typeOracle );
         return creator.create( typeName );
     }
 }
