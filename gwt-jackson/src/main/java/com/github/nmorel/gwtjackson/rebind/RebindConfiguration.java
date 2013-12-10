@@ -291,8 +291,7 @@ public final class RebindConfiguration {
                 }
 
                 StringBuilder builder = new StringBuilder();
-                builder.append( "new " ).append( classType.getQualifiedSourceName() ).append( '.' ).append( constructor.getName() )
-                    .append( '(' );
+                builder.append( "new " ).append( classType.getQualifiedSourceName() ).append( '(' );
                 for ( int i = 0; i < nbParam; i++ ) {
                     if ( i > 0 ) {
                         builder.append( ", %s" );
@@ -356,8 +355,7 @@ public final class RebindConfiguration {
         for ( JConstructor constructor : classType.getConstructors() ) {
             if ( constructor.isPublic() && constructor.getParameters().length == 0 ) {
                 StringBuilder builder = new StringBuilder();
-                builder.append( "new " ).append( classType.getQualifiedSourceName() ).append( '.' ).append( constructor.getName() )
-                    .append( "()" );
+                builder.append( "new " ).append( classType.getQualifiedSourceName() ).append( "()" );
                 return builder.toString();
             }
         }
