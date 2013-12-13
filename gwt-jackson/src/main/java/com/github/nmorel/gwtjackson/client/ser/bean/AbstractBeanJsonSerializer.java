@@ -24,6 +24,7 @@ import java.util.Map;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
+import com.github.nmorel.gwtjackson.client.JsonSerializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
 /**
@@ -65,7 +66,8 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
     }
 
     @Override
-    public void doSerialize( JsonWriter writer, @Nonnull T value, JsonSerializationContext ctx ) throws IOException {
+    public void doSerialize( JsonWriter writer, @Nonnull T value, JsonSerializationContext ctx, JsonSerializerParameters params ) throws
+        IOException {
         ObjectIdSerializer<?> idWriter = null;
         if ( null != identityInfo ) {
             idWriter = ctx.getObjectId( value );

@@ -39,12 +39,27 @@ public abstract class JsonSerializer<T> {
      * @throws JsonSerializationException if an error occurs during the serialization
      */
     public void serialize( JsonWriter writer, T value, JsonSerializationContext ctx ) throws JsonSerializationException {
+        serialize( writer, value, ctx, JsonSerializerParameters.DEFAULT );
+    }
+
+    /**
+     * Serializes an object into JSON output.
+     *
+     * @param writer {@link JsonWriter} used to write the serialized JSON
+     * @param value Object to serialize
+     * @param ctx Context for the full serialization process
+     * @param params Parameters for this serialization
+     *
+     * @throws JsonSerializationException if an error occurs during the serialization
+     */
+    public void serialize( JsonWriter writer, T value, JsonSerializationContext ctx, JsonSerializerParameters params ) throws
+        JsonSerializationException {
         try {
             if ( null == value ) {
-                serializeNullValue( writer, ctx );
+                serializeNullValue( writer, ctx, params );
                 return;
             }
-            doSerialize( writer, value, ctx );
+            doSerialize( writer, value, ctx, params );
         } catch ( IOException e ) {
             throw ctx.traceError( value, e, writer );
         } catch ( JsonSerializationException e ) {
@@ -60,10 +75,12 @@ public abstract class JsonSerializer<T> {
      *
      * @param writer {@link JsonWriter} used to write the serialized JSON
      * @param ctx Context for the full serialization process
+     * @param params Parameters for this serialization
      *
      * @throws IOException if an error occurs while writing the output
      */
-    protected void serializeNullValue( JsonWriter writer, JsonSerializationContext ctx ) throws IOException {
+    protected void serializeNullValue( JsonWriter writer, JsonSerializationContext ctx, JsonSerializerParameters params ) throws
+        IOException {
         writer.nullValue();
     }
 
@@ -73,8 +90,10 @@ public abstract class JsonSerializer<T> {
      * @param writer {@link JsonWriter} used to write the serialized JSON
      * @param value Object to serialize
      * @param ctx Context for the full serialization process
+     * @param params Parameters for this serialization
      *
      * @throws IOException if an error occurs while writing the output
      */
-    protected abstract void doSerialize( JsonWriter writer, @Nonnull T value, JsonSerializationContext ctx ) throws IOException;
+    protected abstract void doSerialize( JsonWriter writer, @Nonnull T value, JsonSerializationContext ctx,
+                                         JsonSerializerParameters params ) throws IOException;
 }

@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.google.common.base.Optional;
 
@@ -55,14 +56,16 @@ public final class OptionalJsonDeserializer<T> extends JsonDeserializer<Optional
     }
 
     @Override
-    protected Optional<T> deserializeNullValue( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+    protected Optional<T> deserializeNullValue( JsonReader reader, JsonDeserializationContext ctx,
+                                                JsonDeserializerParameters params ) throws IOException {
         reader.skipValue();
         return Optional.absent();
     }
 
     @Override
-    public Optional<T> doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
-        return Optional.of( deserializer.deserialize( reader, ctx ) );
+    public Optional<T> doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
+        IOException {
+        return Optional.of( deserializer.deserialize( reader, ctx, params ) );
     }
 
     @Override

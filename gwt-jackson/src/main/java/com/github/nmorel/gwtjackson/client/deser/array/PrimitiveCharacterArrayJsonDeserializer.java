@@ -21,6 +21,7 @@ import java.util.List;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
 import com.github.nmorel.gwtjackson.client.deser.CharacterJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
@@ -44,8 +45,9 @@ public class PrimitiveCharacterArrayJsonDeserializer extends AbstractArrayJsonDe
     private PrimitiveCharacterArrayJsonDeserializer() { }
 
     @Override
-    public char[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
-        List<Character> list = deserializeIntoList( reader, ctx, CharacterJsonDeserializer.getInstance() );
+    public char[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
+        IOException {
+        List<Character> list = deserializeIntoList( reader, ctx, CharacterJsonDeserializer.getInstance(), params );
 
         char[] result = new char[list.size()];
         int i = 0;
@@ -59,18 +61,20 @@ public class PrimitiveCharacterArrayJsonDeserializer extends AbstractArrayJsonDe
     }
 
     @Override
-    protected char[] doDeserializeNonArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+    protected char[] doDeserializeNonArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
+        IOException {
         if ( JsonToken.STRING == reader.peek() ) {
             return reader.nextString().toCharArray();
         } else if ( ctx.isAcceptSingleValueAsArray() ) {
-            return doDeserializeSingleArray( reader, ctx );
+            return doDeserializeSingleArray( reader, ctx, params );
         } else {
             throw ctx.traceError( "Cannot deserialize a char[] out of " + reader.peek() + " token", reader );
         }
     }
 
     @Override
-    protected char[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
-        return new char[]{CharacterJsonDeserializer.getInstance().deserialize( reader, ctx )};
+    protected char[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx,
+                                               JsonDeserializerParameters params ) throws IOException {
+        return new char[]{CharacterJsonDeserializer.getInstance().deserialize( reader, ctx, params )};
     }
 }

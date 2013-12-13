@@ -21,6 +21,7 @@ import java.util.List;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
 import com.github.nmorel.gwtjackson.client.deser.BaseNumberJsonDeserializer.FloatJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 
@@ -43,8 +44,9 @@ public class PrimitiveFloatArrayJsonDeserializer extends AbstractArrayJsonDeseri
     private PrimitiveFloatArrayJsonDeserializer() { }
 
     @Override
-    public float[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
-        List<Float> list = deserializeIntoList( reader, ctx, FloatJsonDeserializer.getInstance() );
+    public float[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
+        IOException {
+        List<Float> list = deserializeIntoList( reader, ctx, FloatJsonDeserializer.getInstance(), params );
 
         float[] result = new float[list.size()];
         int i = 0;
@@ -58,7 +60,8 @@ public class PrimitiveFloatArrayJsonDeserializer extends AbstractArrayJsonDeseri
     }
 
     @Override
-    protected float[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
-        return new float[]{FloatJsonDeserializer.getInstance().deserialize( reader, ctx )};
+    protected float[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx,
+                                                JsonDeserializerParameters params ) throws IOException {
+        return new float[]{FloatJsonDeserializer.getInstance().deserialize( reader, ctx, params )};
     }
 }

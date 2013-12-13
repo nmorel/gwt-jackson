@@ -27,6 +27,7 @@ import java.util.Set;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 
@@ -100,7 +101,7 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
     }
 
     @Override
-    public T doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+    public T doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws IOException {
         if ( null != identityInfo && !JsonToken.BEGIN_OBJECT.equals( reader.peek() ) ) {
             Object id;
             if ( identityInfo.isProperty() ) {

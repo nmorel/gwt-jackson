@@ -21,6 +21,7 @@ import java.util.UUID;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 
 /**
@@ -42,7 +43,7 @@ public class UUIDJsonDeserializer extends JsonDeserializer<UUID> {
     private UUIDJsonDeserializer() { }
 
     @Override
-    public UUID doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+    public UUID doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws IOException {
         return UUID.fromString( reader.nextString() );
     }
 }

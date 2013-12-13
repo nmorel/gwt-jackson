@@ -21,6 +21,7 @@ import java.util.List;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
 import com.github.nmorel.gwtjackson.client.deser.BaseNumberJsonDeserializer.ShortJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 
@@ -43,8 +44,9 @@ public class PrimitiveShortArrayJsonDeserializer extends AbstractArrayJsonDeseri
     private PrimitiveShortArrayJsonDeserializer() { }
 
     @Override
-    public short[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
-        List<Short> list = deserializeIntoList( reader, ctx, ShortJsonDeserializer.getInstance() );
+    public short[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
+        IOException {
+        List<Short> list = deserializeIntoList( reader, ctx, ShortJsonDeserializer.getInstance(), params );
 
         short[] result = new short[list.size()];
         int i = 0;
@@ -58,7 +60,8 @@ public class PrimitiveShortArrayJsonDeserializer extends AbstractArrayJsonDeseri
     }
 
     @Override
-    protected short[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
-        return new short[]{ShortJsonDeserializer.getInstance().deserialize( reader, ctx )};
+    protected short[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx,
+                                                JsonDeserializerParameters params ) throws IOException {
+        return new short[]{ShortJsonDeserializer.getInstance().deserialize( reader, ctx, params )};
     }
 }

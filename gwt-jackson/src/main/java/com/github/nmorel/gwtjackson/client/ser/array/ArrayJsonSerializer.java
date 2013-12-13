@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
+import com.github.nmorel.gwtjackson.client.JsonSerializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
 /**
@@ -55,18 +56,19 @@ public class ArrayJsonSerializer<T> extends JsonSerializer<T[]> {
     }
 
     @Override
-    public void doSerialize( JsonWriter writer, @Nonnull T[] values, JsonSerializationContext ctx ) throws IOException {
+    public void doSerialize( JsonWriter writer, @Nonnull T[] values, JsonSerializationContext ctx,
+                             JsonSerializerParameters params ) throws IOException {
         if ( !ctx.isWriteEmptyJsonArrays() && values.length == 0 ) {
             writer.cancelName();
             return;
         }
 
         if ( ctx.isWriteSingleElemArraysUnwrapped() && values.length == 1 ) {
-            serializer.serialize( writer, values[0], ctx );
+            serializer.serialize( writer, values[0], ctx, params );
         } else {
             writer.beginArray();
             for ( T value : values ) {
-                serializer.serialize( writer, value, ctx );
+                serializer.serialize( writer, value, ctx, params );
             }
             writer.endArray();
         }

@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
+import com.github.nmorel.gwtjackson.client.JsonSerializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
 /**
@@ -42,7 +43,8 @@ public class PrimitiveLongArrayJsonSerializer extends JsonSerializer<long[]> {
     private PrimitiveLongArrayJsonSerializer() { }
 
     @Override
-    public void doSerialize( JsonWriter writer, @Nonnull long[] values, JsonSerializationContext ctx ) throws IOException {
+    public void doSerialize( JsonWriter writer, @Nonnull long[] values, JsonSerializationContext ctx,
+                             JsonSerializerParameters params ) throws IOException {
         if ( !ctx.isWriteEmptyJsonArrays() && values.length == 0 ) {
             writer.cancelName();
             return;

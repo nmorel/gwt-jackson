@@ -22,6 +22,7 @@ import java.util.Collection;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 
@@ -52,14 +53,14 @@ public class IterableJsonDeserializer<T> extends BaseIterableJsonDeserializer<It
     }
 
     @Override
-    public Iterable<T> doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+    public Iterable<T> doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws IOException {
         if ( JsonToken.BEGIN_ARRAY == reader.peek() ) {
 
             Collection<T> result = new ArrayList<T>();
 
             reader.beginArray();
             while ( JsonToken.END_ARRAY != reader.peek() ) {
-                result.add( deserializer.deserialize( reader, ctx ) );
+                result.add( deserializer.deserialize( reader, ctx, params ) );
             }
             reader.endArray();
             return result;
@@ -67,7 +68,7 @@ public class IterableJsonDeserializer<T> extends BaseIterableJsonDeserializer<It
         } else if ( ctx.isAcceptSingleValueAsArray() ) {
 
             Collection<T> result = new ArrayList<T>();
-            result.add( deserializer.deserialize( reader, ctx ) );
+            result.add( deserializer.deserialize( reader, ctx, params ) );
             return result;
 
         } else {

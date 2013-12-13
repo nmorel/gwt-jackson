@@ -25,6 +25,7 @@ import java.util.TreeMap;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
+import com.github.nmorel.gwtjackson.client.JsonSerializerParameters;
 import com.github.nmorel.gwtjackson.client.ser.map.key.KeySerializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
@@ -73,7 +74,8 @@ public class MapJsonSerializer<M extends Map<K, V>, K, V> extends JsonSerializer
     }
 
     @Override
-    public void doSerialize( JsonWriter writer, @Nonnull M values, JsonSerializationContext ctx ) throws IOException {
+    public void doSerialize( JsonWriter writer, @Nonnull M values, JsonSerializationContext ctx, JsonSerializerParameters params ) throws
+        IOException {
         writer.beginObject();
 
         if ( !values.isEmpty() ) {
@@ -86,7 +88,7 @@ public class MapJsonSerializer<M extends Map<K, V>, K, V> extends JsonSerializer
 
                 for ( Entry<K, V> entry : map.entrySet() ) {
                     writer.name( keySerializer.serialize( entry.getKey(), ctx ) );
-                    valueSerializer.serialize( writer, entry.getValue(), ctx );
+                    valueSerializer.serialize( writer, entry.getValue(), ctx, params );
                 }
 
             } else {
@@ -94,7 +96,7 @@ public class MapJsonSerializer<M extends Map<K, V>, K, V> extends JsonSerializer
                 for ( Entry<K, V> entry : map.entrySet() ) {
                     if ( null != entry.getValue() ) {
                         writer.name( keySerializer.serialize( entry.getKey(), ctx ) );
-                        valueSerializer.serialize( writer, entry.getValue(), ctx );
+                        valueSerializer.serialize( writer, entry.getValue(), ctx, params );
                     }
                 }
 

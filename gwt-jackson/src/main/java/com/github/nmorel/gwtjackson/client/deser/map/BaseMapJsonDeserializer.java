@@ -21,6 +21,7 @@ import java.util.Map;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
 import com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
@@ -62,14 +63,14 @@ public abstract class BaseMapJsonDeserializer<M extends Map<K, V>, K, V> extends
     }
 
     @Override
-    public M doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+    public M doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws IOException {
         M result = newMap();
 
         reader.beginObject();
         while ( JsonToken.END_OBJECT != reader.peek() ) {
             String name = reader.nextName();
             K key = keyDeserializer.deserialize( name, ctx );
-            V value = valueDeserializer.deserialize( reader, ctx );
+            V value = valueDeserializer.deserialize( reader, ctx, params );
             result.put( key, value );
         }
         reader.endObject();

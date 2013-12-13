@@ -22,6 +22,7 @@ import java.util.UUID;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
+import com.github.nmorel.gwtjackson.client.JsonSerializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
 /**
@@ -43,7 +44,8 @@ public class UUIDJsonSerializer extends JsonSerializer<UUID> {
     private UUIDJsonSerializer() { }
 
     @Override
-    public void doSerialize( JsonWriter writer, @Nonnull UUID value, JsonSerializationContext ctx ) throws IOException {
+    public void doSerialize( JsonWriter writer, @Nonnull UUID value, JsonSerializationContext ctx,
+                             JsonSerializerParameters params ) throws IOException {
         writer.value( value.toString() );
     }
 }

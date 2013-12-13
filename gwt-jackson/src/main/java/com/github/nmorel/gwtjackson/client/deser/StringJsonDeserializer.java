@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 
 /**
@@ -41,7 +42,7 @@ public class StringJsonDeserializer extends JsonDeserializer<String> {
     private StringJsonDeserializer() { }
 
     @Override
-    public String doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+    public String doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws IOException {
         return reader.nextString();
     }
 }

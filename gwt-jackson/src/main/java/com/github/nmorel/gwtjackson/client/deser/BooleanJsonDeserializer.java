@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 
@@ -42,7 +43,7 @@ public class BooleanJsonDeserializer extends JsonDeserializer<Boolean> {
     private BooleanJsonDeserializer() { }
 
     @Override
-    public Boolean doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+    public Boolean doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws IOException {
         JsonToken token = reader.peek();
         if ( JsonToken.BOOLEAN.equals( token ) ) {
             return reader.nextBoolean();

@@ -24,8 +24,10 @@ import com.github.nmorel.gwtjackson.client.AbstractObjectWriter;
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
+import com.github.nmorel.gwtjackson.client.JsonSerializerParameters;
 import com.github.nmorel.gwtjackson.client.ObjectReader;
 import com.github.nmorel.gwtjackson.client.ObjectWriter;
 import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException;
@@ -44,7 +46,8 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
             protected JsonDeserializer<String[]> newDeserializer( JsonDeserializationContext ctx ) {
                 return new JsonDeserializer<String[]>() {
                     @Override
-                    protected String[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+                    protected String[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx,
+                                                      JsonDeserializerParameters params ) throws IOException {
                         throw new UnsupportedOperationException();
                     }
                 };
@@ -64,7 +67,8 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
             protected JsonDeserializer<String[]> newDeserializer( JsonDeserializationContext ctx ) {
                 return new JsonDeserializer<String[]>() {
                     @Override
-                    protected String[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+                    protected String[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx,
+                                                      JsonDeserializerParameters params ) throws IOException {
                         throw new IOException();
                     }
                 };
@@ -85,7 +89,8 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
             protected JsonDeserializer<String[]> newDeserializer( JsonDeserializationContext ctx ) {
                 return new JsonDeserializer<String[]>() {
                     @Override
-                    protected String[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+                    protected String[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx,
+                                                      JsonDeserializerParameters params ) throws IOException {
                         throw jsonDeserializationException;
                     }
                 };
@@ -105,8 +110,8 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
             protected JsonSerializer<String> newSerializer( JsonSerializationContext ctx ) {
                 return new JsonSerializer<String>() {
                     @Override
-                    protected void doSerialize( JsonWriter writer, @Nonnull String value, JsonSerializationContext ctx ) throws
-                        IOException {
+                    protected void doSerialize( JsonWriter writer, @Nonnull String value, JsonSerializationContext ctx,
+                                                JsonSerializerParameters params ) throws IOException {
                         throw new NullPointerException();
                     }
                 };
@@ -126,8 +131,8 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
             protected JsonSerializer<String> newSerializer( JsonSerializationContext ctx ) {
                 return new JsonSerializer<String>() {
                     @Override
-                    protected void doSerialize( JsonWriter writer, @Nonnull String value, JsonSerializationContext ctx ) throws
-                        IOException {
+                    protected void doSerialize( JsonWriter writer, @Nonnull String value, JsonSerializationContext ctx,
+                                                JsonSerializerParameters params ) throws IOException {
                         throw new IOException();
                     }
                 };
@@ -148,8 +153,8 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
             protected JsonSerializer<String> newSerializer( JsonSerializationContext ctx ) {
                 return new JsonSerializer<String>() {
                     @Override
-                    protected void doSerialize( JsonWriter writer, @Nonnull String value, JsonSerializationContext ctx ) throws
-                        IOException {
+                    protected void doSerialize( JsonWriter writer, @Nonnull String value, JsonSerializationContext ctx,
+                                                JsonSerializerParameters params ) throws IOException {
                         throw jsonSerializationException;
                     }
                 };

@@ -21,6 +21,7 @@ import java.util.List;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
 import com.github.nmorel.gwtjackson.client.deser.BooleanJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 
@@ -43,8 +44,9 @@ public class PrimitiveBooleanArrayJsonDeserializer extends AbstractArrayJsonDese
     private PrimitiveBooleanArrayJsonDeserializer() { }
 
     @Override
-    public boolean[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
-        List<Boolean> list = deserializeIntoList( reader, ctx, BooleanJsonDeserializer.getInstance() );
+    public boolean[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
+        IOException {
+        List<Boolean> list = deserializeIntoList( reader, ctx, BooleanJsonDeserializer.getInstance(), params );
 
         boolean[] result = new boolean[list.size()];
         int i = 0;
@@ -58,7 +60,8 @@ public class PrimitiveBooleanArrayJsonDeserializer extends AbstractArrayJsonDese
     }
 
     @Override
-    protected boolean[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
-        return new boolean[]{BooleanJsonDeserializer.getInstance().deserialize( reader, ctx )};
+    protected boolean[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx,
+                                                  JsonDeserializerParameters params ) throws IOException {
+        return new boolean[]{BooleanJsonDeserializer.getInstance().deserialize( reader, ctx, params )};
     }
 }

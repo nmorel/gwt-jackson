@@ -23,6 +23,7 @@ import java.math.BigInteger;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
+import com.github.nmorel.gwtjackson.client.JsonSerializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
 /**
@@ -100,7 +101,8 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         private DoubleJsonSerializer() { }
 
         @Override
-        public void doSerialize( JsonWriter writer, @Nonnull Double value, JsonSerializationContext ctx ) throws IOException {
+        public void doSerialize( JsonWriter writer, @Nonnull Double value, JsonSerializationContext ctx,
+                                 JsonSerializerParameters params ) throws IOException {
             // writer has a special method to write double, let's use instead of default Number method.
             writer.value( value.doubleValue() );
         }
@@ -157,7 +159,8 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         private LongJsonSerializer() { }
 
         @Override
-        public void doSerialize( JsonWriter writer, @Nonnull Long value, JsonSerializationContext ctx ) throws IOException {
+        public void doSerialize( JsonWriter writer, @Nonnull Long value, JsonSerializationContext ctx,
+                                 JsonSerializerParameters params ) throws IOException {
             // writer has a special method to write long, let's use instead of default Number method.
             writer.value( value.longValue() );
         }
@@ -181,7 +184,8 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
     }
 
     @Override
-    public void doSerialize( JsonWriter writer, @Nonnull N value, JsonSerializationContext ctx ) throws IOException {
+    public void doSerialize( JsonWriter writer, @Nonnull N value, JsonSerializationContext ctx, JsonSerializerParameters params ) throws
+        IOException {
         writer.value( value );
     }
 }

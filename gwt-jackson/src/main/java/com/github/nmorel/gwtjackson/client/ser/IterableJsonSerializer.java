@@ -22,6 +22,7 @@ import java.util.Iterator;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
+import com.github.nmorel.gwtjackson.client.JsonSerializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
 /**
@@ -56,7 +57,8 @@ public class IterableJsonSerializer<I extends Iterable<T>, T> extends JsonSerial
     }
 
     @Override
-    public void doSerialize( JsonWriter writer, @Nonnull I values, JsonSerializationContext ctx ) throws IOException {
+    public void doSerialize( JsonWriter writer, @Nonnull I values, JsonSerializationContext ctx, JsonSerializerParameters params ) throws
+        IOException {
         Iterator<T> iterator = values.iterator();
 
         if ( !iterator.hasNext() ) {
@@ -76,20 +78,20 @@ public class IterableJsonSerializer<I extends Iterable<T>, T> extends JsonSerial
             if ( iterator.hasNext() ) {
                 // there is more than one element, we write the array normally
                 writer.beginArray();
-                serializer.serialize( writer, first, ctx );
+                serializer.serialize( writer, first, ctx, params );
                 while ( iterator.hasNext() ) {
-                    serializer.serialize( writer, iterator.next(), ctx );
+                    serializer.serialize( writer, iterator.next(), ctx, params );
                 }
                 writer.endArray();
             } else {
                 // there is only one element, we write it directly
-                serializer.serialize( writer, first, ctx );
+                serializer.serialize( writer, first, ctx, params );
             }
 
         } else {
             writer.beginArray();
             while ( iterator.hasNext() ) {
-                serializer.serialize( writer, iterator.next(), ctx );
+                serializer.serialize( writer, iterator.next(), ctx, params );
             }
             writer.endArray();
         }

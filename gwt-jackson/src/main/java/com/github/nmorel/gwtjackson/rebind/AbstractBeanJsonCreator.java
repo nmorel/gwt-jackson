@@ -205,7 +205,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
             }
         }
 
-        // if the user asked for an alphbetic order, we sort the rest of the properties
+        // if the user asked for an alphabetic order, we sort the rest of the properties
         if ( info.isPropertyOrderAlphabetic() ) {
             List<Map.Entry<String, PropertyInfo>> entries = new ArrayList<Map.Entry<String, PropertyInfo>>( propertiesMap.entrySet() );
             Collections.sort( entries, new Comparator<Map.Entry<String, PropertyInfo>>() {

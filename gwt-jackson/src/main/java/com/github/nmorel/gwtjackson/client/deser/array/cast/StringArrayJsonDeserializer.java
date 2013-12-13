@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
 import com.github.nmorel.gwtjackson.client.deser.array.AbstractArrayJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
@@ -50,7 +51,8 @@ public class StringArrayJsonDeserializer extends AbstractArrayJsonDeserializer<S
     private StringArrayJsonDeserializer() { }
 
     @Override
-    public String[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+    public String[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
+        IOException {
         JsArrayString jsArray = JsArrayString.createArray().cast();
         reader.beginArray();
         while ( JsonToken.END_ARRAY != reader.peek() ) {
@@ -76,7 +78,8 @@ public class StringArrayJsonDeserializer extends AbstractArrayJsonDeserializer<S
     }
 
     @Override
-    protected String[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+    protected String[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx,
+                                                 JsonDeserializerParameters params ) throws IOException {
         return new String[]{reader.nextString()};
     }
 }

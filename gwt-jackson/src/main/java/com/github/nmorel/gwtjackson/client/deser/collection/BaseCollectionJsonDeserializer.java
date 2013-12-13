@@ -21,6 +21,7 @@ import java.util.Collection;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 
@@ -42,14 +43,14 @@ public abstract class BaseCollectionJsonDeserializer<C extends Collection<T>, T>
     }
 
     @Override
-    public C doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+    public C doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws IOException {
         if ( JsonToken.BEGIN_ARRAY == reader.peek() ) {
 
             C result = newCollection();
 
             reader.beginArray();
             while ( JsonToken.END_ARRAY != reader.peek() ) {
-                T element = deserializer.deserialize( reader, ctx );
+                T element = deserializer.deserialize( reader, ctx, params );
                 if ( isNullValueAllowed() || null != element ) {
                     result.add( element );
                 }
@@ -61,7 +62,7 @@ public abstract class BaseCollectionJsonDeserializer<C extends Collection<T>, T>
         } else if ( ctx.isAcceptSingleValueAsArray() ) {
 
             C result = newCollection();
-            result.add( deserializer.deserialize( reader, ctx ) );
+            result.add( deserializer.deserialize( reader, ctx, params ) );
             return result;
 
         } else {

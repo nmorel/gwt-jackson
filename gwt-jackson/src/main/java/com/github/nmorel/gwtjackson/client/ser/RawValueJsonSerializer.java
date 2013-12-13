@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
+import com.github.nmorel.gwtjackson.client.JsonSerializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
 /**
@@ -35,7 +36,7 @@ public class RawValueJsonSerializer<T> extends JsonSerializer<T> {
     /**
      * @return an instance of {@link RawValueJsonSerializer}
      */
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public static <T> RawValueJsonSerializer<T> getInstance() {
         return (RawValueJsonSerializer<T>) INSTANCE;
     }
@@ -43,7 +44,8 @@ public class RawValueJsonSerializer<T> extends JsonSerializer<T> {
     private RawValueJsonSerializer() { }
 
     @Override
-    protected void doSerialize( JsonWriter writer, @Nonnull Object value, JsonSerializationContext ctx ) throws IOException {
+    protected void doSerialize( JsonWriter writer, @Nonnull Object value, JsonSerializationContext ctx,
+                                JsonSerializerParameters params ) throws IOException {
         writer.rawValue( value );
     }
 }

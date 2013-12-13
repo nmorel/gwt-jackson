@@ -22,6 +22,7 @@ import java.util.List;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 
 /**
@@ -67,15 +68,15 @@ public class ArrayJsonDeserializer<T> extends AbstractArrayJsonDeserializer<T[]>
     }
 
     @Override
-    public T[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
-        List<T> list = deserializeIntoList( reader, ctx, deserializer );
+    public T[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws IOException {
+        List<T> list = deserializeIntoList( reader, ctx, deserializer, params );
         return list.toArray( arrayCreator.create( list.size() ) );
     }
 
     @Override
-    protected T[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+    protected T[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws IOException {
         T[] result = arrayCreator.create( 1 );
-        result[0] = deserializer.deserialize( reader, ctx );
+        result[0] = deserializer.deserialize( reader, ctx, params );
         return result;
     }
 

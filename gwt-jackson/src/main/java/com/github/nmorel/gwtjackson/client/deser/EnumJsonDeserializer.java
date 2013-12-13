@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 
 /**
@@ -54,7 +55,7 @@ public class EnumJsonDeserializer<E extends Enum<E>> extends JsonDeserializer<E>
     }
 
     @Override
-    public E doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+    public E doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws IOException {
         return Enum.valueOf( enumClass, reader.nextString() );
     }
 }

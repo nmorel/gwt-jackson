@@ -23,6 +23,7 @@ import java.util.Date;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 import com.github.nmorel.gwtjackson.client.utils.DateFormat;
@@ -147,7 +148,7 @@ public abstract class BaseDateJsonDeserializer<D extends Date> extends JsonDeser
     }
 
     @Override
-    public D doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+    public D doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws IOException {
         if ( JsonToken.NUMBER.equals( reader.peek() ) ) {
             return deserializeNumber( reader.nextLong() );
         } else {

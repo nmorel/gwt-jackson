@@ -21,6 +21,7 @@ import java.util.List;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
 import com.github.nmorel.gwtjackson.client.deser.BaseNumberJsonDeserializer.ByteJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
@@ -45,8 +46,9 @@ public class PrimitiveByteArrayJsonDeserializer extends AbstractArrayJsonDeseria
     private PrimitiveByteArrayJsonDeserializer() { }
 
     @Override
-    public byte[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
-        List<Byte> list = deserializeIntoList( reader, ctx, ByteJsonDeserializer.getInstance() );
+    public byte[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
+        IOException {
+        List<Byte> list = deserializeIntoList( reader, ctx, ByteJsonDeserializer.getInstance(), params );
 
         byte[] result = new byte[list.size()];
         int i = 0;
@@ -60,18 +62,20 @@ public class PrimitiveByteArrayJsonDeserializer extends AbstractArrayJsonDeseria
     }
 
     @Override
-    protected byte[] doDeserializeNonArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+    protected byte[] doDeserializeNonArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
+        IOException {
         if ( JsonToken.STRING == reader.peek() ) {
             return Base64.decode( reader.nextString() ).getBytes();
         } else if ( ctx.isAcceptSingleValueAsArray() ) {
-            return doDeserializeSingleArray( reader, ctx );
+            return doDeserializeSingleArray( reader, ctx, params );
         } else {
             throw ctx.traceError( "Cannot deserialize a byte[] out of " + reader.peek() + " token", reader );
         }
     }
 
     @Override
-    protected byte[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
-        return new byte[]{ByteJsonDeserializer.getInstance().deserialize( reader, ctx )};
+    protected byte[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx,
+                                               JsonDeserializerParameters params ) throws IOException {
+        return new byte[]{ByteJsonDeserializer.getInstance().deserialize( reader, ctx, params )};
     }
 }

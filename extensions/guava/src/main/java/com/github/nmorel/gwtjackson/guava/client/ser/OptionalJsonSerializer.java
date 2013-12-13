@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
+import com.github.nmorel.gwtjackson.client.JsonSerializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 import com.google.common.base.Optional;
 
@@ -56,9 +57,10 @@ public final class OptionalJsonSerializer<T> extends JsonSerializer<Optional<T>>
     }
 
     @Override
-    protected void doSerialize( JsonWriter writer, @Nonnull Optional<T> value, JsonSerializationContext ctx ) throws IOException {
+    protected void doSerialize( JsonWriter writer, @Nonnull Optional<T> value, JsonSerializationContext ctx,
+                                JsonSerializerParameters params ) throws IOException {
         if ( value.isPresent() ) {
-            serializer.serialize( writer, value.get(), ctx );
+            serializer.serialize( writer, value.get(), ctx, params );
         } else if ( writer.getSerializeNulls() ) {
             writer.nullValue();
         } else {

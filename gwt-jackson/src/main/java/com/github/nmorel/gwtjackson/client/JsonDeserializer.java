@@ -39,11 +39,26 @@ public abstract class JsonDeserializer<T> {
      * @throws JsonDeserializationException if an error occurs during the deserialization
      */
     public T deserialize( JsonReader reader, JsonDeserializationContext ctx ) throws JsonDeserializationException {
+        return deserialize( reader, ctx, JsonDeserializerParameters.DEFAULT );
+    }
+
+    /**
+     * Deserializes a JSON input into an object.
+     *
+     * @param reader {@link JsonReader} used to read the JSON input
+     * @param ctx Context for the full deserialization process
+     * @param params Parameters for this deserialization
+     *
+     * @return the deserialized object
+     * @throws JsonDeserializationException if an error occurs during the deserialization
+     */
+    public T deserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
+        JsonDeserializationException {
         try {
             if ( JsonToken.NULL.equals( reader.peek() ) ) {
-                return deserializeNullValue( reader, ctx );
+                return deserializeNullValue( reader, ctx, params );
             }
-            return doDeserialize( reader, ctx );
+            return doDeserialize( reader, ctx, params );
         } catch ( IOException e ) {
             throw ctx.traceError( e, reader );
         } catch ( JsonDeserializationException e ) {
@@ -59,11 +74,13 @@ public abstract class JsonDeserializer<T> {
      *
      * @param reader {@link JsonReader} used to read the JSON input
      * @param ctx Context for the full deserialization process
+     * @param params Parameters for this deserialization
      *
      * @return the deserialized object
      * @throws IOException if an error occurs reading the input
      */
-    protected T deserializeNullValue( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
+    protected T deserializeNullValue( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
+        IOException {
         reader.skipValue();
         return null;
     }
@@ -73,11 +90,13 @@ public abstract class JsonDeserializer<T> {
      *
      * @param reader {@link JsonReader} used to read the JSON input
      * @param ctx Context for the full deserialization process
+     * @param params Parameters for this deserialization
      *
      * @return the deserialized object
      * @throws IOException if an error occurs reading the input
      */
-    protected abstract T doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException;
+    protected abstract T doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
+        IOException;
 
     /**
      * Set the back reference.
