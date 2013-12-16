@@ -89,8 +89,6 @@ public class BeanIdentityInfo {
 
     private Class<?> scope;
 
-    private PropertyInfo property;
-
     private JType type;
 
     private BeanIdentityInfo( String propertyName, boolean alwaysAsId, Class<? extends ObjectIdGenerator<?>> generator, Class<?> scope,
@@ -134,15 +132,6 @@ public class BeanIdentityInfo {
 
     public Class<?> getScope() {
         return scope;
-    }
-
-    public PropertyInfo getProperty() {
-        return property;
-    }
-
-    public void setProperty( PropertyInfo property ) {
-        this.property = property;
-        this.type = property.getType();
     }
 
     public JType getType() {

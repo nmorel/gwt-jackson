@@ -17,17 +17,19 @@
 package com.github.nmorel.gwtjackson.rebind;
 
 import java.io.PrintWriter;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.ObjectIdGenerator;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.deser.bean.AbstractBeanJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.bean.AbstractIdentityDeserializationInfo;
+import com.github.nmorel.gwtjackson.client.deser.bean.PropertyIdentityDeserializationInfo;
 import com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.AbstractBeanJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.bean.AbstractIdentitySerializationInfo;
 import com.github.nmorel.gwtjackson.client.ser.bean.ObjectIdSerializer;
+import com.github.nmorel.gwtjackson.client.ser.bean.PropertyIdentitySerializationInfo;
 import com.github.nmorel.gwtjackson.client.ser.map.key.KeySerializer;
-import com.github.nmorel.gwtjackson.rebind.FieldAccessor.Accessor;
 import com.github.nmorel.gwtjackson.rebind.PropertyInfo.AdditionalMethod;
 import com.github.nmorel.gwtjackson.rebind.RebindConfiguration.MapperInstance;
 import com.github.nmorel.gwtjackson.rebind.RebindConfiguration.MapperType;
@@ -260,7 +262,6 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         StringSourceWriter sourceWriter = new StringSourceWriter();
 
         if ( propertyInfo.getIdentityInfo().isPresent() ) {
-            findIdPropertyInfo( info.getProperties(), propertyInfo.getIdentityInfo() );
             generateIdentifierSerializationInfo( sourceWriter, type, propertyInfo.getIdentityInfo().get() );
         } else {
             sourceWriter.print( "null" );
@@ -279,30 +280,35 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
     protected void generateIdentifierSerializationInfo( SourceWriter source, JClassType type, BeanIdentityInfo identityInfo ) throws
         UnableToCompleteException {
-        String qualifiedType = getQualifiedClassName( identityInfo.getType() );
 
-        String identityPropertyClass = String.format( "%s<%s, %s>", IDENTITY_SERIALIZATION_INFO_CLASS, type
-            .getParameterizedQualifiedSourceName(), qualifiedType );
+        if ( identityInfo.isIdABeanProperty() ) {
+            source.println( "new %s<%s>(%s, \"%s\")", PropertyIdentitySerializationInfo.class.getName(), type
+                .getParameterizedQualifiedSourceName(), identityInfo.isAlwaysAsId(), identityInfo.getPropertyName() );
+        } else {
+            String qualifiedType = getQualifiedClassName( identityInfo.getType() );
+            String identityPropertyClass = String.format( "%s<%s, %s>", AbstractIdentitySerializationInfo.class.getName(), type
+                .getParameterizedQualifiedSourceName(), qualifiedType );
 
-        source.println( "new %s(%s, \"%s\") {", identityPropertyClass, identityInfo.isAlwaysAsId(), identityInfo.getPropertyName() );
-        source.indent();
+            source.println( "new %s(%s, \"%s\") {", identityPropertyClass, identityInfo.isAlwaysAsId(), identityInfo.getPropertyName() );
+            source.indent();
 
-        source.println( "@Override" );
-        source
-            .println( "protected %s<%s> newSerializer(%s ctx) {", JSON_SERIALIZER_CLASS, qualifiedType, JSON_SERIALIZATION_CONTEXT_CLASS );
-        source.indent();
-        source.println( "return %s;", getJsonSerializerFromType( identityInfo.getType() ) );
-        source.outdent();
-        source.println( "}" );
-        source.println();
+            source.println( "@Override" );
+            source
+                .println( "protected %s<%s> newSerializer(%s ctx) {", JSON_SERIALIZER_CLASS, qualifiedType,
+                    JSON_SERIALIZATION_CONTEXT_CLASS );
+            source.indent();
+            source.println( "return %s;", getJsonSerializerFromType( identityInfo.getType() ) );
+            source.outdent();
+            source.println( "}" );
+            source.println();
 
-        Optional<AdditionalMethod> additionalMethod = Optional.absent();
+            Optional<AdditionalMethod> additionalMethod = Optional.absent();
 
-        source.println( "@Override" );
-        source.println( "public %s<%s> getObjectId(%s bean, %s ctx) {", ObjectIdSerializer.class.getName(), qualifiedType, type
-            .getParameterizedQualifiedSourceName(), JSON_SERIALIZATION_CONTEXT_CLASS );
-        source.indent();
-        if ( !identityInfo.isIdABeanProperty() ) {
+            source.println( "@Override" );
+            source.println( "public %s<%s> getObjectId(%s bean, %s ctx) {", ObjectIdSerializer.class.getName(), qualifiedType, type
+                .getParameterizedQualifiedSourceName(), JSON_SERIALIZATION_CONTEXT_CLASS );
+            source.indent();
+
             String generatorType = String.format( "%s<%s>", ObjectIdGenerator.class.getName(), qualifiedType );
             source.println( "%s generator = new %s().forScope(%s.class);", generatorType, identityInfo.getGenerator()
                 .getCanonicalName(), identityInfo.getScope().getName() );
@@ -315,22 +321,18 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             source.println( "}" );
             source.println( "return new %s<%s>(scopedGen.generateId(bean), getSerializer(ctx));", ObjectIdSerializer.class
                 .getName(), qualifiedType );
-        } else {
-            Accessor accessor = identityInfo.getProperty().getGetterAccessor().get().getAccessor( "bean", false );
-            additionalMethod = accessor.getAdditionalMethod();
-            source.println( "return new %s<%s>(%s, getSerializer(ctx));", ObjectIdSerializer.class.getName(), qualifiedType, accessor
-                .getAccessor() );
-        }
-        source.outdent();
-        source.println( "}" );
 
-        if ( additionalMethod.isPresent() ) {
-            source.println();
-            additionalMethod.get().write( source );
-        }
+            source.outdent();
+            source.println( "}" );
 
-        source.outdent();
-        source.print( "}" );
+            if ( additionalMethod.isPresent() ) {
+                source.println();
+                additionalMethod.get().write( source );
+            }
+
+            source.outdent();
+            source.print( "}" );
+        }
     }
 
     /**
@@ -505,7 +507,6 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         StringSourceWriter sourceWriter = new StringSourceWriter();
 
         if ( propertyInfo.getIdentityInfo().isPresent() ) {
-            findIdPropertyInfo( info.getProperties(), propertyInfo.getIdentityInfo() );
             generateIdentifierDeserializationInfo( sourceWriter, info.getBeanInfo(), propertyInfo.getIdentityInfo().get() );
         } else {
             sourceWriter.print( "null" );
@@ -524,56 +525,35 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
     protected void generateIdentifierDeserializationInfo( SourceWriter source, BeanInfo beanInfo,
                                                           BeanIdentityInfo identityInfo ) throws UnableToCompleteException {
-        String qualifiedType = getQualifiedClassName( identityInfo.getType() );
-
-        String identityPropertyClass = String.format( "%s<%s, %s>", IDENTITY_DESERIALIZATION_INFO_CLASS, beanInfo.getType()
-            .getParameterizedQualifiedSourceName(), qualifiedType );
-
-        source.println( "new %s(\"%s\", %s.class, %s.class) {", identityPropertyClass, identityInfo.getPropertyName(), identityInfo
-            .getGenerator().getCanonicalName(), identityInfo.getScope().getCanonicalName() );
-        source.indent();
-
-        source.println( "@Override" );
-        source
-            .println( "protected %s<%s> newDeserializer(%s ctx) {", JSON_DESERIALIZER_CLASS, qualifiedType,
-                JSON_DESERIALIZATION_CONTEXT_CLASS );
-        source.indent();
-        source.println( "return %s;", getJsonDeserializerFromType( identityInfo.getType() ) );
-        source.outdent();
-        source.println( "}" );
-        source.println();
-
         if ( identityInfo.isIdABeanProperty() ) {
-            Accessor accessor = identityInfo.getProperty().getSetterAccessor().get().getAccessor( "bean", false );
+
+            source.println( "new %s<%s>(\"%s\", %s.class, %s.class)", PropertyIdentityDeserializationInfo.class.getName(), beanInfo
+                .getType().getParameterizedQualifiedSourceName(), identityInfo.getPropertyName(), identityInfo.getGenerator()
+                .getCanonicalName(), identityInfo.getScope().getCanonicalName() );
+
+        } else {
+
+            String qualifiedType = getQualifiedClassName( identityInfo.getType() );
+
+            String identityPropertyClass = String.format( "%s<%s, %s>", AbstractIdentityDeserializationInfo.class.getName(), beanInfo
+                .getType().getParameterizedQualifiedSourceName(), qualifiedType );
+
+            source.println( "new %s(\"%s\", %s.class, %s.class) {", identityPropertyClass, identityInfo.getPropertyName(), identityInfo
+                .getGenerator().getCanonicalName(), identityInfo.getScope().getCanonicalName() );
+            source.indent();
 
             source.println( "@Override" );
-            source.println( "protected void setIdToBean(%s bean, %s id) {", beanInfo.getType()
-                .getParameterizedQualifiedSourceName(), qualifiedType );
+            source
+                .println( "protected %s<%s> newDeserializer(%s ctx) {", JSON_DESERIALIZER_CLASS, qualifiedType,
+                    JSON_DESERIALIZATION_CONTEXT_CLASS );
             source.indent();
-            source.println( accessor.getAccessor() + ";", "id" );
+            source.println( "return %s;", getJsonDeserializerFromType( identityInfo.getType() ) );
             source.outdent();
             source.println( "}" );
+            source.println();
 
-            if ( accessor.getAdditionalMethod().isPresent() ) {
-                source.println();
-                accessor.getAdditionalMethod().get().write( source );
-            }
-        }
-
-        source.outdent();
-        source.print( "}" );
-    }
-
-    protected void findIdPropertyInfo( Map<String, PropertyInfo> properties, Optional<BeanIdentityInfo> identityInfo ) throws
-        UnableToCompleteException {
-        if ( identityInfo.isPresent() && identityInfo.get().isIdABeanProperty() ) {
-            PropertyInfo property = properties.get( identityInfo.get().getPropertyName() );
-            if ( null == property ) {
-                logger.log( Type.ERROR, "Cannot find the property with the name '" + identityInfo.get()
-                    .getPropertyName() + "' used for identity" );
-                throw new UnableToCompleteException();
-            }
-            identityInfo.get().setProperty( property );
+            source.outdent();
+            source.print( "}" );
         }
     }
 

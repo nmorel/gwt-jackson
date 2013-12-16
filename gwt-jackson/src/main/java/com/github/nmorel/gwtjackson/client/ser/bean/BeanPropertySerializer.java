@@ -33,7 +33,7 @@ public abstract class BeanPropertySerializer<T, V> extends HasSerializer<V, Json
      *
      * @return the property's value
      */
-    protected abstract V getValue( T bean, JsonSerializationContext ctx );
+    public abstract V getValue( T bean, JsonSerializationContext ctx );
 
     /**
      * Serializes the property defined for this instance.

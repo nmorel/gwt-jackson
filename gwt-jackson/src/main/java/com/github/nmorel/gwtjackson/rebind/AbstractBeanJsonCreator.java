@@ -222,8 +222,6 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
             }
         }
 
-        findIdPropertyInfo( result, info.getIdentityInfo() );
-
         return result;
     }
 

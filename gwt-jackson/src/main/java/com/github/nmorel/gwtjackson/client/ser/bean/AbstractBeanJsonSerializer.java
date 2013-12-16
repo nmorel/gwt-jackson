@@ -34,7 +34,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
 
     private final Map<String, BeanPropertySerializer<T, ?>> serializers = new LinkedHashMap<String, BeanPropertySerializer<T, ?>>();
 
-    private IdentitySerializationInfo<T, ?> identityInfo;
+    private IdentitySerializationInfo<T> identityInfo;
 
     private SuperclassSerializationInfo<T> superclassInfo;
 
@@ -59,7 +59,12 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
                 return;
             }
 
-            idWriter = identityInfo.getObjectId( value, ctx );
+            if ( identityInfo.isProperty() ) {
+                BeanPropertySerializer<T, ?> propertySerializer = serializers.get( identityInfo.getPropertyName() );
+                idWriter = new ObjectIdSerializer( propertySerializer.getValue( value, ctx ), propertySerializer.getSerializer( ctx ) );
+            } else {
+                idWriter = identityInfo.getObjectId( value, ctx );
+            }
             if ( identityInfo.isAlwaysAsId() ) {
                 idWriter.serializeId( writer, ctx );
                 return;
@@ -158,21 +163,15 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
      */
     public final void serializeObject( JsonWriter writer, T value, JsonSerializationContext ctx ) throws IOException {
         for ( Map.Entry<String, BeanPropertySerializer<T, ?>> entry : serializers.entrySet() ) {
-            writer.name( entry.getKey() );
-            entry.getValue().serialize( writer, value, ctx );
+            if ( null == identityInfo || !identityInfo.isProperty() || !identityInfo.getPropertyName().equals( entry.getKey() ) ) {
+                writer.name( entry.getKey() );
+                entry.getValue().serialize( writer, value, ctx );
+            }
         }
     }
 
-    protected final IdentitySerializationInfo<T, ?> getIdentityInfo() {
-        return identityInfo;
-    }
-
-    protected final void setIdentityInfo( IdentitySerializationInfo<T, ?> identityInfo ) {
+    protected final void setIdentityInfo( IdentitySerializationInfo<T> identityInfo ) {
         this.identityInfo = identityInfo;
-    }
-
-    protected final SuperclassSerializationInfo<T> getSuperclassInfo() {
-        return superclassInfo;
     }
 
     protected final void setSuperclassInfo( SuperclassSerializationInfo<T> superclassInfo ) {

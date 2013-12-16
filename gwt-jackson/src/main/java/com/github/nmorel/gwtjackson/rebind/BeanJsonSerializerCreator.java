@@ -83,7 +83,7 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
         if ( null != typeParameters ) {
             source.print( "%s, ", typeParameters.getJoinedTypeParameterMappersWithType() );
         }
-        source.println( "%s<%s, ?> idProperty, %s<%s> superclassInfo) {", IDENTITY_SERIALIZATION_INFO_CLASS, beanInfo.getType()
+        source.println( "%s<%s> idProperty, %s<%s> superclassInfo) {", IDENTITY_SERIALIZATION_INFO_CLASS, beanInfo.getType()
             .getParameterizedQualifiedSourceName(), SUPERCLASS_SERIALIZATION_INFO_CLASS, beanInfo.getType()
             .getParameterizedQualifiedSourceName() );
         source.indent();
@@ -152,10 +152,6 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
 
             Accessor getterAccessor = property.getGetterAccessor().get().getAccessor( "bean", true );
 
-            source.println( "if(null == getIdentityInfo() || !getIdentityInfo().getPropertyName().equals(\"%s\")) {", property
-                .getPropertyName() );
-            source.indent();
-
             source.println( "addPropertySerializer(\"%s\", new " + BEAN_PROPERTY_SERIALIZER_CLASS + "<%s, %s>() {", property
                 .getPropertyName(), getQualifiedClassName( beanInfo.getType() ), getQualifiedClassName( property.getType() ) );
 
@@ -171,7 +167,7 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
             source.println();
 
             source.println( "@Override" );
-            source.println( "protected %s getValue(%s bean, %s ctx) {", getQualifiedClassName( property
+            source.println( "public %s getValue(%s bean, %s ctx) {", getQualifiedClassName( property
                 .getType() ), getQualifiedClassName( beanInfo.getType() ), JSON_SERIALIZATION_CONTEXT_CLASS );
             source.indent();
             source.println( "return %s;", getterAccessor.getAccessor() );
@@ -185,9 +181,6 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
 
             source.outdent();
             source.println( "});" );
-
-            source.outdent();
-            source.println( "}" );
         }
     }
 }

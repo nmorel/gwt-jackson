@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.ObjectIdGenerator.IdKey;
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
@@ -48,7 +47,7 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
 
     private InstanceBuilder<T> instanceBuilder;
 
-    private IdentityDeserializationInfo<T, ?> identityInfo;
+    private IdentityDeserializationInfo<T> identityInfo;
 
     private SuperclassDeserializationInfo<T> superclassInfo;
 
@@ -87,8 +86,14 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
     @Override
     public T doDeserialize( JsonReader reader, JsonDeserializationContext ctx ) throws IOException {
         if ( null != identityInfo && !JsonToken.BEGIN_OBJECT.equals( reader.peek() ) ) {
-            IdKey id = identityInfo.readIdKey( reader, ctx );
-            Object instance = ctx.getObjectWithId( id );
+            Object id;
+            if ( identityInfo.isProperty() ) {
+                BeanPropertyDeserializer<T, ?> propertyDeserializer = deserializers.get( identityInfo.getPropertyName() );
+                id = propertyDeserializer.getDeserializer( ctx ).deserialize( reader, ctx );
+            } else {
+                id = identityInfo.readId( reader, ctx );
+            }
+            Object instance = ctx.getObjectWithId( identityInfo.newIdKey( id ) );
             if ( null == instance ) {
                 throw ctx.traceError( "Cannot find an object with id " + id, reader );
             }
@@ -230,7 +235,19 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
         }
 
         if ( null != identityReader ) {
-            identityInfo.readAndAddIdToContext( identityReader, instance.getInstance(), ctx );
+            Object id;
+            if ( identityInfo.isProperty() ) {
+                BeanPropertyDeserializer propertyDeserializer = deserializers.get( identityInfo.getPropertyName() );
+                id = propertyDeserializer.getDeserializer( ctx ).deserialize( identityReader, ctx );
+                if ( null != id ) {
+                    propertyDeserializer.setValue( instance.getInstance(), id, ctx );
+                }
+            } else {
+                id = identityInfo.readId( identityReader, ctx );
+            }
+            if ( null != id ) {
+                ctx.addObjectId( identityInfo.newIdKey( id ), instance.getInstance() );
+            }
         }
     }
 
@@ -300,24 +317,12 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
         backReferenceProperty.setBackReference( value, reference, ctx );
     }
 
-    protected final InstanceBuilder<T> getInstanceBuilder() {
-        return instanceBuilder;
-    }
-
     protected final void setInstanceBuilder( InstanceBuilder<T> instanceBuilder ) {
         this.instanceBuilder = instanceBuilder;
     }
 
-    protected final IdentityDeserializationInfo<T, ?> getIdentityInfo() {
-        return identityInfo;
-    }
-
-    protected final void setIdentityInfo( IdentityDeserializationInfo<T, ?> identityInfo ) {
+    protected final void setIdentityInfo( IdentityDeserializationInfo<T> identityInfo ) {
         this.identityInfo = identityInfo;
-    }
-
-    protected final SuperclassDeserializationInfo<T> getSuperclassInfo() {
-        return superclassInfo;
     }
 
     protected final void setSuperclassInfo( SuperclassDeserializationInfo<T> superclassInfo ) {

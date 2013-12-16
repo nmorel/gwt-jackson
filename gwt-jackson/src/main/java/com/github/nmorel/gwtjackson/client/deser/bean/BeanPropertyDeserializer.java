@@ -34,6 +34,10 @@ public abstract class BeanPropertyDeserializer<T, V> extends HasDeserializer<V, 
      * @param bean bean to set the deserialized property to
      * @param ctx context of the deserialization process
      */
-    public abstract void deserialize( JsonReader reader, T bean, JsonDeserializationContext ctx );
+    public void deserialize( JsonReader reader, T bean, JsonDeserializationContext ctx ) {
+        setValue( bean, getDeserializer( ctx ).deserialize( reader, ctx ), ctx );
+    }
+
+    public abstract void setValue( T bean, V value, JsonDeserializationContext ctx );
 }
 

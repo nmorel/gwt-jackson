@@ -121,7 +121,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         if ( null != typeParameters ) {
             source.print( "%s, ", typeParameters.getJoinedTypeParameterMappersWithType() );
         }
-        source.println( "%s<%s, ?> idProperty, %s<%s> superclassInfo) {", IDENTITY_DESERIALIZATION_INFO_CLASS, beanInfo.getType()
+        source.println( "%s<%s> idProperty, %s<%s> superclassInfo) {", IDENTITY_DESERIALIZATION_INFO_CLASS, beanInfo.getType()
             .getParameterizedQualifiedSourceName(), SUPERCLASS_DESERIALIZATION_INFO_CLASS, beanInfo.getType()
             .getParameterizedQualifiedSourceName() );
         source.indent();
@@ -401,12 +401,6 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
                 continue;
             }
 
-            if ( info.getIdentityInfo().isPresent() && info.getIdentityInfo().get().isIdABeanProperty() && info.getIdentityInfo().get()
-                .getProperty() == property ) {
-                // the id property is handled by identity process
-                continue;
-            }
-
             if ( property.isIgnored() ) {
                 // we add the name of the property to the ignoredProperties list
                 source.println( "addIgnoredProperty(\"%s\");", property.getPropertyName() );
@@ -438,17 +432,14 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
                 source.println();
 
                 source.println( "@Override" );
-                source.println( "public void deserialize(%s reader, %s bean, %s ctx) {", JSON_READER_CLASS, info.getType()
-                    .getParameterizedQualifiedSourceName(), JSON_DESERIALIZATION_CONTEXT_CLASS );
+                source.println( "public void setValue(%s bean, %s value, %s ctx) {", info.getType()
+                    .getParameterizedQualifiedSourceName(), getQualifiedClassName( property
+                    .getType() ), JSON_DESERIALIZATION_CONTEXT_CLASS );
                 source.indent();
-
-                source.println( "%s<%s> deserializer = getDeserializer(ctx);", JSON_DESERIALIZER_CLASS, getQualifiedClassName( property
-                    .getType() ) );
-                source.println( "%s value = deserializer.deserialize(reader, ctx);", property.getType()
-                    .getParameterizedQualifiedSourceName() );
                 source.println( accessor.getAccessor() + ";", "value" );
                 if ( property.getManagedReference().isPresent() ) {
-                    source.println( "deserializer.setBackReference(\"%s\", bean, value, ctx);", property.getManagedReference().get() );
+                    source.println( "getDeserializer(ctx).setBackReference(\"%s\", bean, value, ctx);",
+                        property.getManagedReference().get() );
                 }
             } else {
                 // this is a back reference, we add the special back reference property that will be called by the parent
