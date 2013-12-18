@@ -155,8 +155,7 @@ public class JsonDeserializationContext extends JsonMappingContext {
      * @return a {@link JsonDeserializationException} with the given message
      */
     public JsonDeserializationException traceError( String message ) {
-        getLogger().log( Level.SEVERE, message );
-        return new JsonDeserializationException( message );
+        return traceError( message, null );
     }
 
     /**
@@ -168,9 +167,9 @@ public class JsonDeserializationContext extends JsonMappingContext {
      * @return a {@link JsonDeserializationException} with the given message
      */
     public JsonDeserializationException traceError( String message, JsonReader reader ) {
-        JsonDeserializationException exception = traceError( message );
+        getLogger().log( Level.SEVERE, message );
         traceReaderInfo( reader );
-        return exception;
+        return new JsonDeserializationException( message );
     }
 
     /**
@@ -181,8 +180,7 @@ public class JsonDeserializationContext extends JsonMappingContext {
      * @return a {@link JsonDeserializationException} with the given cause
      */
     public JsonDeserializationException traceError( Exception cause ) {
-        getLogger().log( Level.SEVERE, "Error during deserialization", cause );
-        return new JsonDeserializationException( cause );
+        return traceError( cause, null );
     }
 
     /**
@@ -194,16 +192,16 @@ public class JsonDeserializationContext extends JsonMappingContext {
      * @return a {@link JsonDeserializationException} with the given cause
      */
     public JsonDeserializationException traceError( Exception cause, JsonReader reader ) {
-        JsonDeserializationException exception = traceError( cause );
+        getLogger().log( Level.SEVERE, "Error during deserialization", cause );
         traceReaderInfo( reader );
-        return exception;
+        return new JsonDeserializationException( cause );
     }
 
     /**
      * Trace the current reader state
      */
     private void traceReaderInfo( JsonReader reader ) {
-        if ( getLogger().isLoggable( Level.INFO ) ) {
+        if ( null != reader && getLogger().isLoggable( Level.INFO ) ) {
             getLogger().log( Level.INFO, "Error at line " + reader.getLineNumber() + " and column " + reader
                 .getColumnNumber() + " of input <" + reader.getInput() + ">" );
         }

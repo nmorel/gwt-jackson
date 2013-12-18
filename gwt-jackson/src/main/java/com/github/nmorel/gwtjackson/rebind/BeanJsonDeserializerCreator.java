@@ -27,12 +27,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.github.nmorel.gwtjackson.client.deser.bean.SubtypeDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 import com.github.nmorel.gwtjackson.rebind.FieldAccessor.Accessor;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JAbstractMethod;
+import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JConstructor;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JParameter;
@@ -96,6 +98,10 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
         source.println();
 
+        generateClassGetterMethod( source, beanInfo );
+
+        source.println();
+
         source.commit( logger );
     }
 
@@ -121,8 +127,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         if ( null != typeParameters ) {
             source.print( "%s, ", typeParameters.getJoinedTypeParameterMappersWithType() );
         }
-        source.println( "%s<%s> idProperty, %s<%s> superclassInfo) {", IDENTITY_DESERIALIZATION_INFO_CLASS, beanInfo.getType()
-            .getParameterizedQualifiedSourceName(), SUPERCLASS_DESERIALIZATION_INFO_CLASS, beanInfo.getType()
+        source.println( "%s<%s> idProperty, %s<%s> typeInfo) {", IDENTITY_DESERIALIZATION_INFO_CLASS, beanInfo.getType()
+            .getParameterizedQualifiedSourceName(), TYPE_DESERIALIZATION_INFO_CLASS, beanInfo.getType()
             .getParameterizedQualifiedSourceName() );
         source.indent();
         source.println( "super();" );
@@ -147,7 +153,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
             source.println( "if(null == idProperty) {" );
             source.indent();
             source.print( "setIdentityInfo(" );
-            generateIdentifierDeserializationInfo( source, beanInfo, beanInfo.getIdentityInfo().get() );
+            generateIdentifierDeserializationInfo( source, beanInfo.getType(), beanInfo.getIdentityInfo().get() );
             source.println( ");" );
             source.outdent();
             source.println( "} else {" );
@@ -161,19 +167,19 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
         source.println();
 
-        if ( beanInfo.getTypeInfo().isPresent() || beanInfo.getType().getSubtypes().length > 0 ) {
-            source.println( "if(null == superclassInfo) {" );
+        if ( beanInfo.getTypeInfo().isPresent() ) {
+            source.println( "if(null == typeInfo) {" );
             source.indent();
-            source.print( "setSuperclassInfo(" );
-            generateSuperclassInfo( source, beanInfo, beanInfo.getTypeInfo(), false );
+            source.print( "setTypeInfo(" );
+            generateTypeInfo( source, beanInfo.getTypeInfo(), false );
             source.println( ");" );
             source.outdent();
             source.println( "} else {" );
         } else {
-            source.println( "if(null != superclassInfo) {" );
+            source.println( "if(null != typeInfo) {" );
         }
         source.indent();
-        source.println( "setSuperclassInfo(superclassInfo);" );
+        source.println( "setTypeInfo(typeInfo);" );
         source.outdent();
         source.println( "}" );
 
@@ -182,6 +188,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         if ( beanInfo.getCreatorMethod().isPresent() ) {
             generatePropertyDeserializers( source, beanInfo, properties );
         }
+
+        generateSubtypeDeserializers( source, beanInfo );
 
         source.outdent();
         source.println( "}" );
@@ -438,8 +446,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
                 source.indent();
                 source.println( accessor.getAccessor() + ";", "value" );
                 if ( property.getManagedReference().isPresent() ) {
-                    source.println( "getDeserializer(ctx).setBackReference(\"%s\", bean, value, ctx);",
-                        property.getManagedReference().get() );
+                    source.println( "getDeserializer(ctx).setBackReference(\"%s\", bean, value, ctx);", property.getManagedReference()
+                        .get() );
                 }
             } else {
                 // this is a back reference, we add the special back reference property that will be called by the parent
@@ -467,6 +475,42 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
             source.outdent();
             source.println( "});" );
+            source.println();
         }
+    }
+
+    private void generateSubtypeDeserializers( SourceWriter source, BeanInfo beanInfo ) throws UnableToCompleteException {
+        JClassType[] subtypes = beanInfo.getType().getSubtypes();
+        if ( subtypes.length == 0 ) {
+            return;
+        }
+
+        for ( JClassType subtype : subtypes ) {
+            source.println( "addSubtypeDeserializer( %s.class, new %s<%s>() {", subtype.getQualifiedSourceName(), SubtypeDeserializer.class
+                .getName(), getQualifiedClassName( subtype ) );
+            source.indent();
+
+            source.println( "@Override" );
+            source
+                .println( "protected %s<%s> newDeserializer(%s ctx) {", ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS,
+                    getQualifiedClassName( subtype ), JSON_DESERIALIZATION_CONTEXT_CLASS );
+            source.indent();
+            source.println( "return %s;", getJsonDeserializerFromType( subtype ) );
+            source.outdent();
+            source.println( "}" );
+
+            source.outdent();
+            source.println( "});" );
+            source.println();
+        }
+    }
+
+    private void generateClassGetterMethod( SourceWriter source, BeanInfo beanInfo ) {
+        source.println( "@Override" );
+        source.println( "public %s getDeserializedType() {", Class.class.getName() );
+        source.indent();
+        source.println( "return %s.class;", beanInfo.getType().getQualifiedSourceName() );
+        source.outdent();
+        source.println( "}" );
     }
 }

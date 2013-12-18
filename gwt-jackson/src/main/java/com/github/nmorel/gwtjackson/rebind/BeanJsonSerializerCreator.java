@@ -18,10 +18,12 @@ package com.github.nmorel.gwtjackson.rebind;
 
 import java.util.Map;
 
+import com.github.nmorel.gwtjackson.client.ser.bean.SubtypeSerializer;
 import com.github.nmorel.gwtjackson.rebind.FieldAccessor.Accessor;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
+import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.user.rebind.SourceWriter;
 
 /**
@@ -57,6 +59,10 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
 
         source.println();
 
+        generateClassGetterMethod( source, beanInfo );
+
+        source.println();
+
         source.commit( logger );
     }
 
@@ -83,8 +89,8 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
         if ( null != typeParameters ) {
             source.print( "%s, ", typeParameters.getJoinedTypeParameterMappersWithType() );
         }
-        source.println( "%s<%s> idProperty, %s<%s> superclassInfo) {", IDENTITY_SERIALIZATION_INFO_CLASS, beanInfo.getType()
-            .getParameterizedQualifiedSourceName(), SUPERCLASS_SERIALIZATION_INFO_CLASS, beanInfo.getType()
+        source.println( "%s<%s> idProperty, %s<%s> typeInfo) {", IDENTITY_SERIALIZATION_INFO_CLASS, beanInfo.getType()
+            .getParameterizedQualifiedSourceName(), TYPE_SERIALIZATION_INFO_CLASS, beanInfo.getType()
             .getParameterizedQualifiedSourceName() );
         source.indent();
         source.println( "super();" );
@@ -116,19 +122,19 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
 
         source.println();
 
-        if ( beanInfo.getTypeInfo().isPresent() || beanInfo.getType().getSubtypes().length > 0 ) {
-            source.println( "if(null == superclassInfo) {" );
+        if ( beanInfo.getTypeInfo().isPresent() ) {
+            source.println( "if(null == typeInfo) {" );
             source.indent();
-            source.print( "setSuperclassInfo(" );
-            generateSuperclassInfo( source, beanInfo, beanInfo.getTypeInfo(), true );
+            source.print( "setTypeInfo(" );
+            generateTypeInfo( source, beanInfo.getTypeInfo(), true );
             source.println( ");" );
             source.outdent();
             source.println( "} else {" );
         } else {
-            source.println( "if(null != superclassInfo) {" );
+            source.println( "if(null != typeInfo) {" );
         }
         source.indent();
-        source.println( "setSuperclassInfo(superclassInfo);" );
+        source.println( "setTypeInfo(typeInfo);" );
         source.outdent();
         source.println( "}" );
 
@@ -136,7 +142,7 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
 
         generatePropertySerializers( source, beanInfo, properties );
 
-        source.println();
+        generateSubtypeSerializers( source, beanInfo );
 
         source.outdent();
         source.println( "}" );
@@ -181,6 +187,42 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
 
             source.outdent();
             source.println( "});" );
+            source.println();
         }
+    }
+
+    private void generateSubtypeSerializers( SourceWriter source, BeanInfo beanInfo ) throws UnableToCompleteException {
+        JClassType[] subtypes = beanInfo.getType().getSubtypes();
+        if ( subtypes.length == 0 ) {
+            return;
+        }
+
+        for ( JClassType subtype : subtypes ) {
+            source.println( "addSubtypeSerializer( %s.class, new %s<%s>() {", subtype.getQualifiedSourceName(), SubtypeSerializer.class
+                .getName(), getQualifiedClassName( subtype ) );
+            source.indent();
+
+            source.println( "@Override" );
+            source
+                .println( "protected %s<%s> newSerializer(%s ctx) {", ABSTRACT_BEAN_JSON_SERIALIZER_CLASS,
+                    getQualifiedClassName( subtype ), JSON_SERIALIZATION_CONTEXT_CLASS );
+            source.indent();
+            source.println( "return %s;", getJsonSerializerFromType( subtype ) );
+            source.outdent();
+            source.println( "}" );
+
+            source.outdent();
+            source.println( "});" );
+            source.println();
+        }
+    }
+
+    private void generateClassGetterMethod( SourceWriter source, BeanInfo beanInfo ) {
+        source.println( "@Override" );
+        source.println( "public %s getSerializedType() {", Class.class.getName() );
+        source.indent();
+        source.println( "return %s.class;", beanInfo.getType().getQualifiedSourceName() );
+        source.outdent();
+        source.println( "}" );
     }
 }

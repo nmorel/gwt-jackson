@@ -19,6 +19,7 @@ package com.github.nmorel.gwtjackson.client.deser.bean;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,6 +42,9 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
     private final Map<String, BackReferenceProperty<T, ?>> backReferenceDeserializers = new LinkedHashMap<String,
         BackReferenceProperty<T, ?>>();
 
+    private final Map<Class<? extends T>, SubtypeDeserializer<? extends T>> subtypeClassToDeserializer = new IdentityHashMap<Class<?
+        extends T>, SubtypeDeserializer<? extends T>>();
+
     private final Set<String> ignoredProperties = new HashSet<String>();
 
     private final Set<String> requiredProperties = new HashSet<String>();
@@ -49,7 +53,9 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
 
     private IdentityDeserializationInfo<T> identityInfo;
 
-    private SuperclassDeserializationInfo<T> superclassInfo;
+    private TypeDeserializationInfo<T> typeInfo;
+
+    public abstract Class getDeserializedType();
 
     /**
      * Add a {@link BeanPropertyDeserializer}
@@ -72,6 +78,16 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
      */
     protected final void addProperty( String referenceName, BackReferenceProperty<T, ?> backReference ) {
         backReferenceDeserializers.put( referenceName, backReference );
+    }
+
+    /**
+     * Adds a {@link SubtypeDeserializer}.
+     *
+     * @param clazz {@link Class} associated to the deserializer
+     * @param subtypeDeserializer the deserializer
+     */
+    protected <S extends T> void addSubtypeDeserializer( Class<S> clazz, SubtypeDeserializer<S> subtypeDeserializer ) {
+        subtypeClassToDeserializer.put( clazz, subtypeDeserializer );
     }
 
     /**
@@ -102,18 +118,17 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
 
         T result;
 
-        if ( null != superclassInfo && superclassInfo.isIncludeTypeInfo() ) {
-            switch ( superclassInfo.getInclude() ) {
+        if ( null != typeInfo ) {
+            switch ( typeInfo.getInclude() ) {
                 case PROPERTY:
                     // the type info is the first property of the object
                     reader.beginObject();
                     String name = reader.nextName();
-                    if ( !superclassInfo.getPropertyName().equals( name ) ) {
+                    if ( !typeInfo.getPropertyName().equals( name ) ) {
                         // the type info is always the first value. If we don't find it, we throw an error
                         throw ctx.traceError( "Cannot find the type info", reader );
                     }
                     String typeInfoProperty = reader.nextString();
-
                     result = deserializeSubtype( reader, ctx, typeInfoProperty );
                     reader.endObject();
                     break;
@@ -141,14 +156,14 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
                     break;
 
                 default:
-                    throw ctx.traceError( "JsonTypeInfo.As." + superclassInfo.getInclude() + " is not supported", reader );
+                    throw ctx.traceError( "JsonTypeInfo.As." + typeInfo.getInclude() + " is not supported", reader );
             }
         } else if ( null != instanceBuilder ) {
             reader.beginObject();
             result = deserializeObject( reader, ctx );
             reader.endObject();
         } else {
-            throw ctx.traceError( "Cannot instantiate the type", reader );
+            throw ctx.traceError( "Cannot instantiate the type " + getDeserializedType().getName(), reader );
         }
 
         return result;
@@ -281,13 +296,26 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
         return property;
     }
 
-    public final T deserializeSubtype( JsonReader reader, JsonDeserializationContext ctx, String typeInfo ) throws IOException {
-        SubtypeDeserializer<? extends T> deserializer = superclassInfo.getDeserializer( typeInfo );
-        if ( null == deserializer ) {
-            throw ctx.traceError( "No deserializer found for the type " + typeInfo, reader );
+    public final T deserializeSubtype( JsonReader reader, JsonDeserializationContext ctx, String typeInformation ) throws IOException {
+        Class typeClass = typeInfo.getTypeClass( typeInformation );
+        if ( null == typeClass ) {
+            throw ctx.traceError( "Could not find the type associated to " + typeInformation, reader );
         }
 
-        return deserializer.deserializeObject( reader, ctx );
+        return getDeserializer( reader, ctx, typeClass ).deserializeObject( reader, ctx );
+    }
+
+    private AbstractBeanJsonDeserializer<T> getDeserializer( JsonReader reader, JsonDeserializationContext ctx,
+                                                                       Class typeClass ) {
+        if ( typeClass == getDeserializedType() ) {
+            return this;
+        }
+
+        SubtypeDeserializer deserializer = subtypeClassToDeserializer.get( typeClass );
+        if ( null == deserializer ) {
+            throw ctx.traceError( "No deserializer found for the type " + typeClass.getName(), reader );
+        }
+        return (AbstractBeanJsonDeserializer<T>) deserializer.getDeserializer( ctx );
     }
 
     @Override
@@ -296,18 +324,11 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
             return;
         }
 
-        if ( null != superclassInfo ) {
-            SubtypeDeserializer deserializer = superclassInfo.getDeserializer( value.getClass() );
-            if ( null == deserializer ) {
-                // should never happen, the generator add every subtype to the map
-                throw ctx.traceError( "Cannot find deserializer for class " + value.getClass() );
-            }
-            JsonDeserializer<T> jsonDeserializer = deserializer.getDeserializer( ctx );
-            if ( jsonDeserializer.getClass() != getClass() ) {
-                // we test if it's not this deserializer to avoid an infinite loop
-                jsonDeserializer.setBackReference( referenceName, reference, value, ctx );
-                return;
-            }
+        AbstractBeanJsonDeserializer<T> deserializer = getDeserializer( null, ctx, value.getClass() );
+        if ( deserializer.getClass() != getClass() ) {
+            // we test if it's not this deserializer to avoid an infinite loop
+            deserializer.setBackReference( referenceName, reference, value, ctx );
+            return;
         }
 
         BackReferenceProperty backReferenceProperty = backReferenceDeserializers.get( referenceName );
@@ -325,7 +346,7 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
         this.identityInfo = identityInfo;
     }
 
-    protected final void setSuperclassInfo( SuperclassDeserializationInfo<T> superclassInfo ) {
-        this.superclassInfo = superclassInfo;
+    protected final void setTypeInfo( TypeDeserializationInfo<T> typeInfo ) {
+        this.typeInfo = typeInfo;
     }
 }

@@ -18,6 +18,7 @@ package com.github.nmorel.gwtjackson.client.ser.bean;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -36,7 +37,12 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
 
     private IdentitySerializationInfo<T> identityInfo;
 
-    private SuperclassSerializationInfo<T> superclassInfo;
+    private TypeSerializationInfo<T> typeInfo;
+
+    private final Map<Class<? extends T>, SubtypeSerializer<? extends T>> subtypeClassToSerializer = new IdentityHashMap<Class<? extends
+        T>, SubtypeSerializer<? extends T>>();
+
+    public abstract Class getSerializedType();
 
     /**
      * Adds an {@link BeanPropertySerializer}.
@@ -46,6 +52,16 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
      */
     protected void addPropertySerializer( String propertyName, BeanPropertySerializer<T, ?> serializer ) {
         serializers.put( propertyName, serializer );
+    }
+
+    /**
+     * Adds a {@link SubtypeSerializer}.
+     *
+     * @param clazz {@link Class} associated to the serializer
+     * @param subtypeSerializer Serializer
+     */
+    protected <S extends T> void addSubtypeSerializer( Class<S> clazz, SubtypeSerializer<S> subtypeSerializer ) {
+        subtypeClassToSerializer.put( clazz, subtypeSerializer );
     }
 
     @Override
@@ -72,74 +88,58 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
             ctx.addObjectId( value, idWriter );
         }
 
-        if ( null != superclassInfo ) {
-            SubtypeSerializer serializer = superclassInfo.getSerializer( value.getClass() );
-            if ( null == serializer ) {
-                throw ctx.traceError( value, "Cannot find serializer for class " + value.getClass(), writer );
+        if ( null != typeInfo ) {
+            String typeInformation = typeInfo.getTypeInfo( value.getClass() );
+            if ( null == typeInformation ) {
+                throw ctx.traceError( value, "Cannot find type info for class " + value.getClass(), writer );
             }
 
-            if ( !superclassInfo.isIncludeTypeInfo() ) {
-                // we don't include type info so we just serialize the properties
-                writer.beginObject();
-                if ( null != idWriter ) {
-                    writer.name( identityInfo.getPropertyName() );
-                    idWriter.serializeId( writer, ctx );
-                }
-                serializer.serializeObject( writer, value, ctx );
-                writer.endObject();
-            } else {
-                String typeInfo = superclassInfo.getTypeInfo( value.getClass() );
-                if ( null == typeInfo ) {
-                    throw ctx.traceError( value, "Cannot find type info for class " + value.getClass(), writer );
-                }
+            switch ( typeInfo.getInclude() ) {
+                case PROPERTY:
+                    // type info is included as a property of the object
+                    writer.beginObject();
+                    writer.name( typeInfo.getPropertyName() );
+                    writer.value( typeInformation );
+                    if ( null != idWriter ) {
+                        writer.name( identityInfo.getPropertyName() );
+                        idWriter.serializeId( writer, ctx );
+                    }
+                    getSerializer( writer, value, ctx ).serializeObject( writer, value, ctx );
+                    writer.endObject();
+                    break;
 
-                switch ( superclassInfo.getInclude() ) {
-                    case PROPERTY:
-                        // type info is included as a property of the object
-                        writer.beginObject();
-                        writer.name( superclassInfo.getPropertyName() );
-                        writer.value( typeInfo );
-                        if ( null != idWriter ) {
-                            writer.name( identityInfo.getPropertyName() );
-                            idWriter.serializeId( writer, ctx );
-                        }
-                        serializer.serializeObject( writer, value, ctx );
-                        writer.endObject();
-                        break;
+                case WRAPPER_OBJECT:
+                    // type info is included in a wrapper object that contains only one property. The name of this property is the type
+                    // info and the value the object
+                    writer.beginObject();
+                    writer.name( typeInformation );
+                    writer.beginObject();
+                    if ( null != idWriter ) {
+                        writer.name( identityInfo.getPropertyName() );
+                        idWriter.serializeId( writer, ctx );
+                    }
+                    getSerializer( writer, value, ctx ).serializeObject( writer, value, ctx );
+                    writer.endObject();
+                    writer.endObject();
+                    break;
 
-                    case WRAPPER_OBJECT:
-                        // type info is included in a wrapper object that contains only one property. The name of this property is the type
-                        // info and the value the object
-                        writer.beginObject();
-                        writer.name( typeInfo );
-                        writer.beginObject();
-                        if ( null != idWriter ) {
-                            writer.name( identityInfo.getPropertyName() );
-                            idWriter.serializeId( writer, ctx );
-                        }
-                        serializer.serializeObject( writer, value, ctx );
-                        writer.endObject();
-                        writer.endObject();
-                        break;
+                case WRAPPER_ARRAY:
+                    // type info is included in a wrapper array that contains two elements. First one is the type
+                    // info and the second one the object
+                    writer.beginArray();
+                    writer.value( typeInformation );
+                    writer.beginObject();
+                    if ( null != idWriter ) {
+                        writer.name( identityInfo.getPropertyName() );
+                        idWriter.serializeId( writer, ctx );
+                    }
+                    getSerializer( writer, value, ctx ).serializeObject( writer, value, ctx );
+                    writer.endObject();
+                    writer.endArray();
+                    break;
 
-                    case WRAPPER_ARRAY:
-                        // type info is included in a wrapper array that contains two elements. First one is the type
-                        // info and the second one the object
-                        writer.beginArray();
-                        writer.value( typeInfo );
-                        writer.beginObject();
-                        if ( null != idWriter ) {
-                            writer.name( identityInfo.getPropertyName() );
-                            idWriter.serializeId( writer, ctx );
-                        }
-                        serializer.serializeObject( writer, value, ctx );
-                        writer.endObject();
-                        writer.endArray();
-                        break;
-
-                    default:
-                        throw ctx.traceError( value, "JsonTypeInfo.As." + superclassInfo.getInclude() + " is not supported", writer );
-                }
+                default:
+                    throw ctx.traceError( value, "JsonTypeInfo.As." + typeInfo.getInclude() + " is not supported", writer );
             }
         } else {
             writer.beginObject();
@@ -147,9 +147,20 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
                 writer.name( identityInfo.getPropertyName() );
                 idWriter.serializeId( writer, ctx );
             }
-            serializeObject( writer, value, ctx );
+            getSerializer( writer, value, ctx ).serializeObject( writer, value, ctx );
             writer.endObject();
         }
+    }
+
+    private AbstractBeanJsonSerializer<T> getSerializer( JsonWriter writer, T value, JsonSerializationContext ctx ) {
+        if ( value.getClass() == getSerializedType() ) {
+            return this;
+        }
+        SubtypeSerializer subtypeSerializer = subtypeClassToSerializer.get( value.getClass() );
+        if ( null == subtypeSerializer ) {
+            throw ctx.traceError( value, "Cannot find serializer for class " + value.getClass(), writer );
+        }
+        return (AbstractBeanJsonSerializer<T>) subtypeSerializer.getSerializer( ctx );
     }
 
     /**
@@ -174,7 +185,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
         this.identityInfo = identityInfo;
     }
 
-    protected final void setSuperclassInfo( SuperclassSerializationInfo<T> superclassInfo ) {
-        this.superclassInfo = superclassInfo;
+    protected final void setTypeInfo( TypeSerializationInfo<T> typeInfo ) {
+        this.typeInfo = typeInfo;
     }
 }

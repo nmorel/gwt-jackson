@@ -17,7 +17,9 @@
 package com.github.nmorel.gwtjackson.rebind;
 
 import java.io.PrintWriter;
+import java.util.Map.Entry;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.ObjectIdGenerator;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
@@ -86,15 +88,11 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
     protected static final String ABSTRACT_BEAN_JSON_SERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean" + "" +
         ".AbstractBeanJsonSerializer";
 
-    protected static final String SUPERCLASS_DESERIALIZATION_INFO_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean" + "" +
-        ".SuperclassDeserializationInfo";
+    protected static final String TYPE_DESERIALIZATION_INFO_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean" + "" +
+        ".TypeDeserializationInfo";
 
-    protected static final String SUBTYPE_DESERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean.SubtypeDeserializer";
-
-    protected static final String SUPERCLASS_SERIALIZATION_INFO_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean" + "" +
-        ".SuperclassSerializationInfo";
-
-    protected static final String SUBTYPE_SERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean.SubtypeSerializer";
+    protected static final String TYPE_SERIALIZATION_INFO_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean" + "" +
+        ".TypeSerializationInfo";
 
     protected final TreeLogger logger;
 
@@ -240,7 +238,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                 joinedTypeParameters.append( '>' );
             }
 
-            String parameters = generateBeanJsonSerializerParameters( classType, info, propertyInfo );
+            String parameters = generateBeanJsonSerializerParameters( classType, propertyInfo );
             String sep = "";
             if ( joinedTypeParameterSerializers.length() > 0 && !parameters.isEmpty() ) {
                 sep = ", ";
@@ -253,8 +251,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         throw new UnableToCompleteException();
     }
 
-    private String generateBeanJsonSerializerParameters( JClassType type, BeanJsonMapperInfo info,
-                                                         PropertyInfo propertyInfo ) throws UnableToCompleteException {
+    private String generateBeanJsonSerializerParameters( JClassType type, PropertyInfo propertyInfo ) throws UnableToCompleteException {
         if ( null == propertyInfo || (!propertyInfo.getIdentityInfo().isPresent() && !propertyInfo.getTypeInfo().isPresent()) ) {
             return "";
         }
@@ -270,7 +267,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         sourceWriter.print( ", " );
 
         if ( propertyInfo.getTypeInfo().isPresent() ) {
-            generateSuperclassInfo( sourceWriter, info.getBeanInfo(), propertyInfo.getTypeInfo(), true );
+            generateTypeInfo( sourceWriter, propertyInfo.getTypeInfo(), true );
         } else {
             sourceWriter.print( "null" );
         }
@@ -483,7 +480,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                 joinedTypeParameters.append( '>' );
             }
 
-            String parameters = generateBeanJsonDeserializerParameters( info, propertyInfo );
+            String parameters = generateBeanJsonDeserializerParameters( info.getType(), propertyInfo );
             String sep = "";
             if ( joinedTypeParameterDeserializers.length() > 0 && !parameters.isEmpty() ) {
                 sep = ", ";
@@ -491,15 +488,15 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
             return String.format( "new %s%s(%s%s%s)", info
                 .getQualifiedDeserializerClassName(), joinedTypeParameters, joinedTypeParameterDeserializers, sep,
-                generateBeanJsonDeserializerParameters( info, propertyInfo ) );
+                generateBeanJsonDeserializerParameters( info
+                .getType(), propertyInfo ) );
         }
 
         logger.log( TreeLogger.Type.ERROR, "Type '" + type.getQualifiedSourceName() + "' is not supported" );
         throw new UnableToCompleteException();
     }
 
-    private String generateBeanJsonDeserializerParameters( BeanJsonMapperInfo info, PropertyInfo propertyInfo ) throws
-        UnableToCompleteException {
+    private String generateBeanJsonDeserializerParameters( JClassType type, PropertyInfo propertyInfo ) throws UnableToCompleteException {
         if ( null == propertyInfo || (!propertyInfo.getIdentityInfo().isPresent() && !propertyInfo.getTypeInfo().isPresent()) ) {
             return "";
         }
@@ -507,7 +504,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         StringSourceWriter sourceWriter = new StringSourceWriter();
 
         if ( propertyInfo.getIdentityInfo().isPresent() ) {
-            generateIdentifierDeserializationInfo( sourceWriter, info.getBeanInfo(), propertyInfo.getIdentityInfo().get() );
+            generateIdentifierDeserializationInfo( sourceWriter, type, propertyInfo.getIdentityInfo().get() );
         } else {
             sourceWriter.print( "null" );
         }
@@ -515,7 +512,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         sourceWriter.print( ", " );
 
         if ( propertyInfo.getTypeInfo().isPresent() ) {
-            generateSuperclassInfo( sourceWriter, info.getBeanInfo(), propertyInfo.getTypeInfo(), false );
+            generateTypeInfo( sourceWriter, propertyInfo.getTypeInfo(), false );
         } else {
             sourceWriter.print( "null" );
         }
@@ -523,20 +520,20 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         return sourceWriter.toString();
     }
 
-    protected void generateIdentifierDeserializationInfo( SourceWriter source, BeanInfo beanInfo,
-                                                          BeanIdentityInfo identityInfo ) throws UnableToCompleteException {
+    protected void generateIdentifierDeserializationInfo( SourceWriter source, JClassType type, BeanIdentityInfo identityInfo ) throws
+        UnableToCompleteException {
         if ( identityInfo.isIdABeanProperty() ) {
 
-            source.println( "new %s<%s>(\"%s\", %s.class, %s.class)", PropertyIdentityDeserializationInfo.class.getName(), beanInfo
-                .getType().getParameterizedQualifiedSourceName(), identityInfo.getPropertyName(), identityInfo.getGenerator()
+            source.println( "new %s<%s>(\"%s\", %s.class, %s.class)", PropertyIdentityDeserializationInfo.class.getName(), type
+                .getParameterizedQualifiedSourceName(), identityInfo.getPropertyName(), identityInfo.getGenerator()
                 .getCanonicalName(), identityInfo.getScope().getCanonicalName() );
 
         } else {
 
             String qualifiedType = getQualifiedClassName( identityInfo.getType() );
 
-            String identityPropertyClass = String.format( "%s<%s, %s>", AbstractIdentityDeserializationInfo.class.getName(), beanInfo
-                .getType().getParameterizedQualifiedSourceName(), qualifiedType );
+            String identityPropertyClass = String.format( "%s<%s, %s>", AbstractIdentityDeserializationInfo.class.getName(), type
+                .getParameterizedQualifiedSourceName(), qualifiedType );
 
             source.println( "new %s(\"%s\", %s.class, %s.class) {", identityPropertyClass, identityInfo.getPropertyName(), identityInfo
                 .getGenerator().getCanonicalName(), identityInfo.getScope().getCanonicalName() );
@@ -579,77 +576,19 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         throw new UnableToCompleteException();
     }
 
-    protected void generateSuperclassInfo( SourceWriter source, BeanInfo beanInfo, Optional<BeanTypeInfo> typeInfo,
-                                           boolean serialization ) throws UnableToCompleteException {
-        source.print( "new %s(", serialization ? SUPERCLASS_SERIALIZATION_INFO_CLASS : SUPERCLASS_DESERIALIZATION_INFO_CLASS );
-        // gives the information about how to read and write the type info
-        if ( typeInfo.isPresent() ) {
-            String typeInfoProperty = null;
-            if ( null != typeInfo.get().getPropertyName() ) {
-                typeInfoProperty = QUOTED_FUNCTION.apply( typeInfo.get().getPropertyName() );
-            }
-            source.print( "com.fasterxml.jackson.annotation.JsonTypeInfo.As.%s, %s", typeInfo.get().getInclude(), typeInfoProperty );
+    protected void generateTypeInfo( SourceWriter source, Optional<BeanTypeInfo> typeInfo,
+                                     boolean serialization ) throws UnableToCompleteException {
+        String typeInfoProperty = null;
+        if ( null != typeInfo.get().getPropertyName() ) {
+            typeInfoProperty = QUOTED_FUNCTION.apply( typeInfo.get().getPropertyName() );
         }
-        source.println( ")" );
+        source.println( "new %s(%s.%s, %s)", serialization ? TYPE_SERIALIZATION_INFO_CLASS : TYPE_DESERIALIZATION_INFO_CLASS, As.class
+            .getCanonicalName(), typeInfo.get().getInclude(), typeInfoProperty );
         source.indent();
 
-        generateSubtypeMappers( source, beanInfo, typeInfo, serialization );
-
-        source.outdent();
-    }
-
-    private void generateSubtypeMappers( SourceWriter source, BeanInfo beanInfo, Optional<BeanTypeInfo> typeInfo,
-                                         boolean serialization ) throws UnableToCompleteException {
-        if ( beanInfo.getCreatorMethod().isPresent() ) {
-            generateSubtypeMapper( source, typeInfo, beanInfo.getType(), serialization );
+        for ( Entry<JClassType, String> entry : typeInfo.get().getMapTypeToMetadata().entrySet() ) {
+            source.println( ".addTypeInfo(%s.class, \"%s\")", entry.getKey().getQualifiedSourceName(), entry.getValue() );
         }
-        for ( JClassType subtype : beanInfo.getType().getSubtypes() ) {
-            generateSubtypeMapper( source, typeInfo, subtype, serialization );
-        }
-    }
-
-    private void generateSubtypeMapper( SourceWriter source, Optional<BeanTypeInfo> typeInfo, JClassType subtype,
-                                        boolean serialization ) throws UnableToCompleteException {
-        String typeMetadata;
-        if ( !typeInfo.isPresent() ) {
-            typeMetadata = null;
-        } else {
-            typeMetadata = QUOTED_FUNCTION.apply( typeInfo.get().getMapTypeToMetadata().get( subtype ) );
-        }
-
-        String suffix;
-        String subtypeClass;
-        String mapper;
-        String mapperClass;
-        String contextClass;
-        if ( serialization ) {
-            suffix = "Serializer";
-            subtypeClass = SUBTYPE_SERIALIZER_CLASS;
-            mapper = getJsonSerializerFromType( subtype );
-            mapperClass = ABSTRACT_BEAN_JSON_SERIALIZER_CLASS;
-            contextClass = JSON_SERIALIZATION_CONTEXT_CLASS;
-        } else {
-            suffix = "Deserializer";
-            subtypeClass = SUBTYPE_DESERIALIZER_CLASS;
-            mapper = getJsonDeserializerFromType( subtype );
-            mapperClass = ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS;
-            contextClass = JSON_DESERIALIZATION_CONTEXT_CLASS;
-        }
-
-        source.println( ".addSubtype%s( new %s<%s>() {", suffix, subtypeClass, subtype.getQualifiedSourceName() );
-        source.indent();
-        source.indent();
-
-        source.println( "@Override" );
-        source.println( "public %s<%s> new%s(%s ctx) {", mapperClass, subtype.getQualifiedSourceName(), suffix, contextClass );
-        source.indent();
-        source.println( "return %s;", mapper );
-        source.outdent();
-        source.println( "}" );
-
-        source.outdent();
-        source.println( "}, %s.class, %s )", subtype.getQualifiedSourceName(), typeMetadata );
-        source.println();
 
         source.outdent();
     }
