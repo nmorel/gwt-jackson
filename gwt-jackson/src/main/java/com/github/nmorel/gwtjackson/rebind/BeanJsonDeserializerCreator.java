@@ -301,7 +301,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
             source.indent();
             source.println( "%s = %s;", String
                 .format( INSTANCE_BUILDER_DESERIALIZER_FORMAT, name ), getJsonDeserializerFromType( propertyInfo
-                .getType(), propertyInfo ) );
+                .getType(), propertyInfo ).getInstance() );
             source.outdent();
             source.println( "}" );
             source.println( "%s = %s.deserialize(reader, ctx);", FORMAT_VARIABLE.apply( name ), String
@@ -433,7 +433,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
                 source.println( "protected %s<%s> newDeserializer(%s ctx) {", JSON_DESERIALIZER_CLASS, getQualifiedClassName( property
                     .getType() ), JSON_DESERIALIZATION_CONTEXT_CLASS );
                 source.indent();
-                source.println( "return %s;", getJsonDeserializerFromType( property.getType(), property ) );
+                source.println( "return %s;", getJsonDeserializerFromType( property.getType(), property ).getInstance() );
                 source.outdent();
                 source.println( "}" );
 
@@ -495,7 +495,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
                 .println( "protected %s<%s> newDeserializer(%s ctx) {", ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS,
                     getQualifiedClassName( subtype ), JSON_DESERIALIZATION_CONTEXT_CLASS );
             source.indent();
-            source.println( "return %s;", getJsonDeserializerFromType( subtype ) );
+            source.println( "return %s;", getJsonDeserializerFromType( subtype ).getInstance() );
             source.outdent();
             source.println( "}" );
 

@@ -93,13 +93,24 @@ public final class RebindConfiguration {
 
     public static class MapperInstance {
 
+        private final JClassType mapperType;
+
         private final String instanceCreation;
 
         private final MapperType[] parameters;
 
-        public MapperInstance( String instanceCreation, MapperType[] parameters ) {
+        public MapperInstance( JClassType mapperType, String instanceCreation ) {
+            this( mapperType, instanceCreation, new MapperType[0] );
+        }
+
+        public MapperInstance( JClassType mapperType, String instanceCreation, MapperType[] parameters ) {
+            this.mapperType = mapperType;
             this.instanceCreation = instanceCreation;
             this.parameters = parameters;
+        }
+
+        public JClassType getMapperType() {
+            return mapperType;
         }
 
         public String getInstanceCreation() {
@@ -123,9 +134,9 @@ public final class RebindConfiguration {
 
     private final Map<String, MapperInstance> deserializers = new HashMap<String, MapperInstance>();
 
-    private final Map<String, String> keySerializers = new HashMap<String, String>();
+    private final Map<String, MapperInstance> keySerializers = new HashMap<String, MapperInstance>();
 
-    private final Map<String, String> keyDeserializers = new HashMap<String, String>();
+    private final Map<String, MapperInstance> keyDeserializers = new HashMap<String, MapperInstance>();
 
     public RebindConfiguration( TreeLogger logger, GeneratorContext context, JacksonTypeOracle typeOracle ) throws
         UnableToCompleteException {
@@ -191,7 +202,7 @@ public final class RebindConfiguration {
             }
 
             if ( mapperType.isKey() ) {
-                String keyMapperInstance = getKeyInstance( mapperClassType );
+                MapperInstance keyMapperInstance = getKeyInstance( mapperClassType );
                 if ( mapperType.isSerializer() ) {
                     keySerializers.put( mappedType.getQualifiedSourceName(), keyMapperInstance );
                 } else {
@@ -278,7 +289,7 @@ public final class RebindConfiguration {
                     }
                 }
                 builder.append( ')' );
-                return new MapperInstance( builder.toString(), parameters );
+                return new MapperInstance( classType, builder.toString(), parameters );
             }
         }
 
@@ -300,7 +311,7 @@ public final class RebindConfiguration {
                     }
                 }
                 builder.append( ')' );
-                return new MapperInstance( builder.toString(), parameters );
+                return new MapperInstance( classType, builder.toString(), parameters );
             }
         }
 
@@ -339,7 +350,7 @@ public final class RebindConfiguration {
     /**
      * Search a static method or constructor to instantiate the key mapper and return a {@link String} calling it.
      */
-    private String getKeyInstance( JClassType classType ) {
+    private MapperInstance getKeyInstance( JClassType classType ) {
         // we first look at static method
         for ( JMethod method : classType.getMethods() ) {
             // method must be public static, return the instance type and take no parameters
@@ -347,7 +358,7 @@ public final class RebindConfiguration {
                 .getParameters().length == 0 && method.isPublic() ) {
                 StringBuilder builder = new StringBuilder();
                 builder.append( classType.getQualifiedSourceName() ).append( '.' ).append( method.getName() ).append( "()" );
-                return builder.toString();
+                return new MapperInstance( classType, builder.toString() );
             }
         }
 
@@ -356,7 +367,7 @@ public final class RebindConfiguration {
             if ( constructor.isPublic() && constructor.getParameters().length == 0 ) {
                 StringBuilder builder = new StringBuilder();
                 builder.append( "new " ).append( classType.getQualifiedSourceName() ).append( "()" );
-                return builder.toString();
+                return new MapperInstance( classType, builder.toString() );
             }
         }
 
@@ -380,16 +391,16 @@ public final class RebindConfiguration {
     }
 
     /**
-     * Return a {@link String} instantiating the key serializer for the given type
+     * Return a {@link MapperInstance} instantiating the key serializer for the given type
      */
-    public Optional<String> getKeySerializer( JType type ) {
+    public Optional<MapperInstance> getKeySerializer( JType type ) {
         return Optional.fromNullable( keySerializers.get( type.getQualifiedSourceName() ) );
     }
 
     /**
-     * Return a {@link String} instantiating the key deserializer for the given type
+     * Return a {@link MapperInstance} instantiating the key deserializer for the given type
      */
-    public Optional<String> getKeyDeserializer( JType type ) {
+    public Optional<MapperInstance> getKeyDeserializer( JType type ) {
         return Optional.fromNullable( keyDeserializers.get( type.getQualifiedSourceName() ) );
     }
 

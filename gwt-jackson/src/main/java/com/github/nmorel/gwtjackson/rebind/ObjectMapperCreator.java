@@ -175,7 +175,7 @@ public class ObjectMapperCreator extends AbstractCreator {
             source.println( "protected %s<%s> newDeserializer(%s ctx) {", JSON_DESERIALIZER_CLASS, mappedTypeClass
                 .getParameterizedQualifiedSourceName(), JSON_DESERIALIZATION_CONTEXT_CLASS );
             source.indent();
-            source.println( "return %s;", getJsonDeserializerFromType( mappedTypeClass ) );
+            source.println( "return %s;", getJsonDeserializerFromType( mappedTypeClass ).getInstance() );
             source.outdent();
             source.println( "}" );
 
@@ -187,7 +187,7 @@ public class ObjectMapperCreator extends AbstractCreator {
             source.println( "protected %s<%s> newSerializer(%s ctx) {", JSON_SERIALIZER_CLASS, mappedTypeClass
                 .getParameterizedQualifiedSourceName(), JSON_SERIALIZATION_CONTEXT_CLASS );
             source.indent();
-            source.println( "return %s;", getJsonSerializerFromType( mappedTypeClass ) );
+            source.println( "return %s;", getJsonSerializerFromType( mappedTypeClass ).getInstance() );
             source.outdent();
             source.println( "}" );
 

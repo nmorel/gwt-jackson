@@ -25,7 +25,15 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.ObjectReader;
 import com.github.nmorel.gwtjackson.client.ObjectWriter;
+import com.github.nmorel.gwtjackson.client.deser.EnumJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.array.ArrayJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.collection.EnumSetJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.map.EnumMapJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.map.key.EnumKeyDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer;
+import com.github.nmorel.gwtjackson.client.ser.EnumJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.array.ArrayJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.map.key.EnumKeySerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.key.KeySerializer;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
@@ -56,6 +64,22 @@ public class JacksonTypeOracle {
 
     private final JClassType jsonDeserializerType;
 
+    private final JClassType arrayJsonSerializerType;
+
+    private final JClassType arrayJsonDeserializerType;
+
+    private final JClassType enumJsonSerializerType;
+
+    private final JClassType enumJsonDeserializerType;
+
+    private final JClassType enumKeySerializerType;
+
+    private final JClassType enumKeyDeserializerType;
+
+    private final JClassType enumSetJsonDeserializerType;
+
+    private final JClassType enumMapJsonDeserializerType;
+
     private final JClassType mapType;
 
     private final JClassType enumMapType;
@@ -76,6 +100,14 @@ public class JacksonTypeOracle {
         this.keyDeserializerType = typeOracle.findType( KeyDeserializer.class.getCanonicalName() );
         this.jsonSerializerType = typeOracle.findType( JsonSerializer.class.getCanonicalName() );
         this.jsonDeserializerType = typeOracle.findType( JsonDeserializer.class.getCanonicalName() );
+        this.arrayJsonSerializerType = typeOracle.findType( ArrayJsonSerializer.class.getCanonicalName() );
+        this.arrayJsonDeserializerType = typeOracle.findType( ArrayJsonDeserializer.class.getCanonicalName() );
+        this.enumJsonSerializerType = typeOracle.findType( EnumJsonSerializer.class.getCanonicalName() );
+        this.enumJsonDeserializerType = typeOracle.findType( EnumJsonDeserializer.class.getCanonicalName() );
+        this.enumKeySerializerType = typeOracle.findType( EnumKeySerializer.class.getCanonicalName() );
+        this.enumKeyDeserializerType = typeOracle.findType( EnumKeyDeserializer.class.getCanonicalName() );
+        this.enumSetJsonDeserializerType = typeOracle.findType( EnumSetJsonDeserializer.class.getCanonicalName() );
+        this.enumMapJsonDeserializerType = typeOracle.findType( EnumMapJsonDeserializer.class.getCanonicalName() );
         this.enumSetType = typeOracle.findType( EnumSet.class.getCanonicalName() );
         this.mapType = typeOracle.findType( Map.class.getCanonicalName() );
         this.enumMapType = typeOracle.findType( EnumMap.class.getCanonicalName() );
@@ -145,5 +177,41 @@ public class JacksonTypeOracle {
 
     public JClassType findGenericType( JParameterizedType parameterizedType ) {
         return typeOracle.findType( parameterizedType.getQualifiedSourceName() );
+    }
+
+    public JClassType getArrayJsonSerializerType() {
+        return arrayJsonSerializerType;
+    }
+
+    public JClassType getArrayJsonDeserializerType() {
+        return arrayJsonDeserializerType;
+    }
+
+    public JClassType getEnumJsonSerializerType() {
+        return enumJsonSerializerType;
+    }
+
+    public JClassType getEnumJsonDeserializerType() {
+        return enumJsonDeserializerType;
+    }
+
+    public JClassType getEnumKeySerializerType() {
+        return enumKeySerializerType;
+    }
+
+    public JClassType getEnumKeyDeserializerType() {
+        return enumKeyDeserializerType;
+    }
+
+    public JClassType getEnumSetJsonDeserializerType() {
+        return enumSetJsonDeserializerType;
+    }
+
+    public JClassType getEnumMapJsonDeserializerType() {
+        return enumMapJsonDeserializerType;
+    }
+
+    public JClassType findMapperType( String qualifiedMapperClassName ) {
+        return typeOracle.findType( qualifiedMapperClassName );
     }
 }
