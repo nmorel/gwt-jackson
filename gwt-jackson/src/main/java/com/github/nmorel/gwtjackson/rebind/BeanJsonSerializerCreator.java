@@ -20,6 +20,7 @@ import java.util.Map;
 
 import com.github.nmorel.gwtjackson.client.ser.bean.SubtypeSerializer;
 import com.github.nmorel.gwtjackson.rebind.FieldAccessor.Accessor;
+import com.github.nmorel.gwtjackson.rebind.type.JSerializerType;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
@@ -60,10 +61,6 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
         source.println();
 
         generateClassGetterMethod( source, beanInfo );
-
-        source.println();
-
-        source.commit( logger );
     }
 
     private void generateConstructors( SourceWriter source, BeanInfo beanInfo, Map<String, PropertyInfo> properties,
@@ -75,68 +72,28 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
         }
         source.println( ") {" );
         source.indent();
-        source.print( "this(" );
-        if ( null != typeParameters ) {
-            source.print( "%s, ", typeParameters.getJoinedTypeParameterMappersWithoutType() );
+        source.print( "super(" );
+
+        if ( beanInfo.getIdentityInfo().isPresent() ) {
+            generateIdentifierSerializationInfo( source, beanInfo.getType(), beanInfo.getIdentityInfo().get() );
+        } else {
+            source.print( "null" );
         }
-        source.println( "null, null);" );
-        source.outdent();
-        source.println( "}" );
+        source.print( ", " );
 
-        source.println();
-
-        source.print( "public %s(", getSimpleClassName() );
-        if ( null != typeParameters ) {
-            source.print( "%s, ", typeParameters.getJoinedTypeParameterMappersWithType() );
+        if ( beanInfo.getTypeInfo().isPresent() ) {
+            generateTypeInfo( source, beanInfo.getTypeInfo().get(), true );
+        } else {
+            source.print( "null" );
         }
-        source.println( "%s<%s> idProperty, %s<%s> typeInfo) {", IDENTITY_SERIALIZATION_INFO_CLASS, beanInfo.getType()
-            .getParameterizedQualifiedSourceName(), TYPE_SERIALIZATION_INFO_CLASS, beanInfo.getType()
-            .getParameterizedQualifiedSourceName() );
-        source.indent();
-        source.println( "super();" );
-
-        source.println();
+        source.println( ");" );
 
         if ( null != typeParameters ) {
+            source.println();
             for ( String parameterizedSerializer : typeParameters.getTypeParameterMapperNames() ) {
                 source.println( "this.%s = %s%s;", parameterizedSerializer, TYPE_PARAMETER_PREFIX, parameterizedSerializer );
             }
-            source.println();
         }
-
-        if ( beanInfo.getIdentityInfo().isPresent() ) {
-            source.println( "if(null == idProperty) {" );
-            source.indent();
-            source.print( "setIdentityInfo(" );
-            generateIdentifierSerializationInfo( source, beanInfo.getType(), beanInfo.getIdentityInfo().get() );
-            source.println( ");" );
-            source.outdent();
-            source.println( "} else {" );
-        } else {
-            source.println( "if(null != idProperty) {" );
-        }
-        source.indent();
-        source.println( "setIdentityInfo(idProperty);" );
-        source.outdent();
-        source.println( "}" );
-
-        source.println();
-
-        if ( beanInfo.getTypeInfo().isPresent() ) {
-            source.println( "if(null == typeInfo) {" );
-            source.indent();
-            source.print( "setTypeInfo(" );
-            generateTypeInfo( source, beanInfo.getTypeInfo(), true );
-            source.println( ");" );
-            source.outdent();
-            source.println( "} else {" );
-        } else {
-            source.println( "if(null != typeInfo) {" );
-        }
-        source.indent();
-        source.println( "setTypeInfo(typeInfo);" );
-        source.outdent();
-        source.println( "}" );
 
         source.println();
 
@@ -161,14 +118,25 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
             source.println( "addPropertySerializer(\"%s\", new " + BEAN_PROPERTY_SERIALIZER_CLASS + "<%s, %s>() {", property
                 .getPropertyName(), getQualifiedClassName( beanInfo.getType() ), getQualifiedClassName( property.getType() ) );
 
+            JSerializerType serializerType;
+            if ( property.isRawValue() ) {
+                serializerType = JSerializerType.builder().type( property.getType() ).instance( String
+                    .format( "ctx" + ".<%s>getRawValueJsonSerializer()", property.getType().getParameterizedQualifiedSourceName() ) )
+                    .build();
+            } else {
+                serializerType = getJsonSerializerFromType( property.getType() );
+            }
+
             source.indent();
             source.println( "@Override" );
             source.println( "protected %s<%s> newSerializer(%s ctx) {", JSON_SERIALIZER_CLASS, getQualifiedClassName( property
                 .getType() ), JSON_SERIALIZATION_CONTEXT_CLASS );
             source.indent();
-            source.println( "return %s;", getJsonSerializerFromType( property.getType(), property ).getInstance() );
+            source.println( "return %s;", serializerType.getInstance() );
             source.outdent();
             source.println( "}" );
+
+            generatePropertySerializerParameters( source, property, serializerType );
 
             source.println();
 
@@ -188,6 +156,43 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
             source.outdent();
             source.println( "});" );
             source.println();
+        }
+    }
+
+    private void generatePropertySerializerParameters( SourceWriter source, PropertyInfo property,
+                                                       JSerializerType serializerType ) throws UnableToCompleteException {
+        if ( property.getIdentityInfo().isPresent() || property.getTypeInfo().isPresent() ) {
+
+            JClassType annotatedType = findFirstTypeToApplyPropertyAnnotation( serializerType );
+
+            source.println();
+
+            source.println( "@Override" );
+            source.println( "protected %s newParameters(%s ctx) {", JSON_SERIALIZER_PARAMETERS_CLASS, JSON_SERIALIZATION_CONTEXT_CLASS );
+            source.indent();
+            source.print( "return new %s()", JSON_SERIALIZER_PARAMETERS_CLASS );
+
+            source.indent();
+
+            if ( property.getIdentityInfo().isPresent() ) {
+                source.println();
+                source.print( ".setIdentityInfo(" );
+                generateIdentifierSerializationInfo( source, annotatedType, property.getIdentityInfo().get() );
+                source.print( ")" );
+            }
+
+            if ( property.getTypeInfo().isPresent() ) {
+                source.println();
+                source.print( ".setTypeInfo(" );
+                generateTypeInfo( source, property.getTypeInfo().get(), true );
+                source.print( ")" );
+            }
+
+            source.println( ";" );
+            source.outdent();
+
+            source.outdent();
+            source.println( "}" );
         }
     }
 

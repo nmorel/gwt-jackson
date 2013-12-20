@@ -20,6 +20,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.nmorel.gwtjackson.client.ser.IterableJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.bean.IdentitySerializationInfo;
+import com.github.nmorel.gwtjackson.client.ser.bean.TypeSerializationInfo;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.DEFAULT_LOCALE;
 import static com.fasterxml.jackson.annotation.JsonFormat.DEFAULT_TIMEZONE;
@@ -32,7 +34,7 @@ import static com.fasterxml.jackson.annotation.JsonFormat.DEFAULT_TIMEZONE;
  *
  * @author Nicolas Morel
  */
-public class JsonSerializerParameters {
+public final class JsonSerializerParameters {
 
     public static final JsonSerializerParameters DEFAULT = new JsonSerializerParameters();
 
@@ -60,6 +62,7 @@ public class JsonSerializerParameters {
      * defaults ({@link java.util.Locale#getDefault()}) unless explicitly
      * set to another locale.
      */
+
     private String locale = DEFAULT_LOCALE;
 
     /**
@@ -82,27 +85,85 @@ public class JsonSerializerParameters {
      */
     private Include include = Include.ALWAYS;
 
+    /**
+     * Bean identity informations
+     */
+    private IdentitySerializationInfo identityInfo;
+
+    /**
+     * Bean type informations
+     */
+    private TypeSerializationInfo typeInfo;
+
     public String getPattern() {
         return pattern;
+    }
+
+    public JsonSerializerParameters setPattern( String pattern ) {
+        this.pattern = pattern;
+        return this;
     }
 
     public Shape getShape() {
         return shape;
     }
 
+    public JsonSerializerParameters setShape( Shape shape ) {
+        this.shape = shape;
+        return this;
+    }
+
     public String getLocale() {
         return locale;
+    }
+
+    public JsonSerializerParameters setLocale( String locale ) {
+        this.locale = locale;
+        return this;
     }
 
     public String getTimezone() {
         return timezone;
     }
 
+    public JsonSerializerParameters setTimezone( String timezone ) {
+        this.timezone = timezone;
+        return this;
+    }
+
     public String[] getIgnoredProperties() {
         return ignoredProperties;
     }
 
+    public JsonSerializerParameters setIgnoredProperties( String[] ignoredProperties ) {
+        this.ignoredProperties = ignoredProperties;
+        return this;
+    }
+
     public Include getInclude() {
         return include;
+    }
+
+    public JsonSerializerParameters setInclude( Include include ) {
+        this.include = include;
+        return this;
+    }
+
+    public IdentitySerializationInfo getIdentityInfo() {
+        return identityInfo;
+    }
+
+    public JsonSerializerParameters setIdentityInfo( IdentitySerializationInfo identityInfo ) {
+        this.identityInfo = identityInfo;
+        return this;
+    }
+
+    public TypeSerializationInfo getTypeInfo() {
+        return typeInfo;
+    }
+
+    public JsonSerializerParameters setTypeInfo( TypeSerializationInfo typeInfo ) {
+        this.typeInfo = typeInfo;
+        return this;
     }
 }

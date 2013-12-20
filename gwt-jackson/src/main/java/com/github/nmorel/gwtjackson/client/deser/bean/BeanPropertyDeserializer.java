@@ -18,6 +18,7 @@ package com.github.nmorel.gwtjackson.client.deser.bean;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 
 /**
@@ -27,6 +28,19 @@ import com.github.nmorel.gwtjackson.client.stream.JsonReader;
  */
 public abstract class BeanPropertyDeserializer<T, V> extends HasDeserializer<V, JsonDeserializer<V>> {
 
+    private JsonDeserializerParameters parameters;
+
+    protected JsonDeserializerParameters getParameters( JsonDeserializationContext ctx ) {
+        if ( null == parameters ) {
+            parameters = newParameters( ctx );
+        }
+        return parameters;
+    }
+
+    protected JsonDeserializerParameters newParameters( JsonDeserializationContext ctx ) {
+        return JsonDeserializerParameters.DEFAULT;
+    }
+
     /**
      * Deserializes the property defined for this instance.
      *
@@ -35,7 +49,7 @@ public abstract class BeanPropertyDeserializer<T, V> extends HasDeserializer<V, 
      * @param ctx context of the deserialization process
      */
     public void deserialize( JsonReader reader, T bean, JsonDeserializationContext ctx ) {
-        setValue( bean, getDeserializer( ctx ).deserialize( reader, ctx ), ctx );
+        setValue( bean, getDeserializer( ctx ).deserialize( reader, ctx, getParameters( ctx ) ), ctx );
     }
 
     public abstract void setValue( T bean, V value, JsonDeserializationContext ctx );

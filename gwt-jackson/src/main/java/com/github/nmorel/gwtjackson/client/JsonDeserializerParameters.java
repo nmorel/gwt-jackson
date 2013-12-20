@@ -17,6 +17,8 @@
 package com.github.nmorel.gwtjackson.client;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.github.nmorel.gwtjackson.client.deser.bean.IdentityDeserializationInfo;
+import com.github.nmorel.gwtjackson.client.deser.bean.TypeDeserializationInfo;
 import com.github.nmorel.gwtjackson.client.deser.collection.ListJsonDeserializer;
 
 /**
@@ -27,7 +29,7 @@ import com.github.nmorel.gwtjackson.client.deser.collection.ListJsonDeserializer
  *
  * @author Nicolas Morel
  */
-public class JsonDeserializerParameters {
+public final class JsonDeserializerParameters {
 
     public static final JsonDeserializerParameters DEFAULT = new JsonDeserializerParameters();
 
@@ -47,11 +49,49 @@ public class JsonDeserializerParameters {
      */
     private boolean ignoreUnknown = false;
 
+    /**
+     * Bean identity informations
+     */
+    private IdentityDeserializationInfo identityInfo;
+
+    /**
+     * Bean type informations
+     */
+    private TypeDeserializationInfo typeInfo;
+
     public String[] getIgnoredProperties() {
         return ignoredProperties;
     }
 
+    public JsonDeserializerParameters setIgnoredProperties( String[] ignoredProperties ) {
+        this.ignoredProperties = ignoredProperties;
+        return this;
+    }
+
     public boolean isIgnoreUnknown() {
         return ignoreUnknown;
+    }
+
+    public JsonDeserializerParameters setIgnoreUnknown( boolean ignoreUnknown ) {
+        this.ignoreUnknown = ignoreUnknown;
+        return this;
+    }
+
+    public IdentityDeserializationInfo getIdentityInfo() {
+        return identityInfo;
+    }
+
+    public JsonDeserializerParameters setIdentityInfo( IdentityDeserializationInfo identityInfo ) {
+        this.identityInfo = identityInfo;
+        return this;
+    }
+
+    public TypeDeserializationInfo getTypeInfo() {
+        return typeInfo;
+    }
+
+    public JsonDeserializerParameters setTypeInfo( TypeDeserializationInfo typeInfo ) {
+        this.typeInfo = typeInfo;
+        return this;
     }
 }

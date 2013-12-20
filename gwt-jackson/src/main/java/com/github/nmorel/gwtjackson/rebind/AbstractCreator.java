@@ -51,7 +51,6 @@ import com.google.gwt.thirdparty.guava.common.base.Optional;
 import com.google.gwt.user.rebind.AbstractSourceCreator;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
-import com.google.gwt.user.rebind.StringSourceWriter;
 
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.QUOTED_FUNCTION;
 
@@ -69,6 +68,10 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
     public static final String JSON_DESERIALIZATION_CONTEXT_CLASS = "com.github.nmorel.gwtjackson.client.JsonDeserializationContext";
 
     public static final String JSON_SERIALIZATION_CONTEXT_CLASS = "com.github.nmorel.gwtjackson.client.JsonSerializationContext";
+
+    public static final String JSON_DESERIALIZER_PARAMETERS_CLASS = "com.github.nmorel.gwtjackson.client.JsonDeserializerParameters";
+
+    public static final String JSON_SERIALIZER_PARAMETERS_CLASS = "com.github.nmorel.gwtjackson.client.JsonSerializerParameters";
 
     public static final String ARRAY_CREATOR_CLASS = "com.github.nmorel.gwtjackson.client.deser.array.ArrayJsonDeserializer.ArrayCreator";
 
@@ -150,30 +153,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      *         </ul>
      */
     protected JSerializerType getJsonSerializerFromType( JType type ) throws UnableToCompleteException {
-        return getJsonSerializerFromType( type, null );
-    }
-
-    /**
-     * Build the string that instantiate a {@link JsonSerializer} for the given type. If the type is a bean,
-     * the implementation of {@link AbstractBeanJsonSerializer} will
-     * be created.
-     *
-     * @param type type
-     * @param propertyInfo additionnal info to gives to the serializer
-     *
-     * @return the code instantiating the {@link JsonSerializer}. Examples:
-     *         <ul>
-     *         <li>ctx.getIntegerSerializer()</li>
-     *         <li>new org.PersonBeanJsonSerializer()</li>
-     *         </ul>
-     */
-    protected JSerializerType getJsonSerializerFromType( JType type, PropertyInfo propertyInfo ) throws UnableToCompleteException {
         JSerializerType.Builder builder = JSerializerType.builder().type( type );
-
-        if ( null != propertyInfo && propertyInfo.isRawValue() ) {
-            return builder.instance( String.format( "ctx.<%s>getRawValueJsonSerializer()", type.getParameterizedQualifiedSourceName() ) )
-                .build();
-        }
 
         JTypeParameter typeParameter = type.isTypeParameter();
         if ( null != typeParameter ) {
@@ -182,7 +162,6 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
         Optional<MapperInstance> configuredSerializer = configuration.getSerializer( type );
         if ( configuredSerializer.isPresent() ) {
-            builder.mapperType( configuredSerializer.get().getMapperType() );
             if ( null != type.isParameterized() ) {
 
                 JSerializerType[] parametersSerializer = new JSerializerType[type.isParameterized().getTypeArgs().length];
@@ -193,7 +172,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                     if ( MapperType.KEY_SERIALIZER == configuredSerializer.get().getParameters()[i] ) {
                         parameterSerializerType = getKeySerializerFromType( type.isParameterized().getTypeArgs()[i] );
                     } else {
-                        parameterSerializerType = getJsonSerializerFromType( type.isParameterized().getTypeArgs()[i], propertyInfo );
+                        parameterSerializerType = getJsonSerializerFromType( type.isParameterized().getTypeArgs()[i] );
                     }
                     parametersSerializer[i] = parameterSerializerType;
                     params[i] = parameterSerializerType.getInstance();
@@ -214,14 +193,12 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
         JEnumType enumType = type.isEnum();
         if ( null != enumType ) {
-            builder.mapperType( typeOracle.getEnumJsonSerializerType() );
             return builder.instance( String.format( "ctx.<%s>getEnumJsonSerializer()", enumType.getQualifiedSourceName() ) ).build();
         }
 
         JArrayType arrayType = type.isArray();
         if ( null != arrayType ) {
-            builder.mapperType( typeOracle.getArrayJsonSerializerType() );
-            JSerializerType parameterSerializerType = getJsonSerializerFromType( arrayType.getComponentType(), propertyInfo );
+            JSerializerType parameterSerializerType = getJsonSerializerFromType( arrayType.getComponentType() );
             builder.parameters( new JSerializerType[]{parameterSerializerType} );
             return builder.instance( String.format( "ctx.newArrayJsonSerializer(%s)", parameterSerializerType.getInstance() ) ).build();
         }
@@ -261,15 +238,9 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                 builder.parameters( parametersSerializer );
             }
 
-            String parameters = generateBeanJsonSerializerParameters( classType, propertyInfo );
-            String sep = "";
-            if ( joinedTypeParameterSerializers.length() > 0 && !parameters.isEmpty() ) {
-                sep = ", ";
-            }
-
-            builder.mapperType( typeOracle.findMapperType( info.getQualifiedSerializerClassName() ) );
-            builder.instance( String.format( "new %s%s(%s%s%s)", info.getQualifiedSerializerClassName(), joinedTypeParameters
-                .toString(), joinedTypeParameterSerializers, sep, parameters ) );
+            builder.beanMapper( true );
+            builder.instance( String.format( "new %s%s(%s)", info.getQualifiedSerializerClassName(), joinedTypeParameters
+                .toString(), joinedTypeParameterSerializers ) );
             return builder.build();
         }
 
@@ -277,35 +248,11 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         throw new UnableToCompleteException();
     }
 
-    private String generateBeanJsonSerializerParameters( JClassType type, PropertyInfo propertyInfo ) throws UnableToCompleteException {
-        if ( null == propertyInfo || (!propertyInfo.getIdentityInfo().isPresent() && !propertyInfo.getTypeInfo().isPresent()) ) {
-            return "";
-        }
-
-        StringSourceWriter sourceWriter = new StringSourceWriter();
-
-        if ( propertyInfo.getIdentityInfo().isPresent() ) {
-            generateIdentifierSerializationInfo( sourceWriter, type, propertyInfo.getIdentityInfo().get() );
-        } else {
-            sourceWriter.print( "null" );
-        }
-
-        sourceWriter.print( ", " );
-
-        if ( propertyInfo.getTypeInfo().isPresent() ) {
-            generateTypeInfo( sourceWriter, propertyInfo.getTypeInfo(), true );
-        } else {
-            sourceWriter.print( "null" );
-        }
-
-        return sourceWriter.toString();
-    }
-
     protected void generateIdentifierSerializationInfo( SourceWriter source, JClassType type, BeanIdentityInfo identityInfo ) throws
         UnableToCompleteException {
 
         if ( identityInfo.isIdABeanProperty() ) {
-            source.println( "new %s<%s>(%s, \"%s\")", PropertyIdentitySerializationInfo.class.getName(), type
+            source.print( "new %s<%s>(%s, \"%s\")", PropertyIdentitySerializationInfo.class.getName(), type
                 .getParameterizedQualifiedSourceName(), identityInfo.isAlwaysAsId(), identityInfo.getPropertyName() );
         } else {
             String qualifiedType = getQualifiedClassName( identityInfo.getType() );
@@ -370,14 +317,12 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
         Optional<MapperInstance> keySerializer = configuration.getKeySerializer( type );
         if ( keySerializer.isPresent() ) {
-            builder.mapperType( keySerializer.get().getMapperType() );
             builder.instance( keySerializer.get().getInstanceCreation() );
             return builder.build();
         }
 
         JEnumType enumType = type.isEnum();
         if ( null != enumType ) {
-            builder.mapperType( typeOracle.getEnumKeySerializerType() );
             builder.instance( String.format( "ctx.<%s>getEnumKeySerializer()", enumType.getQualifiedSourceName() ) );
             return builder.build();
         }
@@ -400,24 +345,6 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      *         </ul>
      */
     protected JDeserializerType getJsonDeserializerFromType( JType type ) throws UnableToCompleteException {
-        return getJsonDeserializerFromType( type, null );
-    }
-
-    /**
-     * Build the string that instantiate a {@link JsonDeserializer} for the given type. If the type is a bean,
-     * the implementation of {@link AbstractBeanJsonDeserializer} will
-     * be created.
-     *
-     * @param type type
-     * @param propertyInfo additionnal info to gives to the deserializer
-     *
-     * @return the code instantiating the deserializer. Examples:
-     *         <ul>
-     *         <li>ctx.getIntegerDeserializer()</li>
-     *         <li>new org.PersonBeanJsonDeserializer()</li>
-     *         </ul>
-     */
-    protected JDeserializerType getJsonDeserializerFromType( JType type, PropertyInfo propertyInfo ) throws UnableToCompleteException {
         JDeserializerType.Builder builder = JDeserializerType.builder().type( type );
 
         JTypeParameter typeParameter = type.isTypeParameter();
@@ -427,8 +354,6 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
         Optional<MapperInstance> configuredDeserializer = configuration.getDeserializer( type );
         if ( configuredDeserializer.isPresent() ) {
-            builder.mapperType( configuredDeserializer.get().getMapperType() );
-
             if ( null != type.isParameterized() ) {
 
                 JDeserializerType[] parametersDeserializer = new JDeserializerType[type.isParameterized().getTypeArgs().length];
@@ -439,7 +364,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                     if ( MapperType.KEY_DESERIALIZER == configuredDeserializer.get().getParameters()[i] ) {
                         parameterDeserializerType = getKeyDeserializerFromType( type.isParameterized().getTypeArgs()[i] );
                     } else {
-                        parameterDeserializerType = getJsonDeserializerFromType( type.isParameterized().getTypeArgs()[i], propertyInfo );
+                        parameterDeserializerType = getJsonDeserializerFromType( type.isParameterized().getTypeArgs()[i] );
                     }
 
                     parametersDeserializer[i] = parameterDeserializerType;
@@ -461,7 +386,6 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
         JEnumType enumType = type.isEnum();
         if ( null != enumType ) {
-            builder.mapperType( typeOracle.getEnumJsonDeserializerType() );
             return builder.instance( "ctx.newEnumJsonDeserializer(" + enumType.getQualifiedSourceName() + ".class)" ).build();
         }
 
@@ -476,8 +400,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                 "  }\n" +
                 "}";
 
-            builder.mapperType( typeOracle.getArrayJsonDeserializerType() );
-            JDeserializerType parameterDeserializerType = getJsonDeserializerFromType( arrayType.getComponentType(), propertyInfo );
+            JDeserializerType parameterDeserializerType = getJsonDeserializerFromType( arrayType.getComponentType() );
             builder.parameters( new JDeserializerType[]{parameterDeserializerType} );
             return builder.instance( String.format( method, parameterDeserializerType.getInstance(), arrayCreator ) ).build();
         }
@@ -486,10 +409,8 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         if ( null != parameterizedType ) {
             if ( typeOracle.isEnumSet( parameterizedType ) ) {
 
-                JDeserializerType parameterDeserializerType = getJsonDeserializerFromType( parameterizedType
-                    .getTypeArgs()[0], propertyInfo );
+                JDeserializerType parameterDeserializerType = getJsonDeserializerFromType( parameterizedType.getTypeArgs()[0] );
 
-                builder.mapperType( typeOracle.getEnumSetJsonDeserializerType() );
                 builder.parameters( new JDeserializerType[]{parameterDeserializerType} );
                 // EnumSet needs the enum class as parameter
                 builder.instance( String.format( "ctx.newEnumSetJsonDeserializer(%s.class, %s)", parameterizedType.getTypeArgs()[0]
@@ -502,9 +423,8 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             if ( typeOracle.isEnumMap( parameterizedType ) ) {
 
                 JDeserializerType keyDeserializerType = getKeyDeserializerFromType( parameterizedType.getTypeArgs()[0] );
-                JDeserializerType valueDeserializerType = getJsonDeserializerFromType( parameterizedType.getTypeArgs()[1], propertyInfo );
+                JDeserializerType valueDeserializerType = getJsonDeserializerFromType( parameterizedType.getTypeArgs()[1] );
 
-                builder.mapperType( typeOracle.getEnumMapJsonDeserializerType() );
                 builder.parameters( new JDeserializerType[]{keyDeserializerType, valueDeserializerType} );
                 // EnumMap needs the enum class as parameter
                 builder.instance( String.format( "ctx.newEnumMapJsonDeserializer(%s.class, %s, %s)", parameterizedType.getTypeArgs()[0]
@@ -550,17 +470,9 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                 builder.parameters( parametersDeserializer );
             }
 
-            String parameters = generateBeanJsonDeserializerParameters( info.getType(), propertyInfo );
-            String sep = "";
-            if ( joinedTypeParameterDeserializers.length() > 0 && !parameters.isEmpty() ) {
-                sep = ", ";
-            }
-
-            builder.mapperType( typeOracle.findMapperType( info.getQualifiedSerializerClassName() ) );
-            builder.instance( String.format( "new %s%s(%s%s%s)", info
-                .getQualifiedDeserializerClassName(), joinedTypeParameters, joinedTypeParameterDeserializers, sep,
-                generateBeanJsonDeserializerParameters( info
-                .getType(), propertyInfo ) ) );
+            builder.beanMapper( true );
+            builder.instance( String.format( "new %s%s(%s)", info
+                .getQualifiedDeserializerClassName(), joinedTypeParameters, joinedTypeParameterDeserializers ) );
             return builder.build();
         }
 
@@ -568,35 +480,11 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         throw new UnableToCompleteException();
     }
 
-    private String generateBeanJsonDeserializerParameters( JClassType type, PropertyInfo propertyInfo ) throws UnableToCompleteException {
-        if ( null == propertyInfo || (!propertyInfo.getIdentityInfo().isPresent() && !propertyInfo.getTypeInfo().isPresent()) ) {
-            return "";
-        }
-
-        StringSourceWriter sourceWriter = new StringSourceWriter();
-
-        if ( propertyInfo.getIdentityInfo().isPresent() ) {
-            generateIdentifierDeserializationInfo( sourceWriter, type, propertyInfo.getIdentityInfo().get() );
-        } else {
-            sourceWriter.print( "null" );
-        }
-
-        sourceWriter.print( ", " );
-
-        if ( propertyInfo.getTypeInfo().isPresent() ) {
-            generateTypeInfo( sourceWriter, propertyInfo.getTypeInfo(), false );
-        } else {
-            sourceWriter.print( "null" );
-        }
-
-        return sourceWriter.toString();
-    }
-
     protected void generateIdentifierDeserializationInfo( SourceWriter source, JClassType type, BeanIdentityInfo identityInfo ) throws
         UnableToCompleteException {
         if ( identityInfo.isIdABeanProperty() ) {
 
-            source.println( "new %s<%s>(\"%s\", %s.class, %s.class)", PropertyIdentityDeserializationInfo.class.getName(), type
+            source.print( "new %s<%s>(\"%s\", %s.class, %s.class)", PropertyIdentityDeserializationInfo.class.getName(), type
                 .getParameterizedQualifiedSourceName(), identityInfo.getPropertyName(), identityInfo.getGenerator()
                 .getCanonicalName(), identityInfo.getScope().getCanonicalName() );
 
@@ -639,14 +527,12 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
         Optional<MapperInstance> keyDeserializer = configuration.getKeyDeserializer( type );
         if ( keyDeserializer.isPresent() ) {
-            builder.mapperType( keyDeserializer.get().getMapperType() );
             builder.instance( keyDeserializer.get().getInstanceCreation() );
             return builder.build();
         }
 
         JEnumType enumType = type.isEnum();
         if ( null != enumType ) {
-            builder.mapperType( typeOracle.getEnumKeyDeserializerType() );
             builder.instance( String.format( "ctx.newEnumKeyDeserializer(%s.class)", enumType.getQualifiedSourceName() ) );
             return builder.build();
         }
@@ -655,17 +541,16 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         throw new UnableToCompleteException();
     }
 
-    protected void generateTypeInfo( SourceWriter source, Optional<BeanTypeInfo> typeInfo,
-                                     boolean serialization ) throws UnableToCompleteException {
+    protected void generateTypeInfo( SourceWriter source, BeanTypeInfo typeInfo, boolean serialization ) throws UnableToCompleteException {
         String typeInfoProperty = null;
-        if ( null != typeInfo.get().getPropertyName() ) {
-            typeInfoProperty = QUOTED_FUNCTION.apply( typeInfo.get().getPropertyName() );
+        if ( null != typeInfo.getPropertyName() ) {
+            typeInfoProperty = QUOTED_FUNCTION.apply( typeInfo.getPropertyName() );
         }
         source.println( "new %s(%s.%s, %s)", serialization ? TYPE_SERIALIZATION_INFO_CLASS : TYPE_DESERIALIZATION_INFO_CLASS, As.class
-            .getCanonicalName(), typeInfo.get().getInclude(), typeInfoProperty );
+            .getCanonicalName(), typeInfo.getInclude(), typeInfoProperty );
         source.indent();
 
-        for ( Entry<JClassType, String> entry : typeInfo.get().getMapTypeToMetadata().entrySet() ) {
+        for ( Entry<JClassType, String> entry : typeInfo.getMapTypeToMetadata().entrySet() ) {
             source.println( ".addTypeInfo(%s.class, \"%s\")", entry.getKey().getQualifiedSourceName(), entry.getValue() );
         }
 

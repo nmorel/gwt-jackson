@@ -18,6 +18,7 @@ package com.github.nmorel.gwtjackson.rebind;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -26,6 +27,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.nmorel.gwtjackson.client.ser.bean.AbstractBeanJsonSerializer;
+import com.github.nmorel.gwtjackson.rebind.type.JMapperType;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
@@ -133,6 +135,9 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
             parameterizedTypes + ">" );
 
         writeClassBody( source, mapperInfo.getBeanInfo(), mapperInfo.getProperties() );
+
+        source.println();
+        source.commit( logger );
 
         return mapperInfo;
     }
@@ -344,5 +349,26 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
 
         return new TypeParameters( typeParameterMapperNames, joinedTypeParameterMappersWithType
             .toString(), joinedTypeParameterMappersWithoutType.toString() );
+    }
+
+    protected JClassType findFirstTypeToApplyPropertyAnnotation( JMapperType mapperType ) {
+        return findFirstTypeToApplyPropertyAnnotation( Arrays.asList( mapperType ) );
+    }
+
+    private JClassType findFirstTypeToApplyPropertyAnnotation( List<JMapperType> mapperTypeList ) {
+        if ( mapperTypeList.isEmpty() ) {
+            return null;
+        }
+
+        List<JMapperType> subLevel = new ArrayList<JMapperType>();
+        for ( JMapperType mapperType : mapperTypeList ) {
+            if ( mapperType.isBeanMapper() ) {
+                return mapperType.getType().isClass();
+            } else if ( mapperType.getParameters().length > 0 ) {
+                subLevel.addAll( Arrays.asList( mapperType.getParameters() ) );
+            }
+        }
+
+        return findFirstTypeToApplyPropertyAnnotation( subLevel );
     }
 }

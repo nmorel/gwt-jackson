@@ -36,12 +36,17 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
 
     private final Map<String, BeanPropertySerializer<T, ?>> serializers = new LinkedHashMap<String, BeanPropertySerializer<T, ?>>();
 
-    private IdentitySerializationInfo<T> identityInfo;
-
-    private TypeSerializationInfo<T> typeInfo;
-
     private final Map<Class<? extends T>, SubtypeSerializer<? extends T>> subtypeClassToSerializer = new IdentityHashMap<Class<? extends
         T>, SubtypeSerializer<? extends T>>();
+
+    private final IdentitySerializationInfo<T> defaultIdentityInfo;
+
+    private final TypeSerializationInfo<T> defaultTypeInfo;
+
+    protected AbstractBeanJsonSerializer( IdentitySerializationInfo<T> defaultIdentityInfo, TypeSerializationInfo<T> defaultTypeInfo ) {
+        this.defaultIdentityInfo = defaultIdentityInfo;
+        this.defaultTypeInfo = defaultTypeInfo;
+    }
 
     public abstract Class getSerializedType();
 
@@ -68,7 +73,11 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
     @Override
     public void doSerialize( JsonWriter writer, @Nonnull T value, JsonSerializationContext ctx, JsonSerializerParameters params ) throws
         IOException {
+
         ObjectIdSerializer<?> idWriter = null;
+        final IdentitySerializationInfo identityInfo = null == params.getIdentityInfo() ? defaultIdentityInfo : params.getIdentityInfo();
+        final TypeSerializationInfo typeInfo = null == params.getTypeInfo() ? defaultTypeInfo : params.getTypeInfo();
+
         if ( null != identityInfo ) {
             idWriter = ctx.getObjectId( value );
             if ( null != idWriter ) {
@@ -106,7 +115,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
                         writer.name( identityInfo.getPropertyName() );
                         idWriter.serializeId( writer, ctx );
                     }
-                    getSerializer( writer, value, ctx ).serializeObject( writer, value, ctx );
+                    getSerializer( writer, value, ctx ).serializeObject( writer, value, ctx, identityInfo, typeInfo );
                     writer.endObject();
                     break;
 
@@ -120,7 +129,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
                         writer.name( identityInfo.getPropertyName() );
                         idWriter.serializeId( writer, ctx );
                     }
-                    getSerializer( writer, value, ctx ).serializeObject( writer, value, ctx );
+                    getSerializer( writer, value, ctx ).serializeObject( writer, value, ctx, identityInfo, typeInfo );
                     writer.endObject();
                     writer.endObject();
                     break;
@@ -135,7 +144,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
                         writer.name( identityInfo.getPropertyName() );
                         idWriter.serializeId( writer, ctx );
                     }
-                    getSerializer( writer, value, ctx ).serializeObject( writer, value, ctx );
+                    getSerializer( writer, value, ctx ).serializeObject( writer, value, ctx, identityInfo, typeInfo );
                     writer.endObject();
                     writer.endArray();
                     break;
@@ -149,7 +158,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
                 writer.name( identityInfo.getPropertyName() );
                 idWriter.serializeId( writer, ctx );
             }
-            getSerializer( writer, value, ctx ).serializeObject( writer, value, ctx );
+            getSerializer( writer, value, ctx ).serializeObject( writer, value, ctx, identityInfo, typeInfo );
             writer.endObject();
         }
     }
@@ -174,20 +183,13 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
      *
      * @throws IOException if an error occurs while writing a property
      */
-    public final void serializeObject( JsonWriter writer, T value, JsonSerializationContext ctx ) throws IOException {
+    public final void serializeObject( JsonWriter writer, T value, JsonSerializationContext ctx, IdentitySerializationInfo identityInfo,
+                                       TypeSerializationInfo typeInfo ) throws IOException {
         for ( Map.Entry<String, BeanPropertySerializer<T, ?>> entry : serializers.entrySet() ) {
             if ( null == identityInfo || !identityInfo.isProperty() || !identityInfo.getPropertyName().equals( entry.getKey() ) ) {
                 writer.name( entry.getKey() );
                 entry.getValue().serialize( writer, value, ctx );
             }
         }
-    }
-
-    protected final void setIdentityInfo( IdentitySerializationInfo<T> identityInfo ) {
-        this.identityInfo = identityInfo;
-    }
-
-    protected final void setTypeInfo( TypeSerializationInfo<T> typeInfo ) {
-        this.typeInfo = typeInfo;
     }
 }

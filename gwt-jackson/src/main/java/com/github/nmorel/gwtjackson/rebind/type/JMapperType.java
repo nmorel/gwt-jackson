@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.rebind.type;
 
-import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JType;
 
 /**
@@ -28,7 +27,7 @@ public abstract class JMapperType {
 
     protected static abstract class Builder<B extends Builder, M extends JMapperType> {
 
-        protected JClassType mapperType;
+        protected boolean beanMapper;
 
         protected JType type;
 
@@ -36,8 +35,8 @@ public abstract class JMapperType {
 
         protected M[] parameters;
 
-        public B mapperType( JClassType mapperType ) {
-            this.mapperType = mapperType;
+        public B beanMapper( boolean beanMapper ) {
+            this.beanMapper = beanMapper;
             return (B) this;
         }
 
@@ -57,7 +56,7 @@ public abstract class JMapperType {
         }
     }
 
-    protected final JClassType mapperType;
+    protected final boolean beanMapper;
 
     protected final JType type;
 
@@ -65,15 +64,15 @@ public abstract class JMapperType {
 
     protected final JMapperType[] parameters;
 
-    protected JMapperType( JClassType mapperType, JType type, String instance, JMapperType[] parameters ) {
-        this.mapperType = mapperType;
+    protected JMapperType( boolean beanMapper, JType type, String instance, JMapperType[] parameters ) {
+        this.beanMapper = beanMapper;
         this.type = type;
         this.instance = instance;
         this.parameters = parameters;
     }
 
-    public JClassType getMapperType() {
-        return mapperType;
+    public boolean isBeanMapper() {
+        return beanMapper;
     }
 
     public JType getType() {

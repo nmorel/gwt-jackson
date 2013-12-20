@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.rebind.type;
 
-import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.thirdparty.guava.common.base.Preconditions;
 
@@ -35,7 +34,7 @@ public class JSerializerType extends JMapperType {
             if ( null == parameters ) {
                 parameters = new JSerializerType[0];
             }
-            return new JSerializerType( mapperType, type, instance, parameters );
+            return new JSerializerType( beanMapper, type, instance, parameters );
         }
     }
 
@@ -43,7 +42,7 @@ public class JSerializerType extends JMapperType {
         return new Builder();
     }
 
-    public JSerializerType( JClassType mapperType, JType type, String instance, JSerializerType[] parameters ) {
-        super( mapperType, type, instance, parameters );
+    public JSerializerType( boolean beanMapper, JType type, String instance, JSerializerType[] parameters ) {
+        super( beanMapper, type, instance, parameters );
     }
 }

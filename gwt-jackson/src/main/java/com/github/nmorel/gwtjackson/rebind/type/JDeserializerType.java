@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.rebind.type;
 
-import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.thirdparty.guava.common.base.Preconditions;
 
@@ -35,7 +34,7 @@ public class JDeserializerType extends JMapperType {
             if ( null == parameters ) {
                 parameters = new JDeserializerType[0];
             }
-            return new JDeserializerType( mapperType, type, instance, parameters );
+            return new JDeserializerType( beanMapper, type, instance, parameters );
         }
     }
 
@@ -43,7 +42,7 @@ public class JDeserializerType extends JMapperType {
         return new Builder();
     }
 
-    public JDeserializerType( JClassType mapperType, JType type, String instance, JDeserializerType[] parameters ) {
-        super( mapperType, type, instance, parameters );
+    public JDeserializerType( boolean beanMapper, JType type, String instance, JDeserializerType[] parameters ) {
+        super( beanMapper, type, instance, parameters );
     }
 }

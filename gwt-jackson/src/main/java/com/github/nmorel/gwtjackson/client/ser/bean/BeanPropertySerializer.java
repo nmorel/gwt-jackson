@@ -18,6 +18,7 @@ package com.github.nmorel.gwtjackson.client.ser.bean;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
+import com.github.nmorel.gwtjackson.client.JsonSerializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
 /**
@@ -26,6 +27,19 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * @author Nicolas Morel
  */
 public abstract class BeanPropertySerializer<T, V> extends HasSerializer<V, JsonSerializer<V>> {
+
+    private JsonSerializerParameters parameters;
+
+    protected JsonSerializerParameters getParameters( JsonSerializationContext ctx ) {
+        if ( null == parameters ) {
+            parameters = newParameters( ctx );
+        }
+        return parameters;
+    }
+
+    protected JsonSerializerParameters newParameters( JsonSerializationContext ctx ) {
+        return JsonSerializerParameters.DEFAULT;
+    }
 
     /**
      * @param bean bean containing the property to serialize
@@ -43,6 +57,6 @@ public abstract class BeanPropertySerializer<T, V> extends HasSerializer<V, Json
      * @param ctx context of the serialization process
      */
     public void serialize( JsonWriter writer, T bean, JsonSerializationContext ctx ) {
-        getSerializer( ctx ).serialize( writer, getValue( bean, ctx ), ctx );
+        getSerializer( ctx ).serialize( writer, getValue( bean, ctx ), ctx, getParameters( ctx ) );
     }
 }
