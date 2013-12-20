@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.github.nmorel.gwtjackson.client.deser.bean.SubtypeDeserializer;
+import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 import com.github.nmorel.gwtjackson.rebind.FieldAccessor.Accessor;
 import com.github.nmorel.gwtjackson.rebind.type.JDeserializerType;
@@ -72,6 +73,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         ".BeanPropertyDeserializer";
 
     private static final String BACK_REFERENCE_PROPERTY_BEAN_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean.BackReferenceProperty";
+
+    private static final String JSON_DESERIALIZER_PARAMETERS_CLASS = "com.github.nmorel.gwtjackson.client.JsonDeserializerParameters";
 
     public BeanJsonDeserializerCreator( TreeLogger logger, GeneratorContext context, RebindConfiguration configuration,
                                         JacksonTypeOracle typeOracle ) {
@@ -168,7 +171,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
         source.println( "@Override" );
         source.println( "public %s<%s> newInstance( %s reader, %s ctx ) throws %s {", INSTANCE_CLASS, beanInfo.getType()
-            .getParameterizedQualifiedSourceName(), JSON_READER_CLASS, JSON_DESERIALIZATION_CONTEXT_CLASS, IOException.class.getName() );
+            .getParameterizedQualifiedSourceName(), JsonReader.class
+            .getCanonicalName(), JSON_DESERIALIZATION_CONTEXT_CLASS, IOException.class.getName() );
         source.indent();
 
         if ( beanInfo.isCreatorDefaultConstructor() ) {
@@ -442,7 +446,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
     }
 
     private void generatePropertyDeserializerParameters( SourceWriter source, PropertyInfo property,
-                                                       JDeserializerType deserializerType ) throws UnableToCompleteException {
+                                                         JDeserializerType deserializerType ) throws UnableToCompleteException {
         if ( property.getIdentityInfo().isPresent() || property.getTypeInfo().isPresent() ) {
 
             JClassType annotatedType = findFirstTypeToApplyPropertyAnnotation( deserializerType );
@@ -450,8 +454,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
             source.println();
 
             source.println( "@Override" );
-            source.println( "protected %s newParameters(%s ctx) {", JSON_DESERIALIZER_PARAMETERS_CLASS,
-                JSON_DESERIALIZATION_CONTEXT_CLASS );
+            source
+                .println( "protected %s newParameters(%s ctx) {", JSON_DESERIALIZER_PARAMETERS_CLASS, JSON_DESERIALIZATION_CONTEXT_CLASS );
             source.indent();
             source.print( "return new %s()", JSON_DESERIALIZER_PARAMETERS_CLASS );
 

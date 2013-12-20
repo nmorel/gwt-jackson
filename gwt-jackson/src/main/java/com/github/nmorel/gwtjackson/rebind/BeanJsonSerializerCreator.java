@@ -34,6 +34,8 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
 
     private static final String BEAN_PROPERTY_SERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean.BeanPropertySerializer";
 
+    private static final String JSON_SERIALIZER_PARAMETERS_CLASS = "com.github.nmorel.gwtjackson.client.JsonSerializerParameters";
+
     public BeanJsonSerializerCreator( TreeLogger logger, GeneratorContext context, RebindConfiguration configuration,
                                       JacksonTypeOracle typeOracle ) {
         super( logger, context, configuration, typeOracle );
@@ -120,7 +122,7 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
 
             JSerializerType serializerType;
             if ( property.isRawValue() ) {
-                serializerType = JSerializerType.builder().type( property.getType() ).instance( String
+                serializerType = new JSerializerType.Builder().type( property.getType() ).instance( String
                     .format( "ctx" + ".<%s>getRawValueJsonSerializer()", property.getType().getParameterizedQualifiedSourceName() ) )
                     .build();
             } else {

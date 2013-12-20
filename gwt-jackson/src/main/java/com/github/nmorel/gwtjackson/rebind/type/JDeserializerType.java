@@ -38,10 +38,6 @@ public class JDeserializerType extends JMapperType {
         }
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
     public JDeserializerType( boolean beanMapper, JType type, String instance, JDeserializerType[] parameters ) {
         super( beanMapper, type, instance, parameters );
     }

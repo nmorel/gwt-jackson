@@ -24,9 +24,17 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import com.fasterxml.jackson.annotation.ObjectIdGenerator;
+import com.github.nmorel.gwtjackson.client.deser.bean.AbstractIdentityDeserializationInfo;
+import com.github.nmorel.gwtjackson.client.deser.bean.PropertyIdentityDeserializationInfo;
 import com.github.nmorel.gwtjackson.client.ser.bean.AbstractBeanJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.bean.AbstractIdentitySerializationInfo;
+import com.github.nmorel.gwtjackson.client.ser.bean.ObjectIdSerializer;
+import com.github.nmorel.gwtjackson.client.ser.bean.PropertyIdentitySerializationInfo;
 import com.github.nmorel.gwtjackson.rebind.type.JMapperType;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
@@ -39,6 +47,8 @@ import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.user.rebind.SourceWriter;
 
+import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.QUOTED_FUNCTION;
+
 /**
  * @author Nicolas Morel
  */
@@ -50,13 +60,9 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
 
         private final String joinedTypeParameterMappersWithType;
 
-        private final String joinedTypeParameterMappersWithoutType;
-
-        public TypeParameters( List<String> typeParameterMapperNames, String joinedTypeParameterMappersWithType,
-                               String joinedTypeParameterMappersWithoutType ) {
+        public TypeParameters( List<String> typeParameterMapperNames, String joinedTypeParameterMappersWithType ) {
             this.typeParameterMapperNames = typeParameterMapperNames;
             this.joinedTypeParameterMappersWithType = joinedTypeParameterMappersWithType;
-            this.joinedTypeParameterMappersWithoutType = joinedTypeParameterMappersWithoutType;
         }
 
         public List<String> getTypeParameterMapperNames() {
@@ -66,11 +72,21 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
         public String getJoinedTypeParameterMappersWithType() {
             return joinedTypeParameterMappersWithType;
         }
-
-        public String getJoinedTypeParameterMappersWithoutType() {
-            return joinedTypeParameterMappersWithoutType;
-        }
     }
+
+    protected static final String TYPE_PARAMETER_PREFIX = "p_";
+
+    protected static final String ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean" + "" +
+        ".AbstractBeanJsonDeserializer";
+
+    protected static final String ABSTRACT_BEAN_JSON_SERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean" + "" +
+        ".AbstractBeanJsonSerializer";
+
+    private static final String TYPE_DESERIALIZATION_INFO_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean" + "" +
+        ".TypeDeserializationInfo";
+
+    private static final String TYPE_SERIALIZATION_INFO_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean" + "" +
+        ".TypeSerializationInfo";
 
     protected BeanJsonMapperInfo mapperInfo;
 
@@ -328,12 +344,10 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
 
         List<String> typeParameterMapperNames = new ArrayList<String>();
         StringBuilder joinedTypeParameterMappersWithType = new StringBuilder();
-        StringBuilder joinedTypeParameterMappersWithoutType = new StringBuilder();
 
         for ( int i = 0; i < beanInfo.getParameterizedTypes().length; i++ ) {
             if ( i > 0 ) {
                 joinedTypeParameterMappersWithType.append( ", " );
-                joinedTypeParameterMappersWithoutType.append( ", " );
             }
 
             JClassType argType = beanInfo.getParameterizedTypes()[i];
@@ -344,11 +358,116 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
 
             typeParameterMapperNames.add( mapperName );
             joinedTypeParameterMappersWithType.append( String.format( "%s %s%s", mapperType, TYPE_PARAMETER_PREFIX, mapperName ) );
-            joinedTypeParameterMappersWithoutType.append( TYPE_PARAMETER_PREFIX ).append( mapperName );
         }
 
-        return new TypeParameters( typeParameterMapperNames, joinedTypeParameterMappersWithType
-            .toString(), joinedTypeParameterMappersWithoutType.toString() );
+        return new TypeParameters( typeParameterMapperNames, joinedTypeParameterMappersWithType.toString() );
+    }
+
+    protected String getQualifiedClassName( JType type ) {
+        if ( null == type.isPrimitive() ) {
+            return type.getParameterizedQualifiedSourceName();
+        } else {
+            return type.isPrimitive().getQualifiedBoxedSourceName();
+        }
+    }
+
+    protected void generateIdentifierSerializationInfo( SourceWriter source, JClassType type, BeanIdentityInfo identityInfo ) throws
+        UnableToCompleteException {
+
+        if ( identityInfo.isIdABeanProperty() ) {
+            source.print( "new %s<%s>(%s, \"%s\")", PropertyIdentitySerializationInfo.class.getName(), type
+                .getParameterizedQualifiedSourceName(), identityInfo.isAlwaysAsId(), identityInfo.getPropertyName() );
+        } else {
+            String qualifiedType = getQualifiedClassName( identityInfo.getType() );
+            String identityPropertyClass = String.format( "%s<%s, %s>", AbstractIdentitySerializationInfo.class.getName(), type
+                .getParameterizedQualifiedSourceName(), qualifiedType );
+
+            source.println( "new %s(%s, \"%s\") {", identityPropertyClass, identityInfo.isAlwaysAsId(), identityInfo.getPropertyName() );
+            source.indent();
+
+            source.println( "@Override" );
+            source
+                .println( "protected %s<%s> newSerializer(%s ctx) {", JSON_SERIALIZER_CLASS, qualifiedType,
+                    JSON_SERIALIZATION_CONTEXT_CLASS );
+            source.indent();
+            source.println( "return %s;", getJsonSerializerFromType( identityInfo.getType() ).getInstance() );
+            source.outdent();
+            source.println( "}" );
+            source.println();
+
+            source.println( "@Override" );
+            source.println( "public %s<%s> getObjectId(%s bean, %s ctx) {", ObjectIdSerializer.class.getName(), qualifiedType, type
+                .getParameterizedQualifiedSourceName(), JSON_SERIALIZATION_CONTEXT_CLASS );
+            source.indent();
+
+            String generatorType = String.format( "%s<%s>", ObjectIdGenerator.class.getName(), qualifiedType );
+            source.println( "%s generator = new %s().forScope(%s.class);", generatorType, identityInfo.getGenerator()
+                .getCanonicalName(), identityInfo.getScope().getName() );
+            source.println( "%s scopedGen = ctx.findObjectIdGenerator(generator);", generatorType );
+            source.println( "if(null == scopedGen) {" );
+            source.indent();
+            source.println( "scopedGen = generator.newForSerialization(ctx);" );
+            source.println( "ctx.addGenerator(scopedGen);" );
+            source.outdent();
+            source.println( "}" );
+            source.println( "return new %s<%s>(scopedGen.generateId(bean), getSerializer(ctx));", ObjectIdSerializer.class
+                .getName(), qualifiedType );
+
+            source.outdent();
+            source.println( "}" );
+
+            source.outdent();
+            source.print( "}" );
+        }
+    }
+
+    protected void generateIdentifierDeserializationInfo( SourceWriter source, JClassType type, BeanIdentityInfo identityInfo ) throws
+        UnableToCompleteException {
+        if ( identityInfo.isIdABeanProperty() ) {
+
+            source.print( "new %s<%s>(\"%s\", %s.class, %s.class)", PropertyIdentityDeserializationInfo.class.getName(), type
+                .getParameterizedQualifiedSourceName(), identityInfo.getPropertyName(), identityInfo.getGenerator()
+                .getCanonicalName(), identityInfo.getScope().getCanonicalName() );
+
+        } else {
+
+            String qualifiedType = getQualifiedClassName( identityInfo.getType() );
+
+            String identityPropertyClass = String.format( "%s<%s, %s>", AbstractIdentityDeserializationInfo.class.getName(), type
+                .getParameterizedQualifiedSourceName(), qualifiedType );
+
+            source.println( "new %s(\"%s\", %s.class, %s.class) {", identityPropertyClass, identityInfo.getPropertyName(), identityInfo
+                .getGenerator().getCanonicalName(), identityInfo.getScope().getCanonicalName() );
+            source.indent();
+
+            source.println( "@Override" );
+            source
+                .println( "protected %s<%s> newDeserializer(%s ctx) {", JSON_DESERIALIZER_CLASS, qualifiedType,
+                    JSON_DESERIALIZATION_CONTEXT_CLASS );
+            source.indent();
+            source.println( "return %s;", getJsonDeserializerFromType( identityInfo.getType() ).getInstance() );
+            source.outdent();
+            source.println( "}" );
+
+            source.outdent();
+            source.print( "}" );
+        }
+    }
+
+    protected void generateTypeInfo( SourceWriter source, BeanTypeInfo typeInfo, boolean serialization ) throws UnableToCompleteException {
+        String typeInfoProperty = null;
+        if ( null != typeInfo.getPropertyName() ) {
+            typeInfoProperty = QUOTED_FUNCTION.apply( typeInfo.getPropertyName() );
+        }
+        source.println( "new %s(%s.%s, %s)", serialization ? TYPE_SERIALIZATION_INFO_CLASS : TYPE_DESERIALIZATION_INFO_CLASS, As.class
+            .getCanonicalName(), typeInfo.getInclude(), typeInfoProperty );
+        source.indent();
+
+        for ( Entry<JClassType, String> entry : typeInfo.getMapTypeToMetadata().entrySet() ) {
+            source.println( ".addTypeInfo(%s.class, \"%s\")", entry.getKey().getQualifiedSourceName(), entry.getValue() );
+        }
+
+        source.outdent();
     }
 
     protected JClassType findFirstTypeToApplyPropertyAnnotation( JMapperType mapperType ) {

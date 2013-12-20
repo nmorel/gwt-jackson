@@ -99,11 +99,11 @@ public final class RebindConfiguration {
 
         private final MapperType[] parameters;
 
-        public MapperInstance( JClassType mapperType, String instanceCreation ) {
+        private MapperInstance( JClassType mapperType, String instanceCreation ) {
             this( mapperType, instanceCreation, new MapperType[0] );
         }
 
-        public MapperInstance( JClassType mapperType, String instanceCreation, MapperType[] parameters ) {
+        private MapperInstance( JClassType mapperType, String instanceCreation, MapperType[] parameters ) {
             this.mapperType = mapperType;
             this.instanceCreation = instanceCreation;
             this.parameters = parameters;

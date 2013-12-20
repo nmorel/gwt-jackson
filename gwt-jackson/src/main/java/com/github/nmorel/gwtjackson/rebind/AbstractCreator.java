@@ -17,22 +17,14 @@
 package com.github.nmorel.gwtjackson.rebind;
 
 import java.io.PrintWriter;
-import java.util.Map.Entry;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import com.fasterxml.jackson.annotation.ObjectIdGenerator;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
+import com.github.nmorel.gwtjackson.client.deser.array.ArrayJsonDeserializer.ArrayCreator;
 import com.github.nmorel.gwtjackson.client.deser.bean.AbstractBeanJsonDeserializer;
-import com.github.nmorel.gwtjackson.client.deser.bean.AbstractIdentityDeserializationInfo;
-import com.github.nmorel.gwtjackson.client.deser.bean.PropertyIdentityDeserializationInfo;
 import com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.AbstractBeanJsonSerializer;
-import com.github.nmorel.gwtjackson.client.ser.bean.AbstractIdentitySerializationInfo;
-import com.github.nmorel.gwtjackson.client.ser.bean.ObjectIdSerializer;
-import com.github.nmorel.gwtjackson.client.ser.bean.PropertyIdentitySerializationInfo;
 import com.github.nmorel.gwtjackson.client.ser.map.key.KeySerializer;
-import com.github.nmorel.gwtjackson.rebind.PropertyInfo.AdditionalMethod;
 import com.github.nmorel.gwtjackson.rebind.RebindConfiguration.MapperInstance;
 import com.github.nmorel.gwtjackson.rebind.RebindConfiguration.MapperType;
 import com.github.nmorel.gwtjackson.rebind.type.JDeserializerType;
@@ -52,52 +44,22 @@ import com.google.gwt.user.rebind.AbstractSourceCreator;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
 
-import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.QUOTED_FUNCTION;
-
 /**
  * @author Nicolas Morel
  */
 public abstract class AbstractCreator extends AbstractSourceCreator {
 
-    public static final String JSON_DESERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.JsonDeserializer";
+    protected static final String JSON_DESERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.JsonDeserializer";
 
-    public static final String JSON_SERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.JsonSerializer";
+    protected static final String JSON_SERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.JsonSerializer";
 
-    public static final String JSON_READER_CLASS = "com.github.nmorel.gwtjackson.client.stream.JsonReader";
+    protected static final String JSON_DESERIALIZATION_CONTEXT_CLASS = "com.github.nmorel.gwtjackson.client.JsonDeserializationContext";
 
-    public static final String JSON_DESERIALIZATION_CONTEXT_CLASS = "com.github.nmorel.gwtjackson.client.JsonDeserializationContext";
-
-    public static final String JSON_SERIALIZATION_CONTEXT_CLASS = "com.github.nmorel.gwtjackson.client.JsonSerializationContext";
-
-    public static final String JSON_DESERIALIZER_PARAMETERS_CLASS = "com.github.nmorel.gwtjackson.client.JsonDeserializerParameters";
-
-    public static final String JSON_SERIALIZER_PARAMETERS_CLASS = "com.github.nmorel.gwtjackson.client.JsonSerializerParameters";
-
-    public static final String ARRAY_CREATOR_CLASS = "com.github.nmorel.gwtjackson.client.deser.array.ArrayJsonDeserializer.ArrayCreator";
-
-    protected static final String IDENTITY_DESERIALIZATION_INFO_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean" + "" + "" +
-        ".IdentityDeserializationInfo";
-
-    protected static final String IDENTITY_SERIALIZATION_INFO_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean" + "" + "" +
-        ".IdentitySerializationInfo";
-
-    protected static final String TYPE_PARAMETER_PREFIX = "p_";
+    protected static final String JSON_SERIALIZATION_CONTEXT_CLASS = "com.github.nmorel.gwtjackson.client.JsonSerializationContext";
 
     protected static final String TYPE_PARAMETER_DESERIALIZER_FIELD_NAME = "deserializer%d";
 
     protected static final String TYPE_PARAMETER_SERIALIZER_FIELD_NAME = "serializer%d";
-
-    protected static final String ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean" + "" +
-        ".AbstractBeanJsonDeserializer";
-
-    protected static final String ABSTRACT_BEAN_JSON_SERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean" + "" +
-        ".AbstractBeanJsonSerializer";
-
-    protected static final String TYPE_DESERIALIZATION_INFO_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean" + "" +
-        ".TypeDeserializationInfo";
-
-    protected static final String TYPE_SERIALIZATION_INFO_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean" + "" +
-        ".TypeSerializationInfo";
 
     protected final TreeLogger logger;
 
@@ -131,14 +93,6 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         return composer.createSourceWriter( context, printWriter );
     }
 
-    protected String getQualifiedClassName( JType type ) {
-        if ( null == type.isPrimitive() ) {
-            return type.getParameterizedQualifiedSourceName();
-        } else {
-            return type.isPrimitive().getQualifiedBoxedSourceName();
-        }
-    }
-
     /**
      * Build the string that instantiate a {@link JsonSerializer} for the given type. If the type is a bean,
      * the implementation of {@link AbstractBeanJsonSerializer} will
@@ -153,7 +107,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      *         </ul>
      */
     protected JSerializerType getJsonSerializerFromType( JType type ) throws UnableToCompleteException {
-        JSerializerType.Builder builder = JSerializerType.builder().type( type );
+        JSerializerType.Builder builder = new JSerializerType.Builder().type( type );
 
         JTypeParameter typeParameter = type.isTypeParameter();
         if ( null != typeParameter ) {
@@ -248,63 +202,6 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         throw new UnableToCompleteException();
     }
 
-    protected void generateIdentifierSerializationInfo( SourceWriter source, JClassType type, BeanIdentityInfo identityInfo ) throws
-        UnableToCompleteException {
-
-        if ( identityInfo.isIdABeanProperty() ) {
-            source.print( "new %s<%s>(%s, \"%s\")", PropertyIdentitySerializationInfo.class.getName(), type
-                .getParameterizedQualifiedSourceName(), identityInfo.isAlwaysAsId(), identityInfo.getPropertyName() );
-        } else {
-            String qualifiedType = getQualifiedClassName( identityInfo.getType() );
-            String identityPropertyClass = String.format( "%s<%s, %s>", AbstractIdentitySerializationInfo.class.getName(), type
-                .getParameterizedQualifiedSourceName(), qualifiedType );
-
-            source.println( "new %s(%s, \"%s\") {", identityPropertyClass, identityInfo.isAlwaysAsId(), identityInfo.getPropertyName() );
-            source.indent();
-
-            source.println( "@Override" );
-            source
-                .println( "protected %s<%s> newSerializer(%s ctx) {", JSON_SERIALIZER_CLASS, qualifiedType,
-                    JSON_SERIALIZATION_CONTEXT_CLASS );
-            source.indent();
-            source.println( "return %s;", getJsonSerializerFromType( identityInfo.getType() ).getInstance() );
-            source.outdent();
-            source.println( "}" );
-            source.println();
-
-            Optional<AdditionalMethod> additionalMethod = Optional.absent();
-
-            source.println( "@Override" );
-            source.println( "public %s<%s> getObjectId(%s bean, %s ctx) {", ObjectIdSerializer.class.getName(), qualifiedType, type
-                .getParameterizedQualifiedSourceName(), JSON_SERIALIZATION_CONTEXT_CLASS );
-            source.indent();
-
-            String generatorType = String.format( "%s<%s>", ObjectIdGenerator.class.getName(), qualifiedType );
-            source.println( "%s generator = new %s().forScope(%s.class);", generatorType, identityInfo.getGenerator()
-                .getCanonicalName(), identityInfo.getScope().getName() );
-            source.println( "%s scopedGen = ctx.findObjectIdGenerator(generator);", generatorType );
-            source.println( "if(null == scopedGen) {" );
-            source.indent();
-            source.println( "scopedGen = generator.newForSerialization(ctx);" );
-            source.println( "ctx.addGenerator(scopedGen);" );
-            source.outdent();
-            source.println( "}" );
-            source.println( "return new %s<%s>(scopedGen.generateId(bean), getSerializer(ctx));", ObjectIdSerializer.class
-                .getName(), qualifiedType );
-
-            source.outdent();
-            source.println( "}" );
-
-            if ( additionalMethod.isPresent() ) {
-                source.println();
-                additionalMethod.get().write( source );
-            }
-
-            source.outdent();
-            source.print( "}" );
-        }
-    }
-
     /**
      * Build the string that instantiate a {@link KeySerializer} for the given type.
      *
@@ -313,7 +210,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      * @return the code instantiating the {@link KeySerializer}.
      */
     protected JSerializerType getKeySerializerFromType( JType type ) throws UnableToCompleteException {
-        JSerializerType.Builder builder = JSerializerType.builder().type( type );
+        JSerializerType.Builder builder = new JSerializerType.Builder().type( type );
 
         Optional<MapperInstance> keySerializer = configuration.getKeySerializer( type );
         if ( keySerializer.isPresent() ) {
@@ -345,7 +242,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      *         </ul>
      */
     protected JDeserializerType getJsonDeserializerFromType( JType type ) throws UnableToCompleteException {
-        JDeserializerType.Builder builder = JDeserializerType.builder().type( type );
+        JDeserializerType.Builder builder = new JDeserializerType.Builder().type( type );
 
         JTypeParameter typeParameter = type.isTypeParameter();
         if ( null != typeParameter ) {
@@ -392,7 +289,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         JArrayType arrayType = type.isArray();
         if ( null != arrayType ) {
             String method = "ctx.newArrayJsonDeserializer(%s, %s)";
-            String arrayCreator = "new " + ARRAY_CREATOR_CLASS + "<" + arrayType.getComponentType()
+            String arrayCreator = "new " + ArrayCreator.class.getCanonicalName() + "<" + arrayType.getComponentType()
                 .getParameterizedQualifiedSourceName() + ">(){\n" +
                 "  @Override\n" +
                 "  public " + arrayType.getParameterizedQualifiedSourceName() + " create( int length ) {\n" +
@@ -480,40 +377,6 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         throw new UnableToCompleteException();
     }
 
-    protected void generateIdentifierDeserializationInfo( SourceWriter source, JClassType type, BeanIdentityInfo identityInfo ) throws
-        UnableToCompleteException {
-        if ( identityInfo.isIdABeanProperty() ) {
-
-            source.print( "new %s<%s>(\"%s\", %s.class, %s.class)", PropertyIdentityDeserializationInfo.class.getName(), type
-                .getParameterizedQualifiedSourceName(), identityInfo.getPropertyName(), identityInfo.getGenerator()
-                .getCanonicalName(), identityInfo.getScope().getCanonicalName() );
-
-        } else {
-
-            String qualifiedType = getQualifiedClassName( identityInfo.getType() );
-
-            String identityPropertyClass = String.format( "%s<%s, %s>", AbstractIdentityDeserializationInfo.class.getName(), type
-                .getParameterizedQualifiedSourceName(), qualifiedType );
-
-            source.println( "new %s(\"%s\", %s.class, %s.class) {", identityPropertyClass, identityInfo.getPropertyName(), identityInfo
-                .getGenerator().getCanonicalName(), identityInfo.getScope().getCanonicalName() );
-            source.indent();
-
-            source.println( "@Override" );
-            source
-                .println( "protected %s<%s> newDeserializer(%s ctx) {", JSON_DESERIALIZER_CLASS, qualifiedType,
-                    JSON_DESERIALIZATION_CONTEXT_CLASS );
-            source.indent();
-            source.println( "return %s;", getJsonDeserializerFromType( identityInfo.getType() ).getInstance() );
-            source.outdent();
-            source.println( "}" );
-            source.println();
-
-            source.outdent();
-            source.print( "}" );
-        }
-    }
-
     /**
      * Build the string that instantiate a {@link KeyDeserializer} for the given type.
      *
@@ -522,7 +385,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      * @return the code instantiating the {@link KeyDeserializer}.
      */
     protected JDeserializerType getKeyDeserializerFromType( JType type ) throws UnableToCompleteException {
-        JDeserializerType.Builder builder = JDeserializerType.builder();
+        JDeserializerType.Builder builder = new JDeserializerType.Builder();
         builder.type( type );
 
         Optional<MapperInstance> keyDeserializer = configuration.getKeyDeserializer( type );
@@ -539,22 +402,6 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
         logger.log( TreeLogger.Type.ERROR, "Type '" + type.getQualifiedSourceName() + "' is not supported as map's key" );
         throw new UnableToCompleteException();
-    }
-
-    protected void generateTypeInfo( SourceWriter source, BeanTypeInfo typeInfo, boolean serialization ) throws UnableToCompleteException {
-        String typeInfoProperty = null;
-        if ( null != typeInfo.getPropertyName() ) {
-            typeInfoProperty = QUOTED_FUNCTION.apply( typeInfo.getPropertyName() );
-        }
-        source.println( "new %s(%s.%s, %s)", serialization ? TYPE_SERIALIZATION_INFO_CLASS : TYPE_DESERIALIZATION_INFO_CLASS, As.class
-            .getCanonicalName(), typeInfo.getInclude(), typeInfoProperty );
-        source.indent();
-
-        for ( Entry<JClassType, String> entry : typeInfo.getMapTypeToMetadata().entrySet() ) {
-            source.println( ".addTypeInfo(%s.class, \"%s\")", entry.getKey().getQualifiedSourceName(), entry.getValue() );
-        }
-
-        source.outdent();
     }
 
 }
