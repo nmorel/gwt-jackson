@@ -16,6 +16,9 @@
 
 package com.github.nmorel.gwtjackson.client;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -62,7 +65,6 @@ public final class JsonSerializerParameters {
      * defaults ({@link java.util.Locale#getDefault()}) unless explicitly
      * set to another locale.
      */
-
     private String locale = DEFAULT_LOCALE;
 
     /**
@@ -78,7 +80,7 @@ public final class JsonSerializerParameters {
     /**
      * Names of properties to ignore.
      */
-    private String[] ignoredProperties;
+    private Set<String> ignoredProperties;
 
     /**
      * Inclusion rule to use.
@@ -131,12 +133,15 @@ public final class JsonSerializerParameters {
         return this;
     }
 
-    public String[] getIgnoredProperties() {
+    public Set<String> getIgnoredProperties() {
         return ignoredProperties;
     }
 
-    public JsonSerializerParameters setIgnoredProperties( String[] ignoredProperties ) {
-        this.ignoredProperties = ignoredProperties;
+    public JsonSerializerParameters addIgnoredProperty( String ignoredProperty ) {
+        if ( null == ignoredProperties ) {
+            ignoredProperties = new HashSet<String>();
+        }
+        ignoredProperties.add( ignoredProperty );
         return this;
     }
 

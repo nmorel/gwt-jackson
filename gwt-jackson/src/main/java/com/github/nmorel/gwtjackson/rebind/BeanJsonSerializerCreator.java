@@ -18,6 +18,7 @@ package com.github.nmorel.gwtjackson.rebind;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.nmorel.gwtjackson.client.ser.bean.SubtypeSerializer;
 import com.github.nmorel.gwtjackson.rebind.FieldAccessor.Accessor;
 import com.github.nmorel.gwtjackson.rebind.type.JSerializerType;
@@ -175,6 +176,13 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
             source.print( "return new %s()", JSON_SERIALIZER_PARAMETERS_CLASS );
 
             source.indent();
+
+            generateCommonPropertyParameters( source, property, serializerType );
+
+            if ( property.getInclude().isPresent() ) {
+                source.println();
+                source.print( ".setInclude(%s.%s)", Include.class.getCanonicalName(), property.getInclude().get().name() );
+            }
 
             if ( property.getIdentityInfo().isPresent() ) {
                 source.println();

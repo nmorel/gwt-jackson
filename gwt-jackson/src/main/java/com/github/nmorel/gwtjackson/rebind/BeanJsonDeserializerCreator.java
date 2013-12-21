@@ -461,6 +461,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
             source.indent();
 
+            generateCommonPropertyParameters( source, property, deserializerType );
+
             if ( property.getIdentityInfo().isPresent() ) {
                 source.println();
                 source.print( ".setIdentityInfo(" );

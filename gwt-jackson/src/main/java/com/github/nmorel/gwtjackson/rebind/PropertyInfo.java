@@ -18,8 +18,12 @@ package com.github.nmorel.gwtjackson.rebind;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
@@ -99,6 +103,21 @@ public final class PropertyInfo {
 
         result.identityInfo = Optional.fromNullable( BeanIdentityInfo.process( logger, typeOracle, result.type, fieldAccessors ) );
         result.typeInfo = Optional.fromNullable( BeanTypeInfo.process( logger, typeOracle, result.type, fieldAccessors ) );
+
+        result.format = Optional.fromNullable( findAnnotationOnAnyAccessor( fieldAccessors, JsonFormat.class ) );
+
+        JsonInclude jsonInclude = findAnnotationOnAnyAccessor( fieldAccessors, JsonInclude.class );
+        if ( null != jsonInclude ) {
+            result.include = Optional.of( jsonInclude.value() );
+        }
+
+        JsonIgnoreProperties jsonIgnoreProperties = findAnnotationOnAnyAccessor( fieldAccessors, JsonIgnoreProperties.class );
+        if ( null != jsonIgnoreProperties ) {
+            result.ignoreUnknown = Optional.of( jsonIgnoreProperties.ignoreUnknown() );
+            if ( null != jsonIgnoreProperties.value() && jsonIgnoreProperties.value().length > 0 ) {
+                result.ignoredProperties = Optional.of( jsonIgnoreProperties.value() );
+            }
+        }
 
         return result;
     }
@@ -212,7 +231,7 @@ public final class PropertyInfo {
 
     private String propertyName;
 
-    private boolean rawValue;
+    private boolean rawValue = false;
 
     private Optional<String> managedReference = Optional.absent();
 
@@ -225,6 +244,14 @@ public final class PropertyInfo {
     private Optional<BeanIdentityInfo> identityInfo = Optional.absent();
 
     private Optional<BeanTypeInfo> typeInfo = Optional.absent();
+
+    private Optional<JsonFormat> format = Optional.absent();
+
+    private Optional<Include> include = Optional.absent();
+
+    private Optional<Boolean> ignoreUnknown = Optional.absent();
+
+    private Optional<String[]> ignoredProperties = Optional.absent();
 
     private PropertyInfo() {
     }
@@ -279,5 +306,21 @@ public final class PropertyInfo {
 
     public Optional<BeanTypeInfo> getTypeInfo() {
         return typeInfo;
+    }
+
+    public Optional<JsonFormat> getFormat() {
+        return format;
+    }
+
+    public Optional<Include> getInclude() {
+        return include;
+    }
+
+    public Optional<Boolean> getIgnoreUnknown() {
+        return ignoreUnknown;
+    }
+
+    public Optional<String[]> getIgnoredProperties() {
+        return ignoredProperties;
     }
 }

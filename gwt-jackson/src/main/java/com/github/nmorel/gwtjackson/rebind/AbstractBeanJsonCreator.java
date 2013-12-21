@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.ObjectIdGenerator;
@@ -45,6 +47,7 @@ import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JParameter;
 import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
 import com.google.gwt.core.ext.typeinfo.JType;
+import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.google.gwt.user.rebind.SourceWriter;
 
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.QUOTED_FUNCTION;
@@ -489,5 +492,36 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
         }
 
         return findFirstTypeToApplyPropertyAnnotation( subLevel );
+    }
+
+    protected void generateCommonPropertyParameters( SourceWriter source, PropertyInfo property,
+                                                     JMapperType mapperType ) throws UnableToCompleteException {
+        if ( property.getFormat().isPresent() ) {
+            JsonFormat format = property.getFormat().get();
+            if ( !Strings.isNullOrEmpty( format.pattern() ) ) {
+                source.println();
+                source.print( ".setPattern(\"%s\")", format.pattern() );
+            }
+            source.println();
+            source.print( ".setShape(%s.%s)", Shape.class.getCanonicalName(), format.shape().name() );
+            if ( !Strings.isNullOrEmpty( format.locale() ) && !JsonFormat.DEFAULT_LOCALE.equals( format.locale() ) ) {
+                source.println();
+                source.print( ".setLocale(\"%s\")", format.locale() );
+            }
+            if ( !Strings.isNullOrEmpty( format.timezone() ) && !JsonFormat.DEFAULT_TIMEZONE.equals( format.timezone() ) ) {
+                source.println();
+                source.print( ".setTimezone(\"%s\")", format.timezone() );
+            }
+        }
+        if ( property.getIgnoreUnknown().isPresent() ) {
+            source.println();
+            source.print( ".setIgnoreUnknown(%s)", Boolean.toString( property.getIgnoreUnknown().get() ) );
+        }
+        if ( property.getIgnoredProperties().isPresent() ) {
+            for ( String ignoredProperty : property.getIgnoredProperties().get() ) {
+                source.println();
+                source.print( ".addIgnoredProperty(\"%s\")", ignoredProperty );
+            }
+        }
     }
 }

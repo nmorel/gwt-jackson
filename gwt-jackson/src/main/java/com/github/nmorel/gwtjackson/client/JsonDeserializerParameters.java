@@ -16,10 +16,17 @@
 
 package com.github.nmorel.gwtjackson.client;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.nmorel.gwtjackson.client.deser.bean.IdentityDeserializationInfo;
 import com.github.nmorel.gwtjackson.client.deser.bean.TypeDeserializationInfo;
 import com.github.nmorel.gwtjackson.client.deser.collection.ListJsonDeserializer;
+
+import static com.fasterxml.jackson.annotation.JsonFormat.DEFAULT_LOCALE;
+import static com.fasterxml.jackson.annotation.JsonFormat.DEFAULT_TIMEZONE;
 
 /**
  * This class includes parameters defined through properties annotations like {@link JsonIgnoreProperties}. They are specific to one
@@ -34,9 +41,45 @@ public final class JsonDeserializerParameters {
     public static final JsonDeserializerParameters DEFAULT = new JsonDeserializerParameters();
 
     /**
+     * Datatype-specific additional piece of configuration that may be used
+     * to further refine formatting aspects. This may, for example, determine
+     * low-level format String used for {@link java.util.Date} serialization;
+     * however, exact use is determined by specific <code>JsonSerializer</code>
+     */
+    private String pattern;
+
+    /**
+     * Structure to use for serialization: definition of mapping depends on datatype,
+     * but usually has straight-forward counterpart in data format (JSON).
+     * Note that commonly only a subset of shapes is available; and if 'invalid' value
+     * is chosen, defaults are usually used.
+     */
+    private Shape shape = Shape.ANY;
+
+    /**
+     * {@link java.util.Locale} to use for serialization (if needed).
+     * Special value of {@link com.fasterxml.jackson.annotation.JsonFormat#DEFAULT_LOCALE}
+     * can be used to mean "just use the default", where default is specified
+     * by the serialization context, which in turn defaults to system
+     * defaults ({@link java.util.Locale#getDefault()}) unless explicitly
+     * set to another locale.
+     */
+    private String locale = DEFAULT_LOCALE;
+
+    /**
+     * {@link java.util.TimeZone} to use for serialization (if needed).
+     * Special value of {@link com.fasterxml.jackson.annotation.JsonFormat#DEFAULT_TIMEZONE}
+     * can be used to mean "just use the default", where default is specified
+     * by the serialization context, which in turn defaults to system
+     * defaults ({@link java.util.TimeZone#getDefault()}) unless explicitly
+     * set to another locale.
+     */
+    private String timezone = DEFAULT_TIMEZONE;
+
+    /**
      * Names of properties to ignore.
      */
-    private String[] ignoredProperties;
+    private Set<String> ignoredProperties;
 
     /**
      * Property that defines whether it is ok to just ignore any
@@ -59,12 +102,51 @@ public final class JsonDeserializerParameters {
      */
     private TypeDeserializationInfo typeInfo;
 
-    public String[] getIgnoredProperties() {
+    public String getPattern() {
+        return pattern;
+    }
+
+    public JsonDeserializerParameters setPattern( String pattern ) {
+        this.pattern = pattern;
+        return this;
+    }
+
+    public Shape getShape() {
+        return shape;
+    }
+
+    public JsonDeserializerParameters setShape( Shape shape ) {
+        this.shape = shape;
+        return this;
+    }
+
+    public String getLocale() {
+        return locale;
+    }
+
+    public JsonDeserializerParameters setLocale( String locale ) {
+        this.locale = locale;
+        return this;
+    }
+
+    public String getTimezone() {
+        return timezone;
+    }
+
+    public JsonDeserializerParameters setTimezone( String timezone ) {
+        this.timezone = timezone;
+        return this;
+    }
+
+    public Set<String> getIgnoredProperties() {
         return ignoredProperties;
     }
 
-    public JsonDeserializerParameters setIgnoredProperties( String[] ignoredProperties ) {
-        this.ignoredProperties = ignoredProperties;
+    public JsonDeserializerParameters addIgnoredProperty( String ignoredProperty ) {
+        if ( null == ignoredProperties ) {
+            ignoredProperties = new HashSet<String>();
+        }
+        ignoredProperties.add( ignoredProperty );
         return this;
     }
 
