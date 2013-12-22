@@ -33,6 +33,7 @@ import com.github.nmorel.gwtjackson.client.advanced.jsontype.PolymorphismNoTypeI
 import com.github.nmorel.gwtjackson.client.advanced.jsontype.TypeNamesGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonAutoDetectGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonCreatorGwtTest;
+import com.github.nmorel.gwtjackson.client.annotations.JsonFormatGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonIgnoreGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonIgnoreTypeGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonManagedAndBackReferenceGwtTest;
@@ -254,6 +255,7 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( JsonManagedAndBackReferenceGwtTest.class );
         suite.addTestSuite( JsonRootNameGwtTest.class );
         suite.addTestSuite( JsonRawValueGwtTest.class );
+        suite.addTestSuite( JsonFormatGwtTest.class );
 
         // Advanced use cases
         suite.addTestSuite( PrivateAccessGwtTest.class );

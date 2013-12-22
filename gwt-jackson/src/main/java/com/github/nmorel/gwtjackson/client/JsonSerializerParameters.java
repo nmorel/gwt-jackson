@@ -26,9 +26,6 @@ import com.github.nmorel.gwtjackson.client.ser.IterableJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.IdentitySerializationInfo;
 import com.github.nmorel.gwtjackson.client.ser.bean.TypeSerializationInfo;
 
-import static com.fasterxml.jackson.annotation.JsonFormat.DEFAULT_LOCALE;
-import static com.fasterxml.jackson.annotation.JsonFormat.DEFAULT_TIMEZONE;
-
 /**
  * This class includes parameters defined through properties annotations like {@link JsonFormat}. They are specific to one
  * {@link JsonSerializer} and that's why they are not contained inside {@link JsonSerializationContext}.
@@ -45,7 +42,7 @@ public final class JsonSerializerParameters {
      * Datatype-specific additional piece of configuration that may be used
      * to further refine formatting aspects. This may, for example, determine
      * low-level format String used for {@link java.util.Date} serialization;
-     * however, exact use is determined by specific <code>JsonSerializer</code>
+     * however, exact use is determined by specific {@link JsonSerializer}
      */
     private String pattern;
 
@@ -58,24 +55,14 @@ public final class JsonSerializerParameters {
     private Shape shape = Shape.ANY;
 
     /**
-     * {@link java.util.Locale} to use for serialization (if needed).
-     * Special value of {@link com.fasterxml.jackson.annotation.JsonFormat#DEFAULT_LOCALE}
-     * can be used to mean "just use the default", where default is specified
-     * by the serialization context, which in turn defaults to system
-     * defaults ({@link java.util.Locale#getDefault()}) unless explicitly
-     * set to another locale.
+     * Locale to use for serialization (if needed).
      */
-    private String locale = DEFAULT_LOCALE;
+    private String locale;
 
     /**
-     * {@link java.util.TimeZone} to use for serialization (if needed).
-     * Special value of {@link com.fasterxml.jackson.annotation.JsonFormat#DEFAULT_TIMEZONE}
-     * can be used to mean "just use the default", where default is specified
-     * by the serialization context, which in turn defaults to system
-     * defaults ({@link java.util.TimeZone#getDefault()}) unless explicitly
-     * set to another locale.
+     * Timezone to use for serialization (if needed).
      */
-    private String timezone = DEFAULT_TIMEZONE;
+    private String timezone;
 
     /**
      * Names of properties to ignore.

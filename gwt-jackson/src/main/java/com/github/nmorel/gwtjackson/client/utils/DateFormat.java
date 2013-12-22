@@ -17,6 +17,8 @@
 package com.github.nmorel.gwtjackson.client.utils;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.TimeZone;
@@ -25,6 +27,31 @@ import com.google.gwt.i18n.client.TimeZone;
  * @author Nicolas Morel
  */
 public final class DateFormat {
+
+    private static class DateParser {
+
+        protected final DateTimeFormat dateTimeFormat;
+
+        protected DateParser( String pattern ) {
+            this.dateTimeFormat = DateTimeFormat.getFormat( pattern );
+        }
+
+        protected Date parse( String date ) {
+            return DateFormat.parse( dateTimeFormat, date );
+        }
+    }
+
+    private static class DateParserNoTz extends DateParser {
+
+        protected DateParserNoTz( String pattern ) {
+            super( pattern + " Z" );
+        }
+
+        @Override
+        protected Date parse( String date ) {
+            return super.parse( date + " +0000" );
+        }
+    }
 
     /**
      * Defines a commonly used date format that conforms
@@ -55,6 +82,8 @@ public final class DateFormat {
      */
     public static final TimeZone UTC_TIMEZONE = TimeZone.createTimeZone( 0 );
 
+    private static final Map<String, DateParser> CACHE_PARSERS = new HashMap<String, DateParser>();
+
     /**
      * Format a date using {@link #DATE_FORMAT_STR_ISO8601} and {@link #UTC_TIMEZONE}
      *
@@ -63,7 +92,134 @@ public final class DateFormat {
      * @return the formatted date
      */
     public static String format( Date date ) {
-        return DateFormat.DATE_FORMAT_STR_ISO8601.format( date, DateFormat.UTC_TIMEZONE );
+        return format( DateFormat.DATE_FORMAT_STR_ISO8601, DateFormat.UTC_TIMEZONE, date );
+    }
+
+    /**
+     * Format a date using the pattern given in parameter or {@link #DATE_FORMAT_STR_ISO8601} if null and {@link #UTC_TIMEZONE}.
+     *
+     * @param pattern pattern to use. If null, {@link #DATE_FORMAT_STR_ISO8601} will be used.
+     * @param date date to format
+     *
+     * @return the formatted date
+     */
+    public static String format( String pattern, Date date ) {
+        DateTimeFormat dateTimeFormat;
+        if ( null == pattern ) {
+            dateTimeFormat = DateFormat.DATE_FORMAT_STR_ISO8601;
+        } else {
+            // GWT already handle a cache, no need to make our own
+            dateTimeFormat = DateTimeFormat.getFormat( pattern );
+        }
+        return format( dateTimeFormat, UTC_TIMEZONE, date );
+    }
+
+    /**
+     * Format a date using the {@link DateTimeFormat} and {@link TimeZone} given in
+     * parameters
+     *
+     * @param format format to use
+     * @param timeZone timezone to use
+     * @param date date to format
+     *
+     * @return the formatted date
+     */
+    public static String format( DateTimeFormat format, TimeZone timeZone, Date date ) {
+        return format.format( date, timeZone );
+    }
+
+    /**
+     * Parse a date using {@link #DATE_FORMAT_STR_ISO8601} and the browser timezone.
+     *
+     * @param date date to parse
+     *
+     * @return the parsed date
+     */
+    public static Date parse( String date ) {
+        return parse( DateFormat.DATE_FORMAT_STR_ISO8601, date );
+    }
+
+    /**
+     * Parse a date using the pattern given in parameter or {@link #DATE_FORMAT_STR_ISO8601} and the browser timezone.
+     *
+     * @param pattern pattern to use. If null, {@link #DATE_FORMAT_STR_ISO8601} will be used.
+     * @param date date to parse
+     *
+     * @return the parsed date
+     */
+    public static Date parse( String pattern, String date ) {
+        if ( null == pattern ) {
+            return parse( DateFormat.DATE_FORMAT_STR_ISO8601, date );
+        } else {
+            DateParser parser = CACHE_PARSERS.get( pattern );
+            if ( null == parser ) {
+                if ( hasTz( pattern ) ) {
+                    parser = new DateParser( pattern );
+                } else {
+                    // the pattern does not have a timezone, we use the UTC timezone as reference
+                    parser = new DateParserNoTz( pattern );
+                }
+                CACHE_PARSERS.put( pattern, parser );
+            }
+            return parser.parse( date );
+        }
+    }
+
+    /**
+     * Find if a pattern contains informations about the timezone.
+     *
+     * @param pattern pattern
+     *
+     * @return true if the pattern contains informations about the timezone, false otherwise
+     */
+    private static boolean hasTz( String pattern ) {
+        boolean inQuote = false;
+
+        for ( int i = 0; i < pattern.length(); i++ ) {
+            char ch = pattern.charAt( i );
+
+            // If inside quote, except two quote connected, just copy or exit.
+            if ( inQuote ) {
+                if ( ch == '\'' ) {
+                    if ( i + 1 < pattern.length() && pattern.charAt( i + 1 ) == '\'' ) {
+                        // Quote appeared twice continuously, interpret as one quote.
+                        ++i;
+                    } else {
+                        inQuote = false;
+                    }
+                }
+                continue;
+            }
+
+            // Outside quote now.
+            if ( "Zzv".indexOf( ch ) > 0 ) {
+                return true;
+            }
+
+            // Two consecutive quotes is a quote literal, inside or outside of quotes.
+            if ( ch == '\'' ) {
+                if ( i + 1 < pattern.length() && pattern.charAt( i + 1 ) == '\'' ) {
+                    i++;
+                } else {
+                    inQuote = true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Parse a date using the {@link DateTimeFormat} given in
+     * parameter and the browser timezone.
+     *
+     * @param format format to use
+     * @param date date to parse
+     *
+     * @return the parsed date
+     */
+    public static Date parse( DateTimeFormat format, String date ) {
+        return format.parseStrict( date );
     }
 
     private DateFormat() {}

@@ -44,7 +44,7 @@ public final class JsonDeserializerParameters {
      * Datatype-specific additional piece of configuration that may be used
      * to further refine formatting aspects. This may, for example, determine
      * low-level format String used for {@link java.util.Date} serialization;
-     * however, exact use is determined by specific <code>JsonSerializer</code>
+     * however, exact use is determined by specific {@link JsonDeserializer}
      */
     private String pattern;
 
@@ -57,22 +57,12 @@ public final class JsonDeserializerParameters {
     private Shape shape = Shape.ANY;
 
     /**
-     * {@link java.util.Locale} to use for serialization (if needed).
-     * Special value of {@link com.fasterxml.jackson.annotation.JsonFormat#DEFAULT_LOCALE}
-     * can be used to mean "just use the default", where default is specified
-     * by the serialization context, which in turn defaults to system
-     * defaults ({@link java.util.Locale#getDefault()}) unless explicitly
-     * set to another locale.
+     * Locale to use for deserialization (if needed).
      */
     private String locale = DEFAULT_LOCALE;
 
     /**
-     * {@link java.util.TimeZone} to use for serialization (if needed).
-     * Special value of {@link com.fasterxml.jackson.annotation.JsonFormat#DEFAULT_TIMEZONE}
-     * can be used to mean "just use the default", where default is specified
-     * by the serialization context, which in turn defaults to system
-     * defaults ({@link java.util.TimeZone#getDefault()}) unless explicitly
-     * set to another locale.
+     * TimeZone to use for deserialization (if needed).
      */
     private String timezone = DEFAULT_TIMEZONE;
 

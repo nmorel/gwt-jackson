@@ -447,7 +447,9 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
     private void generatePropertyDeserializerParameters( SourceWriter source, PropertyInfo property,
                                                          JDeserializerType deserializerType ) throws UnableToCompleteException {
-        if ( property.getIdentityInfo().isPresent() || property.getTypeInfo().isPresent() ) {
+
+        if ( property.getFormat().isPresent() || property.getIgnoredProperties().isPresent() || property.getIgnoreUnknown().isPresent() ||
+            property.getIdentityInfo().isPresent() || property.getTypeInfo().isPresent() ) {
 
             JClassType annotatedType = findFirstTypeToApplyPropertyAnnotation( deserializerType );
 

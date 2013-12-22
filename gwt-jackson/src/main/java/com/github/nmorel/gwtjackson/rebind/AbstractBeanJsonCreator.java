@@ -40,6 +40,7 @@ import com.github.nmorel.gwtjackson.client.ser.bean.PropertyIdentitySerializatio
 import com.github.nmorel.gwtjackson.rebind.type.JMapperType;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
+import com.google.gwt.core.ext.TreeLogger.Type;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JField;
@@ -505,10 +506,12 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
             source.println();
             source.print( ".setShape(%s.%s)", Shape.class.getCanonicalName(), format.shape().name() );
             if ( !Strings.isNullOrEmpty( format.locale() ) && !JsonFormat.DEFAULT_LOCALE.equals( format.locale() ) ) {
+                logger.log( Type.WARN, "JsonFormat.locale is not supported by default" );
                 source.println();
                 source.print( ".setLocale(\"%s\")", format.locale() );
             }
             if ( !Strings.isNullOrEmpty( format.timezone() ) && !JsonFormat.DEFAULT_TIMEZONE.equals( format.timezone() ) ) {
+                logger.log( Type.WARN, "JsonFormat.timezone is not supported by default" );
                 source.println();
                 source.print( ".setTimezone(\"%s\")", format.timezone() );
             }

@@ -36,8 +36,6 @@ import com.google.gwt.i18n.client.DateTimeFormat;
  */
 public abstract class BaseDateJsonDeserializer<D extends Date> extends JsonDeserializer<D> {
 
-    private static final DateTimeFormat SQL_DATE_FORMAT = DateTimeFormat.getFormat( "yyyy-MM-dd Z" );
-
     /**
      * Default implementation of {@link BaseDateJsonDeserializer} for {@link Date}
      */
@@ -55,13 +53,13 @@ public abstract class BaseDateJsonDeserializer<D extends Date> extends JsonDeser
         private DateJsonDeserializer() { }
 
         @Override
-        protected Date deserializeNumber( long millis ) {
+        protected Date deserializeNumber( long millis, JsonDeserializerParameters params ) {
             return new Date( millis );
         }
 
         @Override
-        protected Date deserializeString( String date ) {
-            return DateFormat.DATE_FORMAT_STR_ISO8601.parseStrict( date );
+        protected Date deserializeString( String date, JsonDeserializerParameters params ) {
+            return DateFormat.parse( params.getPattern(), date );
         }
     }
 
@@ -82,12 +80,12 @@ public abstract class BaseDateJsonDeserializer<D extends Date> extends JsonDeser
         private SqlDateJsonDeserializer() { }
 
         @Override
-        protected java.sql.Date deserializeNumber( long millis ) {
+        protected java.sql.Date deserializeNumber( long millis, JsonDeserializerParameters params ) {
             return new java.sql.Date( millis );
         }
 
         @Override
-        protected java.sql.Date deserializeString( String date ) {
+        protected java.sql.Date deserializeString( String date, JsonDeserializerParameters params ) {
             Date d = SQL_DATE_FORMAT.parse( date + " +0000" );
             return new java.sql.Date( d.getTime() );
         }
@@ -110,12 +108,12 @@ public abstract class BaseDateJsonDeserializer<D extends Date> extends JsonDeser
         private SqlTimeJsonDeserializer() { }
 
         @Override
-        protected Time deserializeNumber( long millis ) {
+        protected Time deserializeNumber( long millis, JsonDeserializerParameters params ) {
             return new Time( millis );
         }
 
         @Override
-        protected Time deserializeString( String date ) {
+        protected Time deserializeString( String date, JsonDeserializerParameters params ) {
             return Time.valueOf( date );
         }
     }
@@ -137,26 +135,28 @@ public abstract class BaseDateJsonDeserializer<D extends Date> extends JsonDeser
         private SqlTimestampJsonDeserializer() { }
 
         @Override
-        protected Timestamp deserializeNumber( long millis ) {
+        protected Timestamp deserializeNumber( long millis, JsonDeserializerParameters params ) {
             return new Timestamp( millis );
         }
 
         @Override
-        protected Timestamp deserializeString( String date ) {
-            return new Timestamp( DateFormat.DATE_FORMAT_STR_ISO8601.parse( date ).getTime() );
+        protected Timestamp deserializeString( String date, JsonDeserializerParameters params ) {
+            return new Timestamp( DateFormat.parse( params.getPattern(), date ).getTime() );
         }
     }
+
+    private static final DateTimeFormat SQL_DATE_FORMAT = DateTimeFormat.getFormat( "yyyy-MM-dd Z" );
 
     @Override
     public D doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws IOException {
-        if ( JsonToken.NUMBER.equals( reader.peek() ) ) {
-            return deserializeNumber( reader.nextLong() );
+        if ( params.getShape().isNumeric() || JsonToken.NUMBER.equals( reader.peek() ) ) {
+            return deserializeNumber( reader.nextLong(), params );
         } else {
-            return deserializeString( reader.nextString() );
+            return deserializeString( reader.nextString(), params );
         }
     }
 
-    protected abstract D deserializeNumber( long millis );
+    protected abstract D deserializeNumber( long millis, JsonDeserializerParameters params );
 
-    protected abstract D deserializeString( String date );
+    protected abstract D deserializeString( String date, JsonDeserializerParameters params );
 }
