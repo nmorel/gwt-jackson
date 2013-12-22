@@ -80,6 +80,8 @@
 
     <!-- Plugins version -->
     <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
+    <maven-site-plugin.version>3.3</maven-site-plugin.version>
+    <maven-resources-plugin.version>2.6</maven-resources-plugin.version>
     <maven-surefire-plugin.version>2.16</maven-surefire-plugin.version>
     <maven-deploy-plugin.version>2.8.1</maven-deploy-plugin.version>
     <gwt-maven-plugin.version>2.5.1</gwt-maven-plugin.version>
@@ -140,6 +142,16 @@
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>${maven-compiler-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>${maven-resources-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>${maven-site-plugin.version}</version>
         </plugin>
 
         <plugin>
