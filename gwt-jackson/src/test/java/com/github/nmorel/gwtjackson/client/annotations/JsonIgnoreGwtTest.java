@@ -18,7 +18,9 @@ package com.github.nmorel.gwtjackson.client.annotations;
 
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;
+import com.github.nmorel.gwtjackson.client.ObjectReader;
 import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
+import com.github.nmorel.gwtjackson.shared.ObjectReaderTester;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonIgnoreTester;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonIgnoreTester.BeanWithIgnoredProperties;
 import com.google.gwt.core.client.GWT;
@@ -28,18 +30,25 @@ import com.google.gwt.core.client.GWT;
  */
 public class JsonIgnoreGwtTest extends GwtJacksonTestCase {
 
-    public interface JsonIgnoreMapper extends ObjectMapper<BeanWithIgnoredProperties>, ObjectMapperTester<BeanWithIgnoredProperties> {
+    public interface BeanWithIgnoredPropertiesMapper extends ObjectMapper<BeanWithIgnoredProperties>, ObjectMapperTester<BeanWithIgnoredProperties> {
+        static BeanWithIgnoredPropertiesMapper INSTANCE = GWT.create( BeanWithIgnoredPropertiesMapper.class );
+    }
 
-        static JsonIgnoreMapper INSTANCE = GWT.create( JsonIgnoreMapper.class );
+    public interface BeanWithUnknownPropertyMapper extends ObjectReader<JsonIgnoreTester.BeanWithUnknownProperty>, ObjectReaderTester<JsonIgnoreTester.BeanWithUnknownProperty> {
+        static BeanWithUnknownPropertyMapper INSTANCE = GWT.create( BeanWithUnknownPropertyMapper.class );
     }
 
     private JsonIgnoreTester tester = JsonIgnoreTester.INSTANCE;
 
-    public void testSerialize() {
-        tester.testSerialize( JsonIgnoreMapper.INSTANCE );
+    public void testSerializeBeanWithIgnoredProperties() {
+        tester.testSerializeBeanWithIgnoredProperties(BeanWithIgnoredPropertiesMapper.INSTANCE);
     }
 
-    public void testDeserialize() {
-        tester.testDeserialize( JsonIgnoreMapper.INSTANCE );
+    public void testDeserializeBeanWithIgnoredProperties() {
+        tester.testDeserializeBeanWithIgnoredProperties(BeanWithIgnoredPropertiesMapper.INSTANCE);
+    }
+
+    public void testDeserializeBeanWithUnknownProperty() {
+        tester.testDeserializeBeanWithUnknownProperty(BeanWithUnknownPropertyMapper.INSTANCE);
     }
 }

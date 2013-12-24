@@ -26,12 +26,17 @@ import org.junit.Test;
 public class JsonIgnoreJacksonTest extends AbstractJacksonTest {
 
     @Test
-    public void testSerialize() {
-        JsonIgnoreTester.INSTANCE.testSerialize( createWriter( JsonIgnoreTester.BeanWithIgnoredProperties.class ) );
+    public void testSerializeBeanWithIgnoredProperties() {
+        JsonIgnoreTester.INSTANCE.testSerializeBeanWithIgnoredProperties(createWriter(JsonIgnoreTester.BeanWithIgnoredProperties.class));
     }
 
     @Test
-    public void testDeserialize() {
-        JsonIgnoreTester.INSTANCE.testDeserialize( createReader( JsonIgnoreTester.BeanWithIgnoredProperties.class ) );
+    public void testDeserializeBeanWithIgnoredProperties() {
+        JsonIgnoreTester.INSTANCE.testDeserializeBeanWithIgnoredProperties(createReader(JsonIgnoreTester.BeanWithIgnoredProperties.class));
+    }
+
+    @Test
+    public void testDeserializeBeanWithUnknownProperty() {
+        JsonIgnoreTester.INSTANCE.testDeserializeBeanWithUnknownProperty(createReader(JsonIgnoreTester.BeanWithUnknownProperty.class));
     }
 }

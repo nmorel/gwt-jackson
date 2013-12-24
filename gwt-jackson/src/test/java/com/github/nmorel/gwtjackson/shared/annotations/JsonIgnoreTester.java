@@ -29,6 +29,11 @@ import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
  */
 public final class JsonIgnoreTester extends AbstractTester {
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class BeanWithUnknownProperty {
+        public String knownProperty;
+    }
+
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
     @JsonIgnoreProperties({"stringProperty", "aBooleanProperty", "unknownProperty"})
     public static class BeanWithIgnoredProperties {
@@ -51,7 +56,7 @@ public final class JsonIgnoreTester extends AbstractTester {
     private JsonIgnoreTester() {
     }
 
-    public void testSerialize( ObjectWriterTester<BeanWithIgnoredProperties> writer ) {
+    public void testSerializeBeanWithIgnoredProperties(ObjectWriterTester<BeanWithIgnoredProperties> writer) {
         BeanWithIgnoredProperties bean = new BeanWithIgnoredProperties();
         bean.intProperty = 15;
         bean.stringProperty = "IAmAString";
@@ -64,7 +69,7 @@ public final class JsonIgnoreTester extends AbstractTester {
         assertEquals( expected, result );
     }
 
-    public void testDeserialize( ObjectReaderTester<BeanWithIgnoredProperties> reader ) {
+    public void testDeserializeBeanWithIgnoredProperties(ObjectReaderTester<BeanWithIgnoredProperties> reader) {
         String input = "{\"ignoredProperty\":45.7," +
             "\"aStringProperty\":\"IAmAString\"," +
             "\"aBooleanProperty\":true," +
@@ -76,6 +81,14 @@ public final class JsonIgnoreTester extends AbstractTester {
         assertNull( result.ignoredProperty );
         assertEquals( "IAmAString", result.stringProperty );
         assertEquals( 15, result.intProperty );
+    }
+
+    public void testDeserializeBeanWithUnknownProperty( ObjectReaderTester<BeanWithUnknownProperty> reader ) {
+        String input = "{\"unknownProperty\":45.7," +
+                "\"knownProperty\":\"IAmAString\"}";
+
+        BeanWithUnknownProperty result = reader.read( input );
+        assertEquals( "IAmAString", result.knownProperty );
     }
 
 }

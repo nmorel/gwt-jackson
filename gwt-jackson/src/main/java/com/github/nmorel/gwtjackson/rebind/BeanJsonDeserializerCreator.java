@@ -143,6 +143,11 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
             }
         }
 
+        if (beanInfo.isIgnoreUnknown()) {
+            source.println();
+            source.println("setIgnoreUnknown(true);");
+        }
+
         source.println();
 
         if ( beanInfo.getCreatorMethod().isPresent() ) {

@@ -48,6 +48,8 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
 
     private final Set<String> ignoredProperties = new HashSet<String>();
 
+    private boolean ignoreUnknown;
+
     private final Set<String> requiredProperties = new HashSet<String>();
 
     private final InstanceBuilder<T> instanceBuilder;
@@ -105,6 +107,15 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
      */
     protected final void addIgnoredProperty( String propertyName ) {
         ignoredProperties.add( propertyName );
+    }
+
+    /**
+     * Defines whether encountering of unknown
+     * properties should result in a failure (by throwing a
+     * {@link com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException}) or not.
+     */
+    protected void setIgnoreUnknown(boolean ignoreUnknown) {
+        this.ignoreUnknown = ignoreUnknown;
     }
 
     @Override
@@ -303,7 +314,7 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
     private BeanPropertyDeserializer<T, ?> getPropertyDeserializer( String propertyName, JsonDeserializationContext ctx ) {
         BeanPropertyDeserializer<T, ?> property = deserializers.get( propertyName );
         if ( null == property ) {
-            if ( ctx.isFailOnUnknownProperties() ) {
+            if ( !ignoreUnknown && ctx.isFailOnUnknownProperties() ) {
                 throw ctx.traceError( "Unknown property '" + propertyName + "'" );
             }
         }
