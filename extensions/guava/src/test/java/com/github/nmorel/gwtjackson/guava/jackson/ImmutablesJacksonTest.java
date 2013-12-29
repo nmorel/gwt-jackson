@@ -18,6 +18,7 @@ package com.github.nmorel.gwtjackson.guava.jackson;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.github.nmorel.gwtjackson.guava.shared.ImmutablesTester;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
@@ -45,6 +46,7 @@ public class ImmutablesJacksonTest extends AbstractJacksonGuavaTest {
     @Test
     public void testImmutableSetFromSingle() {
         objectMapper.enable( DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY );
+        objectMapper.enable( SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED );
         ImmutablesTester.INSTANCE.testImmutableSetFromSingle( createMapper( new TypeReference<ImmutableSet<String>>() {} ) );
     }
 
