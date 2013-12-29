@@ -516,10 +516,6 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
                 source.print( ".setTimezone(\"%s\")", format.timezone() );
             }
         }
-        if ( property.getIgnoreUnknown().isPresent() ) {
-            source.println();
-            source.print( ".setIgnoreUnknown(%s)", Boolean.toString( property.getIgnoreUnknown().get() ) );
-        }
         if ( property.getIgnoredProperties().isPresent() ) {
             for ( String ignoredProperty : property.getIgnoredProperties().get() ) {
                 source.println();

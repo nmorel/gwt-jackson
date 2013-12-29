@@ -18,6 +18,7 @@ package com.github.nmorel.gwtjackson.jackson.annotations;
 
 import com.github.nmorel.gwtjackson.jackson.AbstractJacksonTest;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonIgnoreTester;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -27,16 +28,31 @@ public class JsonIgnoreJacksonTest extends AbstractJacksonTest {
 
     @Test
     public void testSerializeBeanWithIgnoredProperties() {
-        JsonIgnoreTester.INSTANCE.testSerializeBeanWithIgnoredProperties(createWriter(JsonIgnoreTester.BeanWithIgnoredProperties.class));
+        JsonIgnoreTester.INSTANCE
+            .testSerializeBeanWithIgnoredProperties( createWriter( JsonIgnoreTester.BeanWithIgnoredProperties.class ) );
     }
 
     @Test
     public void testDeserializeBeanWithIgnoredProperties() {
-        JsonIgnoreTester.INSTANCE.testDeserializeBeanWithIgnoredProperties(createReader(JsonIgnoreTester.BeanWithIgnoredProperties.class));
+        JsonIgnoreTester.INSTANCE
+            .testDeserializeBeanWithIgnoredProperties( createReader( JsonIgnoreTester.BeanWithIgnoredProperties.class ) );
     }
 
     @Test
     public void testDeserializeBeanWithUnknownProperty() {
-        JsonIgnoreTester.INSTANCE.testDeserializeBeanWithUnknownProperty(createReader(JsonIgnoreTester.BeanWithUnknownProperty.class));
+        JsonIgnoreTester.INSTANCE.testDeserializeBeanWithUnknownProperty( createReader( JsonIgnoreTester.BeanWithUnknownProperty.class ) );
+    }
+
+    @Test
+    public void testSerializeBeanWithIgnorePropertiesAsProperty() {
+        JsonIgnoreTester.INSTANCE
+            .testSerializeBeanWithIgnorePropertiesAsProperty( createWriter( JsonIgnoreTester.BeanWithIgnorePropertiesAsProperty.class ) );
+    }
+
+    @Test
+    @Ignore( "does not take the ignoreUnknown property into account" )
+    public void testDeserializeBeanWithIgnorePropertiesAsProperty() {
+        JsonIgnoreTester.INSTANCE
+            .testDeserializeBeanWithIgnorePropertiesAsProperty( createReader( JsonIgnoreTester.BeanWithIgnorePropertiesAsProperty.class ) );
     }
 }

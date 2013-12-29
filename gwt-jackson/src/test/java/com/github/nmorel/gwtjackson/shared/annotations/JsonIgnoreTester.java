@@ -31,20 +31,27 @@ public final class JsonIgnoreTester extends AbstractTester {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class BeanWithUnknownProperty {
+
         public String knownProperty;
     }
 
-    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-    @JsonIgnoreProperties({"stringProperty", "aBooleanProperty", "unknownProperty"})
+    public static class BeanWithIgnorePropertiesAsProperty {
+
+        @JsonIgnoreProperties( value = {"intProperty"}, ignoreUnknown = true )
+        public BeanWithIgnoredProperties property;
+    }
+
+    @JsonAutoDetect( fieldVisibility = JsonAutoDetect.Visibility.ANY )
+    @JsonIgnoreProperties( {"stringProperty", "aBooleanProperty", "notAnActualProperty"} )
     public static class BeanWithIgnoredProperties {
 
-        @JsonIgnore(false)
+        @JsonIgnore( false )
         protected int intProperty;
 
-        @JsonProperty("aStringProperty")
+        @JsonProperty( "aStringProperty" )
         protected String stringProperty;
 
-        @JsonProperty("aBooleanProperty")
+        @JsonProperty( "aBooleanProperty" )
         protected Boolean booleanProperty;
 
         @JsonIgnore
@@ -56,7 +63,7 @@ public final class JsonIgnoreTester extends AbstractTester {
     private JsonIgnoreTester() {
     }
 
-    public void testSerializeBeanWithIgnoredProperties(ObjectWriterTester<BeanWithIgnoredProperties> writer) {
+    public void testSerializeBeanWithIgnoredProperties( ObjectWriterTester<BeanWithIgnoredProperties> writer ) {
         BeanWithIgnoredProperties bean = new BeanWithIgnoredProperties();
         bean.intProperty = 15;
         bean.stringProperty = "IAmAString";
@@ -69,7 +76,7 @@ public final class JsonIgnoreTester extends AbstractTester {
         assertEquals( expected, result );
     }
 
-    public void testDeserializeBeanWithIgnoredProperties(ObjectReaderTester<BeanWithIgnoredProperties> reader) {
+    public void testDeserializeBeanWithIgnoredProperties( ObjectReaderTester<BeanWithIgnoredProperties> reader ) {
         String input = "{\"ignoredProperty\":45.7," +
             "\"aStringProperty\":\"IAmAString\"," +
             "\"aBooleanProperty\":true," +
@@ -84,11 +91,39 @@ public final class JsonIgnoreTester extends AbstractTester {
     }
 
     public void testDeserializeBeanWithUnknownProperty( ObjectReaderTester<BeanWithUnknownProperty> reader ) {
-        String input = "{\"unknownProperty\":45.7," +
-                "\"knownProperty\":\"IAmAString\"}";
+        String input = "{\"unknown\":45.7," + "\"knownProperty\":\"IAmAString\"}";
 
         BeanWithUnknownProperty result = reader.read( input );
         assertEquals( "IAmAString", result.knownProperty );
+    }
+
+    public void testSerializeBeanWithIgnorePropertiesAsProperty( ObjectWriterTester<BeanWithIgnorePropertiesAsProperty> writer ) {
+        BeanWithIgnorePropertiesAsProperty bean = new BeanWithIgnorePropertiesAsProperty();
+        bean.property = new BeanWithIgnoredProperties();
+        bean.property.intProperty = 15;
+        bean.property.stringProperty = "IAmAString";
+        bean.property.booleanProperty = true;
+        bean.property.ignoredProperty = 45.7d;
+
+        String expected = "{\"property\":{\"aStringProperty\":\"IAmAString\"}}";
+        String result = writer.write( bean );
+
+        assertEquals( expected, result );
+    }
+
+    public void testDeserializeBeanWithIgnorePropertiesAsProperty( ObjectReaderTester<BeanWithIgnorePropertiesAsProperty> reader ) {
+        String input = "{\"property\":{" +
+            "\"aStringProperty\":\"IAmAString\"," +
+            "\"unknown\":\"unknown\"," +
+            "\"intProperty\":15}}";
+
+        BeanWithIgnorePropertiesAsProperty result = reader.read( input );
+
+        assertNotNull( result.property );
+        assertNull( result.property.booleanProperty );
+        assertNull( result.property.ignoredProperty );
+        assertEquals( "IAmAString", result.property.stringProperty );
+        assertEquals( 0, result.property.intProperty );
     }
 
 }

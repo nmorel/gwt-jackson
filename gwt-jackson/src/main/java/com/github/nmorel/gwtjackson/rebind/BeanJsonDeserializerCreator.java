@@ -470,6 +470,11 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
             generateCommonPropertyParameters( source, property, deserializerType );
 
+            if ( property.getIgnoreUnknown().isPresent() ) {
+                source.println();
+                source.print( ".setIgnoreUnknown(%s)", Boolean.toString( property.getIgnoreUnknown().get() ) );
+            }
+
             if ( property.getIdentityInfo().isPresent() ) {
                 source.println();
                 source.print( ".setIdentityInfo(" );
