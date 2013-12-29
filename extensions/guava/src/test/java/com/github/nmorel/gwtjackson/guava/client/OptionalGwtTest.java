@@ -20,7 +20,9 @@ import com.github.nmorel.gwtjackson.client.JsonSerializationContext.Builder;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;
 import com.github.nmorel.gwtjackson.guava.shared.OptionalTester;
 import com.github.nmorel.gwtjackson.guava.shared.OptionalTester.BeanWithOptional;
+import com.github.nmorel.gwtjackson.guava.shared.OptionalTester.OptionalGenericData;
 import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
+import com.google.common.base.Optional;
 import com.google.gwt.core.client.GWT;
 
 /**
@@ -31,6 +33,12 @@ public class OptionalGwtTest extends GwtJacksonGuavaTestCase {
     public interface BeanWithOptionalMapper extends ObjectMapper<BeanWithOptional>, ObjectMapperTester<BeanWithOptional> {
 
         static BeanWithOptionalMapper INSTANCE = GWT.create( BeanWithOptionalMapper.class );
+    }
+
+    public interface OptionalGenericDataMapper extends ObjectMapper<Optional<OptionalGenericData<String>>>,
+        ObjectMapperTester<Optional<OptionalGenericData<String>>> {
+
+        static OptionalGenericDataMapper INSTANCE = GWT.create( OptionalGenericDataMapper.class );
     }
 
     private OptionalTester tester = OptionalTester.INSTANCE;
@@ -46,5 +54,13 @@ public class OptionalGwtTest extends GwtJacksonGuavaTestCase {
 
     public void testDeserialize() {
         tester.testDeserialize( BeanWithOptionalMapper.INSTANCE );
+    }
+
+    public void testDeserializeGeneric() {
+        tester.testDeserializeGeneric( OptionalGenericDataMapper.INSTANCE );
+    }
+
+    public void testSerializeGeneric() {
+        tester.testSerializeGeneric( OptionalGenericDataMapper.INSTANCE );
     }
 }

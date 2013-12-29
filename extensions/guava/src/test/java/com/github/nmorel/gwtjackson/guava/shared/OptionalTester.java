@@ -16,6 +16,8 @@
 
 package com.github.nmorel.gwtjackson.guava.shared;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
 import com.github.nmorel.gwtjackson.shared.ObjectReaderTester;
 import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
@@ -33,6 +35,12 @@ public final class OptionalTester extends AbstractTester {
         public Optional<Integer> emptyOptional;
 
         public Optional<Integer> optional;
+    }
+
+    @JsonAutoDetect( fieldVisibility = Visibility.ANY )
+    public static final class OptionalGenericData<T> {
+
+        private Optional<T> myData;
     }
 
     public static final OptionalTester INSTANCE = new OptionalTester();
@@ -82,6 +90,20 @@ public final class OptionalTester extends AbstractTester {
         assertFalse( bean.emptyOptional.isPresent() );
         assertTrue( bean.optional.isPresent() );
         assertEquals( 145, bean.optional.get().intValue() );
+    }
+
+    public void testDeserializeGeneric( ObjectReaderTester<Optional<OptionalGenericData<String>>> reader ) {
+        Optional<OptionalGenericData<String>> data = reader.read( "{\"myData\":\"simpleString\"}" );
+        assertTrue( data.isPresent() );
+        assertTrue( data.get().myData.isPresent() );
+        assertEquals( "simpleString", data.get().myData.get() );
+    }
+
+    public void testSerializeGeneric( ObjectWriterTester<Optional<OptionalGenericData<String>>> writer ) {
+        OptionalGenericData<String> data = new OptionalGenericData<String>();
+        data.myData = Optional.of( "simpleString" );
+        String value = writer.write( Optional.of( data ) );
+        assertEquals( "{\"myData\":\"simpleString\"}", value );
     }
 
 }

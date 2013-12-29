@@ -17,8 +17,11 @@
 package com.github.nmorel.gwtjackson.guava.jackson;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.nmorel.gwtjackson.guava.shared.OptionalTester;
 import com.github.nmorel.gwtjackson.guava.shared.OptionalTester.BeanWithOptional;
+import com.github.nmorel.gwtjackson.guava.shared.OptionalTester.OptionalGenericData;
+import com.google.common.base.Optional;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -42,5 +45,15 @@ public class OptionalJacksonTest extends AbstractJacksonGuavaTest {
     @Test
     public void testDeserialize() {
         OptionalTester.INSTANCE.testDeserialize( createReader( BeanWithOptional.class ) );
+    }
+
+    @Test
+    public void testDeserializeGeneric() {
+        OptionalTester.INSTANCE.testDeserializeGeneric( createReader( new TypeReference<Optional<OptionalGenericData<String>>>() {} ) );
+    }
+
+    @Test
+    public void testSerializeGeneric() {
+        OptionalTester.INSTANCE.testSerializeGeneric( createWriter( new TypeReference<Optional<OptionalGenericData<String>>>() {} ) );
     }
 }
