@@ -17,9 +17,11 @@
 package com.github.nmorel.gwtjackson.guava.rebind;
 
 import com.github.nmorel.gwtjackson.client.AbstractConfiguration;
+import com.github.nmorel.gwtjackson.client.ser.IterableJsonSerializer;
 import com.github.nmorel.gwtjackson.guava.client.deser.OptionalJsonDeserializer;
 import com.github.nmorel.gwtjackson.guava.client.ser.OptionalJsonSerializer;
 import com.google.common.base.Optional;
+import com.google.common.collect.FluentIterable;
 
 /**
  * @author Nicolas Morel
@@ -29,5 +31,6 @@ public class GuavaConfiguration extends AbstractConfiguration {
     @Override
     protected void configure() {
         type( Optional.class ).serializer( OptionalJsonSerializer.class ).deserializer( OptionalJsonDeserializer.class );
+        type( FluentIterable.class ).serializer( IterableJsonSerializer.class );
     }
 }

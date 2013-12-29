@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-package com.github.nmorel.gwtjackson.guava.client;
+package com.github.nmorel.gwtjackson.guava.jackson;
 
-import com.google.gwt.junit.tools.GWTTestSuite;
-import junit.framework.Test;
-import junit.framework.TestCase;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.github.nmorel.gwtjackson.guava.shared.FluentIterableTester;
+import com.google.common.collect.FluentIterable;
+import org.junit.Test;
 
 /**
  * @author Nicolas Morel
  */
-public class GwtJacksonGuavaTestSuite extends TestCase {
+public class FluentIterableJacksonTest extends AbstractJacksonGuavaTest {
 
-    public static Test suite() {
-        GWTTestSuite suite = new GWTTestSuite();
-        suite.addTestSuite( OptionalGwtTest.class );
-        suite.addTestSuite( FluentIterableGwtTest.class );
-        return suite;
+    @Test
+    public void testSerialization() {
+        FluentIterableTester.INSTANCE.testSerialization( createWriter( new TypeReference<FluentIterable<Integer>>() {} ) );
     }
 }
