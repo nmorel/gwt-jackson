@@ -53,4 +53,8 @@ public final class EnumKeyDeserializer<E extends Enum<E>> extends KeyDeserialize
     protected E doDeserialize( String key, JsonDeserializationContext ctx ) {
         return Enum.valueOf( enumClass, key );
     }
+
+    public Class<E> getEnumClass() {
+        return enumClass;
+    }
 }

@@ -71,9 +71,9 @@ public class BiMapGwtTest extends GwtJacksonGuavaTestCase {
     public void testDeserialization() {
         String input = "{" +
             "\"biMap\":{\"one\":1,\"two\":2,\"three\":3,\"four\":4}," +
-            "\"hashBiMap\":{\"one\":1,\"two\":2,\"three\":3,\"four\":4}" +
-//            "\"enumHashBiMap\":{\"A\":1,\"B\":2,\"C\":3,\"D\":4}," +
-//            "\"enumBiMap\":{\"A\":\"ONE\",\"B\":\"TWO\",\"C\":\"THREE\",\"D\":\"FOUR\"}" +
+            "\"hashBiMap\":{\"one\":1,\"two\":2,\"three\":3,\"four\":4}," +
+            "\"enumHashBiMap\":{\"A\":1,\"B\":2,\"C\":3,\"D\":4}," +
+            "\"enumBiMap\":{\"A\":\"ONE\",\"B\":\"TWO\",\"C\":\"THREE\",\"D\":\"FOUR\"}" +
             "}";
 
         BeanWithBiMapTypes result = BeanWithBiMapTypesMapper.INSTANCE.read( input );
@@ -88,6 +88,20 @@ public class BiMapGwtTest extends GwtJacksonGuavaTestCase {
         assertNotNull( result.biMap );
         assertEquals( expectedHashBiMap, result.biMap );
         assertEquals( expectedHashBiMap, result.hashBiMap );
+
+        EnumHashBiMap<AlphaEnum, Integer> expectedEnumHashBiMap = EnumHashBiMap.create( AlphaEnum.class );
+        expectedEnumHashBiMap.put( AlphaEnum.A, 1 );
+        expectedEnumHashBiMap.put( AlphaEnum.D, 4 );
+        expectedEnumHashBiMap.put( AlphaEnum.C, 3 );
+        expectedEnumHashBiMap.put( AlphaEnum.B, 2 );
+        assertEquals( expectedEnumHashBiMap, result.enumHashBiMap );
+
+        EnumBiMap<AlphaEnum, NumericEnum> expectedEnumBiMap = EnumBiMap.create( AlphaEnum.class, NumericEnum.class );
+        expectedEnumBiMap.put( AlphaEnum.A, NumericEnum.ONE );
+        expectedEnumBiMap.put( AlphaEnum.D, NumericEnum.FOUR );
+        expectedEnumBiMap.put( AlphaEnum.C, NumericEnum.THREE );
+        expectedEnumBiMap.put( AlphaEnum.B, NumericEnum.TWO );
+        assertEquals( expectedEnumBiMap, result.enumBiMap );
     }
 
 }

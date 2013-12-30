@@ -14,35 +14,35 @@
  * limitations under the License.
  */
 
-package com.github.nmorel.gwtjackson.client.deser.map;
-
-import java.util.EnumMap;
+package com.github.nmorel.gwtjackson.guava.client.deser;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.map.BaseMapJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.map.key.EnumKeyDeserializer;
+import com.google.common.collect.EnumHashBiMap;
 
 /**
- * Default {@link JsonDeserializer} implementation for {@link EnumMap}.
+ * Default {@link JsonDeserializer} implementation for {@link EnumHashBiMap}.
  * <p>Cannot be overriden. Use {@link BaseMapJsonDeserializer}.</p>
  *
- * @param <E> Type of the enum keys inside the {@link EnumMap}
- * @param <V> Type of the values inside the {@link EnumMap}
+ * @param <E> Type of the enum keys inside the {@link EnumHashBiMap}
+ * @param <V> Type of the values inside the {@link EnumHashBiMap}
  *
  * @author Nicolas Morel
  */
-public final class EnumMapJsonDeserializer<E extends Enum<E>, V> extends BaseMapJsonDeserializer<EnumMap<E, V>, E, V> {
+public final class EnumHashBiMapJsonDeserializer<E extends Enum<E>, V> extends BaseMapJsonDeserializer<EnumHashBiMap<E, V>, E, V> {
 
     /**
      * @param keyDeserializer {@link EnumKeyDeserializer} used to deserialize the enum keys.
      * @param valueDeserializer {@link JsonDeserializer} used to deserialize the values.
-     * @param <E> Type of the enum keys inside the {@link EnumMap}
-     * @param <V> Type of the values inside the {@link EnumMap}
+     * @param <E> Type of the enum keys inside the {@link EnumHashBiMap}
+     * @param <V> Type of the values inside the {@link EnumHashBiMap}
      *
-     * @return a new instance of {@link EnumMapJsonDeserializer}
+     * @return a new instance of {@link EnumHashBiMapJsonDeserializer}
      */
-    public static <E extends Enum<E>, V> EnumMapJsonDeserializer<E, V> newInstance( EnumKeyDeserializer<E> keyDeserializer,
-                                                                                    JsonDeserializer<V> valueDeserializer ) {
-        return new EnumMapJsonDeserializer<E, V>( keyDeserializer, valueDeserializer );
+    public static <E extends Enum<E>, V> EnumHashBiMapJsonDeserializer<E, V> newInstance( EnumKeyDeserializer<E> keyDeserializer,
+                                                                                          JsonDeserializer<V> valueDeserializer ) {
+        return new EnumHashBiMapJsonDeserializer<E, V>( keyDeserializer, valueDeserializer );
     }
 
     /**
@@ -54,13 +54,13 @@ public final class EnumMapJsonDeserializer<E extends Enum<E>, V> extends BaseMap
      * @param keyDeserializer {@link EnumKeyDeserializer} used to deserialize the enum keys.
      * @param valueDeserializer {@link JsonDeserializer} used to deserialize the values.
      */
-    private EnumMapJsonDeserializer( EnumKeyDeserializer<E> keyDeserializer, JsonDeserializer<V> valueDeserializer ) {
+    private EnumHashBiMapJsonDeserializer( EnumKeyDeserializer<E> keyDeserializer, JsonDeserializer<V> valueDeserializer ) {
         super( keyDeserializer, valueDeserializer );
         this.enumClass = keyDeserializer.getEnumClass();
     }
 
     @Override
-    protected EnumMap<E, V> newMap() {
-        return new EnumMap<E, V>( enumClass );
+    protected EnumHashBiMap<E, V> newMap() {
+        return EnumHashBiMap.create( enumClass );
     }
 }

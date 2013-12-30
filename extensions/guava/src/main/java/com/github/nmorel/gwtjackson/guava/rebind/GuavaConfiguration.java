@@ -20,6 +20,8 @@ import com.github.nmorel.gwtjackson.client.AbstractConfiguration;
 import com.github.nmorel.gwtjackson.client.ser.IterableJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.MapJsonSerializer;
 import com.github.nmorel.gwtjackson.guava.client.deser.BiMapJsonDeserializer;
+import com.github.nmorel.gwtjackson.guava.client.deser.EnumBiMapJsonDeserializer;
+import com.github.nmorel.gwtjackson.guava.client.deser.EnumHashBiMapJsonDeserializer;
 import com.github.nmorel.gwtjackson.guava.client.deser.HashBiMapJsonDeserializer;
 import com.github.nmorel.gwtjackson.guava.client.deser.ImmutableBiMapJsonDeserializer;
 import com.github.nmorel.gwtjackson.guava.client.deser.ImmutableCollectionJsonDeserializer;
@@ -70,8 +72,8 @@ public class GuavaConfiguration extends AbstractConfiguration {
         type( BiMap.class ).serializer( MapJsonSerializer.class ).deserializer( BiMapJsonDeserializer.class );
         type( ImmutableBiMap.class ).serializer( MapJsonSerializer.class ).deserializer( ImmutableBiMapJsonDeserializer.class );
         type( HashBiMap.class ).serializer( MapJsonSerializer.class ).deserializer( HashBiMapJsonDeserializer.class );
-        type( EnumBiMap.class ).serializer( MapJsonSerializer.class );
-        type( EnumHashBiMap.class ).serializer( MapJsonSerializer.class );
+        type( EnumBiMap.class ).serializer( MapJsonSerializer.class ).deserializer( EnumBiMapJsonDeserializer.class );
+        type( EnumHashBiMap.class ).serializer( MapJsonSerializer.class ).deserializer( EnumHashBiMapJsonDeserializer.class );
 
         //        // Multiset
         //        type( Multiset.class );

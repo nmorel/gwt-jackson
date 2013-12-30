@@ -158,10 +158,10 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         }
 
         JClassType classType = type.isClassOrInterface();
-        JParameterizedType parameterizedType = type.isParameterized();
         if ( null != classType ) {
             // it's a bean
             JClassType baseClassType = classType;
+            JParameterizedType parameterizedType = type.isParameterized();
             if ( null != parameterizedType ) {
                 // it's a bean with generics, we create a serializer based on generic type
                 baseClassType = typeOracle.findGenericType( parameterizedType );
@@ -302,41 +302,11 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             return builder.instance( String.format( method, parameterDeserializerType.getInstance(), arrayCreator ) ).build();
         }
 
-        JParameterizedType parameterizedType = type.isParameterized();
-        if ( null != parameterizedType ) {
-            if ( typeOracle.isEnumSet( parameterizedType ) ) {
-
-                JDeserializerType parameterDeserializerType = getJsonDeserializerFromType( parameterizedType.getTypeArgs()[0] );
-
-                builder.parameters( new JDeserializerType[]{parameterDeserializerType} );
-                // EnumSet needs the enum class as parameter
-                builder.instance( String.format( "ctx.newEnumSetJsonDeserializer(%s.class, %s)", parameterizedType.getTypeArgs()[0]
-                    .getQualifiedSourceName(), parameterDeserializerType.getInstance() ) );
-
-                return builder.build();
-
-            }
-
-            if ( typeOracle.isEnumMap( parameterizedType ) ) {
-
-                JDeserializerType keyDeserializerType = getKeyDeserializerFromType( parameterizedType.getTypeArgs()[0] );
-                JDeserializerType valueDeserializerType = getJsonDeserializerFromType( parameterizedType.getTypeArgs()[1] );
-
-                builder.parameters( new JDeserializerType[]{keyDeserializerType, valueDeserializerType} );
-                // EnumMap needs the enum class as parameter
-                builder.instance( String.format( "ctx.newEnumMapJsonDeserializer(%s.class, %s, %s)", parameterizedType.getTypeArgs()[0]
-                    .getQualifiedSourceName(), keyDeserializerType.getInstance(), valueDeserializerType.getInstance() ) );
-
-                return builder.build();
-            }
-
-            // other parameterized types are considered to be beans
-        }
-
         JClassType classType = type.isClassOrInterface();
         if ( null != classType ) {
             // it's a bean
             JClassType baseClassType = classType;
+            JParameterizedType parameterizedType = type.isParameterized();
             if ( null != parameterizedType ) {
                 // it's a bean with generics, we create a deserializer based on generic type
                 baseClassType = typeOracle.findGenericType( parameterizedType );

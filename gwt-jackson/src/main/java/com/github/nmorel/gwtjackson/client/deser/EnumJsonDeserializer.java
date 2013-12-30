@@ -58,4 +58,8 @@ public class EnumJsonDeserializer<E extends Enum<E>> extends JsonDeserializer<E>
     public E doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws IOException {
         return Enum.valueOf( enumClass, reader.nextString() );
     }
+
+    public Class<E> getEnumClass() {
+        return enumClass;
+    }
 }

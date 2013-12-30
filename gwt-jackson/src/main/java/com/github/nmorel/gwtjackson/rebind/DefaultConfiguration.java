@@ -83,6 +83,7 @@ import com.github.nmorel.gwtjackson.client.deser.collection.AbstractSequentialLi
 import com.github.nmorel.gwtjackson.client.deser.collection.AbstractSetJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.collection.ArrayListJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.collection.CollectionJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.collection.EnumSetJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.collection.HashSetJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.collection.IterableJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.collection.LinkedHashSetJsonDeserializer;
@@ -96,6 +97,7 @@ import com.github.nmorel.gwtjackson.client.deser.collection.StackJsonDeserialize
 import com.github.nmorel.gwtjackson.client.deser.collection.TreeSetJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.collection.VectorJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.map.AbstractMapJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.map.EnumMapJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.map.HashMapJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.map.IdentityHashMapJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.map.LinkedHashMapJsonDeserializer;
@@ -216,7 +218,7 @@ public final class DefaultConfiguration extends AbstractConfiguration {
             .deserializer( AbstractSequentialListJsonDeserializer.class );
         type( AbstractSet.class ).serializer( IterableJsonSerializer.class ).deserializer( AbstractSetJsonDeserializer.class );
         type( ArrayList.class ).serializer( IterableJsonSerializer.class ).deserializer( ArrayListJsonDeserializer.class );
-        type( EnumSet.class ).serializer( IterableJsonSerializer.class )/*.deserializer( EnumSetJsonDeserializer.class )*/;
+        type( EnumSet.class ).serializer( IterableJsonSerializer.class ).deserializer( EnumSetJsonDeserializer.class );
         type( HashSet.class ).serializer( IterableJsonSerializer.class ).deserializer( HashSetJsonDeserializer.class );
         type( LinkedHashSet.class ).serializer( IterableJsonSerializer.class ).deserializer( LinkedHashSetJsonDeserializer.class );
         type( LinkedList.class ).serializer( IterableJsonSerializer.class ).deserializer( LinkedListJsonDeserializer.class );
@@ -232,7 +234,7 @@ public final class DefaultConfiguration extends AbstractConfiguration {
         // Map mappers
         type( Map.class ).serializer( MapJsonSerializer.class ).deserializer( MapJsonDeserializer.class );
         type( AbstractMap.class ).serializer( MapJsonSerializer.class ).deserializer( AbstractMapJsonDeserializer.class );
-        type( EnumMap.class ).serializer( MapJsonSerializer.class )/*.deserializer( EnumMapJsonDeserializer.class )*/;
+        type( EnumMap.class ).serializer( MapJsonSerializer.class ).deserializer( EnumMapJsonDeserializer.class );
         type( HashMap.class ).serializer( MapJsonSerializer.class ).deserializer( HashMapJsonDeserializer.class );
         type( IdentityHashMap.class ).serializer( MapJsonSerializer.class ).deserializer( IdentityHashMapJsonDeserializer.class );
         type( LinkedHashMap.class ).serializer( MapJsonSerializer.class ).deserializer( LinkedHashMapJsonDeserializer.class );

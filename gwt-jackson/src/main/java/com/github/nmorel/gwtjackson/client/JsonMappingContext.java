@@ -16,21 +16,15 @@
 
 package com.github.nmorel.gwtjackson.client;
 
-import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.logging.Logger;
 
 import com.github.nmorel.gwtjackson.client.deser.EnumJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.array.ArrayJsonDeserializer;
-import com.github.nmorel.gwtjackson.client.deser.collection.EnumSetJsonDeserializer;
-import com.github.nmorel.gwtjackson.client.deser.map.EnumMapJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.map.key.EnumKeyDeserializer;
-import com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer;
 import com.github.nmorel.gwtjackson.client.ser.EnumJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.RawValueJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.array.ArrayJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.key.EnumKeySerializer;
-import com.github.nmorel.gwtjackson.client.ser.map.key.KeySerializer;
 
 /**
  * Base class for serialization and deserialization context
@@ -51,26 +45,15 @@ public abstract class JsonMappingContext {
         return ArrayJsonDeserializer.newInstance( deserializer, arrayCreator );
     }
 
-    public <T extends Enum<T>> JsonDeserializer<EnumSet<T>> newEnumSetJsonDeserializer( Class<T> enumClass,
-                                                                                        JsonDeserializer<T> deserializer ) {
-        return EnumSetJsonDeserializer.newInstance( enumClass, deserializer );
-    }
-
-    public <T extends Enum<T>> JsonDeserializer<T> newEnumJsonDeserializer( Class<T> enumClass ) {
+    public <T extends Enum<T>> EnumJsonDeserializer<T> newEnumJsonDeserializer( Class<T> enumClass ) {
         return EnumJsonDeserializer.newInstance( enumClass );
-    }
-
-    public <E extends Enum<E>, V> JsonDeserializer<EnumMap<E, V>> newEnumMapJsonDeserializer( Class<E> enumClass,
-                                                                                              KeyDeserializer<E> keyDeserializer,
-                                                                                              JsonDeserializer<V> valueDeserializer ) {
-        return EnumMapJsonDeserializer.newInstance( enumClass, keyDeserializer, valueDeserializer );
     }
 
     /*##############################*/
     /*####   Key deserializers  ####*/
     /*##############################*/
 
-    public <T extends Enum<T>> KeyDeserializer<T> newEnumKeyDeserializer( Class<T> enumClass ) {
+    public <T extends Enum<T>> EnumKeyDeserializer<T> newEnumKeyDeserializer( Class<T> enumClass ) {
         return EnumKeyDeserializer.newInstance( enumClass );
     }
 
@@ -82,7 +65,7 @@ public abstract class JsonMappingContext {
         return RawValueJsonSerializer.getInstance();
     }
 
-    public <E extends Enum<E>> JsonSerializer<E> getEnumJsonSerializer() {
+    public <E extends Enum<E>> EnumJsonSerializer<E> getEnumJsonSerializer() {
         return EnumJsonSerializer.getInstance();
     }
 
@@ -94,7 +77,7 @@ public abstract class JsonMappingContext {
     /*#####   Key serializers  #####*/
     /*##############################*/
 
-    public <T extends Enum<T>> KeySerializer<T> getEnumKeySerializer() {
+    public <T extends Enum<T>> EnumKeySerializer<T> getEnumKeySerializer() {
         return EnumKeySerializer.getInstance();
     }
 }
