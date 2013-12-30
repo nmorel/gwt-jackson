@@ -35,7 +35,8 @@ import com.google.common.collect.ImmutableSortedMap;
  *
  * @author Nicolas Morel
  */
-public final class ImmutableSortedMapJsonDeserializer<K extends Comparable<?>, V> extends BaseImmutableMapJsonDeserializer<ImmutableSortedMap<K, V>, K, V> {
+public final class ImmutableSortedMapJsonDeserializer<K extends Comparable<K>,
+    V> extends BaseImmutableMapJsonDeserializer<ImmutableSortedMap<K, V>, K, V> {
 
     /**
      * @param keyDeserializer {@link KeyDeserializer} used to deserialize the keys.
@@ -45,8 +46,9 @@ public final class ImmutableSortedMapJsonDeserializer<K extends Comparable<?>, V
      *
      * @return a new instance of {@link ImmutableSortedMapJsonDeserializer}
      */
-    public static <K extends Comparable<?>, V> ImmutableSortedMapJsonDeserializer<K, V> newInstance( KeyDeserializer<K> keyDeserializer,
-                                                                               JsonDeserializer<V> valueDeserializer ) {
+    public static <K extends Comparable<K>, V> ImmutableSortedMapJsonDeserializer<K, V> newInstance( KeyDeserializer<K> keyDeserializer,
+                                                                                                     JsonDeserializer<V>
+                                                                                                         valueDeserializer ) {
         return new ImmutableSortedMapJsonDeserializer<K, V>( keyDeserializer, valueDeserializer );
     }
 

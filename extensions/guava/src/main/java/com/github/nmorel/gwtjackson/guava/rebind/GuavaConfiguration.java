@@ -22,29 +22,43 @@ import com.github.nmorel.gwtjackson.client.ser.map.MapJsonSerializer;
 import com.github.nmorel.gwtjackson.guava.client.deser.BiMapJsonDeserializer;
 import com.github.nmorel.gwtjackson.guava.client.deser.EnumBiMapJsonDeserializer;
 import com.github.nmorel.gwtjackson.guava.client.deser.EnumHashBiMapJsonDeserializer;
+import com.github.nmorel.gwtjackson.guava.client.deser.EnumMultisetJsonDeserializer;
 import com.github.nmorel.gwtjackson.guava.client.deser.HashBiMapJsonDeserializer;
+import com.github.nmorel.gwtjackson.guava.client.deser.HashMultisetJsonDeserializer;
 import com.github.nmorel.gwtjackson.guava.client.deser.ImmutableBiMapJsonDeserializer;
 import com.github.nmorel.gwtjackson.guava.client.deser.ImmutableCollectionJsonDeserializer;
 import com.github.nmorel.gwtjackson.guava.client.deser.ImmutableListJsonDeserializer;
 import com.github.nmorel.gwtjackson.guava.client.deser.ImmutableMapJsonDeserializer;
+import com.github.nmorel.gwtjackson.guava.client.deser.ImmutableMultisetJsonDeserializer;
 import com.github.nmorel.gwtjackson.guava.client.deser.ImmutableSetJsonDeserializer;
 import com.github.nmorel.gwtjackson.guava.client.deser.ImmutableSortedMapJsonDeserializer;
 import com.github.nmorel.gwtjackson.guava.client.deser.ImmutableSortedSetJsonDeserializer;
+import com.github.nmorel.gwtjackson.guava.client.deser.LinkedHashMultisetJsonDeserializer;
+import com.github.nmorel.gwtjackson.guava.client.deser.MultisetJsonDeserializer;
 import com.github.nmorel.gwtjackson.guava.client.deser.OptionalJsonDeserializer;
+import com.github.nmorel.gwtjackson.guava.client.deser.SortedMultisetJsonDeserializer;
+import com.github.nmorel.gwtjackson.guava.client.deser.TreeMultisetJsonDeserializer;
 import com.github.nmorel.gwtjackson.guava.client.ser.OptionalJsonSerializer;
 import com.google.common.base.Optional;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.EnumBiMap;
 import com.google.common.collect.EnumHashBiMap;
+import com.google.common.collect.EnumMultiset;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultiset;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.ImmutableSortedSet;
+import com.google.common.collect.LinkedHashMultiset;
+import com.google.common.collect.Multiset;
+import com.google.common.collect.SortedMultiset;
+import com.google.common.collect.TreeMultiset;
 
 /**
  * @author Nicolas Morel
@@ -75,16 +89,16 @@ public class GuavaConfiguration extends AbstractConfiguration {
         type( EnumBiMap.class ).serializer( MapJsonSerializer.class ).deserializer( EnumBiMapJsonDeserializer.class );
         type( EnumHashBiMap.class ).serializer( MapJsonSerializer.class ).deserializer( EnumHashBiMapJsonDeserializer.class );
 
-        //        // Multiset
-        //        type( Multiset.class );
-        //        type( SortedMultiset.class );
-        //        type( ImmutableMultiset.class );
-        //        type( ImmutableSortedMultiset.class );
-        //        type( HashMultiset.class );
-        //        type( LinkedHashMultiset.class );
-        //        type( TreeMultiset.class );
-        //        type( EnumMultiset.class );
-        //
+        // Multiset
+        type( Multiset.class ).serializer( IterableJsonSerializer.class ).deserializer( MultisetJsonDeserializer.class );
+        type( SortedMultiset.class ).serializer( IterableJsonSerializer.class ).deserializer( SortedMultisetJsonDeserializer.class );
+        type( ImmutableMultiset.class ).serializer( IterableJsonSerializer.class ).deserializer( ImmutableMultisetJsonDeserializer.class );
+        type( HashMultiset.class ).serializer( IterableJsonSerializer.class ).deserializer( HashMultisetJsonDeserializer.class );
+        type( LinkedHashMultiset.class ).serializer( IterableJsonSerializer.class )
+            .deserializer( LinkedHashMultisetJsonDeserializer.class );
+        type( TreeMultiset.class ).serializer( IterableJsonSerializer.class ).deserializer( TreeMultisetJsonDeserializer.class );
+        type( EnumMultiset.class ).serializer( IterableJsonSerializer.class ).deserializer( EnumMultisetJsonDeserializer.class );
+
         //        // Multimap
         //        type( Multimap.class );
         //        type( ImmutableMultimap.class );
