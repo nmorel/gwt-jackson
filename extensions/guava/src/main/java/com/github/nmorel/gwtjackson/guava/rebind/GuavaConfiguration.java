@@ -19,6 +19,7 @@ package com.github.nmorel.gwtjackson.guava.rebind;
 import com.github.nmorel.gwtjackson.client.AbstractConfiguration;
 import com.github.nmorel.gwtjackson.client.ser.IterableJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.MapJsonSerializer;
+import com.github.nmorel.gwtjackson.guava.client.deser.ImmutableBiMapJsonDeserializer;
 import com.github.nmorel.gwtjackson.guava.client.deser.ImmutableCollectionJsonDeserializer;
 import com.github.nmorel.gwtjackson.guava.client.deser.ImmutableListJsonDeserializer;
 import com.github.nmorel.gwtjackson.guava.client.deser.ImmutableMapJsonDeserializer;
@@ -28,7 +29,12 @@ import com.github.nmorel.gwtjackson.guava.client.deser.ImmutableSortedSetJsonDes
 import com.github.nmorel.gwtjackson.guava.client.deser.OptionalJsonDeserializer;
 import com.github.nmorel.gwtjackson.guava.client.ser.OptionalJsonSerializer;
 import com.google.common.base.Optional;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.EnumBiMap;
+import com.google.common.collect.EnumHashBiMap;
 import com.google.common.collect.FluentIterable;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -58,13 +64,13 @@ public class GuavaConfiguration extends AbstractConfiguration {
         type( ImmutableMap.class ).serializer( MapJsonSerializer.class ).deserializer( ImmutableMapJsonDeserializer.class );
         type( ImmutableSortedMap.class ).serializer( MapJsonSerializer.class ).deserializer( ImmutableSortedMapJsonDeserializer.class );
 
-        //        // BiMap
-        //        type( BiMap.class ).serializer( MapJsonSerializer.class );
-        //        type( ImmutableBiMap.class ).serializer( MapJsonSerializer.class );
-        //        type( HashBiMap.class ).serializer( MapJsonSerializer.class );
-        //        type( EnumBiMap.class ).serializer( MapJsonSerializer.class );
-        //        type( EnumHashBiMap.class ).serializer( MapJsonSerializer.class );
-        //
+        // BiMap
+        type( BiMap.class ).serializer( MapJsonSerializer.class );
+        type( ImmutableBiMap.class ).serializer( MapJsonSerializer.class ).deserializer( ImmutableBiMapJsonDeserializer.class );
+        type( HashBiMap.class ).serializer( MapJsonSerializer.class );
+        type( EnumBiMap.class ).serializer( MapJsonSerializer.class );
+        type( EnumHashBiMap.class ).serializer( MapJsonSerializer.class );
+
         //        // Multiset
         //        type( Multiset.class );
         //        type( SortedMultiset.class );

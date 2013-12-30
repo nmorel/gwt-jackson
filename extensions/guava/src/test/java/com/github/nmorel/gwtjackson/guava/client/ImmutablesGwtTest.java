@@ -21,6 +21,7 @@ import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;
 import com.github.nmorel.gwtjackson.guava.shared.ImmutablesTester;
 import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
+import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -66,11 +67,11 @@ public class ImmutablesGwtTest extends GwtJacksonGuavaTestCase {
         static ImmutableSortedMapIntegerBooleanMapper INSTANCE = GWT.create( ImmutableSortedMapIntegerBooleanMapper.class );
     }
 
-    //    public interface ImmutableBiMapIntegerBooleanMapper extends ObjectMapper<ImmutableBiMap<Integer, Boolean>>,
-    //        ObjectMapperTester<ImmutableBiMap<Integer, Boolean>> {
-    //
-    //        static ImmutableBiMapIntegerBooleanMapper INSTANCE = GWT.create( ImmutableBiMapIntegerBooleanMapper.class );
-    //    }
+    public interface ImmutableBiMapIntegerBooleanMapper extends ObjectMapper<ImmutableBiMap<Integer, Boolean>>,
+        ObjectMapperTester<ImmutableBiMap<Integer, Boolean>> {
+
+        static ImmutableBiMapIntegerBooleanMapper INSTANCE = GWT.create( ImmutableBiMapIntegerBooleanMapper.class );
+    }
 
     private ImmutablesTester tester = ImmutablesTester.INSTANCE;
 
@@ -100,7 +101,7 @@ public class ImmutablesGwtTest extends GwtJacksonGuavaTestCase {
         tester.testImmutableSortedMap( ImmutableSortedMapIntegerBooleanMapper.INSTANCE );
     }
 
-    //    public void testImmutableBiMap() {
-    //        tester.testImmutableBiMap( ImmutableBiMapIntegerBooleanMapper.INSTANCE );
-    //    }
+    public void testImmutableBiMap() {
+        tester.testImmutableBiMap( ImmutableBiMapIntegerBooleanMapper.INSTANCE );
+    }
 }
