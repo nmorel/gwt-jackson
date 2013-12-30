@@ -25,7 +25,6 @@ import com.github.nmorel.gwtjackson.client.deser.collection.BaseIterableJsonDese
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableCollection.Builder;
 
 /**
  * Base {@link JsonDeserializer} implementation for {@link ImmutableCollection}.
@@ -35,7 +34,8 @@ import com.google.common.collect.ImmutableCollection.Builder;
  *
  * @author Nicolas Morel
  */
-public abstract class BaseImmutableCollectionJsonDeserializer<C extends ImmutableCollection<T>, T> extends BaseIterableJsonDeserializer<C, T> {
+public abstract class BaseImmutableCollectionJsonDeserializer<C extends ImmutableCollection<T>,
+    T> extends BaseIterableJsonDeserializer<C, T> {
 
     /**
      * @param deserializer {@link JsonDeserializer} used to map the objects inside the {@link ImmutableCollection}.
@@ -44,33 +44,51 @@ public abstract class BaseImmutableCollectionJsonDeserializer<C extends Immutabl
         super( deserializer );
     }
 
-    protected void buildCollection( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params,
-                            Builder<T> result ) throws IOException {
+    /**
+     * Build the {@link ImmutableCollection}. It delegates the element addition to an abstract method because the
+     * {@link ImmutableCollection.Builder} is not visible in the emulated class.
+     *
+     * @param reader {@link JsonReader} used to read the JSON input
+     * @param ctx Context for the full deserialization process
+     * @param params Parameters for this deserialization
+     *
+     * @throws IOException
+     */
+    protected void buildCollection( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
+        IOException {
         if ( JsonToken.BEGIN_ARRAY == reader.peek() ) {
 
             reader.beginArray();
             while ( JsonToken.END_ARRAY != reader.peek() ) {
                 T element = deserializer.deserialize( reader, ctx, params );
                 if ( isNullValueAllowed() || null != element ) {
-                    result.add( element );
+                    addToCollection( element );
                 }
             }
             reader.endArray();
 
         } else if ( ctx.isAcceptSingleValueAsArray() ) {
 
-            result.add( deserializer.deserialize( reader, ctx, params ) );
+            addToCollection( deserializer.deserialize( reader, ctx, params ) );
 
         } else {
-            throw ctx.traceError( "Cannot deserialize a com.google.common.collect.ImmutableCollection out of " + reader.peek() + " token", reader );
+            throw ctx.traceError( "Cannot deserialize a com.google.common.collect.ImmutableCollection out of " + reader
+                .peek() + " token", reader );
         }
     }
+
+    /**
+     * Add an element to the current collection
+     *
+     * @param element Element to add
+     */
+    protected abstract void addToCollection( T element );
 
     /**
      * @return true if the collection accepts null value
      */
     protected boolean isNullValueAllowed() {
-        return true;
+        return false;
     }
 
     @Override

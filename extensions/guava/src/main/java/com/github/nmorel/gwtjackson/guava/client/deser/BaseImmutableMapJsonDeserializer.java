@@ -63,14 +63,24 @@ public abstract class BaseImmutableMapJsonDeserializer<M extends ImmutableMap<K,
         this.valueDeserializer = valueDeserializer;
     }
 
+    /**
+     * Build the {@link ImmutableMap} using the given builder.
+     *
+     * @param reader {@link JsonReader} used to read the JSON input
+     * @param ctx Context for the full deserialization process
+     * @param params Parameters for this deserialization
+     * @param builder {@link ImmutableMap.Builder} used to collect the entries
+     *
+     * @throws IOException
+     */
     protected void buildMap( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params, Builder<K,
-        V> result ) throws IOException {
+        V> builder ) throws IOException {
         reader.beginObject();
         while ( JsonToken.END_OBJECT != reader.peek() ) {
             String name = reader.nextName();
             K key = keyDeserializer.deserialize( name, ctx );
             V value = valueDeserializer.deserialize( reader, ctx, params );
-            result.put( key, value );
+            builder.put( key, value );
         }
         reader.endObject();
     }

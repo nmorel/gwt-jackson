@@ -31,7 +31,8 @@ import com.google.common.collect.ImmutableSortedSet;
  *
  * @author Nicolas Morel
  */
-public final class ImmutableSortedSetJsonDeserializer<T> extends BaseImmutableCollectionJsonDeserializer<ImmutableSortedSet<T>, T> {
+public final class ImmutableSortedSetJsonDeserializer<T extends Comparable<?>> extends
+    BaseImmutableCollectionJsonDeserializer<ImmutableSortedSet<T>, T> {
 
     /**
      * @param deserializer {@link JsonDeserializer} used to deserialize the objects inside the {@link ImmutableSortedSet}.
@@ -39,9 +40,11 @@ public final class ImmutableSortedSetJsonDeserializer<T> extends BaseImmutableCo
      *
      * @return a new instance of {@link ImmutableSortedSetJsonDeserializer}
      */
-    public static <T> ImmutableSortedSetJsonDeserializer<T> newInstance( JsonDeserializer<T> deserializer ) {
+    public static <T extends Comparable<?>> ImmutableSortedSetJsonDeserializer<T> newInstance( JsonDeserializer<T> deserializer ) {
         return new ImmutableSortedSetJsonDeserializer<T>( deserializer );
     }
+
+    private ImmutableSortedSet.Builder<T> currentBuilder;
 
     /**
      * @param deserializer {@link JsonDeserializer} used to deserialize the objects inside the {@link ImmutableSortedSet}.
@@ -52,9 +55,18 @@ public final class ImmutableSortedSetJsonDeserializer<T> extends BaseImmutableCo
 
     @Override
     protected ImmutableSortedSet<T> doDeserialize( JsonReader reader, JsonDeserializationContext ctx,
-                                             JsonDeserializerParameters params ) throws IOException {
-        ImmutableSortedSet.Builder<T> builder = ImmutableSortedSet.builder();
-        buildCollection( reader, ctx, params, builder );
-        return builder.build();
+                                                   JsonDeserializerParameters params ) throws IOException {
+        try {
+            currentBuilder = ImmutableSortedSet.naturalOrder();
+            buildCollection( reader, ctx, params );
+            return currentBuilder.build();
+        } finally {
+            currentBuilder = null;
+        }
+    }
+
+    @Override
+    protected void addToCollection( T element ) {
+        currentBuilder.add( element );
     }
 }

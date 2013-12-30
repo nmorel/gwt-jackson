@@ -35,7 +35,7 @@ import com.google.common.collect.ImmutableSortedMap;
  *
  * @author Nicolas Morel
  */
-public final class ImmutableSortedMapJsonDeserializer<K, V> extends BaseImmutableMapJsonDeserializer<ImmutableSortedMap<K, V>, K, V> {
+public final class ImmutableSortedMapJsonDeserializer<K extends Comparable<?>, V> extends BaseImmutableMapJsonDeserializer<ImmutableSortedMap<K, V>, K, V> {
 
     /**
      * @param keyDeserializer {@link KeyDeserializer} used to deserialize the keys.
@@ -45,7 +45,7 @@ public final class ImmutableSortedMapJsonDeserializer<K, V> extends BaseImmutabl
      *
      * @return a new instance of {@link ImmutableSortedMapJsonDeserializer}
      */
-    public static <K, V> ImmutableSortedMapJsonDeserializer<K, V> newInstance( KeyDeserializer<K> keyDeserializer,
+    public static <K extends Comparable<?>, V> ImmutableSortedMapJsonDeserializer<K, V> newInstance( KeyDeserializer<K> keyDeserializer,
                                                                                JsonDeserializer<V> valueDeserializer ) {
         return new ImmutableSortedMapJsonDeserializer<K, V>( keyDeserializer, valueDeserializer );
     }
@@ -61,7 +61,7 @@ public final class ImmutableSortedMapJsonDeserializer<K, V> extends BaseImmutabl
     @Override
     protected ImmutableSortedMap<K, V> doDeserialize( JsonReader reader, JsonDeserializationContext ctx,
                                                       JsonDeserializerParameters params ) throws IOException {
-        ImmutableSortedMap.Builder<K, V> builder = ImmutableSortedMap.builder();
+        ImmutableSortedMap.Builder<K, V> builder = ImmutableSortedMap.naturalOrder();
         buildMap( reader, ctx, params, builder );
         return builder.build();
     }

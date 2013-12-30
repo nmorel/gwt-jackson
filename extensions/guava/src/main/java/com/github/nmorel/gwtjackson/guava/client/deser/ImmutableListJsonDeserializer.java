@@ -43,6 +43,8 @@ public final class ImmutableListJsonDeserializer<T> extends BaseImmutableCollect
         return new ImmutableListJsonDeserializer<T>( deserializer );
     }
 
+    private ImmutableList.Builder<T> currentBuilder;
+
     /**
      * @param deserializer {@link JsonDeserializer} used to deserialize the objects inside the {@link ImmutableList}.
      */
@@ -53,8 +55,17 @@ public final class ImmutableListJsonDeserializer<T> extends BaseImmutableCollect
     @Override
     protected ImmutableList<T> doDeserialize( JsonReader reader, JsonDeserializationContext ctx,
                                               JsonDeserializerParameters params ) throws IOException {
-        ImmutableList.Builder<T> builder = ImmutableList.builder();
-        buildCollection( reader, ctx, params, builder );
-        return builder.build();
+        try {
+            currentBuilder = ImmutableList.builder();
+            buildCollection( reader, ctx, params );
+            return currentBuilder.build();
+        } finally {
+            currentBuilder = null;
+        }
+    }
+
+    @Override
+    protected void addToCollection( T element ) {
+        currentBuilder.add( element );
     }
 }
