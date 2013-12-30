@@ -36,12 +36,12 @@ public class IterableJsonSerializer<I extends Iterable<T>, T> extends JsonSerial
 
     /**
      * @param serializer {@link JsonSerializer} used to serialize the objects inside the {@link Iterable}.
-     * @param <T> Type of the elements inside the {@link Iterable}
+     * @param <I> Type of the {@link Iterable}
      *
      * @return a new instance of {@link IterableJsonSerializer}
      */
-    public static <I extends Iterable<T>, T> IterableJsonSerializer<I, T> newInstance( JsonSerializer<T> serializer ) {
-        return new IterableJsonSerializer<I, T>( serializer );
+    public static <I extends Iterable<?>> IterableJsonSerializer<I, ?> newInstance( JsonSerializer<?> serializer ) {
+        return new IterableJsonSerializer( serializer );
     }
 
     protected final JsonSerializer<T> serializer;

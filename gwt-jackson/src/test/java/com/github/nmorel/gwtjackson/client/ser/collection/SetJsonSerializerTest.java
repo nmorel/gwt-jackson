@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.AbstractJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.IterableJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.StringJsonSerializer;
@@ -31,7 +32,7 @@ import com.github.nmorel.gwtjackson.client.ser.StringJsonSerializer;
 public class SetJsonSerializerTest extends AbstractJsonSerializerTest<Set<String>> {
 
     @Override
-    protected IterableJsonSerializer<Set<String>, String> createSerializer() {
+    protected JsonSerializer<Set<String>> createSerializer() {
         return IterableJsonSerializer.newInstance( StringJsonSerializer.getInstance() );
     }
 

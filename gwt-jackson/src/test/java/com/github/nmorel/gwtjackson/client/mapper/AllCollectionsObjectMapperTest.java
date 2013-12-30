@@ -24,6 +24,7 @@ import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -93,6 +94,8 @@ public class AllCollectionsObjectMapperTest extends GwtJacksonTestCase {
         public TreeSet<String> treeSet;
 
         public Vector<String> vector;
+
+        public List<Set<String>> listSet;
     }
 
     public void testDeserializeValue() {
@@ -116,7 +119,8 @@ public class AllCollectionsObjectMapperTest extends GwtJacksonTestCase {
             "\"sortedSet\":[\"Hello\",null,\"World\",\"!\"]," +
             "\"stack\":[\"Hello\",null,\"World\",\"!\"]," +
             "\"treeSet\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"vector\":[\"Hello\",null,\"World\",\"!\"]" +
+            "\"vector\":[\"Hello\",null,\"World\",\"!\"]," +
+            "\"listSet\":[[\"Hello\"],[\"World\"],[]]" +
             "}";
 
         BeanWithCollectionsType bean = BeanWithCollectionsTypeMapper.INSTANCE.read( input );
@@ -155,12 +159,18 @@ public class AllCollectionsObjectMapperTest extends GwtJacksonTestCase {
 
         assertEquals( baseExpectedSortedSet, bean.sortedSet );
         assertEquals( baseExpectedSortedSet, bean.treeSet );
+
+        List<Set<String>> expectedListSet = Arrays.asList( Collections.<String>singleton( "Hello" ), Collections
+            .<String>singleton( "World" ), Collections.<String>emptySet() );
+        assertEquals( expectedListSet, bean.listSet );
     }
 
     public void testSerializeValue() {
 
         ArrayList<String> list = new ArrayList<String>( Arrays.asList( "Hello", null, "World", "!" ) );
         LinkedList<String> linkedList = new LinkedList<String>( list );
+        List<Set<String>> listSet = Arrays.asList( Collections.<String>singleton( "Hello" ), Collections
+            .<String>singleton( "World" ), Collections.<String>emptySet() );
 
         BeanWithCollectionsType bean = new BeanWithCollectionsType();
         bean.abstractCollection = list;
@@ -193,6 +203,8 @@ public class AllCollectionsObjectMapperTest extends GwtJacksonTestCase {
         bean.treeSet = new TreeSet<String>( Arrays.asList( "Hello", "World", "!" ) );
         bean.sortedSet = bean.treeSet;
 
+        bean.listSet = listSet;
+
         String expected = "{" +
             "\"abstractCollection\":[\"Hello\",null,\"World\",\"!\"]," +
             "\"abstractList\":[\"Hello\",null,\"World\",\"!\"]," +
@@ -213,7 +225,8 @@ public class AllCollectionsObjectMapperTest extends GwtJacksonTestCase {
             "\"sortedSet\":[\"!\",\"Hello\",\"World\"]," +
             "\"stack\":[\"Hello\",null,\"World\",\"!\"]," +
             "\"treeSet\":[\"!\",\"Hello\",\"World\"]," +
-            "\"vector\":[\"Hello\",null,\"World\",\"!\"]" +
+            "\"vector\":[\"Hello\",null,\"World\",\"!\"]," +
+            "\"listSet\":[[\"Hello\"],[\"World\"],[]]" +
             "}";
 
         assertEquals( expected, BeanWithCollectionsTypeMapper.INSTANCE.write( bean ) );

@@ -19,6 +19,7 @@ package com.github.nmorel.gwtjackson.client.ser.collection;
 import java.util.Arrays;
 import java.util.Collections;
 
+import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.AbstractJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.IterableJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.StringJsonSerializer;
@@ -29,7 +30,7 @@ import com.github.nmorel.gwtjackson.client.ser.StringJsonSerializer;
 public class IterableJsonSerializerTest extends AbstractJsonSerializerTest<Iterable<String>> {
 
     @Override
-    protected IterableJsonSerializer<Iterable<String>, String> createSerializer() {
+    protected JsonSerializer<Iterable<String>> createSerializer() {
         return IterableJsonSerializer.newInstance( StringJsonSerializer.getInstance() );
     }
 

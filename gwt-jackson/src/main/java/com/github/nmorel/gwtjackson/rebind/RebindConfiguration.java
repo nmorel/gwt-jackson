@@ -41,8 +41,10 @@ import com.google.gwt.thirdparty.guava.common.collect.ImmutableList;
 
 /**
  * Wrap the default configuration + user configuration. It reads the configuration from {@link DefaultConfiguration} and any {@link
- * AbstractConfiguration} the user defined with : <pre>&lt;extend-configuration-property name="gwtjackson.configuration.extension"
- * value="com.example.MyAbstractConfiguration" /&gt;</pre>
+ * AbstractConfiguration} the user defined with :
+ * <pre>
+ * &lt;extend-configuration-property name="gwtjackson.configuration.extension" value="com.example.MyAbstractConfiguration" /&gt;
+ * </pre>
  *
  * @author Nicolas Morel
  */

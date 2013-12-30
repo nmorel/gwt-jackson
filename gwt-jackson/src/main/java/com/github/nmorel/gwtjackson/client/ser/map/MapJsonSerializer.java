@@ -44,14 +44,12 @@ public class MapJsonSerializer<M extends Map<K, V>, K, V> extends JsonSerializer
      * @param keySerializer {@link KeySerializer} used to serialize the keys.
      * @param valueSerializer {@link JsonSerializer} used to serialize the values.
      * @param <M> Type of the {@link Map}
-     * @param <K> Type of the keys inside the {@link Map}
-     * @param <V> Type of the values inside the {@link Map}
      *
      * @return a new instance of {@link MapJsonSerializer}
      */
-    public static <M extends Map<K, V>, K, V> MapJsonSerializer<M, K, V> newInstance( KeySerializer<K> keySerializer,
-                                                                                      JsonSerializer<V> valueSerializer ) {
-        return new MapJsonSerializer<M, K, V>( keySerializer, valueSerializer );
+    public static <M extends Map<?, ?>> MapJsonSerializer<M, ?, ?> newInstance( KeySerializer<?> keySerializer,
+                                                                                JsonSerializer<?> valueSerializer ) {
+        return new MapJsonSerializer( keySerializer, valueSerializer );
     }
 
     protected final KeySerializer<K> keySerializer;
