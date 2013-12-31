@@ -32,6 +32,7 @@ public class GwtJacksonGuavaTestSuite extends TestCase {
         suite.addTestSuite( ImmutablesGwtTest.class );
         suite.addTestSuite( BiMapGwtTest.class );
         suite.addTestSuite( MultisetGwtTest.class );
+        suite.addTestSuite( MultimapGwtTest.class );
         return suite;
     }
 }
