@@ -2,7 +2,7 @@ gwt-jackson [![Build Status](https://nmorel.ci.cloudbees.com/buildStatus/icon?jo
 =====
 gwt-jackson is a [GWT](http://www.gwtproject.org/) JSON serializer/deserializer mechanism based on [Jackson 2.x annotations](https://github.com/FasterXML/jackson-annotations). Jackson 1.x annotations (`org.codehaus.jackson.*`) are not supported.
 
-It is currently under development but lots of stuff is already working. You can find many use cases in the [tests](src/test/java/com/github/nmorel/gwtjackson).
+It is currently under development but lots of stuff is already working. You can find many use cases in the [tests](gwt-jackson/src/test/java/com/github/nmorel/gwtjackson).
 
 Quick start
 -------------
