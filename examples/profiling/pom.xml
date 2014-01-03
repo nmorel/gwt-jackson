@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <artifactId>examples</artifactId>
     <groupId>com.github.nmorel.gwtjackson</groupId>
@@ -7,14 +9,14 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>hello</artifactId>
+  <artifactId>profiling</artifactId>
   <packaging>war</packaging>
 
-  <name>gwt-jackson :: Examples :: Hello World</name>
-  <description>GWT Hello World using gwt-jackson instead of RPC</description>
+  <name>gwt-jackson :: Examples :: Profiling</name>
+  <description>Project used for profiling with d8</description>
 
   <properties>
-    <gwt.module>com.github.nmorel.gwtjackson.hello.Hello</gwt.module>
+    <gwt.module>com.github.nmorel.gwtjackson.profiling.Profiling</gwt.module>
   </properties>
 
   <build>
