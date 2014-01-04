@@ -17,7 +17,6 @@
 
 <module rename-to='profiling'>
 
-  <inherits name="com.google.gwt.user.User" />
   <inherits name="com.github.nmorel.gwtjackson.GwtJackson" />
 
   <entry-point class="com.github.nmorel.gwtjackson.profiling.client.Profiling" />

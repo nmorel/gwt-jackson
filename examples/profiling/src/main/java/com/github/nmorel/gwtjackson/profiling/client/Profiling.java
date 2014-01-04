@@ -29,8 +29,6 @@ import com.google.gwt.core.client.GWT;
  */
 public class Profiling implements EntryPoint {
 
-    public static interface PersonMapper extends ObjectMapper<Person> {}
-
     public static class Person {
 
         private String firstName;
@@ -77,16 +75,16 @@ public class Profiling implements EntryPoint {
         }
     }
 
+    public static interface PersonMapper extends ObjectMapper<Person> {}
+
     @Override
     public void onModuleLoad() {
         PersonMapper mapper = GWT.create( PersonMapper.class );
+        Person input = new Person( "John", "Doe", new Person( "Jane", "Doe" ), new Person( "Billy", "Doe", new Person( "Lily", "Doe" ) ) );
 
-        String json = mapper
-                .write( new Person( "John", "Doe", new Person( "Jane", "Doe" ), new Person( "Billy", "Doe", new Person( "Lily",
-                        "Doe" ) ) ) );
-        GWT.log( json ); // > {"firstName":"John","lastName":"Doe"}
-
-        Person person = mapper.read( json );
-        GWT.log( person.getFirstName() + " " + person.getLastName() ); // > John Doe
+        for ( int i = 0; i < 10000; i++ ) {
+            String json = mapper.write( input );
+            Person person = mapper.read( json );
+        }
     }
 }
