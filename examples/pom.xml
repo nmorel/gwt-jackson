@@ -33,6 +33,7 @@
     <module>minimal</module>
     <module>hello</module>
     <module>profiling</module>
+    <module>benchmark</module>
   </modules>
 
   <properties>
