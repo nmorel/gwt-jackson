@@ -45,7 +45,7 @@ public class PrimitiveLongArrayJsonDeserializer extends AbstractArrayJsonDeseria
 
     @Override
     public long[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-        IOException {
+            IOException {
         List<Long> list = deserializeIntoList( reader, ctx, LongJsonDeserializer.getInstance(), params );
 
         long[] result = new long[list.size()];

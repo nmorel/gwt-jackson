@@ -30,14 +30,14 @@ import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
  */
 public final class PolymorphismIdClassAsPropertyTester extends AbstractTester {
 
-    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY)
-    @JsonPropertyOrder(alphabetic = true)
+    @JsonTypeInfo( use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY )
+    @JsonPropertyOrder( alphabetic = true )
     public static abstract class Person {
 
         public String name;
     }
 
-    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "class")
+    @JsonTypeInfo( use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "class" )
     public static class Employee extends Person {
 
         public int id;
@@ -90,90 +90,90 @@ public final class PolymorphismIdClassAsPropertyTester extends AbstractTester {
         String result = writer.write( persons );
 
         String expected = "[" +
-            "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Employee\"," +
-            "\"id\":2," +
-            "\"name\":\"Thomas\"," +
-            "\"title\":\"Waiter\"" +
-            "}," +
-            "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Employee\"," +
-            "\"id\":3," +
-            "\"name\":\"Patricia\"," +
-            "\"title\":\"Cook\"" +
-            "}," +
-            "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Manager\"," +
-            "\"id\":1," +
-            "\"managedEmployees\":" +
-            "[" +
-            "{" +
-            "\"class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Employee\"," +
-            "\"id\":2," +
-            "\"name\":\"Thomas\"," +
-            "\"title\":\"Waiter\"" +
-            "}," +
-            "{" +
-            "\"class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Employee\"," +
-            "\"id\":3," +
-            "\"name\":\"Patricia\"," +
-            "\"title\":\"Cook\"" +
-            "}" +
-            "]," +
-            "\"name\":\"Bob\"," +
-            "\"title\":\"Boss\"" +
-            "}," +
-            "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Customer\"," +
-            "\"name\":\"Brad\"," +
-            "\"satisfaction\":90" +
-            "}" +
-            "]";
+                "{" +
+                "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Employee\"," +
+                "\"id\":2," +
+                "\"name\":\"Thomas\"," +
+                "\"title\":\"Waiter\"" +
+                "}," +
+                "{" +
+                "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Employee\"," +
+                "\"id\":3," +
+                "\"name\":\"Patricia\"," +
+                "\"title\":\"Cook\"" +
+                "}," +
+                "{" +
+                "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Manager\"," +
+                "\"id\":1," +
+                "\"managedEmployees\":" +
+                "[" +
+                "{" +
+                "\"class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Employee\"," +
+                "\"id\":2," +
+                "\"name\":\"Thomas\"," +
+                "\"title\":\"Waiter\"" +
+                "}," +
+                "{" +
+                "\"class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Employee\"," +
+                "\"id\":3," +
+                "\"name\":\"Patricia\"," +
+                "\"title\":\"Cook\"" +
+                "}" +
+                "]," +
+                "\"name\":\"Bob\"," +
+                "\"title\":\"Boss\"" +
+                "}," +
+                "{" +
+                "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Customer\"," +
+                "\"name\":\"Brad\"," +
+                "\"satisfaction\":90" +
+                "}" +
+                "]";
 
         assertEquals( expected, result );
     }
 
     public void testDeserialize( ObjectReaderTester<Person[]> reader ) {
         String input = "[" +
-            "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Employee\"," +
-            "\"id\":2," +
-            "\"name\":\"Thomas\"," +
-            "\"title\":\"Waiter\"" +
-            "}," +
-            "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Employee\"," +
-            "\"id\":3," +
-            "\"name\":\"Patricia\"," +
-            "\"title\":\"Cook\"" +
-            "}," +
-            "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Manager\"," +
-            "\"id\":1," +
-            "\"managedEmployees\":" +
-            "[" +
-            "{" +
-            "\"class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Employee\"," +
-            "\"id\":2," +
-            "\"name\":\"Thomas\"," +
-            "\"title\":\"Waiter\"" +
-            "}," +
-            "{" +
-            "\"class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Employee\"," +
-            "\"id\":3," +
-            "\"name\":\"Patricia\"," +
-            "\"title\":\"Cook\"" +
-            "}" +
-            "]," +
-            "\"name\":\"Bob\"," +
-            "\"title\":\"Boss\"" +
-            "}," +
-            "{" +
-            "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Customer\"," +
-            "\"name\":\"Brad\"," +
-            "\"satisfaction\":90" +
-            "}" +
-            "]";
+                "{" +
+                "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Employee\"," +
+                "\"id\":2," +
+                "\"name\":\"Thomas\"," +
+                "\"title\":\"Waiter\"" +
+                "}," +
+                "{" +
+                "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Employee\"," +
+                "\"id\":3," +
+                "\"name\":\"Patricia\"," +
+                "\"title\":\"Cook\"" +
+                "}," +
+                "{" +
+                "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Manager\"," +
+                "\"id\":1," +
+                "\"managedEmployees\":" +
+                "[" +
+                "{" +
+                "\"class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Employee\"," +
+                "\"id\":2," +
+                "\"name\":\"Thomas\"," +
+                "\"title\":\"Waiter\"" +
+                "}," +
+                "{" +
+                "\"class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Employee\"," +
+                "\"id\":3," +
+                "\"name\":\"Patricia\"," +
+                "\"title\":\"Cook\"" +
+                "}" +
+                "]," +
+                "\"name\":\"Bob\"," +
+                "\"title\":\"Boss\"" +
+                "}," +
+                "{" +
+                "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Customer\"," +
+                "\"name\":\"Brad\"," +
+                "\"satisfaction\":90" +
+                "}" +
+                "]";
 
         Person[] result = reader.read( input );
         {

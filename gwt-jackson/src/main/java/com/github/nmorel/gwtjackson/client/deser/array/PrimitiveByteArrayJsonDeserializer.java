@@ -47,7 +47,7 @@ public class PrimitiveByteArrayJsonDeserializer extends AbstractArrayJsonDeseria
 
     @Override
     public byte[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-        IOException {
+            IOException {
         List<Byte> list = deserializeIntoList( reader, ctx, ByteJsonDeserializer.getInstance(), params );
 
         byte[] result = new byte[list.size()];
@@ -63,7 +63,7 @@ public class PrimitiveByteArrayJsonDeserializer extends AbstractArrayJsonDeseria
 
     @Override
     protected byte[] doDeserializeNonArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-        IOException {
+            IOException {
         if ( JsonToken.STRING == reader.peek() ) {
             return Base64.decode( reader.nextString() ).getBytes();
         } else if ( ctx.isAcceptSingleValueAsArray() ) {

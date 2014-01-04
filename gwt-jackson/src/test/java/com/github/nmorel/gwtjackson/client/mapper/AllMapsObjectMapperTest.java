@@ -62,15 +62,15 @@ public class AllMapsObjectMapperTest extends GwtJacksonTestCase {
 
     public void testDeserializeValue() {
         String input = "{" +
-            "\"abstractMap\":{\"one\":1,\"four\":2,\"two\":2,\"three\":3,\"four\":4}," +
-            "\"enumMap\":{\"A\":1,\"C\":3,\"B\":2,\"D\":4,\"D\":5}," +
-            "\"hashMap\":{\"one\":1,\"two\":2,\"three\":3,\"four\":4}," +
-            "\"identityHashMap\":{\"three\":3}," +
-            "\"linkedHashMap\":{\"one\":1,\"two\":2,\"three\":3,\"four\":4}," +
-            "\"map\":{\"one\":1,\"two\":2,\"three\":3,\"four\":4}," +
-            "\"sortedMap\":{\"four\":4,\"two\":2,\"one\":1,\"three\":3}," +
-            "\"treeMap\":{\"one\":1,\"three\":3,\"four\":4,\"two\":2}" +
-            "}";
+                "\"abstractMap\":{\"one\":1,\"four\":2,\"two\":2,\"three\":3,\"four\":4}," +
+                "\"enumMap\":{\"A\":1,\"C\":3,\"B\":2,\"D\":4,\"D\":5}," +
+                "\"hashMap\":{\"one\":1,\"two\":2,\"three\":3,\"four\":4}," +
+                "\"identityHashMap\":{\"three\":3}," +
+                "\"linkedHashMap\":{\"one\":1,\"two\":2,\"three\":3,\"four\":4}," +
+                "\"map\":{\"one\":1,\"two\":2,\"three\":3,\"four\":4}," +
+                "\"sortedMap\":{\"four\":4,\"two\":2,\"one\":1,\"three\":3}," +
+                "\"treeMap\":{\"one\":1,\"three\":3,\"four\":4,\"two\":2}" +
+                "}";
 
         BeanWithMapsType bean = BeanWithMapsTypeMapper.INSTANCE.read( input );
         assertNotNull( bean );
@@ -144,15 +144,15 @@ public class AllMapsObjectMapperTest extends GwtJacksonTestCase {
         bean.enumMap = enumMap;
 
         String expected = "{" +
-            "\"abstractMap\":{\"one\":1,\"two\":2,\"three\":3,\"four\":4}," +
-            "\"enumMap\":{\"A\":1,\"B\":2,\"C\":3,\"D\":4}," +
-            "\"hashMap\":{\"one\":1,\"two\":2,\"three\":3,\"four\":4}," +
-            "\"identityHashMap\":{\"one\":1}," +
-            "\"linkedHashMap\":{\"one\":1,\"two\":2,\"three\":3,\"four\":4}," +
-            "\"map\":{\"one\":1,\"two\":2,\"three\":3,\"four\":4}," +
-            "\"sortedMap\":{\"four\":4,\"one\":1,\"three\":3,\"two\":2}," +
-            "\"treeMap\":{\"four\":4,\"one\":1,\"three\":3,\"two\":2}" +
-            "}";
+                "\"abstractMap\":{\"one\":1,\"two\":2,\"three\":3,\"four\":4}," +
+                "\"enumMap\":{\"A\":1,\"B\":2,\"C\":3,\"D\":4}," +
+                "\"hashMap\":{\"one\":1,\"two\":2,\"three\":3,\"four\":4}," +
+                "\"identityHashMap\":{\"one\":1}," +
+                "\"linkedHashMap\":{\"one\":1,\"two\":2,\"three\":3,\"four\":4}," +
+                "\"map\":{\"one\":1,\"two\":2,\"three\":3,\"four\":4}," +
+                "\"sortedMap\":{\"four\":4,\"one\":1,\"three\":3,\"two\":2}," +
+                "\"treeMap\":{\"four\":4,\"one\":1,\"three\":3,\"two\":2}" +
+                "}";
 
         assertEquals( expected, BeanWithMapsTypeMapper.INSTANCE.write( bean ) );
     }

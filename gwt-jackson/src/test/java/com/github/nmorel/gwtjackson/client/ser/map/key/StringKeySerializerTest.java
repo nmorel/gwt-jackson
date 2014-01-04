@@ -27,7 +27,7 @@ public class StringKeySerializerTest extends AbstractKeySerializerTest<String> {
     }
 
     public void testSerializeValue() {
-        assertSerialization("Hello World!", "Hello World!");
-        assertSerialization("", "");
+        assertSerialization( "Hello World!", "Hello World!" );
+        assertSerialization( "", "" );
     }
 }

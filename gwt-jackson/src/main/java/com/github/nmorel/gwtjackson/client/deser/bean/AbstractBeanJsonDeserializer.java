@@ -41,10 +41,10 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
     private final Map<String, BeanPropertyDeserializer<T, ?>> deserializers = new LinkedHashMap<String, BeanPropertyDeserializer<T, ?>>();
 
     private final Map<String, BackReferenceProperty<T, ?>> backReferenceDeserializers = new LinkedHashMap<String,
-        BackReferenceProperty<T, ?>>();
+            BackReferenceProperty<T, ?>>();
 
     private final Map<Class<? extends T>, SubtypeDeserializer<? extends T>> subtypeClassToDeserializer = new IdentityHashMap<Class<?
-        extends T>, SubtypeDeserializer<? extends T>>();
+            extends T>, SubtypeDeserializer<? extends T>>();
 
     private final Set<String> defaultIgnoredProperties = new HashSet<String>();
 
@@ -216,7 +216,7 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
 
         // we will remove the properties read from this list and check at the end it's empty
         Set<String> requiredPropertiesLeft = requiredProperties.isEmpty() ? Collections
-            .<String>emptySet() : new HashSet<String>( requiredProperties );
+                .<String>emptySet() : new HashSet<String>( requiredProperties );
 
         // we first instantiate the bean. It might buffer properties if there are properties required for constructor and they are not in
         // first position
@@ -343,7 +343,7 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
         }
 
         return getDeserializer( reader, ctx, typeClass )
-            .deserializeObject( reader, ctx, identityInfo, typeInfo, ignoreUnknown, ignoredProperties );
+                .deserializeObject( reader, ctx, identityInfo, typeInfo, ignoreUnknown, ignoredProperties );
     }
 
     private AbstractBeanJsonDeserializer<T> getDeserializer( JsonReader reader, JsonDeserializationContext ctx, Class typeClass ) {

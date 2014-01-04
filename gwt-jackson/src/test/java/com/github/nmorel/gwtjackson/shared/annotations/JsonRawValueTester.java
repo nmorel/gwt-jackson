@@ -35,7 +35,7 @@ public final class JsonRawValueTester extends AbstractTester {
      */
 
     /// Class for testing {@link JsonRawValue} annotations with getters returning String
-    @JsonPropertyOrder( alphabetic = true )
+    @JsonPropertyOrder(alphabetic = true)
     public final static class ClassGetter<T> {
 
         private final T _value;
@@ -44,7 +44,7 @@ public final class JsonRawValueTester extends AbstractTester {
 
         public T getNonRaw() { return _value; }
 
-        @JsonProperty( "raw" )
+        @JsonProperty("raw")
         @JsonRawValue
         public T foobar() { return _value; }
 

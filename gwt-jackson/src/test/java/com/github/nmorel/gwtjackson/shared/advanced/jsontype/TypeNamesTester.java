@@ -151,7 +151,7 @@ public final class TypeNamesTester extends AbstractTester {
 
         assertEquals( "[{\"doggy\":{\"ageInYears\":3,\"name\":\"Spot\"}}]", writer.write( new Animal[]{new Dog( "Spot", 3 )} ) );
         assertEquals( "[{\"TypeNamesTester$MaineCoon\":{\"name\":\"Belzebub\",\"purrs\":true}}]", writer
-            .write( new Animal[]{new MaineCoon( "Belzebub", true )} ) );
+                .write( new Animal[]{new MaineCoon( "Belzebub", true )} ) );
     }
 
     public void testRoundTrip( ObjectMapperTester<Animal[]> mapper ) {
@@ -159,7 +159,7 @@ public final class TypeNamesTester extends AbstractTester {
 
         String json = mapper.write( input );
         assertEquals( "[{\"doggy\":{\"ageInYears\":7,\"name\":\"Odie\"}},null,{\"TypeNamesTester$MaineCoon\":{\"name\":\"Piru\"," +
-            "" + "\"purrs\":false}},{\"persialaisKissa\":{\"name\":\"Khomeini\",\"purrs\":true}}]", json );
+                "" + "\"purrs\":false}},{\"persialaisKissa\":{\"name\":\"Khomeini\",\"purrs\":true}}]", json );
 
         Animal[] output = mapper.read( json );
         assertEquals( input.length, output.length );
@@ -175,7 +175,7 @@ public final class TypeNamesTester extends AbstractTester {
 
         String json = mapper.write( input );
         assertEquals( "{\"venla\":{\"TypeNamesTester$MaineCoon\":{\"name\":\"Venla\",\"purrs\":true}}," +
-            "" + "\"ama\":{\"doggy\":{\"ageInYears\":13,\"name\":\"Amadeus\"}}}", json );
+                "" + "\"ama\":{\"doggy\":{\"ageInYears\":13,\"name\":\"Amadeus\"}}}", json );
 
         LinkedHashMap<String, Animal> output = mapper.read( json );
         assertNotNull( output );

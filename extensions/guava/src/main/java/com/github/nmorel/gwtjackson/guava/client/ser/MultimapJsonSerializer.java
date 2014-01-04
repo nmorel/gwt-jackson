@@ -71,8 +71,8 @@ public class MultimapJsonSerializer<M extends Multimap<K, V>, K, V> extends Json
     }
 
     @Override
-    public void doSerialize( JsonWriter writer, @Nonnull M multimap, JsonSerializationContext ctx, JsonSerializerParameters params ) throws
-        IOException {
+    public void doSerialize( JsonWriter writer, @Nonnull M multimap, JsonSerializationContext ctx,
+                             JsonSerializerParameters params ) throws IOException {
         writer.beginObject();
 
         if ( !multimap.isEmpty() ) {

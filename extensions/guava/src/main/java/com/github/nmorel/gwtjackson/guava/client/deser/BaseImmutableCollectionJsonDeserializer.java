@@ -35,7 +35,7 @@ import com.google.common.collect.ImmutableCollection;
  * @author Nicolas Morel
  */
 public abstract class BaseImmutableCollectionJsonDeserializer<C extends ImmutableCollection<T>,
-    T> extends BaseIterableJsonDeserializer<C, T> {
+        T> extends BaseIterableJsonDeserializer<C, T> {
 
     /**
      * @param deserializer {@link JsonDeserializer} used to map the objects inside the {@link ImmutableCollection}.
@@ -55,7 +55,7 @@ public abstract class BaseImmutableCollectionJsonDeserializer<C extends Immutabl
      * @throws IOException
      */
     protected void buildCollection( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-        IOException {
+            IOException {
         if ( JsonToken.BEGIN_ARRAY == reader.peek() ) {
 
             reader.beginArray();
@@ -73,7 +73,7 @@ public abstract class BaseImmutableCollectionJsonDeserializer<C extends Immutabl
 
         } else {
             throw ctx.traceError( "Cannot deserialize a com.google.common.collect.ImmutableCollection out of " + reader
-                .peek() + " token", reader );
+                    .peek() + " token", reader );
         }
     }
 

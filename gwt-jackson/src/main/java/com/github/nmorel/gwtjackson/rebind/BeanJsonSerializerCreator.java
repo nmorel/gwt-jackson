@@ -49,11 +49,11 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
 
     @Override
     protected void writeClassBody( SourceWriter source, BeanInfo beanInfo, Map<String,
-        PropertyInfo> properties ) throws UnableToCompleteException {
+            PropertyInfo> properties ) throws UnableToCompleteException {
         source.println();
 
         TypeParameters typeParameters = generateTypeParameterMapperFields( source, beanInfo, JSON_SERIALIZER_CLASS,
-            TYPE_PARAMETER_SERIALIZER_FIELD_NAME );
+                TYPE_PARAMETER_SERIALIZER_FIELD_NAME );
 
         if ( null != typeParameters ) {
             source.println();
@@ -109,7 +109,7 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
     }
 
     private void generatePropertySerializers( SourceWriter source, BeanInfo beanInfo, Map<String,
-        PropertyInfo> properties ) throws UnableToCompleteException {
+            PropertyInfo> properties ) throws UnableToCompleteException {
         for ( PropertyInfo property : properties.values() ) {
             if ( !property.getGetterAccessor().isPresent() || property.isIgnored() ) {
                 // there is no getter visible or the property is ignored
@@ -119,13 +119,13 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
             Accessor getterAccessor = property.getGetterAccessor().get().getAccessor( "bean", true );
 
             source.println( "addPropertySerializer(\"%s\", new " + BEAN_PROPERTY_SERIALIZER_CLASS + "<%s, %s>() {", property
-                .getPropertyName(), getQualifiedClassName( beanInfo.getType() ), getQualifiedClassName( property.getType() ) );
+                    .getPropertyName(), getQualifiedClassName( beanInfo.getType() ), getQualifiedClassName( property.getType() ) );
 
             JSerializerType serializerType;
             if ( property.isRawValue() ) {
                 serializerType = new JSerializerType.Builder().type( property.getType() ).instance( String
-                    .format( "ctx" + ".<%s>getRawValueJsonSerializer()", property.getType().getParameterizedQualifiedSourceName() ) )
-                    .build();
+                        .format( "ctx" + ".<%s>getRawValueJsonSerializer()", property.getType().getParameterizedQualifiedSourceName() ) )
+                        .build();
             } else {
                 serializerType = getJsonSerializerFromType( property.getType() );
             }
@@ -133,7 +133,7 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
             source.indent();
             source.println( "@Override" );
             source.println( "protected %s<%s> newSerializer(%s ctx) {", JSON_SERIALIZER_CLASS, getQualifiedClassName( property
-                .getType() ), JSON_SERIALIZATION_CONTEXT_CLASS );
+                    .getType() ), JSON_SERIALIZATION_CONTEXT_CLASS );
             source.indent();
             source.println( "return %s;", serializerType.getInstance() );
             source.outdent();
@@ -145,7 +145,7 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
 
             source.println( "@Override" );
             source.println( "public %s getValue(%s bean, %s ctx) {", getQualifiedClassName( property
-                .getType() ), getQualifiedClassName( beanInfo.getType() ), JSON_SERIALIZATION_CONTEXT_CLASS );
+                    .getType() ), getQualifiedClassName( beanInfo.getType() ), JSON_SERIALIZATION_CONTEXT_CLASS );
             source.indent();
             source.println( "return %s;", getterAccessor.getAccessor() );
             source.outdent();
@@ -165,7 +165,7 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
     private void generatePropertySerializerParameters( SourceWriter source, PropertyInfo property,
                                                        JSerializerType serializerType ) throws UnableToCompleteException {
         if ( property.getFormat().isPresent() || property.getIgnoredProperties().isPresent() || property.getIgnoreUnknown().isPresent() ||
-            property.getIdentityInfo().isPresent() || property.getTypeInfo().isPresent() || property.getInclude().isPresent() ) {
+                property.getIdentityInfo().isPresent() || property.getTypeInfo().isPresent() || property.getInclude().isPresent() ) {
 
             JClassType annotatedType = findFirstTypeToApplyPropertyAnnotation( serializerType );
 
@@ -215,12 +215,11 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
 
         for ( JClassType subtype : subtypes ) {
             source.println( "addSubtypeSerializer( %s.class, new %s<%s>() {", subtype.getQualifiedSourceName(), SubtypeSerializer.class
-                .getName(), getQualifiedClassName( subtype ) );
+                    .getName(), getQualifiedClassName( subtype ) );
             source.indent();
 
             source.println( "@Override" );
-            source
-                .println( "protected %s<%s> newSerializer(%s ctx) {", ABSTRACT_BEAN_JSON_SERIALIZER_CLASS,
+            source.println( "protected %s<%s> newSerializer(%s ctx) {", ABSTRACT_BEAN_JSON_SERIALIZER_CLASS,
                     getQualifiedClassName( subtype ), JSON_SERIALIZATION_CONTEXT_CLASS );
             source.indent();
             source.println( "return %s;", getJsonSerializerFromType( subtype ).getInstance() );

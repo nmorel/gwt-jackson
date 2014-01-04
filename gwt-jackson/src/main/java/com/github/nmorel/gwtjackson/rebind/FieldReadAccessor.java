@@ -62,7 +62,7 @@ public class FieldReadAccessor extends FieldAccessor {
             @Override
             public void write( SourceWriter source ) {
                 source.println( "private native %s %s(%s bean) /*-{", fieldType
-                    .getParameterizedQualifiedSourceName(), methodName, enclosingType.getParameterizedQualifiedSourceName() );
+                        .getParameterizedQualifiedSourceName(), methodName, enclosingType.getParameterizedQualifiedSourceName() );
                 source.indent();
                 if ( method.isPresent() ) {
                     source.println( "return bean.@%s::%s()();", enclosingType.getQualifiedSourceName(), method.get().getName() );

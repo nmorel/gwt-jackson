@@ -40,9 +40,10 @@ public class Hello implements EntryPoint {
      * returns an error.
      */
     private static final String SERVER_ERROR = "An error occurred while " + "attempting to contact the server. Please check your network " +
-        "" + "connection and try again.";
+            "" + "connection and try again.";
 
     private static final GreetingRequestWriter GREETING_REQUEST_WRITER = GWT.create( GreetingRequestWriter.class );
+
     private static final GreetingResponseReader GREETING_RESPONSE_READER = GWT.create( GreetingResponseReader.class );
 
     /**
@@ -87,13 +88,13 @@ public class Hello implements EntryPoint {
         dialogBox.setWidget( dialogVPanel );
 
         // Add a handler to close the DialogBox
-        closeButton.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        closeButton.addClickHandler( new ClickHandler() {
+            public void onClick( ClickEvent event ) {
                 dialogBox.hide();
-                sendButton.setEnabled(true);
-                sendButton.setFocus(true);
+                sendButton.setEnabled( true );
+                sendButton.setFocus( true );
             }
-        });
+        } );
 
         // Create a handler for the sendButton and nameField
         class MyHandler implements ClickHandler, KeyUpHandler {
@@ -133,7 +134,7 @@ public class Hello implements EntryPoint {
 
                 try {
                     new RequestBuilder( RequestBuilder.POST, "hello/greet" ).sendRequest( GREETING_REQUEST_WRITER
-                        .write( new GreetingRequest( textToServer ) ), new RequestCallback() {
+                            .write( new GreetingRequest( textToServer ) ), new RequestCallback() {
                         @Override
                         public void onResponseReceived( Request request, Response response ) {
                             GreetingResponse result = GREETING_RESPONSE_READER.read( response.getText() );
@@ -141,9 +142,9 @@ public class Hello implements EntryPoint {
                             dialogBox.setText( "Remote Procedure Call" );
                             serverResponseLabel.removeStyleName( "serverResponseLabelError" );
                             serverResponseLabel.setHTML( new SafeHtmlBuilder().appendEscaped( result.getGreeting() )
-                                .appendHtmlConstant( "<br><br>I am running " ).appendEscaped( result.getServerInfo() )
-                                .appendHtmlConstant( ".<br><br>It looks like you are using:<br>" ).appendEscaped( result.getUserAgent() )
-                                .toSafeHtml() );
+                                    .appendHtmlConstant( "<br><br>I am running " ).appendEscaped( result.getServerInfo() )
+                                    .appendHtmlConstant( ".<br><br>It looks like you are using:<br>" ).appendEscaped( result
+                                            .getUserAgent() ).toSafeHtml() );
                             dialogBox.center();
                             closeButton.setFocus( true );
                         }

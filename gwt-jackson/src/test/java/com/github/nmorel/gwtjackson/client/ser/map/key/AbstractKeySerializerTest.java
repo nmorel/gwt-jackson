@@ -18,8 +18,6 @@ package com.github.nmorel.gwtjackson.client.ser.map.key;
 
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
-import com.github.nmorel.gwtjackson.client.JsonSerializer;
-import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
 /**
  * @author Nicolas Morel

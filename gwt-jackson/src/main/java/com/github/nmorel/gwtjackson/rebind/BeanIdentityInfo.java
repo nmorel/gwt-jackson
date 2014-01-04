@@ -76,7 +76,7 @@ public class BeanIdentityInfo {
                 jsonIdentityReference = findFirstEncounteredAnnotationsOnAllHierarchy( type, JsonIdentityReference.class );
             }
             return new BeanIdentityInfo( jsonIdentityInfo.property(), null != jsonIdentityReference && jsonIdentityReference
-                .alwaysAsId(), jsonIdentityInfo.generator(), jsonIdentityInfo.scope(), typeOracle );
+                    .alwaysAsId(), jsonIdentityInfo.generator(), jsonIdentityInfo.scope(), typeOracle );
         }
         return null;
     }

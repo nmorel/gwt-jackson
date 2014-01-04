@@ -68,7 +68,7 @@ public class SingleArrayOptionGwtTest extends GwtJacksonTestCase {
 
     static class StringListBean {
 
-        @SuppressWarnings( "unused" )
+        @SuppressWarnings("unused")
         public Collection<String> values;
 
         public StringListBean( Collection<String> v ) { values = v; }
@@ -110,7 +110,7 @@ public class SingleArrayOptionGwtTest extends GwtJacksonTestCase {
         // [Issue#180]
         final String EXP_STRINGS = "{\"values\":\"foo\"}";
         assertEquals( EXP_STRINGS, StringListBeanWriter.INSTANCE.write( new StringListBean( Collections
-            .singletonList( "foo" ) ), createSerializationContext() ) );
+                .singletonList( "foo" ) ), createSerializationContext() ) );
 
         final Set<String> SET = new HashSet<String>();
         SET.add( "foo" );
@@ -143,12 +143,12 @@ public class SingleArrayOptionGwtTest extends GwtJacksonTestCase {
 
         // first with simple scalar types (numbers), with collections
         List<Integer> ints = ListJsonDeserializer.newInstance( IntegerJsonDeserializer.getInstance() ).deserialize( context
-            .newJsonReader( "4" ), context );
+                .newJsonReader( "4" ), context );
         assertEquals( 1, ints.size() );
         assertEquals( Integer.valueOf( 4 ), ints.get( 0 ) );
 
         List<String> strings = ListJsonDeserializer.newInstance( StringJsonDeserializer.getInstance() ).deserialize( context
-            .newJsonReader( "\"abc\"" ), context );
+                .newJsonReader( "\"abc\"" ), context );
         assertEquals( 1, strings.size() );
         assertEquals( "abc", strings.get( 0 ) );
 
@@ -157,7 +157,7 @@ public class SingleArrayOptionGwtTest extends GwtJacksonTestCase {
         assertEquals( 1, intArray.length );
         assertEquals( -7, intArray[0] );
 
-        String[] stringArray = ArrayJsonDeserializer.newInstance(StringJsonDeserializer.getInstance(), new ArrayCreator<String>() {
+        String[] stringArray = ArrayJsonDeserializer.newInstance( StringJsonDeserializer.getInstance(), new ArrayCreator<String>() {
             @Override
             public String[] create( int length ) {
                 return new String[length];

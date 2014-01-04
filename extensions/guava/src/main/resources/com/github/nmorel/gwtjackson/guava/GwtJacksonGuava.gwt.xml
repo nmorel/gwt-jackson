@@ -20,7 +20,8 @@
   <inherits name="com.github.nmorel.gwtjackson.GwtJackson" />
   <inherits name="com.google.common.collect.Collect" />
 
-  <extend-configuration-property name="gwtjackson.configuration.extension" value="com.github.nmorel.gwtjackson.guava.rebind.GuavaConfiguration" />
+  <extend-configuration-property name="gwtjackson.configuration.extension"
+                                 value="com.github.nmorel.gwtjackson.guava.rebind.GuavaConfiguration" />
 
   <source path="client" />
 

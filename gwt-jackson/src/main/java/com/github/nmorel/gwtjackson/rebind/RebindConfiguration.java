@@ -141,7 +141,7 @@ public final class RebindConfiguration {
     private final Map<String, MapperInstance> keyDeserializers = new HashMap<String, MapperInstance>();
 
     public RebindConfiguration( TreeLogger logger, GeneratorContext context, JacksonTypeOracle typeOracle ) throws
-        UnableToCompleteException {
+            UnableToCompleteException {
         this.logger = logger;
         this.context = context;
         this.typeOracle = typeOracle;
@@ -275,7 +275,7 @@ public final class RebindConfiguration {
         for ( JMethod method : classType.getMethods() ) {
             // method must be public static, return the instance type and take no parameters
             if ( method.isStatic() && method.getReturnType().getQualifiedSourceName().equals( classType.getQualifiedSourceName() ) && method
-                .getParameters().length == nbParam && method.isPublic() ) {
+                    .getParameters().length == nbParam && method.isPublic() ) {
                 MapperType[] parameters = getParameters( method, isSerializers );
                 if ( null == parameters ) {
                     continue;
@@ -318,7 +318,7 @@ public final class RebindConfiguration {
         }
 
         logger.log( Type.WARN, "Cannot instantiate the custom serializer/deserializer " + classType
-            .getQualifiedSourceName() + ". It will be ignored" );
+                .getQualifiedSourceName() + ". It will be ignored" );
         return null;
     }
 
@@ -357,7 +357,7 @@ public final class RebindConfiguration {
         for ( JMethod method : classType.getMethods() ) {
             // method must be public static, return the instance type and take no parameters
             if ( method.isStatic() && method.getReturnType().getQualifiedSourceName().equals( classType.getQualifiedSourceName() ) && method
-                .getParameters().length == 0 && method.isPublic() ) {
+                    .getParameters().length == 0 && method.isPublic() ) {
                 StringBuilder builder = new StringBuilder();
                 builder.append( classType.getQualifiedSourceName() ).append( '.' ).append( method.getName() ).append( "()" );
                 return new MapperInstance( classType, builder.toString() );
@@ -374,7 +374,7 @@ public final class RebindConfiguration {
         }
 
         logger.log( Type.WARN, "Cannot instantiate the custom key serializer/deserializer " + classType
-            .getQualifiedSourceName() + ". It will be ignored" );
+                .getQualifiedSourceName() + ". It will be ignored" );
         return null;
     }
 

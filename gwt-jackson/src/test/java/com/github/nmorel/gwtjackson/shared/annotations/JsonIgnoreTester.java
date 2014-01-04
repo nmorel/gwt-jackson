@@ -37,21 +37,21 @@ public final class JsonIgnoreTester extends AbstractTester {
 
     public static class BeanWithIgnorePropertiesAsProperty {
 
-        @JsonIgnoreProperties( value = {"intProperty"}, ignoreUnknown = true )
+        @JsonIgnoreProperties(value = {"intProperty"}, ignoreUnknown = true)
         public BeanWithIgnoredProperties property;
     }
 
-    @JsonAutoDetect( fieldVisibility = JsonAutoDetect.Visibility.ANY )
-    @JsonIgnoreProperties( {"stringProperty", "aBooleanProperty", "notAnActualProperty"} )
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+    @JsonIgnoreProperties({"stringProperty", "aBooleanProperty", "notAnActualProperty"})
     public static class BeanWithIgnoredProperties {
 
-        @JsonIgnore( false )
+        @JsonIgnore(false)
         protected int intProperty;
 
-        @JsonProperty( "aStringProperty" )
+        @JsonProperty("aStringProperty")
         protected String stringProperty;
 
-        @JsonProperty( "aBooleanProperty" )
+        @JsonProperty("aBooleanProperty")
         protected Boolean booleanProperty;
 
         @JsonIgnore
@@ -78,9 +78,9 @@ public final class JsonIgnoreTester extends AbstractTester {
 
     public void testDeserializeBeanWithIgnoredProperties( ObjectReaderTester<BeanWithIgnoredProperties> reader ) {
         String input = "{\"ignoredProperty\":45.7," +
-            "\"aStringProperty\":\"IAmAString\"," +
-            "\"aBooleanProperty\":true," +
-            "\"intProperty\":15}";
+                "\"aStringProperty\":\"IAmAString\"," +
+                "\"aBooleanProperty\":true," +
+                "\"intProperty\":15}";
 
         BeanWithIgnoredProperties result = reader.read( input );
 
@@ -113,9 +113,9 @@ public final class JsonIgnoreTester extends AbstractTester {
 
     public void testDeserializeBeanWithIgnorePropertiesAsProperty( ObjectReaderTester<BeanWithIgnorePropertiesAsProperty> reader ) {
         String input = "{\"property\":{" +
-            "\"aStringProperty\":\"IAmAString\"," +
-            "\"unknown\":\"unknown\"," +
-            "\"intProperty\":15}}";
+                "\"aStringProperty\":\"IAmAString\"," +
+                "\"unknown\":\"unknown\"," +
+                "\"intProperty\":15}}";
 
         BeanWithIgnorePropertiesAsProperty result = reader.read( input );
 

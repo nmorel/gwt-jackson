@@ -29,7 +29,7 @@ import com.github.nmorel.gwtjackson.shared.ObjectReaderTester;
 public final class ObjectIdDeserializationTester extends AbstractTester {
     // // Classes for external id use
 
-    @JsonIdentityInfo( generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id" )
+    @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id")
     public static class Identifiable {
 
         public int value;
@@ -45,7 +45,7 @@ public final class ObjectIdDeserializationTester extends AbstractTester {
         }
     }
 
-    @JsonIdentityInfo( generator = ObjectIdGenerators.UUIDGenerator.class, property = "#" )
+    @JsonIdentityInfo(generator = ObjectIdGenerators.UUIDGenerator.class, property = "#")
     public static class UUIDNode {
 
         public int value;
@@ -69,7 +69,7 @@ public final class ObjectIdDeserializationTester extends AbstractTester {
 
     public static class IdWrapper {
 
-        @JsonIdentityInfo( generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id" )
+        @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
         public ValueNode node;
 
         public IdWrapper() {
@@ -97,7 +97,7 @@ public final class ObjectIdDeserializationTester extends AbstractTester {
 
     // // Classes for external id use
 
-    @JsonIdentityInfo( generator = ObjectIdGenerators.PropertyGenerator.class, property = "customId" )
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "customId")
     public static class IdentifiableCustom {
 
         public int value;
@@ -118,8 +118,8 @@ public final class ObjectIdDeserializationTester extends AbstractTester {
 
     public static class IdWrapperExt {
 
-        @JsonIdentityInfo( generator = ObjectIdGenerators.PropertyGenerator.class,
-            property = "customId" )
+        @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
+                property = "customId")
         public ValueNodeExt node;
 
         public IdWrapperExt() {

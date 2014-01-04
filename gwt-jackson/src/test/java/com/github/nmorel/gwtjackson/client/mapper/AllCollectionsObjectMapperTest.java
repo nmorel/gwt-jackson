@@ -100,28 +100,28 @@ public class AllCollectionsObjectMapperTest extends GwtJacksonTestCase {
 
     public void testDeserializeValue() {
         String input = "{" +
-            "\"abstractCollection\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"abstractList\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"abstractQueue\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"abstractSequentialList\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"abstractSet\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"arrayList\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"collection\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"enumSet\":[\"B\",null,\"C\",\"A\"]," +
-            "\"hashSet\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"iterable\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"linkedHashSet\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"linkedList\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"list\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"priorityQueue\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"queue\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"set\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"sortedSet\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"stack\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"treeSet\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"vector\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"listSet\":[[\"Hello\"],[\"World\"],[]]" +
-            "}";
+                "\"abstractCollection\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"abstractList\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"abstractQueue\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"abstractSequentialList\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"abstractSet\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"arrayList\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"collection\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"enumSet\":[\"B\",null,\"C\",\"A\"]," +
+                "\"hashSet\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"iterable\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"linkedHashSet\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"linkedList\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"list\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"priorityQueue\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"queue\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"set\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"sortedSet\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"stack\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"treeSet\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"vector\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"listSet\":[[\"Hello\"],[\"World\"],[]]" +
+                "}";
 
         BeanWithCollectionsType bean = BeanWithCollectionsTypeMapper.INSTANCE.read( input );
         assertNotNull( bean );
@@ -153,15 +153,15 @@ public class AllCollectionsObjectMapperTest extends GwtJacksonTestCase {
         assertEquals( EnumSet.copyOf( Arrays.asList( AnEnum.A, AnEnum.B, AnEnum.C ) ), bean.enumSet );
 
         assertTrue( Arrays.deepEquals( new PriorityQueue<String>( baseExpectedCollectionWithoutNull ).toArray(), bean.abstractQueue
-            .toArray() ) );
+                .toArray() ) );
         assertTrue( Arrays.deepEquals( new PriorityQueue<String>( baseExpectedCollectionWithoutNull ).toArray(), bean.priorityQueue
-            .toArray() ) );
+                .toArray() ) );
 
         assertEquals( baseExpectedSortedSet, bean.sortedSet );
         assertEquals( baseExpectedSortedSet, bean.treeSet );
 
         List<Set<String>> expectedListSet = Arrays.asList( Collections.<String>singleton( "Hello" ), Collections
-            .<String>singleton( "World" ), Collections.<String>emptySet() );
+                .<String>singleton( "World" ), Collections.<String>emptySet() );
         assertEquals( expectedListSet, bean.listSet );
     }
 
@@ -170,7 +170,7 @@ public class AllCollectionsObjectMapperTest extends GwtJacksonTestCase {
         ArrayList<String> list = new ArrayList<String>( Arrays.asList( "Hello", null, "World", "!" ) );
         LinkedList<String> linkedList = new LinkedList<String>( list );
         List<Set<String>> listSet = Arrays.asList( Collections.<String>singleton( "Hello" ), Collections
-            .<String>singleton( "World" ), Collections.<String>emptySet() );
+                .<String>singleton( "World" ), Collections.<String>emptySet() );
 
         BeanWithCollectionsType bean = new BeanWithCollectionsType();
         bean.abstractCollection = list;
@@ -206,28 +206,28 @@ public class AllCollectionsObjectMapperTest extends GwtJacksonTestCase {
         bean.listSet = listSet;
 
         String expected = "{" +
-            "\"abstractCollection\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"abstractList\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"abstractQueue\":[\"!\",\"World\",\"Hello\"]," +
-            "\"abstractSequentialList\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"abstractSet\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"arrayList\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"collection\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"enumSet\":[\"A\"]," +
-            "\"hashSet\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"iterable\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"linkedHashSet\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"linkedList\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"list\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"priorityQueue\":[\"!\",\"World\",\"Hello\"]," +
-            "\"queue\":[\"!\",\"World\",\"Hello\"]," +
-            "\"set\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"sortedSet\":[\"!\",\"Hello\",\"World\"]," +
-            "\"stack\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"treeSet\":[\"!\",\"Hello\",\"World\"]," +
-            "\"vector\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"listSet\":[[\"Hello\"],[\"World\"],[]]" +
-            "}";
+                "\"abstractCollection\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"abstractList\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"abstractQueue\":[\"!\",\"World\",\"Hello\"]," +
+                "\"abstractSequentialList\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"abstractSet\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"arrayList\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"collection\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"enumSet\":[\"A\"]," +
+                "\"hashSet\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"iterable\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"linkedHashSet\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"linkedList\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"list\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"priorityQueue\":[\"!\",\"World\",\"Hello\"]," +
+                "\"queue\":[\"!\",\"World\",\"Hello\"]," +
+                "\"set\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"sortedSet\":[\"!\",\"Hello\",\"World\"]," +
+                "\"stack\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"treeSet\":[\"!\",\"Hello\",\"World\"]," +
+                "\"vector\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"listSet\":[[\"Hello\"],[\"World\"],[]]" +
+                "}";
 
         assertEquals( expected, BeanWithCollectionsTypeMapper.INSTANCE.write( bean ) );
     }

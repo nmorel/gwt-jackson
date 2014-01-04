@@ -185,7 +185,7 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
 
     @Override
     public void doSerialize( JsonWriter writer, @Nonnull N value, JsonSerializationContext ctx, JsonSerializerParameters params ) throws
-        IOException {
+            IOException {
         writer.value( value );
     }
 }

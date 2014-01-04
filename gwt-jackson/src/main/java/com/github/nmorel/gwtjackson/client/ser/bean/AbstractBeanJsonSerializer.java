@@ -39,7 +39,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
     private final Map<String, BeanPropertySerializer<T, ?>> serializers = new LinkedHashMap<String, BeanPropertySerializer<T, ?>>();
 
     private final Map<Class<? extends T>, SubtypeSerializer<? extends T>> subtypeClassToSerializer = new IdentityHashMap<Class<? extends
-        T>, SubtypeSerializer<? extends T>>();
+            T>, SubtypeSerializer<? extends T>>();
 
     private final IdentitySerializationInfo<T> defaultIdentityInfo;
 
@@ -74,13 +74,13 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
 
     @Override
     public void doSerialize( JsonWriter writer, @Nonnull T value, JsonSerializationContext ctx, JsonSerializerParameters params ) throws
-        IOException {
+            IOException {
 
         // Processing the parameters. We fallback to default if parameter is not present.
         final IdentitySerializationInfo identityInfo = null == params.getIdentityInfo() ? defaultIdentityInfo : params.getIdentityInfo();
         final TypeSerializationInfo typeInfo = null == params.getTypeInfo() ? defaultTypeInfo : params.getTypeInfo();
         final Set<String> ignoredProperties = null == params.getIgnoredProperties() ? Collections.<String>emptySet() : params
-            .getIgnoredProperties();
+                .getIgnoredProperties();
 
         ObjectIdSerializer<?> idWriter = null;
         if ( null != identityInfo ) {
@@ -192,7 +192,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
                                        TypeSerializationInfo typeInfo, Set<String> ignoredProperties ) throws IOException {
         for ( Map.Entry<String, BeanPropertySerializer<T, ?>> entry : serializers.entrySet() ) {
             if ( (null == identityInfo || !identityInfo.isProperty() || !identityInfo.getPropertyName().equals( entry
-                .getKey() )) && !ignoredProperties.contains( entry.getKey() ) ) {
+                    .getKey() )) && !ignoredProperties.contains( entry.getKey() ) ) {
                 writer.name( entry.getKey() );
                 entry.getValue().serialize( writer, value, ctx );
             }

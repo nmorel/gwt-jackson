@@ -37,7 +37,7 @@ public class DateOptionsGwtTest extends GwtJacksonTestCase {
 
     public void testSerializeDatesAsTimestamps() {
         tester.testSerializeDatesAsTimestamps( createWriter( BeanWithDatesMapper.INSTANCE, new Builder().writeDatesAsTimestamps( true )
-            .writeDateKeysAsTimestamps( true ).build() ) );
+                .writeDateKeysAsTimestamps( true ).build() ) );
     }
 
     public void testDeserializeDatesAsTimestamps() {
@@ -46,7 +46,7 @@ public class DateOptionsGwtTest extends GwtJacksonTestCase {
 
     public void testSerializeDatesNotAsTimestamps() {
         tester.testSerializeDatesNotAsTimestamps( createWriter( BeanWithDatesMapper.INSTANCE, new Builder().writeDatesAsTimestamps( false )
-            .writeDateKeysAsTimestamps( false ).build() ) );
+                .writeDateKeysAsTimestamps( false ).build() ) );
     }
 
     public void testDeserializeDatesNotAsTimestamps() {

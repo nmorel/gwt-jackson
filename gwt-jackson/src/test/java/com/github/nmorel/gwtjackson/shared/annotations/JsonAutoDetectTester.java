@@ -72,8 +72,8 @@ public final class JsonAutoDetectTester extends AbstractTester {
         bean.fieldWithJsonProperty = "jsonProperty";
 
         String expected = "{\"publicFieldVisible\":\"publicField\"," +
-            "\"protectedFieldVisible\":\"protectedField\"," +
-            "\"fieldWithJsonProperty\":\"jsonProperty\"}";
+                "\"protectedFieldVisible\":\"protectedField\"," +
+                "\"fieldWithJsonProperty\":\"jsonProperty\"}";
         String result = writer.write( bean );
 
         assertEquals( expected, result );
@@ -81,10 +81,10 @@ public final class JsonAutoDetectTester extends AbstractTester {
 
     public void testDeserializeAutoDetection( ObjectReaderTester<BeanOne> reader ) {
         String input = "{\"visibleWithSetter\":\"Hello\"," +
-            "\"publicFieldVisible\":\"publicField\"," +
-            "\"protectedFieldVisible\":\"protectedField\"," +
-            "\"notVisibleField\":2," +
-            "\"fieldWithJsonProperty\":\"jsonProperty\"}";
+                "\"publicFieldVisible\":\"publicField\"," +
+                "\"protectedFieldVisible\":\"protectedField\"," +
+                "\"notVisibleField\":2," +
+                "\"fieldWithJsonProperty\":\"jsonProperty\"}";
 
         BeanOne result = reader.read( input );
 

@@ -36,7 +36,7 @@ public class TypeNamesGwtTest extends GwtJacksonTestCase {
     }
 
     public interface AnimalMapMapper extends ObjectMapper<LinkedHashMap<String, Animal>>, ObjectMapperTester<LinkedHashMap<String,
-        Animal>> {
+            Animal>> {
 
         static AnimalMapMapper INSTANCE = GWT.create( AnimalMapMapper.class );
     }

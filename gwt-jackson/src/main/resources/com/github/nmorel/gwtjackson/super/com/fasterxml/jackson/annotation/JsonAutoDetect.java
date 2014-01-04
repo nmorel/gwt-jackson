@@ -5,16 +5,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.fasterxml.jackson.annotation.JacksonAnnotation;
-
 /**
  * Super source for {@link com.fasterxml.jackson.annotation.JsonAutoDetect} to remove the use of java.lang.reflect.* classes
  */
 @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @JacksonAnnotation
-public @interface JsonAutoDetect
-{
+public @interface JsonAutoDetect {
+
     /**
      * Enumeration for possible visibility thresholds (minimum visibility)
      * that can be used to limit which methods (and fields) are

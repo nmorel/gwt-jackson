@@ -32,13 +32,13 @@ public class OrderMapEntriesByKeysOptionJacksonTest extends AbstractJacksonTest 
     @Test
     public void testWriteUnordered() {
         OrderMapEntriesByKeysOptionTester.INSTANCE
-            .testWriteUnordered( createWriter( new TypeReference<LinkedHashMap<String, Integer>>() {} ) );
+                .testWriteUnordered( createWriter( new TypeReference<LinkedHashMap<String, Integer>>() {} ) );
     }
 
     @Test
     public void testWriteOrdered() {
         objectMapper.configure( SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true );
         OrderMapEntriesByKeysOptionTester.INSTANCE
-            .testWriteOrdered( createWriter( new TypeReference<LinkedHashMap<String, Integer>>() {} ) );
+                .testWriteOrdered( createWriter( new TypeReference<LinkedHashMap<String, Integer>>() {} ) );
     }
 }

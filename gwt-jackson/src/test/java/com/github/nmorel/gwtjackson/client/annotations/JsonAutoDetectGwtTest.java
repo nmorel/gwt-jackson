@@ -42,6 +42,6 @@ public class JsonAutoDetectGwtTest extends GwtJacksonTestCase {
 
     public void testDeserializeAutoDetection() {
         tester.testDeserializeAutoDetection( createMapper( JsonAutoDetectMapper.INSTANCE, new JsonDeserializationContext.Builder()
-            .failOnUnknownProperties( false ).build(), newDefaultSerializationContext() ) );
+                .failOnUnknownProperties( false ).build(), newDefaultSerializationContext() ) );
     }
 }

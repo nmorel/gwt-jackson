@@ -361,7 +361,7 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester {
 
         String json = mapper.write( root );
         assertEquals( "{\"name\":\"root\",\"firstChild\":{\"name\":\"kid1\",\"firstChild\":null,\"next\":{\"name\":\"kid2\"," +
-            "\"firstChild\":null,\"next\":null}},\"next\":null}", json );
+                "" + "\"firstChild\":null,\"next\":null}},\"next\":null}", json );
 
         FullTreeNode resultNode = mapper.read( json );
         assertEquals( "root", resultNode.name );

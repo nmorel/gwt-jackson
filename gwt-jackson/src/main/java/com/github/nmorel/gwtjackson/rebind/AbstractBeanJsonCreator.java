@@ -81,16 +81,16 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
     protected static final String TYPE_PARAMETER_PREFIX = "p_";
 
     protected static final String ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean" + "" +
-        ".AbstractBeanJsonDeserializer";
+            ".AbstractBeanJsonDeserializer";
 
     protected static final String ABSTRACT_BEAN_JSON_SERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean" + "" +
-        ".AbstractBeanJsonSerializer";
+            ".AbstractBeanJsonSerializer";
 
     private static final String TYPE_DESERIALIZATION_INFO_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean" + "" +
-        ".TypeDeserializationInfo";
+            ".TypeDeserializationInfo";
 
     private static final String TYPE_SERIALIZATION_INFO_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean" + "" +
-        ".TypeSerializationInfo";
+            ".TypeSerializationInfo";
 
     protected BeanJsonMapperInfo mapperInfo;
 
@@ -130,7 +130,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
             String qualifiedDeserializerClassName = packageName + "." + simpleDeserializerClassName;
 
             mapperInfo = new BeanJsonMapperInfo( beanType, qualifiedSerializerClassName, simpleSerializerClassName,
-                qualifiedDeserializerClassName, simpleDeserializerClassName );
+                    qualifiedDeserializerClassName, simpleDeserializerClassName );
 
             // retrieve the informations on the beans and its properties
             BeanInfo info = BeanInfo.process( logger, typeOracle, mapperInfo );
@@ -151,8 +151,8 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
         String parameterizedTypes = beanType.getParameterizedQualifiedSourceName();
 
         SourceWriter source = getSourceWriter( printWriter, packageName, getSimpleClassName() + getGenericClassBoundedParameters(),
-            getSuperclass() + "<" +
-            parameterizedTypes + ">" );
+                getSuperclass() + "<" +
+                parameterizedTypes + ">" );
 
         writeClassBody( source, mapperInfo.getBeanInfo(), mapperInfo.getProperties() );
 
@@ -185,7 +185,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
     }
 
     protected abstract void writeClassBody( SourceWriter source, BeanInfo info, Map<String,
-        PropertyInfo> properties ) throws UnableToCompleteException;
+            PropertyInfo> properties ) throws UnableToCompleteException;
 
     private Map<String, PropertyInfo> findAllProperties( BeanInfo info ) throws UnableToCompleteException {
         Map<String, PropertyInfo> result = new LinkedHashMap<String, PropertyInfo>();
@@ -271,7 +271,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
             } else {
                 // we found an other field with the same name on a superclass. we ignore it
                 logger.log( TreeLogger.Type.WARN, "A field with the same name as " + field
-                    .getName() + " has already been found on child class" );
+                        .getName() + " has already been found on child class" );
             }
         }
         parseFields( type.getSuperclass(), propertiesMap );
@@ -308,8 +308,8 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
                 if ( method.getParameters().length == 0 ) {
                     String methodName = method.getName();
                     if ( (methodName.startsWith( "get" ) && methodName.length() > 3) || (methodName.startsWith( "is" ) && methodName
-                        .length() > 2 && null != returnType.isPrimitive() && JPrimitiveType.BOOLEAN.equals( returnType
-                        .isPrimitive() )) || method.isAnnotationPresent( JsonProperty.class ) ) {
+                            .length() > 2 && null != returnType.isPrimitive() && JPrimitiveType.BOOLEAN.equals( returnType
+                            .isPrimitive() )) || method.isAnnotationPresent( JsonProperty.class ) ) {
                         // it's a getter method
                         String fieldName = extractFieldNameFromGetterSetterMethodName( methodName );
                         FieldAccessors property = propertiesMap.get( fieldName );
@@ -376,22 +376,21 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
     }
 
     protected void generateIdentifierSerializationInfo( SourceWriter source, JClassType type, BeanIdentityInfo identityInfo ) throws
-        UnableToCompleteException {
+            UnableToCompleteException {
 
         if ( identityInfo.isIdABeanProperty() ) {
             source.print( "new %s<%s>(%s, \"%s\")", PropertyIdentitySerializationInfo.class.getName(), type
-                .getParameterizedQualifiedSourceName(), identityInfo.isAlwaysAsId(), identityInfo.getPropertyName() );
+                    .getParameterizedQualifiedSourceName(), identityInfo.isAlwaysAsId(), identityInfo.getPropertyName() );
         } else {
             String qualifiedType = getQualifiedClassName( identityInfo.getType() );
             String identityPropertyClass = String.format( "%s<%s, %s>", AbstractIdentitySerializationInfo.class.getName(), type
-                .getParameterizedQualifiedSourceName(), qualifiedType );
+                    .getParameterizedQualifiedSourceName(), qualifiedType );
 
             source.println( "new %s(%s, \"%s\") {", identityPropertyClass, identityInfo.isAlwaysAsId(), identityInfo.getPropertyName() );
             source.indent();
 
             source.println( "@Override" );
-            source
-                .println( "protected %s<%s> newSerializer(%s ctx) {", JSON_SERIALIZER_CLASS, qualifiedType,
+            source.println( "protected %s<%s> newSerializer(%s ctx) {", JSON_SERIALIZER_CLASS, qualifiedType,
                     JSON_SERIALIZATION_CONTEXT_CLASS );
             source.indent();
             source.println( "return %s;", getJsonSerializerFromType( identityInfo.getType() ).getInstance() );
@@ -401,12 +400,12 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
 
             source.println( "@Override" );
             source.println( "public %s<%s> getObjectId(%s bean, %s ctx) {", ObjectIdSerializer.class.getName(), qualifiedType, type
-                .getParameterizedQualifiedSourceName(), JSON_SERIALIZATION_CONTEXT_CLASS );
+                    .getParameterizedQualifiedSourceName(), JSON_SERIALIZATION_CONTEXT_CLASS );
             source.indent();
 
             String generatorType = String.format( "%s<%s>", ObjectIdGenerator.class.getName(), qualifiedType );
             source.println( "%s generator = new %s().forScope(%s.class);", generatorType, identityInfo.getGenerator()
-                .getCanonicalName(), identityInfo.getScope().getName() );
+                    .getCanonicalName(), identityInfo.getScope().getName() );
             source.println( "%s scopedGen = ctx.findObjectIdGenerator(generator);", generatorType );
             source.println( "if(null == scopedGen) {" );
             source.indent();
@@ -415,7 +414,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
             source.outdent();
             source.println( "}" );
             source.println( "return new %s<%s>(scopedGen.generateId(bean), getSerializer(ctx));", ObjectIdSerializer.class
-                .getName(), qualifiedType );
+                    .getName(), qualifiedType );
 
             source.outdent();
             source.println( "}" );
@@ -426,27 +425,26 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
     }
 
     protected void generateIdentifierDeserializationInfo( SourceWriter source, JClassType type, BeanIdentityInfo identityInfo ) throws
-        UnableToCompleteException {
+            UnableToCompleteException {
         if ( identityInfo.isIdABeanProperty() ) {
 
             source.print( "new %s<%s>(\"%s\", %s.class, %s.class)", PropertyIdentityDeserializationInfo.class.getName(), type
-                .getParameterizedQualifiedSourceName(), identityInfo.getPropertyName(), identityInfo.getGenerator()
-                .getCanonicalName(), identityInfo.getScope().getCanonicalName() );
+                    .getParameterizedQualifiedSourceName(), identityInfo.getPropertyName(), identityInfo.getGenerator()
+                    .getCanonicalName(), identityInfo.getScope().getCanonicalName() );
 
         } else {
 
             String qualifiedType = getQualifiedClassName( identityInfo.getType() );
 
             String identityPropertyClass = String.format( "%s<%s, %s>", AbstractIdentityDeserializationInfo.class.getName(), type
-                .getParameterizedQualifiedSourceName(), qualifiedType );
+                    .getParameterizedQualifiedSourceName(), qualifiedType );
 
             source.println( "new %s(\"%s\", %s.class, %s.class) {", identityPropertyClass, identityInfo.getPropertyName(), identityInfo
-                .getGenerator().getCanonicalName(), identityInfo.getScope().getCanonicalName() );
+                    .getGenerator().getCanonicalName(), identityInfo.getScope().getCanonicalName() );
             source.indent();
 
             source.println( "@Override" );
-            source
-                .println( "protected %s<%s> newDeserializer(%s ctx) {", JSON_DESERIALIZER_CLASS, qualifiedType,
+            source.println( "protected %s<%s> newDeserializer(%s ctx) {", JSON_DESERIALIZER_CLASS, qualifiedType,
                     JSON_DESERIALIZATION_CONTEXT_CLASS );
             source.indent();
             source.println( "return %s;", getJsonDeserializerFromType( identityInfo.getType() ).getInstance() );
@@ -464,7 +462,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
             typeInfoProperty = QUOTED_FUNCTION.apply( typeInfo.getPropertyName() );
         }
         source.println( "new %s(%s.%s, %s)", serialization ? TYPE_SERIALIZATION_INFO_CLASS : TYPE_DESERIALIZATION_INFO_CLASS, As.class
-            .getCanonicalName(), typeInfo.getInclude(), typeInfoProperty );
+                .getCanonicalName(), typeInfo.getInclude(), typeInfoProperty );
         source.indent();
 
         for ( Entry<JClassType, String> entry : typeInfo.getMapTypeToMetadata().entrySet() ) {

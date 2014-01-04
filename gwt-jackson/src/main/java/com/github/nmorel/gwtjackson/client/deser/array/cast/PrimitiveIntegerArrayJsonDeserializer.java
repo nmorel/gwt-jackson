@@ -54,7 +54,7 @@ public class PrimitiveIntegerArrayJsonDeserializer extends AbstractArrayJsonDese
 
     @Override
     public int[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-        IOException {
+            IOException {
         JsArrayInteger jsArray = JsArrayInteger.createArray().cast();
         reader.beginArray();
         while ( JsonToken.END_ARRAY != reader.peek() ) {

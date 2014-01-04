@@ -114,39 +114,39 @@ public final class PolymorphismNoTypeInfoTester extends AbstractTester {
         String result = writer.write( persons );
 
         String expected = "[" +
-            "{" +
-            "\"id\":2," +
-            "\"name\":\"Thomas\"," +
-            "\"title\":\"Waiter\"" +
-            "}," +
-            "{" +
-            "\"id\":3," +
-            "\"name\":\"Patricia\"," +
-            "\"title\":\"Cook\"" +
-            "}," +
-            "{" +
-            "\"id\":1," +
-            "\"managedEmployees\":" +
-            "[" +
-            "{" +
-            "\"id\":2," +
-            "\"name\":\"Thomas\"," +
-            "\"title\":\"Waiter\"" +
-            "}," +
-            "{" +
-            "\"id\":3," +
-            "\"name\":\"Patricia\"," +
-            "\"title\":\"Cook\"" +
-            "}" +
-            "]," +
-            "\"name\":\"Bob\"," +
-            "\"title\":\"Boss\"" +
-            "}," +
-            "{" +
-            "\"name\":\"Brad\"," +
-            "\"satisfaction\":90" +
-            "}" +
-            "]";
+                "{" +
+                "\"id\":2," +
+                "\"name\":\"Thomas\"," +
+                "\"title\":\"Waiter\"" +
+                "}," +
+                "{" +
+                "\"id\":3," +
+                "\"name\":\"Patricia\"," +
+                "\"title\":\"Cook\"" +
+                "}," +
+                "{" +
+                "\"id\":1," +
+                "\"managedEmployees\":" +
+                "[" +
+                "{" +
+                "\"id\":2," +
+                "\"name\":\"Thomas\"," +
+                "\"title\":\"Waiter\"" +
+                "}," +
+                "{" +
+                "\"id\":3," +
+                "\"name\":\"Patricia\"," +
+                "\"title\":\"Cook\"" +
+                "}" +
+                "]," +
+                "\"name\":\"Bob\"," +
+                "\"title\":\"Boss\"" +
+                "}," +
+                "{" +
+                "\"name\":\"Brad\"," +
+                "\"satisfaction\":90" +
+                "}" +
+                "]";
 
         assertEquals( expected, result );
     }
@@ -159,39 +159,39 @@ public final class PolymorphismNoTypeInfoTester extends AbstractTester {
      */
     public void testDeserializeNonInstantiableBean( ObjectReaderTester<Person[]> reader ) {
         String input = "[" +
-            "{" +
-            "\"id\":2," +
-            "\"name\":\"Thomas\"," +
-            "\"title\":\"Waiter\"" +
-            "}," +
-            "{" +
-            "\"id\":3," +
-            "\"name\":\"Patricia\"," +
-            "\"title\":\"Cook\"" +
-            "}," +
-            "{" +
-            "\"id\":1," +
-            "\"managedEmployees\":" +
-            "[" +
-            "{" +
-            "\"id\":2," +
-            "\"name\":\"Thomas\"," +
-            "\"title\":\"Waiter\"" +
-            "}," +
-            "{" +
-            "\"id\":3," +
-            "\"name\":\"Patricia\"," +
-            "\"title\":\"Cook\"" +
-            "}" +
-            "]," +
-            "\"name\":\"Bob\"," +
-            "\"title\":\"Boss\"" +
-            "}," +
-            "{" +
-            "\"name\":\"Brad\"," +
-            "\"satisfaction\":90" +
-            "}" +
-            "]";
+                "{" +
+                "\"id\":2," +
+                "\"name\":\"Thomas\"," +
+                "\"title\":\"Waiter\"" +
+                "}," +
+                "{" +
+                "\"id\":3," +
+                "\"name\":\"Patricia\"," +
+                "\"title\":\"Cook\"" +
+                "}," +
+                "{" +
+                "\"id\":1," +
+                "\"managedEmployees\":" +
+                "[" +
+                "{" +
+                "\"id\":2," +
+                "\"name\":\"Thomas\"," +
+                "\"title\":\"Waiter\"" +
+                "}," +
+                "{" +
+                "\"id\":3," +
+                "\"name\":\"Patricia\"," +
+                "\"title\":\"Cook\"" +
+                "}" +
+                "]," +
+                "\"name\":\"Bob\"," +
+                "\"title\":\"Boss\"" +
+                "}," +
+                "{" +
+                "\"name\":\"Brad\"," +
+                "\"satisfaction\":90" +
+                "}" +
+                "]";
 
         try {
             reader.read( input );
@@ -208,35 +208,35 @@ public final class PolymorphismNoTypeInfoTester extends AbstractTester {
      */
     public void testDeserializeInstantiableBean( ObjectReaderTester<Employee[]> reader ) {
         String input = "[" +
-            "{" +
-            "\"id\":2," +
-            "\"name\":\"Thomas\"," +
-            "\"title\":\"Waiter\"" +
-            "}," +
-            "{" +
-            "\"id\":3," +
-            "\"name\":\"Patricia\"," +
-            "\"title\":\"Cook\"" +
-            "}," +
-            "{" +
-            "\"id\":1," +
-            "\"managedEmployees\":" +
-            "[" +
-            "{" +
-            "\"id\":2," +
-            "\"name\":\"Thomas\"," +
-            "\"title\":\"Waiter\"" +
-            "}," +
-            "{" +
-            "\"id\":3," +
-            "\"name\":\"Patricia\"," +
-            "\"title\":\"Cook\"" +
-            "}" +
-            "]," +
-            "\"name\":\"Bob\"," +
-            "\"title\":\"Boss\"" +
-            "}" +
-            "]";
+                "{" +
+                "\"id\":2," +
+                "\"name\":\"Thomas\"," +
+                "\"title\":\"Waiter\"" +
+                "}," +
+                "{" +
+                "\"id\":3," +
+                "\"name\":\"Patricia\"," +
+                "\"title\":\"Cook\"" +
+                "}," +
+                "{" +
+                "\"id\":1," +
+                "\"managedEmployees\":" +
+                "[" +
+                "{" +
+                "\"id\":2," +
+                "\"name\":\"Thomas\"," +
+                "\"title\":\"Waiter\"" +
+                "}," +
+                "{" +
+                "\"id\":3," +
+                "\"name\":\"Patricia\"," +
+                "\"title\":\"Cook\"" +
+                "}" +
+                "]," +
+                "\"name\":\"Bob\"," +
+                "\"title\":\"Boss\"" +
+                "}" +
+                "]";
 
         Person[] result = reader.read( input );
         {

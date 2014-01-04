@@ -61,12 +61,14 @@ public class GenericsJacksonTest extends AbstractJacksonTest {
     @Test
     public void testSerializeIntegerGenericString() {
         GenericsTester.INSTANCE
-            .testSerializeIntegerGenericString( createWriter( new TypeReference<GenericTwoType<Integer, GenericOneType<String>>>() {} ) );
+                .testSerializeIntegerGenericString( createWriter( new TypeReference<GenericTwoType<Integer,
+                        GenericOneType<String>>>() {} ) );
     }
 
     @Test
     public void testDeserializeIntegerGenericString() {
         GenericsTester.INSTANCE
-            .testDeserializeIntegerGenericString( createReader( new TypeReference<GenericTwoType<Integer, GenericOneType<String>>>() {} ) );
+                .testDeserializeIntegerGenericString( createReader( new TypeReference<GenericTwoType<Integer,
+                        GenericOneType<String>>>() {} ) );
     }
 }

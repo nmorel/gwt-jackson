@@ -43,7 +43,8 @@ public class CharacterJsonDeserializer extends JsonDeserializer<Character> {
     private CharacterJsonDeserializer() { }
 
     @Override
-    public Character doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws IOException {
+    public Character doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
+            IOException {
         if ( JsonToken.NUMBER.equals( reader.peek() ) ) {
             return (char) reader.nextInt();
         } else {

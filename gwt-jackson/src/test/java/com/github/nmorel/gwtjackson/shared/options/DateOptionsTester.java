@@ -79,15 +79,15 @@ public final class DateOptionsTester extends AbstractTester {
         bean.mapSqlTimestamp = mapSqlTimestamp;
 
         String expected = "{" +
-            "\"date\":1345304756540," +
-            "\"sqlDate\":\"" + bean.sqlDate.toString() + "\"," +
-            "\"sqlTime\":\"" + bean.sqlTime.toString() + "\"," +
-            "\"sqlTimestamp\":1345304756543," +
-            "\"mapDate\":{\"1345304756544\":\"java.util.Date\"}," +
-            "\"mapSqlDate\":{\"1345304756545\":\"java.sql.Date\"}," +
-            "\"mapSqlTime\":{\"1345304756546\":\"java.sql.Time\"}," +
-            "\"mapSqlTimestamp\":{\"1345304756547\":\"java.sql.Timestamp\"}" +
-            "}";
+                "\"date\":1345304756540," +
+                "\"sqlDate\":\"" + bean.sqlDate.toString() + "\"," +
+                "\"sqlTime\":\"" + bean.sqlTime.toString() + "\"," +
+                "\"sqlTimestamp\":1345304756543," +
+                "\"mapDate\":{\"1345304756544\":\"java.util.Date\"}," +
+                "\"mapSqlDate\":{\"1345304756545\":\"java.sql.Date\"}," +
+                "\"mapSqlTime\":{\"1345304756546\":\"java.sql.Time\"}," +
+                "\"mapSqlTimestamp\":{\"1345304756547\":\"java.sql.Timestamp\"}" +
+                "}";
 
         assertEquals( expected, writer.write( bean ) );
     }
@@ -95,12 +95,12 @@ public final class DateOptionsTester extends AbstractTester {
     public void testDeserializeDatesAsTimestamps( ObjectReaderTester<BeanWithDates> reader ) {
 
         String input = "{" +
-            "\"date\":1345304756540," +
-            "\"sqlDate\":\"2012-08-18\"," +
-            "\"sqlTime\":\"15:45:56\"," +
-            "\"sqlTimestamp\":1345304756543," +
-            "\"mapDate\":{\"1345304756544\":\"java.util.Date\"}" +
-            "}";
+                "\"date\":1345304756540," +
+                "\"sqlDate\":\"2012-08-18\"," +
+                "\"sqlTime\":\"15:45:56\"," +
+                "\"sqlTimestamp\":1345304756543," +
+                "\"mapDate\":{\"1345304756544\":\"java.util.Date\"}" +
+                "}";
 
         BeanWithDates bean = reader.read( input );
         assertEquals( new Date( 1345304756540l ), bean.date );
@@ -139,15 +139,15 @@ public final class DateOptionsTester extends AbstractTester {
         bean.mapSqlTimestamp = mapSqlTimestamp;
 
         String expected = "{" +
-            "\"date\":\"2012-08-18T15:45:56.540+0000\"," +
-            "\"sqlDate\":\"" + bean.sqlDate.toString() + "\"," +
-            "\"sqlTime\":\"" + bean.sqlTime.toString() + "\"," +
-            "\"sqlTimestamp\":\"2012-08-18T15:45:56.543+0000\"," +
-            "\"mapDate\":{\"2012-08-18T15:45:56.544+0000\":\"java.util.Date\"}," +
-            "\"mapSqlDate\":{\"2012-08-18T15:45:56.545+0000\":\"java.sql.Date\"}," +
-            "\"mapSqlTime\":{\"2012-08-18T15:45:56.546+0000\":\"java.sql.Time\"}," +
-            "\"mapSqlTimestamp\":{\"2012-08-18T15:45:56.547+0000\":\"java.sql.Timestamp\"}" +
-            "}";
+                "\"date\":\"2012-08-18T15:45:56.540+0000\"," +
+                "\"sqlDate\":\"" + bean.sqlDate.toString() + "\"," +
+                "\"sqlTime\":\"" + bean.sqlTime.toString() + "\"," +
+                "\"sqlTimestamp\":\"2012-08-18T15:45:56.543+0000\"," +
+                "\"mapDate\":{\"2012-08-18T15:45:56.544+0000\":\"java.util.Date\"}," +
+                "\"mapSqlDate\":{\"2012-08-18T15:45:56.545+0000\":\"java.sql.Date\"}," +
+                "\"mapSqlTime\":{\"2012-08-18T15:45:56.546+0000\":\"java.sql.Time\"}," +
+                "\"mapSqlTimestamp\":{\"2012-08-18T15:45:56.547+0000\":\"java.sql.Timestamp\"}" +
+                "}";
 
         assertEquals( expected, writer.write( bean ) );
     }
@@ -155,12 +155,12 @@ public final class DateOptionsTester extends AbstractTester {
     public void testDeserializeDatesNotAsTimestamps( ObjectReaderTester<BeanWithDates> reader ) {
 
         String input = "{" +
-            "\"date\":\"2012-08-18T15:45:56.540+0000\"," +
-            "\"sqlDate\":\"2012-08-18\"," +
-            "\"sqlTime\":\"15:45:56\"," +
-            "\"sqlTimestamp\":\"2012-08-18T15:45:56.543+0000\"," +
-            "\"mapDate\":{\"2012-08-18T15:45:56.544+0000\":\"java.util.Date\"}" +
-            "}";
+                "\"date\":\"2012-08-18T15:45:56.540+0000\"," +
+                "\"sqlDate\":\"2012-08-18\"," +
+                "\"sqlTime\":\"15:45:56\"," +
+                "\"sqlTimestamp\":\"2012-08-18T15:45:56.543+0000\"," +
+                "\"mapDate\":{\"2012-08-18T15:45:56.544+0000\":\"java.util.Date\"}" +
+                "}";
 
         BeanWithDates bean = reader.read( input );
         assertEquals( new Date( 1345304756540l ), bean.date );

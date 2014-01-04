@@ -71,13 +71,13 @@ public final class JsonFormatTester extends AbstractTester {
         bean.timestamp = timestamp;
 
         String expected = "{" +
-            "\"dateString\":\"/2013/12/25/\"," +
-            "\"dateNumber\":" + millis + "," +
-            "\"date\":\"2013-12-25T00:00:00.000+0000\"," +
-            "\"timestampString\":\"/2013/12/25/\"," +
-            "\"timestampNumber\":" + millis + "," +
-            "\"timestamp\":\"2013-12-25T00:00:00.000+0000\"" +
-            "}";
+                "\"dateString\":\"/2013/12/25/\"," +
+                "\"dateNumber\":" + millis + "," +
+                "\"date\":\"2013-12-25T00:00:00.000+0000\"," +
+                "\"timestampString\":\"/2013/12/25/\"," +
+                "\"timestampNumber\":" + millis + "," +
+                "\"timestamp\":\"2013-12-25T00:00:00.000+0000\"" +
+                "}";
         String result = mapper.write( bean );
         assertEquals( expected, result );
 
@@ -85,7 +85,7 @@ public final class JsonFormatTester extends AbstractTester {
         assertEquals( date, actual.dateString );
         assertEquals( date, actual.dateNumber );
         assertEquals( date, actual.date );
-        assertEquals( timestamp, actual.timestampString);
+        assertEquals( timestamp, actual.timestampString );
         assertEquals( timestamp, actual.timestampNumber );
         assertEquals( timestamp, actual.timestamp );
     }

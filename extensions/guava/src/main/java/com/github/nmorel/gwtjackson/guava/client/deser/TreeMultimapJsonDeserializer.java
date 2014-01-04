@@ -30,7 +30,7 @@ import com.google.common.collect.TreeMultimap;
  * @author Nicolas Morel
  */
 public final class TreeMultimapJsonDeserializer<K extends Comparable<K>, V extends Comparable<V>> extends
-    BaseMultimapJsonDeserializer<TreeMultimap<K, V>, K, V> {
+        BaseMultimapJsonDeserializer<TreeMultimap<K, V>, K, V> {
 
     /**
      * @param keyDeserializer {@link KeyDeserializer} used to deserialize the keys.
@@ -41,7 +41,7 @@ public final class TreeMultimapJsonDeserializer<K extends Comparable<K>, V exten
      * @return a new instance of {@link TreeMultimapJsonDeserializer}
      */
     public static <K extends Comparable<K>, V extends Comparable<V>> TreeMultimapJsonDeserializer<K,
-        V> newInstance( KeyDeserializer<K> keyDeserializer, JsonDeserializer<V> valueDeserializer ) {
+            V> newInstance( KeyDeserializer<K> keyDeserializer, JsonDeserializer<V> valueDeserializer ) {
         return new TreeMultimapJsonDeserializer<K, V>( keyDeserializer, valueDeserializer );
     }
 

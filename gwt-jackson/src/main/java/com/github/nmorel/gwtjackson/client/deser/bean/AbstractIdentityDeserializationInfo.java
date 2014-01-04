@@ -10,7 +10,7 @@ import com.github.nmorel.gwtjackson.client.stream.JsonReader;
  * @author Nicolas Morel
  */
 public abstract class AbstractIdentityDeserializationInfo<T, V> extends HasDeserializer<V,
-    JsonDeserializer<V>> implements IdentityDeserializationInfo<T> {
+        JsonDeserializer<V>> implements IdentityDeserializationInfo<T> {
 
     /**
      * Name of the property holding the identity

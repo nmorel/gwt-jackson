@@ -53,7 +53,8 @@ public class IterableJsonDeserializer<T> extends BaseIterableJsonDeserializer<It
     }
 
     @Override
-    public Iterable<T> doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws IOException {
+    public Iterable<T> doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
+            IOException {
         if ( JsonToken.BEGIN_ARRAY == reader.peek() ) {
 
             Collection<T> result = new ArrayList<T>();

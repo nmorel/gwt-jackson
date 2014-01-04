@@ -46,7 +46,7 @@ public class PrimitiveCharacterArrayJsonDeserializer extends AbstractArrayJsonDe
 
     @Override
     public char[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-        IOException {
+            IOException {
         List<Character> list = deserializeIntoList( reader, ctx, CharacterJsonDeserializer.getInstance(), params );
 
         char[] result = new char[list.size()];
@@ -62,7 +62,7 @@ public class PrimitiveCharacterArrayJsonDeserializer extends AbstractArrayJsonDe
 
     @Override
     protected char[] doDeserializeNonArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-        IOException {
+            IOException {
         if ( JsonToken.STRING == reader.peek() ) {
             return reader.nextString().toCharArray();
         } else if ( ctx.isAcceptSingleValueAsArray() ) {

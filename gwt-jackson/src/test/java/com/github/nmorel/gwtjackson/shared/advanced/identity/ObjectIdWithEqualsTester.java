@@ -29,7 +29,7 @@ import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
  */
 public final class ObjectIdWithEqualsTester extends AbstractTester {
 
-    @JsonIdentityInfo( generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Foo.class )
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Foo.class)
     public static class Foo {
 
         public int id;
@@ -43,7 +43,7 @@ public final class ObjectIdWithEqualsTester extends AbstractTester {
         public Foo( int i ) { id = i; }
     }
 
-    @JsonIdentityInfo( generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Bar.class )
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Bar.class)
     static class Bar {
 
         public int id;

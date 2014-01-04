@@ -43,7 +43,8 @@ public class BooleanJsonDeserializer extends JsonDeserializer<Boolean> {
     private BooleanJsonDeserializer() { }
 
     @Override
-    public Boolean doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws IOException {
+    public Boolean doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
+            IOException {
         JsonToken token = reader.peek();
         if ( JsonToken.BOOLEAN.equals( token ) ) {
             return reader.nextBoolean();

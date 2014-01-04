@@ -20,7 +20,6 @@ import java.util.AbstractMap;
 import java.util.LinkedHashMap;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
-import com.github.nmorel.gwtjackson.client.deser.map.BaseMapJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer;
 
 /**

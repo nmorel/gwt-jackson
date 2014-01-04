@@ -211,11 +211,11 @@ public final class DefaultConfiguration extends AbstractConfiguration {
         type( Iterable.class ).serializer( IterableJsonSerializer.class ).deserializer( IterableJsonDeserializer.class );
         type( Collection.class ).serializer( IterableJsonSerializer.class ).deserializer( CollectionJsonDeserializer.class );
         type( AbstractCollection.class ).serializer( IterableJsonSerializer.class )
-            .deserializer( AbstractCollectionJsonDeserializer.class );
+                .deserializer( AbstractCollectionJsonDeserializer.class );
         type( AbstractList.class ).serializer( IterableJsonSerializer.class ).deserializer( AbstractListJsonDeserializer.class );
         type( AbstractQueue.class ).serializer( IterableJsonSerializer.class ).deserializer( AbstractQueueJsonDeserializer.class );
         type( AbstractSequentialList.class ).serializer( IterableJsonSerializer.class )
-            .deserializer( AbstractSequentialListJsonDeserializer.class );
+                .deserializer( AbstractSequentialListJsonDeserializer.class );
         type( AbstractSet.class ).serializer( IterableJsonSerializer.class ).deserializer( AbstractSetJsonDeserializer.class );
         type( ArrayList.class ).serializer( IterableJsonSerializer.class ).deserializer( ArrayListJsonDeserializer.class );
         type( EnumSet.class ).serializer( IterableJsonSerializer.class ).deserializer( EnumSetJsonDeserializer.class );
@@ -243,19 +243,19 @@ public final class DefaultConfiguration extends AbstractConfiguration {
 
         // Array mappers
         type( boolean[].class ).serializer( PrimitiveBooleanArrayJsonSerializer.class )
-            .deserializer( PrimitiveBooleanArrayJsonDeserializer.class );
+                .deserializer( PrimitiveBooleanArrayJsonDeserializer.class );
         type( byte[].class ).serializer( PrimitiveByteArrayJsonSerializer.class ).deserializer( PrimitiveByteArrayJsonDeserializer.class );
         type( char[].class ).serializer( PrimitiveCharacterArrayJsonSerializer.class )
-            .deserializer( PrimitiveCharacterArrayJsonDeserializer.class );
+                .deserializer( PrimitiveCharacterArrayJsonDeserializer.class );
         type( double[].class ).serializer( PrimitiveDoubleArrayJsonSerializer.class )
-            .deserializer( PrimitiveDoubleArrayJsonDeserializer.class );
+                .deserializer( PrimitiveDoubleArrayJsonDeserializer.class );
         type( float[].class ).serializer( PrimitiveFloatArrayJsonSerializer.class )
-            .deserializer( PrimitiveFloatArrayJsonDeserializer.class );
+                .deserializer( PrimitiveFloatArrayJsonDeserializer.class );
         type( int[].class ).serializer( PrimitiveIntegerArrayJsonSerializer.class )
-            .deserializer( PrimitiveIntegerArrayJsonDeserializer.class );
+                .deserializer( PrimitiveIntegerArrayJsonDeserializer.class );
         type( long[].class ).serializer( PrimitiveLongArrayJsonSerializer.class ).deserializer( PrimitiveLongArrayJsonDeserializer.class );
         type( short[].class ).serializer( PrimitiveShortArrayJsonSerializer.class )
-            .deserializer( PrimitiveShortArrayJsonDeserializer.class );
+                .deserializer( PrimitiveShortArrayJsonDeserializer.class );
 
         // Map's key mappers
         key( BigDecimal.class ).serializer( BigDecimalKeySerializer.class ).deserializer( BigDecimalKeyDeserializer.class );

@@ -51,18 +51,18 @@ public class IndentGwtTest extends GwtJacksonTestCase {
         String expected = "{\"string\":\"aString\",\"set\":[1,2,3,4]}";
 
         // no indent by default
-        String result = IndentMapper.INSTANCE.write( bean);
+        String result = IndentMapper.INSTANCE.write( bean );
         assertEquals( expected, result );
 
         expected = "{\n" +
-            "  \"string\": \"aString\",\n" +
-            "  \"set\": [\n" +
-            "    1,\n" +
-            "    2,\n" +
-            "    3,\n" +
-            "    4\n" +
-            "  ]\n" +
-            "}";
+                "  \"string\": \"aString\",\n" +
+                "  \"set\": [\n" +
+                "    1,\n" +
+                "    2,\n" +
+                "    3,\n" +
+                "    4\n" +
+                "  ]\n" +
+                "}";
 
         // activating the indentation
         result = IndentMapper.INSTANCE.write( bean, new JsonSerializationContext.Builder().indent( true ).build() );

@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.deser.map.key;
 
-import com.github.nmorel.gwtjackson.client.deser.EnumJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.map.key.EnumKeyDeserializerTest.EnumTest;
 
 /**

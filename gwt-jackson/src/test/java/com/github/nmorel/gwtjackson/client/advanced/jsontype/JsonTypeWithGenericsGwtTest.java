@@ -32,13 +32,14 @@ import com.google.gwt.core.client.GWT;
  */
 public class JsonTypeWithGenericsGwtTest extends GwtJacksonTestCase {
 
-    public interface ContainerWithGetterAnimalMapper extends ObjectMapper<ContainerWithGetter<Animal>>, ObjectMapperTester<ContainerWithGetter<Animal>> {
+    public interface ContainerWithGetterAnimalMapper extends ObjectMapper<ContainerWithGetter<Animal>>,
+            ObjectMapperTester<ContainerWithGetter<Animal>> {
 
         static ContainerWithGetterAnimalMapper INSTANCE = GWT.create( ContainerWithGetterAnimalMapper.class );
     }
 
     public interface ContainerWithFieldAnimalMapper extends ObjectWriter<ContainerWithField<Animal>>,
-        ObjectWriterTester<ContainerWithField<Animal>> {
+            ObjectWriterTester<ContainerWithField<Animal>> {
 
         static ContainerWithFieldAnimalMapper INSTANCE = GWT.create( ContainerWithFieldAnimalMapper.class );
     }

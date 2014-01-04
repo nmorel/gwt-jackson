@@ -45,7 +45,7 @@ public class PrimitiveShortArrayJsonDeserializer extends AbstractArrayJsonDeseri
 
     @Override
     public short[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-        IOException {
+            IOException {
         List<Short> list = deserializeIntoList( reader, ctx, ShortJsonDeserializer.getInstance(), params );
 
         short[] result = new short[list.size()];

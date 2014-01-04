@@ -89,7 +89,7 @@ public final class ObjectIdTester extends AbstractTester {
     }
 
     @JsonIdentityInfo(property = "id",
-        generator = ObjectIdGenerators.PropertyGenerator.class)
+            generator = ObjectIdGenerators.PropertyGenerator.class)
     public static class Employee {
 
         public int id;
@@ -166,6 +166,6 @@ public final class ObjectIdTester extends AbstractTester {
 
         String json = mapper.write( comp );
         assertEquals( "{\"employees\":[{\"id\":1,\"name\":\"First\",\"manager\":null,\"reports\":[2]},{\"id\":2,\"name\":\"Second\"," +
-            "\"manager\":1,\"reports\":[]}]}", json );
+                "" + "\"manager\":1,\"reports\":[]}]}", json );
     }
 }

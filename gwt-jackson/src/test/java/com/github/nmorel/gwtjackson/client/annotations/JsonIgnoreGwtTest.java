@@ -34,25 +34,25 @@ import com.google.gwt.core.client.GWT;
 public class JsonIgnoreGwtTest extends GwtJacksonTestCase {
 
     public interface BeanWithIgnoredPropertiesMapper extends ObjectMapper<BeanWithIgnoredProperties>,
-        ObjectMapperTester<BeanWithIgnoredProperties> {
+            ObjectMapperTester<BeanWithIgnoredProperties> {
 
         static BeanWithIgnoredPropertiesMapper INSTANCE = GWT.create( BeanWithIgnoredPropertiesMapper.class );
     }
 
     public interface BeanWithUnknownPropertyMapper extends ObjectReader<JsonIgnoreTester.BeanWithUnknownProperty>,
-        ObjectReaderTester<JsonIgnoreTester.BeanWithUnknownProperty> {
+            ObjectReaderTester<JsonIgnoreTester.BeanWithUnknownProperty> {
 
         static BeanWithUnknownPropertyMapper INSTANCE = GWT.create( BeanWithUnknownPropertyMapper.class );
     }
 
     public interface BeanWithIgnorePropertiesAsPropertyWriter extends ObjectWriter<BeanWithIgnorePropertiesAsProperty>,
-        ObjectWriterTester<BeanWithIgnorePropertiesAsProperty> {
+            ObjectWriterTester<BeanWithIgnorePropertiesAsProperty> {
 
         static BeanWithIgnorePropertiesAsPropertyWriter INSTANCE = GWT.create( BeanWithIgnorePropertiesAsPropertyWriter.class );
     }
 
     public interface BeanWithIgnorePropertiesAsPropertyReader extends ObjectReader<JsonIgnoreTester.BeanWithIgnorePropertiesAsProperty>,
-        ObjectReaderTester<BeanWithIgnorePropertiesAsProperty> {
+            ObjectReaderTester<BeanWithIgnorePropertiesAsProperty> {
 
         static BeanWithIgnorePropertiesAsPropertyReader INSTANCE = GWT.create( BeanWithIgnorePropertiesAsPropertyReader.class );
     }

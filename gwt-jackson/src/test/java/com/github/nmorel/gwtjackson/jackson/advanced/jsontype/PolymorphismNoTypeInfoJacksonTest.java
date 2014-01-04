@@ -34,13 +34,13 @@ public class PolymorphismNoTypeInfoJacksonTest extends AbstractJacksonTest {
     @Test
     public void testDeserializeNonInstantiableBean() {
         PolymorphismNoTypeInfoTester.INSTANCE
-            .testDeserializeNonInstantiableBean( createReader( PolymorphismNoTypeInfoTester.Person[].class ) );
+                .testDeserializeNonInstantiableBean( createReader( PolymorphismNoTypeInfoTester.Person[].class ) );
     }
 
     @Test
     public void testDeserializeInstantiableBean() {
         objectMapper.configure( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false );
         PolymorphismNoTypeInfoTester.INSTANCE
-            .testDeserializeInstantiableBean( createReader( PolymorphismNoTypeInfoTester.Employee[].class ) );
+                .testDeserializeInstantiableBean( createReader( PolymorphismNoTypeInfoTester.Employee[].class ) );
     }
 }

@@ -74,7 +74,7 @@ public abstract class BaseImmutableMapJsonDeserializer<M extends ImmutableMap<K,
      * @throws IOException
      */
     protected void buildMap( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params, Builder<K,
-        V> builder ) throws IOException {
+            V> builder ) throws IOException {
         reader.beginObject();
         while ( JsonToken.END_OBJECT != reader.peek() ) {
             String name = reader.nextName();

@@ -51,7 +51,7 @@ public abstract class BaseNumberJsonDeserializer<N extends Number> extends JsonD
 
         @Override
         protected BigDecimal doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-            IOException {
+                IOException {
             return new BigDecimal( reader.nextString() );
         }
     }
@@ -74,7 +74,7 @@ public abstract class BaseNumberJsonDeserializer<N extends Number> extends JsonD
 
         @Override
         protected BigInteger doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-            IOException {
+                IOException {
             return new BigInteger( reader.nextString() );
         }
     }
@@ -97,7 +97,7 @@ public abstract class BaseNumberJsonDeserializer<N extends Number> extends JsonD
 
         @Override
         protected Byte doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-            IOException {
+                IOException {
             return (byte) reader.nextInt();
         }
     }
@@ -120,7 +120,7 @@ public abstract class BaseNumberJsonDeserializer<N extends Number> extends JsonD
 
         @Override
         protected Double doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-            IOException {
+                IOException {
             return reader.nextDouble();
         }
     }
@@ -143,7 +143,7 @@ public abstract class BaseNumberJsonDeserializer<N extends Number> extends JsonD
 
         @Override
         protected Float doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-            IOException {
+                IOException {
             return Float.parseFloat( reader.nextString() );
         }
     }
@@ -166,7 +166,7 @@ public abstract class BaseNumberJsonDeserializer<N extends Number> extends JsonD
 
         @Override
         protected Integer doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-            IOException {
+                IOException {
             if ( JsonToken.NUMBER.equals( reader.peek() ) ) {
                 return reader.nextInt();
             } else {
@@ -193,7 +193,7 @@ public abstract class BaseNumberJsonDeserializer<N extends Number> extends JsonD
 
         @Override
         protected Long doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-            IOException {
+                IOException {
             return reader.nextLong();
         }
     }
@@ -216,7 +216,7 @@ public abstract class BaseNumberJsonDeserializer<N extends Number> extends JsonD
 
         @Override
         protected Short doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-            IOException {
+                IOException {
             if ( JsonToken.NUMBER.equals( reader.peek() ) ) {
                 return (short) reader.nextInt();
             } else {

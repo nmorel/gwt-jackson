@@ -61,11 +61,11 @@ public class FieldWriteAccessor extends FieldAccessor {
             @Override
             public void write( SourceWriter source ) {
                 source.println( "private native void %s(%s bean, %s value) /*-{", methodName, enclosingType
-                    .getParameterizedQualifiedSourceName(), fieldType.getParameterizedQualifiedSourceName() );
+                        .getParameterizedQualifiedSourceName(), fieldType.getParameterizedQualifiedSourceName() );
                 source.indent();
                 if ( method.isPresent() ) {
                     source.println( "bean.@%s::%s(%s)(value);", enclosingType.getQualifiedSourceName(), method.get().getName(), fieldType
-                        .getJNISignature() );
+                            .getJNISignature() );
                 } else {
                     source.println( "bean.@%s::%s = value;", enclosingType.getQualifiedSourceName(), field.get().getName() );
                 }

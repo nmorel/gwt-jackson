@@ -35,19 +35,19 @@ public class GenericsGwtTest extends GwtJacksonTestCase {
     }
 
     public interface GenericTypeStringStringMapper extends ObjectMapper<GenericTwoType<String, String>>,
-        ObjectMapperTester<GenericTwoType<String, String>> {
+            ObjectMapperTester<GenericTwoType<String, String>> {
 
         static GenericTypeStringStringMapper INSTANCE = GWT.create( GenericTypeStringStringMapper.class );
     }
 
     public interface GenericTypeIntegerStringMapper extends ObjectMapper<GenericTwoType<Integer, String>>,
-        ObjectMapperTester<GenericTwoType<Integer, String>> {
+            ObjectMapperTester<GenericTwoType<Integer, String>> {
 
         static GenericTypeIntegerStringMapper INSTANCE = GWT.create( GenericTypeIntegerStringMapper.class );
     }
 
     public interface GenericTypeIntegerGenericStringMapper extends ObjectMapper<GenericTwoType<Integer, GenericOneType<String>>>,
-        ObjectMapperTester<GenericTwoType<Integer, GenericOneType<String>>> {
+            ObjectMapperTester<GenericTwoType<Integer, GenericOneType<String>>> {
 
         static GenericTypeIntegerGenericStringMapper INSTANCE = GWT.create( GenericTypeIntegerGenericStringMapper.class );
     }

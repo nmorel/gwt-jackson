@@ -20,7 +20,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
-import com.github.nmorel.gwtjackson.client.deser.map.BaseMapJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer;
 
 /**

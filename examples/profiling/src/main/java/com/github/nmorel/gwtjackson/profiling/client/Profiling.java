@@ -82,7 +82,8 @@ public class Profiling implements EntryPoint {
         PersonMapper mapper = GWT.create( PersonMapper.class );
 
         String json = mapper
-            .write( new Person( "John", "Doe", new Person( "Jane", "Doe" ), new Person( "Billy", "Doe", new Person( "Lily", "Doe" ) ) ) );
+                .write( new Person( "John", "Doe", new Person( "Jane", "Doe" ), new Person( "Billy", "Doe", new Person( "Lily",
+                        "Doe" ) ) ) );
         GWT.log( json ); // > {"firstName":"John","lastName":"Doe"}
 
         Person person = mapper.read( json );

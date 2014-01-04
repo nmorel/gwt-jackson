@@ -97,11 +97,11 @@ public class GuavaConfiguration extends AbstractConfiguration {
 
         // Immutable Collections
         type( ImmutableCollection.class ).serializer( IterableJsonSerializer.class ).deserializer( ImmutableCollectionJsonDeserializer
-            .class );
+                .class );
         type( ImmutableList.class ).serializer( IterableJsonSerializer.class ).deserializer( ImmutableListJsonDeserializer.class );
         type( ImmutableSet.class ).serializer( IterableJsonSerializer.class ).deserializer( ImmutableSetJsonDeserializer.class );
         type( ImmutableSortedSet.class ).serializer( IterableJsonSerializer.class )
-            .deserializer( ImmutableSortedSetJsonDeserializer.class );
+                .deserializer( ImmutableSortedSetJsonDeserializer.class );
 
         // Immutable Map
         type( ImmutableMap.class ).serializer( MapJsonSerializer.class ).deserializer( ImmutableMapJsonDeserializer.class );
@@ -118,7 +118,7 @@ public class GuavaConfiguration extends AbstractConfiguration {
         type( Multiset.class ).serializer( IterableJsonSerializer.class ).deserializer( MultisetJsonDeserializer.class );
         type( HashMultiset.class ).serializer( IterableJsonSerializer.class ).deserializer( HashMultisetJsonDeserializer.class );
         type( LinkedHashMultiset.class ).serializer( IterableJsonSerializer.class )
-            .deserializer( LinkedHashMultisetJsonDeserializer.class );
+                .deserializer( LinkedHashMultisetJsonDeserializer.class );
         type( SortedMultiset.class ).serializer( IterableJsonSerializer.class ).deserializer( SortedMultisetJsonDeserializer.class );
         type( TreeMultiset.class ).serializer( IterableJsonSerializer.class ).deserializer( TreeMultisetJsonDeserializer.class );
         type( ImmutableMultiset.class ).serializer( IterableJsonSerializer.class ).deserializer( ImmutableMultisetJsonDeserializer.class );
@@ -129,20 +129,20 @@ public class GuavaConfiguration extends AbstractConfiguration {
 
         type( ImmutableMultimap.class ).serializer( MultimapJsonSerializer.class ).deserializer( ImmutableMultimapJsonDeserializer.class );
         type( ImmutableSetMultimap.class ).serializer( MultimapJsonSerializer.class ).deserializer( ImmutableSetMultimapJsonDeserializer
-            .class );
+                .class );
         type( ImmutableListMultimap.class ).serializer( MultimapJsonSerializer.class ).deserializer( ImmutableListMultimapJsonDeserializer
-            .class );
+                .class );
 
         type( SetMultimap.class ).serializer( MultimapJsonSerializer.class ).deserializer( SetMultimapJsonDeserializer.class );
         type( HashMultimap.class ).serializer( MultimapJsonSerializer.class ).deserializer( HashMultimapJsonDeserializer.class );
         type( LinkedHashMultimap.class ).serializer( MultimapJsonSerializer.class )
-            .deserializer( LinkedHashMultimapJsonDeserializer.class );
+                .deserializer( LinkedHashMultimapJsonDeserializer.class );
         type( SortedSetMultimap.class ).serializer( MultimapJsonSerializer.class ).deserializer( SortedSetMultimapJsonDeserializer.class );
         type( TreeMultimap.class ).serializer( MultimapJsonSerializer.class ).deserializer( TreeMultimapJsonDeserializer.class );
 
         type( ListMultimap.class ).serializer( MultimapJsonSerializer.class ).deserializer( ListMultimapJsonDeserializer.class );
         type( ArrayListMultimap.class ).serializer( MultimapJsonSerializer.class ).deserializer( ArrayListMultimapJsonDeserializer.class );
         type( LinkedListMultimap.class ).serializer( MultimapJsonSerializer.class )
-            .deserializer( LinkedListMultimapJsonDeserializer.class );
+                .deserializer( LinkedListMultimapJsonDeserializer.class );
     }
 }

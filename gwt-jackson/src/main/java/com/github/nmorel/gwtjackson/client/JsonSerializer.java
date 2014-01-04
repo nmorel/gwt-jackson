@@ -53,7 +53,7 @@ public abstract class JsonSerializer<T> {
      * @throws JsonSerializationException if an error occurs during the serialization
      */
     public void serialize( JsonWriter writer, T value, JsonSerializationContext ctx, JsonSerializerParameters params ) throws
-        JsonSerializationException {
+            JsonSerializationException {
         try {
             if ( null == value ) {
                 serializeNullValue( writer, ctx, params );
@@ -80,7 +80,7 @@ public abstract class JsonSerializer<T> {
      * @throws IOException if an error occurs while writing the output
      */
     protected void serializeNullValue( JsonWriter writer, JsonSerializationContext ctx, JsonSerializerParameters params ) throws
-        IOException {
+            IOException {
         writer.nullValue();
     }
 

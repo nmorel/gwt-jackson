@@ -30,7 +30,7 @@ import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
  */
 public final class ObjectIdSerializationTester extends AbstractTester {
 
-    @JsonIdentityInfo( generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id" )
+    @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id")
     public static class Identifiable {
 
         public int value;
@@ -46,7 +46,7 @@ public final class ObjectIdSerializationTester extends AbstractTester {
         }
     }
 
-    @JsonIdentityInfo( generator = ObjectIdGenerators.PropertyGenerator.class, property = "customId" )
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "customId")
     public static class IdentifiableWithProp {
 
         public int value;
@@ -70,7 +70,7 @@ public final class ObjectIdSerializationTester extends AbstractTester {
 
     public static class IdWrapper {
 
-        @JsonIdentityInfo( generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id" )
+        @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
         public ValueNode node;
 
         public IdWrapper() {
@@ -100,7 +100,7 @@ public final class ObjectIdSerializationTester extends AbstractTester {
 
     public static class IdWrapperCustom {
 
-        @JsonIdentityInfo( generator = ObjectIdGenerators.PropertyGenerator.class, property = "id" )
+        @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
         public ValueNodeCustom node;
 
         public IdWrapperCustom() {
@@ -130,7 +130,7 @@ public final class ObjectIdSerializationTester extends AbstractTester {
         }
     }
 
-    @JsonIdentityInfo( generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id" )
+    @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id")
     public static class AlwaysAsId {
 
         public int value;
@@ -145,14 +145,14 @@ public final class ObjectIdSerializationTester extends AbstractTester {
     }
 
     // For [https://github.com/FasterXML/jackson-annotations/issues/4]
-    @JsonPropertyOrder( alphabetic = true )
+    @JsonPropertyOrder(alphabetic = true)
     public static class AlwaysContainer {
 
-        @JsonIdentityReference( alwaysAsId = true )
+        @JsonIdentityReference(alwaysAsId = true)
         public AlwaysAsId a = new AlwaysAsId( 13 );
 
-        @JsonIdentityInfo( generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id" )
-        @JsonIdentityReference( alwaysAsId = true )
+        @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id")
+        @JsonIdentityReference(alwaysAsId = true)
         public Value b = new Value();
     }
 
@@ -161,14 +161,14 @@ public final class ObjectIdSerializationTester extends AbstractTester {
         public int x = 3;
     }
 
-    @JsonIdentityInfo( generator = ObjectIdGenerators.PropertyGenerator.class, property = "id" )
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     public static class TreeNode {
 
         public int id;
 
         public String name;
 
-        @JsonIdentityReference( alwaysAsId = true )
+        @JsonIdentityReference(alwaysAsId = true)
         public TreeNode parent;
 
         // children serialized with ids if need be
@@ -187,7 +187,7 @@ public final class ObjectIdSerializationTester extends AbstractTester {
     // // Let's also have one 'broken' test
 
     // no "id" property
-    @JsonIdentityInfo( generator = ObjectIdGenerators.PropertyGenerator.class, property = "id" )
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     public static class Broken {
 
         public int value;
@@ -282,7 +282,8 @@ public final class ObjectIdSerializationTester extends AbstractTester {
         TreeNode leaf = new TreeNode( root, 2, "leaf" );
         root.child = leaf;
         String json = writer.write( root );
-        assertEquals( "{\"id\":1,\"name\":\"root\",\"parent\":null,\"child\":{\"id\":2,\"name\":\"leaf\",\"parent\":1,\"child\":null}}", json );
+        assertEquals( "{\"id\":1,\"name\":\"root\",\"parent\":null,\"child\":{\"id\":2,\"name\":\"leaf\",\"parent\":1,\"child\":null}}",
+                json );
     }
 
     /*

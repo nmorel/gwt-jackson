@@ -167,8 +167,8 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                 baseClassType = typeOracle.findGenericType( parameterizedType );
             }
             BeanJsonSerializerCreator beanJsonSerializerCreator = new BeanJsonSerializerCreator( logger
-                .branch( Type.DEBUG, "Creating serializer for " + baseClassType
-                    .getQualifiedSourceName() ), context, configuration, typeOracle );
+                    .branch( Type.DEBUG, "Creating serializer for " + baseClassType
+                            .getQualifiedSourceName() ), context, configuration, typeOracle );
             BeanJsonMapperInfo info = beanJsonSerializerCreator.create( baseClassType );
 
             StringBuilder joinedTypeParameters = new StringBuilder();
@@ -194,7 +194,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
             builder.beanMapper( true );
             builder.instance( String.format( "new %s%s(%s)", info.getQualifiedSerializerClassName(), joinedTypeParameters
-                .toString(), joinedTypeParameterSerializers ) );
+                    .toString(), joinedTypeParameterSerializers ) );
             return builder.build();
         }
 
@@ -290,12 +290,12 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         if ( null != arrayType ) {
             String method = "ctx.newArrayJsonDeserializer(%s, %s)";
             String arrayCreator = "new " + ArrayCreator.class.getCanonicalName() + "<" + arrayType.getComponentType()
-                .getParameterizedQualifiedSourceName() + ">(){\n" +
-                "  @Override\n" +
-                "  public " + arrayType.getParameterizedQualifiedSourceName() + " create( int length ) {\n" +
-                "    return new " + arrayType.getComponentType().getParameterizedQualifiedSourceName() + "[length];\n" +
-                "  }\n" +
-                "}";
+                    .getParameterizedQualifiedSourceName() + ">(){\n" +
+                    "  @Override\n" +
+                    "  public " + arrayType.getParameterizedQualifiedSourceName() + " create( int length ) {\n" +
+                    "    return new " + arrayType.getComponentType().getParameterizedQualifiedSourceName() + "[length];\n" +
+                    "  }\n" +
+                    "}";
 
             JDeserializerType parameterDeserializerType = getJsonDeserializerFromType( arrayType.getComponentType() );
             builder.parameters( new JDeserializerType[]{parameterDeserializerType} );
@@ -312,8 +312,8 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                 baseClassType = typeOracle.findGenericType( parameterizedType );
             }
             BeanJsonDeserializerCreator beanJsonDeserializerCreator = new BeanJsonDeserializerCreator( logger
-                .branch( Type.DEBUG, "Creating deserializer for " + baseClassType
-                    .getQualifiedSourceName() ), context, configuration, typeOracle );
+                    .branch( Type.DEBUG, "Creating deserializer for " + baseClassType
+                            .getQualifiedSourceName() ), context, configuration, typeOracle );
             BeanJsonMapperInfo info = beanJsonDeserializerCreator.create( baseClassType );
 
             StringBuilder joinedTypeParameters = new StringBuilder();
@@ -339,7 +339,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
             builder.beanMapper( true );
             builder.instance( String.format( "new %s%s(%s)", info
-                .getQualifiedDeserializerClassName(), joinedTypeParameters, joinedTypeParameterDeserializers ) );
+                    .getQualifiedDeserializerClassName(), joinedTypeParameters, joinedTypeParameterDeserializers ) );
             return builder.build();
         }
 

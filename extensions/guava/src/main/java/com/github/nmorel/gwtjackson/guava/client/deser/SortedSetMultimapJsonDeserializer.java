@@ -32,7 +32,7 @@ import com.google.common.collect.TreeMultimap;
  * @author Nicolas Morel
  */
 public final class SortedSetMultimapJsonDeserializer<K extends Comparable<K>, V extends Comparable<V>> extends
-    BaseMultimapJsonDeserializer<SortedSetMultimap<K, V>, K, V> {
+        BaseMultimapJsonDeserializer<SortedSetMultimap<K, V>, K, V> {
 
     /**
      * @param keyDeserializer {@link KeyDeserializer} used to deserialize the keys.
@@ -43,7 +43,7 @@ public final class SortedSetMultimapJsonDeserializer<K extends Comparable<K>, V 
      * @return a new instance of {@link SortedSetMultimapJsonDeserializer}
      */
     public static <K extends Comparable<K>, V extends Comparable<V>> SortedSetMultimapJsonDeserializer<K,
-        V> newInstance( KeyDeserializer<K> keyDeserializer, JsonDeserializer<V> valueDeserializer ) {
+            V> newInstance( KeyDeserializer<K> keyDeserializer, JsonDeserializer<V> valueDeserializer ) {
         return new SortedSetMultimapJsonDeserializer<K, V>( keyDeserializer, valueDeserializer );
     }
 

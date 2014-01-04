@@ -33,7 +33,7 @@ import com.google.gwt.core.client.GWT;
 public class JsonPropertyOrderGwtTest extends GwtJacksonTestCase {
 
     public interface BeanWithPropertiesNotOrderedMapper extends ObjectMapper<BeanWithPropertiesNotOrdered>,
-        ObjectMapperTester<BeanWithPropertiesNotOrdered> {
+            ObjectMapperTester<BeanWithPropertiesNotOrdered> {
 
         static BeanWithPropertiesNotOrderedMapper INSTANCE = GWT.create( BeanWithPropertiesNotOrderedMapper.class );
     }
@@ -44,22 +44,22 @@ public class JsonPropertyOrderGwtTest extends GwtJacksonTestCase {
     }
 
     public interface BeanWithSomeDefinedOrderMapper extends ObjectMapper<BeanWithSomeDefinedOrder>,
-        ObjectMapperTester<BeanWithSomeDefinedOrder> {
+            ObjectMapperTester<BeanWithSomeDefinedOrder> {
 
         static BeanWithSomeDefinedOrderMapper INSTANCE = GWT.create( BeanWithSomeDefinedOrderMapper.class );
     }
 
     public interface BeanWithAlphabeticOrderMapper extends ObjectMapper<BeanWithAlphabeticOrder>,
-        ObjectMapperTester<BeanWithAlphabeticOrder> {
+            ObjectMapperTester<BeanWithAlphabeticOrder> {
 
         static BeanWithAlphabeticOrderMapper INSTANCE = GWT.create( BeanWithAlphabeticOrderMapper.class );
     }
 
     public interface BeanWithSomeDefinedAndRestAlphabeticOrderMapper extends ObjectMapper<BeanWithSomeDefinedAndRestAlphabeticOrder>,
-        ObjectMapperTester<BeanWithSomeDefinedAndRestAlphabeticOrder> {
+            ObjectMapperTester<BeanWithSomeDefinedAndRestAlphabeticOrder> {
 
         static BeanWithSomeDefinedAndRestAlphabeticOrderMapper INSTANCE = GWT
-            .create( BeanWithSomeDefinedAndRestAlphabeticOrderMapper.class );
+                .create( BeanWithSomeDefinedAndRestAlphabeticOrderMapper.class );
     }
 
     private JsonPropertyOrderTester tester = JsonPropertyOrderTester.INSTANCE;

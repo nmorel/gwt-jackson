@@ -29,13 +29,13 @@ public class JsonIgnoreJacksonTest extends AbstractJacksonTest {
     @Test
     public void testSerializeBeanWithIgnoredProperties() {
         JsonIgnoreTester.INSTANCE
-            .testSerializeBeanWithIgnoredProperties( createWriter( JsonIgnoreTester.BeanWithIgnoredProperties.class ) );
+                .testSerializeBeanWithIgnoredProperties( createWriter( JsonIgnoreTester.BeanWithIgnoredProperties.class ) );
     }
 
     @Test
     public void testDeserializeBeanWithIgnoredProperties() {
         JsonIgnoreTester.INSTANCE
-            .testDeserializeBeanWithIgnoredProperties( createReader( JsonIgnoreTester.BeanWithIgnoredProperties.class ) );
+                .testDeserializeBeanWithIgnoredProperties( createReader( JsonIgnoreTester.BeanWithIgnoredProperties.class ) );
     }
 
     @Test
@@ -46,13 +46,15 @@ public class JsonIgnoreJacksonTest extends AbstractJacksonTest {
     @Test
     public void testSerializeBeanWithIgnorePropertiesAsProperty() {
         JsonIgnoreTester.INSTANCE
-            .testSerializeBeanWithIgnorePropertiesAsProperty( createWriter( JsonIgnoreTester.BeanWithIgnorePropertiesAsProperty.class ) );
+                .testSerializeBeanWithIgnorePropertiesAsProperty( createWriter( JsonIgnoreTester.BeanWithIgnorePropertiesAsProperty.class
+                ) );
     }
 
     @Test
-    @Ignore( "does not take the ignoreUnknown property into account" )
+    @Ignore("does not take the ignoreUnknown property into account")
     public void testDeserializeBeanWithIgnorePropertiesAsProperty() {
         JsonIgnoreTester.INSTANCE
-            .testDeserializeBeanWithIgnorePropertiesAsProperty( createReader( JsonIgnoreTester.BeanWithIgnorePropertiesAsProperty.class ) );
+                .testDeserializeBeanWithIgnorePropertiesAsProperty( createReader( JsonIgnoreTester.BeanWithIgnorePropertiesAsProperty
+                        .class ) );
     }
 }

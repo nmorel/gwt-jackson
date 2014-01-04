@@ -73,7 +73,7 @@ public class MapJsonSerializer<M extends Map<K, V>, K, V> extends JsonSerializer
 
     @Override
     public void doSerialize( JsonWriter writer, @Nonnull M values, JsonSerializationContext ctx, JsonSerializerParameters params ) throws
-        IOException {
+            IOException {
         writer.beginObject();
 
         if ( !values.isEmpty() ) {

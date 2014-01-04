@@ -32,9 +32,9 @@ import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
 public final class VisibleTypeIdTester extends AbstractTester {
 
     // type id as property, exposed
-    @JsonTypeInfo( use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY,
-        property = "type", visible = true )
-    @JsonTypeName( "BaseType" )
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY,
+            property = "type", visible = true)
+    @JsonTypeName("BaseType")
     public static class PropertyBean {
 
         public int a = 3;
@@ -45,9 +45,9 @@ public final class VisibleTypeIdTester extends AbstractTester {
     }
 
     // as wrapper-array
-    @JsonTypeInfo( use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_ARRAY,
-        property = "type", visible = true )
-    @JsonTypeName( "ArrayType" )
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_ARRAY,
+            property = "type", visible = true)
+    @JsonTypeName("ArrayType")
     public static class WrapperArrayBean {
 
         public int a = 1;
@@ -58,9 +58,9 @@ public final class VisibleTypeIdTester extends AbstractTester {
     }
 
     // as wrapper-object
-    @JsonTypeInfo( use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT,
-        property = "type", visible = true )
-    @JsonTypeName( "ObjectType" )
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT,
+            property = "type", visible = true)
+    @JsonTypeName("ObjectType")
     public static class WrapperObjectBean {
 
         public int a = 2;
@@ -73,12 +73,12 @@ public final class VisibleTypeIdTester extends AbstractTester {
     // as external id, bit trickier
     public static class ExternalIdWrapper {
 
-        @JsonTypeInfo( use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXTERNAL_PROPERTY,
-            property = "type", visible = true )
+        @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXTERNAL_PROPERTY,
+                property = "type", visible = true)
         public ExternalIdBean bean = new ExternalIdBean();
     }
 
-    @JsonTypeName( "ExternalType" )
+    @JsonTypeName("ExternalType")
     public static class ExternalIdBean {
 
         public int a = 2;
@@ -90,8 +90,8 @@ public final class VisibleTypeIdTester extends AbstractTester {
 
     // // // [JACKSON-762]: type id from property
 
-    @JsonTypeInfo( use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY,
-        property = "type" )
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY,
+            property = "type")
     public static class TypeIdFromFieldProperty {
 
         public int a = 3;
@@ -100,8 +100,8 @@ public final class VisibleTypeIdTester extends AbstractTester {
         public String type = "SomeType";
     }
 
-    @JsonTypeInfo( use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_ARRAY,
-        property = "type" )
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_ARRAY,
+            property = "type")
     public static class TypeIdFromFieldArray {
 
         public int a = 3;
@@ -110,8 +110,8 @@ public final class VisibleTypeIdTester extends AbstractTester {
         public String type = "SomeType";
     }
 
-    @JsonTypeInfo( use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT,
-        property = "type" )
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT,
+            property = "type")
     public static class TypeIdFromMethodObject {
 
         public int a = 3;
@@ -122,8 +122,8 @@ public final class VisibleTypeIdTester extends AbstractTester {
 
     public static class ExternalIdWrapper2 {
 
-        @JsonTypeInfo( use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXTERNAL_PROPERTY,
-            property = "type", visible = true )
+        @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXTERNAL_PROPERTY,
+                property = "type", visible = true)
         public ExternalIdBean2 bean = new ExternalIdBean2();
     }
 
@@ -148,16 +148,16 @@ public final class VisibleTypeIdTester extends AbstractTester {
         public String getType2() { return "type2"; }
     }
 
-    @JsonTypeInfo( use = JsonTypeInfo.Id.NAME, property = "name" )
-    @JsonSubTypes( {@JsonSubTypes.Type( value = I263Impl.class )} )
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "name")
+    @JsonSubTypes({@JsonSubTypes.Type(value = I263Impl.class)})
     public static abstract class I263Base {
 
         @JsonTypeId
         public abstract String getName();
     }
 
-    @JsonPropertyOrder( {"age", "name"} )
-    @JsonTypeName( "bob" )
+    @JsonPropertyOrder({"age", "name"})
+    @JsonTypeName("bob")
     public static class I263Impl extends I263Base {
 
         public int age = 41;

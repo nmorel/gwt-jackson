@@ -6,7 +6,7 @@ public class GreetingRequest {
 
     private String name;
 
-    public GreetingRequest( @JsonProperty( "name" ) String name ) {
+    public GreetingRequest( @JsonProperty("name") String name ) {
         this.name = name;
     }
 

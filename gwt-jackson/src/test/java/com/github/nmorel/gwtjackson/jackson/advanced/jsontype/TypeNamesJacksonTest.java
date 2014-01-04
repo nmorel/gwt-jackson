@@ -41,7 +41,7 @@ public class TypeNamesJacksonTest extends AbstractJacksonTest {
     }
 
     @Test
-    @Ignore( "for some reasons, jackson don't add type info. It works on original jackson test with a class extending LinkedHashMap" )
+    @Ignore("for some reasons, jackson don't add type info. It works on original jackson test with a class extending LinkedHashMap")
     public void testRoundTripMap() {
         TypeNamesTester.INSTANCE.testRoundTripMap( createMapper( new TypeReference<LinkedHashMap<String, Animal>>() {} ) );
     }

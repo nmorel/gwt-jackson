@@ -36,7 +36,7 @@ public class OptionalJacksonTest extends AbstractJacksonGuavaTest {
     }
 
     @Test
-    @Ignore( "jackson does not force the null value" )
+    @Ignore("jackson does not force the null value")
     public void testSerializeWithNonNullSerialization() {
         objectMapper.setSerializationInclusion( JsonInclude.Include.NON_NULL );
         OptionalTester.INSTANCE.testSerializeWithNonNullSerialization( createWriter( BeanWithOptional.class ) );

@@ -89,7 +89,8 @@ public class BeanTypeInfo {
 
         for ( JClassType subtype : type.getSubtypes() ) {
             classToMetadata
-                .put( subtype, extractTypeMetadata( logger, type, subtype, jsonTypeInfo, propertySubTypes, typeSubTypes, allSubtypes ) );
+                    .put( subtype, extractTypeMetadata( logger, type, subtype, jsonTypeInfo, propertySubTypes, typeSubTypes,
+                            allSubtypes ) );
         }
 
         result.mapTypeToMetadata = classToMetadata;

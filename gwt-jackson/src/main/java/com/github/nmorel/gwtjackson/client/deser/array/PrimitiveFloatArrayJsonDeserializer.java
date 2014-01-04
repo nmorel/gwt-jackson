@@ -45,7 +45,7 @@ public class PrimitiveFloatArrayJsonDeserializer extends AbstractArrayJsonDeseri
 
     @Override
     public float[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-        IOException {
+            IOException {
         List<Float> list = deserializeIntoList( reader, ctx, FloatJsonDeserializer.getInstance(), params );
 
         float[] result = new float[list.size()];

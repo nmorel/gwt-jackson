@@ -45,7 +45,7 @@ public class PrimitiveIntegerArrayJsonDeserializer extends AbstractArrayJsonDese
 
     @Override
     public int[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-        IOException {
+            IOException {
         List<Integer> list = deserializeIntoList( reader, ctx, IntegerJsonDeserializer.getInstance(), params );
 
         int[] result = new int[list.size()];

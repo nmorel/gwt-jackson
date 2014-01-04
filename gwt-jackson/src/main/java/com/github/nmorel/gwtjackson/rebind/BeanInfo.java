@@ -48,12 +48,12 @@ import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounte
 public final class BeanInfo {
 
     public static BeanInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, BeanJsonMapperInfo mapperInfo ) throws
-        UnableToCompleteException {
+            UnableToCompleteException {
         BeanInfo result = new BeanInfo();
         result.type = mapperInfo.getType();
 
         result.parameterizedTypes = null == mapperInfo.getType().isGenericType() ? new JClassType[0] : mapperInfo.getType().isGenericType()
-            .getTypeParameters();
+                .getTypeParameters();
 
         determineInstanceCreator( logger, result );
 
@@ -67,7 +67,7 @@ public final class BeanInfo {
         }
 
         JsonIgnoreProperties jsonIgnoreProperties = findFirstEncounteredAnnotationsOnAllHierarchy( mapperInfo
-            .getType(), JsonIgnoreProperties.class );
+                .getType(), JsonIgnoreProperties.class );
         if ( null != jsonIgnoreProperties ) {
             for ( String ignoreProperty : jsonIgnoreProperties.value() ) {
                 result.addIgnoredField( ignoreProperty );
@@ -76,7 +76,7 @@ public final class BeanInfo {
         }
 
         JsonPropertyOrder jsonPropertyOrder = findFirstEncounteredAnnotationsOnAllHierarchy( mapperInfo
-            .getType(), JsonPropertyOrder.class );
+                .getType(), JsonPropertyOrder.class );
         result.propertyOrderAlphabetic = null != jsonPropertyOrder && jsonPropertyOrder.alphabetic();
         if ( null != jsonPropertyOrder && jsonPropertyOrder.value().length > 0 ) {
             result.propertyOrderList = Arrays.asList( jsonPropertyOrder.value() );
@@ -123,11 +123,11 @@ public final class BeanInfo {
             // - or all its parameters are annotated with JsonProperty
             boolean isAllParametersAnnotatedWithJsonProperty = isAllParametersAnnotatedWith( constructor, JsonProperty.class );
             if ( (constructor.isAnnotationPresent( JsonCreator.class ) && ((isAllParametersAnnotatedWithJsonProperty) || (constructor
-                .getParameters().length == 1))) || isAllParametersAnnotatedWithJsonProperty ) {
+                    .getParameters().length == 1))) || isAllParametersAnnotatedWithJsonProperty ) {
                 if ( null != creatorConstructor ) {
                     // Jackson fails with an ArrayIndexOutOfBoundsException when it's the case, let's be more flexible
                     logger.log( TreeLogger.Type.WARN, "More than one constructor annotated with @JsonCreator, " +
-                        "we use " + creatorConstructor );
+                            "we use " + creatorConstructor );
                     break;
                 } else {
                     creatorConstructor = constructor;
@@ -140,12 +140,12 @@ public final class BeanInfo {
             // searching for factory method
             for ( JMethod method : info.getType().getMethods() ) {
                 if ( method.isStatic() && method.isAnnotationPresent( JsonCreator.class ) && (method
-                    .getParameters().length == 1 || isAllParametersAnnotatedWith( method, JsonProperty.class )) ) {
+                        .getParameters().length == 1 || isAllParametersAnnotatedWith( method, JsonProperty.class )) ) {
                     if ( null != creatorFactory ) {
 
                         // Jackson fails with an ArrayIndexOutOfBoundsException when it's the case, let's be more flexible
                         logger.log( TreeLogger.Type.WARN, "More than one factory method annotated with @JsonCreator, " +
-                            "we use " + creatorFactory );
+                                "we use " + creatorFactory );
                         break;
                     } else {
                         creatorFactory = method;
@@ -166,7 +166,7 @@ public final class BeanInfo {
         if ( info.creatorMethod.isPresent() ) {
             if ( !info.isCreatorDefaultConstructor() ) {
                 if ( info.creatorMethod.get().getParameters().length == 1 && !isAllParametersAnnotatedWith( info.creatorMethod
-                    .get(), JsonProperty.class ) ) {
+                        .get(), JsonProperty.class ) ) {
                     // delegation constructor
                     info.creatorDelegation = true;
                 } else {

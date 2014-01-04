@@ -35,28 +35,28 @@ import com.google.gwt.core.client.GWT;
 public class JsonCreatorGwtTest extends GwtJacksonTestCase {
 
     public interface BeanWithDefaultConstructorPrivateMapper extends ObjectMapper<BeanWithDefaultConstructorPrivate>,
-        ObjectMapperTester<BeanWithDefaultConstructorPrivate> {
+            ObjectMapperTester<BeanWithDefaultConstructorPrivate> {
 
         static BeanWithDefaultConstructorPrivateMapper INSTANCE = GWT.create( BeanWithDefaultConstructorPrivateMapper.class );
     }
 
     public interface BeanWithoutDefaultConstructorAndNoAnnotationMapper extends
-        ObjectMapper<BeanWithoutDefaultConstructorAndNoAnnotation>, ObjectMapperTester<BeanWithoutDefaultConstructorAndNoAnnotation> {
+            ObjectMapper<BeanWithoutDefaultConstructorAndNoAnnotation>, ObjectMapperTester<BeanWithoutDefaultConstructorAndNoAnnotation> {
 
         static BeanWithoutDefaultConstructorAndNoAnnotationMapper INSTANCE = GWT
-            .create( BeanWithoutDefaultConstructorAndNoAnnotationMapper.class );
+                .create( BeanWithoutDefaultConstructorAndNoAnnotationMapper.class );
     }
 
     public interface BeanWithoutDefaultConstructorAndPropertiesAnnotationMapper extends
-        ObjectMapper<BeanWithoutDefaultConstructorAndPropertiesAnnotation>,
-        ObjectMapperTester<BeanWithoutDefaultConstructorAndPropertiesAnnotation> {
+            ObjectMapper<BeanWithoutDefaultConstructorAndPropertiesAnnotation>,
+            ObjectMapperTester<BeanWithoutDefaultConstructorAndPropertiesAnnotation> {
 
         static BeanWithoutDefaultConstructorAndPropertiesAnnotationMapper INSTANCE = GWT
-            .create( BeanWithoutDefaultConstructorAndPropertiesAnnotationMapper.class );
+                .create( BeanWithoutDefaultConstructorAndPropertiesAnnotationMapper.class );
     }
 
     public interface BeanWithConstructorAnnotatedMapper extends ObjectMapper<BeanWithConstructorAnnotated>,
-        ObjectMapperTester<BeanWithConstructorAnnotated> {
+            ObjectMapperTester<BeanWithConstructorAnnotated> {
 
         static BeanWithConstructorAnnotatedMapper INSTANCE = GWT.create( BeanWithConstructorAnnotatedMapper.class );
     }
@@ -67,16 +67,16 @@ public class JsonCreatorGwtTest extends GwtJacksonTestCase {
     }
 
     public interface BeanWithPrivateFactoryMethodMapper extends ObjectMapper<BeanWithPrivateFactoryMethod>,
-        ObjectMapperTester<BeanWithPrivateFactoryMethod> {
+            ObjectMapperTester<BeanWithPrivateFactoryMethod> {
 
         static BeanWithPrivateFactoryMethodMapper INSTANCE = GWT.create( BeanWithPrivateFactoryMethodMapper.class );
     }
 
     public interface BeanWithPropertiesOnlyPresentOnConstructorMapper extends ObjectMapper<BeanWithPropertiesOnlyPresentOnConstructor>,
-        ObjectMapperTester<BeanWithPropertiesOnlyPresentOnConstructor> {
+            ObjectMapperTester<BeanWithPropertiesOnlyPresentOnConstructor> {
 
         static BeanWithPropertiesOnlyPresentOnConstructorMapper INSTANCE = GWT
-            .create( BeanWithPropertiesOnlyPresentOnConstructorMapper.class );
+                .create( BeanWithPropertiesOnlyPresentOnConstructorMapper.class );
     }
 
     private JsonCreatorTester tester = JsonCreatorTester.INSTANCE;
@@ -98,20 +98,18 @@ public class JsonCreatorGwtTest extends GwtJacksonTestCase {
     }
 
     public void testSerializeBeanWithoutDefaultConstructorAndPropertiesAnnotation() {
-        tester
-            .testSerializeBeanWithoutDefaultConstructorAndPropertiesAnnotation(
+        tester.testSerializeBeanWithoutDefaultConstructorAndPropertiesAnnotation(
                 BeanWithoutDefaultConstructorAndPropertiesAnnotationMapper.INSTANCE );
     }
 
     public void testDeserializeBeanWithoutDefaultConstructorAndPropertiesAnnotation() {
-        tester
-            .testDeserializeBeanWithoutDefaultConstructorAndPropertiesAnnotation(
+        tester.testDeserializeBeanWithoutDefaultConstructorAndPropertiesAnnotation(
                 BeanWithoutDefaultConstructorAndPropertiesAnnotationMapper.INSTANCE );
     }
 
     public void testDeserializeBeanWithMissingRequiredPropertyInCreator() {
-        tester
-            .testDeserializeBeanWithMissingRequiredPropertyInCreator( BeanWithoutDefaultConstructorAndPropertiesAnnotationMapper.INSTANCE );
+        tester.testDeserializeBeanWithMissingRequiredPropertyInCreator( BeanWithoutDefaultConstructorAndPropertiesAnnotationMapper
+                .INSTANCE );
     }
 
     public void testSerializeBeanWithConstructorAnnotated() {
@@ -140,11 +138,11 @@ public class JsonCreatorGwtTest extends GwtJacksonTestCase {
 
     public void testSerializeBeanWithPropertiesOnlyPresentOnConstructor() {
         JsonCreatorTester.INSTANCE
-            .testSerializeBeanWithPropertiesOnlyPresentOnConstructor( BeanWithPropertiesOnlyPresentOnConstructorMapper.INSTANCE );
+                .testSerializeBeanWithPropertiesOnlyPresentOnConstructor( BeanWithPropertiesOnlyPresentOnConstructorMapper.INSTANCE );
     }
 
     public void testDeserializeBeanWithPropertiesOnlyPresentOnConstructor() {
         JsonCreatorTester.INSTANCE
-            .testDeserializeBeanWithPropertiesOnlyPresentOnConstructor( BeanWithPropertiesOnlyPresentOnConstructorMapper.INSTANCE );
+                .testDeserializeBeanWithPropertiesOnlyPresentOnConstructor( BeanWithPropertiesOnlyPresentOnConstructorMapper.INSTANCE );
     }
 }

@@ -46,7 +46,7 @@ public abstract class AbstractArrayJsonDeserializer<T> extends JsonDeserializer<
                                              JsonDeserializerParameters params ) throws IOException;
 
     protected T doDeserializeNonArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-        IOException {
+            IOException {
         if ( ctx.isAcceptSingleValueAsArray() ) {
             return doDeserializeSingleArray( reader, ctx, params );
         } else {

@@ -50,25 +50,25 @@ public class ImmutablesGwtTest extends GwtJacksonGuavaTestCase {
     }
 
     public interface ImmutableSortedSetIntegerMapper extends ObjectMapper<ImmutableSortedSet<Integer>>,
-        ObjectMapperTester<ImmutableSortedSet<Integer>> {
+            ObjectMapperTester<ImmutableSortedSet<Integer>> {
 
         static ImmutableSortedSetIntegerMapper INSTANCE = GWT.create( ImmutableSortedSetIntegerMapper.class );
     }
 
     public interface ImmutableMapIntegerBooleanMapper extends ObjectMapper<ImmutableMap<Integer, Boolean>>,
-        ObjectMapperTester<ImmutableMap<Integer, Boolean>> {
+            ObjectMapperTester<ImmutableMap<Integer, Boolean>> {
 
         static ImmutableMapIntegerBooleanMapper INSTANCE = GWT.create( ImmutableMapIntegerBooleanMapper.class );
     }
 
     public interface ImmutableSortedMapIntegerBooleanMapper extends ObjectMapper<ImmutableSortedMap<Integer, Boolean>>,
-        ObjectMapperTester<ImmutableSortedMap<Integer, Boolean>> {
+            ObjectMapperTester<ImmutableSortedMap<Integer, Boolean>> {
 
         static ImmutableSortedMapIntegerBooleanMapper INSTANCE = GWT.create( ImmutableSortedMapIntegerBooleanMapper.class );
     }
 
     public interface ImmutableBiMapIntegerBooleanMapper extends ObjectMapper<ImmutableBiMap<Integer, Boolean>>,
-        ObjectMapperTester<ImmutableBiMap<Integer, Boolean>> {
+            ObjectMapperTester<ImmutableBiMap<Integer, Boolean>> {
 
         static ImmutableBiMapIntegerBooleanMapper INSTANCE = GWT.create( ImmutableBiMapIntegerBooleanMapper.class );
     }
@@ -85,8 +85,8 @@ public class ImmutablesGwtTest extends GwtJacksonGuavaTestCase {
 
     public void testImmutableSetFromSingle() {
         tester.testImmutableSetFromSingle( createMapper( ImmutableSetStringMapper.INSTANCE, new JsonDeserializationContext.Builder()
-            .acceptSingleValueAsArray( true ).build(), new JsonSerializationContext.Builder().writeSingleElemArraysUnwrapped( true )
-            .build() ) );
+                .acceptSingleValueAsArray( true ).build(), new JsonSerializationContext.Builder().writeSingleElemArraysUnwrapped( true )
+                .build() ) );
     }
 
     public void testImmutableSortedSet() {

@@ -42,9 +42,9 @@ public final class EnumBiMapJsonDeserializer<K extends Enum<K>, V extends Enum<V
      * @return a new instance of {@link EnumBiMapJsonDeserializer}
      */
     public static <K extends Enum<K>, V extends Enum<V>> EnumBiMapJsonDeserializer<K, V> newInstance( EnumKeyDeserializer<K>
-                                                                                                          keyDeserializer,
+                                                                                                              keyDeserializer,
                                                                                                       EnumJsonDeserializer<V>
-                                                                                                          valueDeserializer ) {
+                                                                                                              valueDeserializer ) {
         return new EnumBiMapJsonDeserializer<K, V>( keyDeserializer, valueDeserializer );
     }
 

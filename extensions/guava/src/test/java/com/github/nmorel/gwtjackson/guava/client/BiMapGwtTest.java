@@ -59,22 +59,22 @@ public class BiMapGwtTest extends GwtJacksonGuavaTestCase {
         bean.enumBiMap.put( AlphaEnum.B, NumericEnum.TWO );
 
         String expected = "{" +
-            "\"biMap\":{\"one\":1}," +
-            "\"hashBiMap\":{\"one\":1}," +
-            "\"enumHashBiMap\":{\"A\":1,\"B\":2,\"C\":3,\"D\":4}," +
-            "\"enumBiMap\":{\"A\":\"ONE\",\"B\":\"TWO\",\"C\":\"THREE\",\"D\":\"FOUR\"}" +
-            "}";
+                "\"biMap\":{\"one\":1}," +
+                "\"hashBiMap\":{\"one\":1}," +
+                "\"enumHashBiMap\":{\"A\":1,\"B\":2,\"C\":3,\"D\":4}," +
+                "\"enumBiMap\":{\"A\":\"ONE\",\"B\":\"TWO\",\"C\":\"THREE\",\"D\":\"FOUR\"}" +
+                "}";
 
         assertEquals( expected, BeanWithBiMapTypesMapper.INSTANCE.write( bean ) );
     }
 
     public void testDeserialization() {
         String input = "{" +
-            "\"biMap\":{\"one\":1,\"two\":2,\"three\":3,\"four\":4}," +
-            "\"hashBiMap\":{\"one\":1,\"two\":2,\"three\":3,\"four\":4}," +
-            "\"enumHashBiMap\":{\"A\":1,\"B\":2,\"C\":3,\"D\":4}," +
-            "\"enumBiMap\":{\"A\":\"ONE\",\"B\":\"TWO\",\"C\":\"THREE\",\"D\":\"FOUR\"}" +
-            "}";
+                "\"biMap\":{\"one\":1,\"two\":2,\"three\":3,\"four\":4}," +
+                "\"hashBiMap\":{\"one\":1,\"two\":2,\"three\":3,\"four\":4}," +
+                "\"enumHashBiMap\":{\"A\":1,\"B\":2,\"C\":3,\"D\":4}," +
+                "\"enumBiMap\":{\"A\":\"ONE\",\"B\":\"TWO\",\"C\":\"THREE\",\"D\":\"FOUR\"}" +
+                "}";
 
         BeanWithBiMapTypes result = BeanWithBiMapTypesMapper.INSTANCE.read( input );
         assertNotNull( result );

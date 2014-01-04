@@ -64,7 +64,7 @@ public final class OptionalJsonDeserializer<T> extends JsonDeserializer<Optional
 
     @Override
     public Optional<T> doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-        IOException {
+            IOException {
         return Optional.of( deserializer.deserialize( reader, ctx, params ) );
     }
 

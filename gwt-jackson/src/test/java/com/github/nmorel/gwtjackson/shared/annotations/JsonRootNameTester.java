@@ -28,13 +28,13 @@ import com.github.nmorel.gwtjackson.shared.ObjectReaderTester;
  */
 public final class JsonRootNameTester extends AbstractTester {
 
-    @JsonRootName( "rudy" )
+    @JsonRootName("rudy")
     public static class Bean {
 
         public int a = 3;
     }
 
-    @JsonRootName( "" )
+    @JsonRootName("")
     public static class RootBeanWithEmpty {
 
         public int a = 2;

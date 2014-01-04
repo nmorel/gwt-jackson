@@ -35,7 +35,7 @@ import com.google.common.collect.ImmutableSetMultimap;
  * @author Nicolas Morel
  */
 public final class ImmutableSetMultimapJsonDeserializer<K, V> extends BaseImmutableMultimapJsonDeserializer<ImmutableSetMultimap<K, V>,
-    K, V> {
+        K, V> {
 
     /**
      * @param keyDeserializer {@link KeyDeserializer} used to deserialize the keys.

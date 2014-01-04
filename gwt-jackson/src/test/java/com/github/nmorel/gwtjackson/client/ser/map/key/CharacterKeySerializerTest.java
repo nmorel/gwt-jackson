@@ -27,7 +27,7 @@ public class CharacterKeySerializerTest extends AbstractKeySerializerTest<Charac
     }
 
     public void testSerializeValue() {
-        assertSerialization("e", 'e');
-        assertSerialization("ë", 'ë');
+        assertSerialization( "e", 'e' );
+        assertSerialization( "ë", 'ë' );
     }
 }

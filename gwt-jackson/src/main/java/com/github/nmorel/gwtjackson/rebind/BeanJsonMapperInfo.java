@@ -67,7 +67,7 @@ public class BeanJsonMapperInfo {
 
                 genericClassBoundedParametersBuilder.append( parameter.getName() );
                 if ( !(parameter.getBounds().length == 1 && parameter.getBounds()[0].getQualifiedSourceName().equals( Object.class
-                    .getName() )) ) {
+                        .getName() )) ) {
                     for ( int i = 0; i < parameter.getBounds().length; i++ ) {
                         if ( i == 0 ) {
                             genericClassBoundedParametersBuilder.append( " extends " );

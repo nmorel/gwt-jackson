@@ -30,14 +30,14 @@ public final class InheritanceTester extends AbstractTester {
 
     public static interface InterfaceBean {
 
-        @JsonProperty( value = "propertyOnInterface" )
+        @JsonProperty(value = "propertyOnInterface")
         String getInterfaceProperty();
 
         void setInterfaceProperty( String interfaceProperty );
     }
 
-    @JsonAutoDetect( fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE,
-        setterVisibility = JsonAutoDetect.Visibility.NONE )
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE,
+            setterVisibility = JsonAutoDetect.Visibility.NONE)
     public static abstract class ParentBean implements InterfaceBean {
 
         public String protectedField;
@@ -45,16 +45,15 @@ public final class InheritanceTester extends AbstractTester {
         @JsonProperty
         String defaultButAnnotated;
 
-        @JsonProperty( value = "parentProperty" )
+        @JsonProperty(value = "parentProperty")
         public abstract String getProperty();
 
         public abstract void setProperty( String property );
     }
 
-    @JsonAutoDetect( fieldVisibility = JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC, getterVisibility = JsonAutoDetect.Visibility
-        .PUBLIC_ONLY,
-        setterVisibility = JsonAutoDetect.Visibility.PUBLIC_ONLY )
-    @JsonPropertyOrder( value = {"parentProperty", "protectedField", "propertyOnInterface", "defaultButAnnotated"} )
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC, getterVisibility = JsonAutoDetect.Visibility
+            .PUBLIC_ONLY, setterVisibility = JsonAutoDetect.Visibility.PUBLIC_ONLY)
+    @JsonPropertyOrder(value = {"parentProperty", "protectedField", "propertyOnInterface", "defaultButAnnotated"})
     public static class ChildBean extends ParentBean {
 
         private String property;
@@ -95,9 +94,9 @@ public final class InheritanceTester extends AbstractTester {
         bean.interfaceProperty = "propertyOnInterface";
 
         String expected = "{\"parentProperty\":\"propertyOnChild\"," +
-            "\"protectedField\":\"protectedOnParent\"," +
-            "\"propertyOnInterface\":\"propertyOnInterface\"," +
-            "\"defaultButAnnotated\":\"defaultOnParent\"}";
+                "\"protectedField\":\"protectedOnParent\"," +
+                "\"propertyOnInterface\":\"propertyOnInterface\"," +
+                "\"defaultButAnnotated\":\"defaultOnParent\"}";
         String result = writer.write( bean );
 
         assertEquals( expected, result );
@@ -105,9 +104,9 @@ public final class InheritanceTester extends AbstractTester {
 
     public void testDeserialize( ObjectReaderTester<ChildBean> reader ) {
         String input = "{\"protectedField\":\"protectedOnParent\"," +
-            "\"defaultButAnnotated\":\"defaultOnParent\"," +
-            "\"parentProperty\":\"propertyOnChild\"," +
-            "\"propertyOnInterface\":\"propertyOnInterface\"}";
+                "\"defaultButAnnotated\":\"defaultOnParent\"," +
+                "\"parentProperty\":\"propertyOnChild\"," +
+                "\"propertyOnInterface\":\"propertyOnInterface\"}";
 
         ChildBean result = reader.read( input );
         assertEquals( "protectedOnParent", result.protectedField );

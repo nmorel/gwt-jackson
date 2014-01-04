@@ -30,38 +30,39 @@ public class JsonPropertyOrderJacksonTest extends AbstractJacksonTest {
     @Ignore("jackson has a different natural order")
     public void testSerializeBeanWithPropertiesNotOrdered() {
         JsonPropertyOrderTester.INSTANCE
-            .testSerializeBeanWithPropertiesNotOrdered( createWriter( JsonPropertyOrderTester.BeanWithPropertiesNotOrdered.class ) );
+                .testSerializeBeanWithPropertiesNotOrdered( createWriter( JsonPropertyOrderTester.BeanWithPropertiesNotOrdered.class ) );
     }
 
     @Test
     public void testSerializeBeanWithDefinedOrder() {
         JsonPropertyOrderTester.INSTANCE
-            .testSerializeBeanWithDefinedOrder( createWriter( JsonPropertyOrderTester.BeanWithDefinedOrder.class ) );
+                .testSerializeBeanWithDefinedOrder( createWriter( JsonPropertyOrderTester.BeanWithDefinedOrder.class ) );
     }
 
     @Test
     public void testSerializeBeanWithSomeDefinedOrder() {
         JsonPropertyOrderTester.INSTANCE
-            .testSerializeBeanWithSomeDefinedOrder( createWriter( JsonPropertyOrderTester.BeanWithSomeDefinedOrder.class ) );
+                .testSerializeBeanWithSomeDefinedOrder( createWriter( JsonPropertyOrderTester.BeanWithSomeDefinedOrder.class ) );
     }
 
     @Test
     public void testSerializeBeanWithAlphabeticOrder() {
         JsonPropertyOrderTester.INSTANCE
-            .testSerializeBeanWithAlphabeticOrder( createWriter( JsonPropertyOrderTester.BeanWithAlphabeticOrder.class ) );
+                .testSerializeBeanWithAlphabeticOrder( createWriter( JsonPropertyOrderTester.BeanWithAlphabeticOrder.class ) );
     }
 
     @Test
     public void testSerializeBeanWithSomeDefinedAndRestAlphabeticOrder() {
         JsonPropertyOrderTester.INSTANCE
-            .testSerializeBeanWithSomeDefinedAndRestAlphabeticOrder( createWriter( JsonPropertyOrderTester
-                .BeanWithSomeDefinedAndRestAlphabeticOrder.class ) );
+                .testSerializeBeanWithSomeDefinedAndRestAlphabeticOrder( createWriter( JsonPropertyOrderTester
+                        .BeanWithSomeDefinedAndRestAlphabeticOrder.class ) );
     }
 
     @Test
     @Ignore("jackson doesn't support it yet")
     public void testDeserializeBeanWithMissingRequiredProperties() {
         JsonPropertyOrderTester.INSTANCE
-            .testDeserializeBeanWithMissingRequiredProperties( createReader( JsonPropertyOrderTester.BeanWithPropertiesNotOrdered.class ) );
+                .testDeserializeBeanWithMissingRequiredProperties( createReader( JsonPropertyOrderTester.BeanWithPropertiesNotOrdered
+                        .class ) );
     }
 }

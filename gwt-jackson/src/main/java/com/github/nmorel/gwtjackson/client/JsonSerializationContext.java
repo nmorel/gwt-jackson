@@ -212,8 +212,8 @@ public class JsonSerializationContext extends JsonMappingContext {
 
         public JsonSerializationContext build() {
             return new JsonSerializationContext( useEqualityForObjectId, serializeNulls, writeDatesAsTimestamps,
-                writeDateKeysAsTimestamps, indent, wrapRootValue, writeCharArraysAsJsonArrays, writeNullMapValues, writeEmptyJsonArrays,
-                orderMapEntriesByKeys, writeSingleElemArraysUnwrapped );
+                    writeDateKeysAsTimestamps, indent, wrapRootValue, writeCharArraysAsJsonArrays, writeNullMapValues,
+                    writeEmptyJsonArrays, orderMapEntriesByKeys, writeSingleElemArraysUnwrapped );
         }
     }
 

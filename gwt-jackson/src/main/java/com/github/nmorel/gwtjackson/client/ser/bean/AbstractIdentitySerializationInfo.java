@@ -25,7 +25,7 @@ import com.github.nmorel.gwtjackson.client.JsonSerializer;
  * @author Nicolas Morel
  */
 public abstract class AbstractIdentitySerializationInfo<T, I> extends HasSerializer<I,
-    JsonSerializer<I>> implements IdentitySerializationInfo<T> {
+        JsonSerializer<I>> implements IdentitySerializationInfo<T> {
 
     /**
      * if we always serialize the bean as an id even for the first encounter.

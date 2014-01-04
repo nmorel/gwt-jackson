@@ -52,7 +52,7 @@ public class StringArrayJsonDeserializer extends AbstractArrayJsonDeserializer<S
 
     @Override
     public String[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-        IOException {
+            IOException {
         JsArrayString jsArray = JsArrayString.createArray().cast();
         reader.beginArray();
         while ( JsonToken.END_ARRAY != reader.peek() ) {

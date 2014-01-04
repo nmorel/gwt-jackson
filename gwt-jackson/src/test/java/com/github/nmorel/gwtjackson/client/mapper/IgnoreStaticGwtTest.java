@@ -36,7 +36,7 @@ public class IgnoreStaticGwtTest extends GwtJacksonTestCase {
 
     public void testDeserializeValue() {
         IgnoreStaticTester.INSTANCE.testDeserializeValue( createReader( IgnoreStaticBeanMapper.INSTANCE, new Builder()
-            .failOnUnknownProperties( false ).build() ) );
+                .failOnUnknownProperties( false ).build() ) );
     }
 
     public void testSerializeValue() {

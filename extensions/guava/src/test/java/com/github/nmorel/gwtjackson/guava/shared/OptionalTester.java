@@ -37,7 +37,7 @@ public final class OptionalTester extends AbstractTester {
         public Optional<Integer> optional;
     }
 
-    @JsonAutoDetect( fieldVisibility = Visibility.ANY )
+    @JsonAutoDetect(fieldVisibility = Visibility.ANY)
     public static final class OptionalGenericData<T> {
 
         private Optional<T> myData;
@@ -55,10 +55,10 @@ public final class OptionalTester extends AbstractTester {
         bean.optional = Optional.of( 145 );
 
         String expected = "{" +
-            "\"string\":null," +
-            "\"emptyOptional\":null," +
-            "\"optional\":145" +
-            "}";
+                "\"string\":null," +
+                "\"emptyOptional\":null," +
+                "\"optional\":145" +
+                "}";
 
         assertEquals( expected, writer.write( bean ) );
     }
@@ -70,9 +70,9 @@ public final class OptionalTester extends AbstractTester {
         bean.optional = Optional.of( 145 );
 
         String expected = "{" +
-            "\"emptyOptional\":null," +
-            "\"optional\":145" +
-            "}";
+                "\"emptyOptional\":null," +
+                "\"optional\":145" +
+                "}";
 
         assertEquals( expected, writer.write( bean ) );
     }
@@ -80,10 +80,10 @@ public final class OptionalTester extends AbstractTester {
     public void testDeserialize( ObjectReaderTester<BeanWithOptional> reader ) {
 
         String input = "{" +
-            "\"string\":\"aString\"," +
-            "\"emptyOptional\":null," +
-            "\"optional\":145" +
-            "}";
+                "\"string\":\"aString\"," +
+                "\"emptyOptional\":null," +
+                "\"optional\":145" +
+                "}";
 
         BeanWithOptional bean = reader.read( input );
         assertEquals( "aString", bean.string );

@@ -22,7 +22,8 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.SetMultimap;
 
 /**
- * Default {@link JsonDeserializer} implementation for {@link SetMultimap}. The deserialization process returns a {@link LinkedHashMultimap}.
+ * Default {@link JsonDeserializer} implementation for {@link SetMultimap}. The deserialization process returns a {@link
+ * LinkedHashMultimap}.
  * <p>Cannot be overriden. Use {@link BaseMultimapJsonDeserializer}.</p>
  *
  * @param <K> Type of the keys inside the {@link SetMultimap}
@@ -41,7 +42,7 @@ public final class SetMultimapJsonDeserializer<K, V> extends BaseMultimapJsonDes
      * @return a new instance of {@link SetMultimapJsonDeserializer}
      */
     public static <K, V> SetMultimapJsonDeserializer<K, V> newInstance( KeyDeserializer<K> keyDeserializer,
-                                                                     JsonDeserializer<V> valueDeserializer ) {
+                                                                        JsonDeserializer<V> valueDeserializer ) {
         return new SetMultimapJsonDeserializer<K, V>( keyDeserializer, valueDeserializer );
     }
 

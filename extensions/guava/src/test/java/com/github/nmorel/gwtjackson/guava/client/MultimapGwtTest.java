@@ -82,44 +82,44 @@ public class MultimapGwtTest extends GwtJacksonGuavaTestCase {
         bean.arrayListMultimap = ArrayListMultimap.create( ImmutableListMultimap.of( "foo", 3, "foo", 2, "foo", 5 ) );
 
         String expected = "{" +
-            "\"multimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
-            "\"immutableMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
-            "\"immutableSetMultimap\":{\"foo\":[3]}," +
-            "\"immutableListMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
-            "\"setMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
-            "\"hashMultimap\":{\"foo\":[3]}," +
-            "\"linkedHashMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
-            "\"sortedSetMultimap\":{\"bar\":[4],\"foo\":[2,3,5]}," +
-            "\"treeMultimap\":{\"bar\":[4],\"foo\":[2,3,5]}," +
-            "\"listMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
-            "\"arrayListMultimap\":{\"foo\":[3,2,5]}," +
-            "\"linkedListMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}" +
-            "}";
+                "\"multimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
+                "\"immutableMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
+                "\"immutableSetMultimap\":{\"foo\":[3]}," +
+                "\"immutableListMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
+                "\"setMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
+                "\"hashMultimap\":{\"foo\":[3]}," +
+                "\"linkedHashMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
+                "\"sortedSetMultimap\":{\"bar\":[4],\"foo\":[2,3,5]}," +
+                "\"treeMultimap\":{\"bar\":[4],\"foo\":[2,3,5]}," +
+                "\"listMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
+                "\"arrayListMultimap\":{\"foo\":[3,2,5]}," +
+                "\"linkedListMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}" +
+                "}";
 
         assertEquals( expected, BeanWithMultimapTypesMapper.INSTANCE.write( bean ) );
     }
 
     public void testDeserialization() {
         String input = "{" +
-            "\"multimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
-            "\"immutableMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
-            "\"immutableSetMultimap\":{\"foo\":[3]}," +
-            "\"immutableListMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
-            "\"setMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
-            "\"hashMultimap\":{\"foo\":[3]}," +
-            "\"linkedHashMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
-            "\"sortedSetMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
-            "\"treeMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
-            "\"listMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
-            "\"arrayListMultimap\":{\"foo\":[3,2,5]}," +
-            "\"linkedListMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}" +
-            "}";
+                "\"multimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
+                "\"immutableMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
+                "\"immutableSetMultimap\":{\"foo\":[3]}," +
+                "\"immutableListMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
+                "\"setMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
+                "\"hashMultimap\":{\"foo\":[3]}," +
+                "\"linkedHashMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
+                "\"sortedSetMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
+                "\"treeMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
+                "\"listMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}," +
+                "\"arrayListMultimap\":{\"foo\":[3,2,5]}," +
+                "\"linkedListMultimap\":{\"foo\":[3,2,5],\"bar\":[4]}" +
+                "}";
 
         BeanWithMultimapTypes result = BeanWithMultimapTypesMapper.INSTANCE.read( input );
         assertNotNull( result );
 
         ImmutableListMultimap<String, Integer> expectedOrderedKeysAndValues = ImmutableListMultimap
-            .of( "foo", 3, "bar", 4, "foo", 2, "foo", 5 );
+                .of( "foo", 3, "bar", 4, "foo", 2, "foo", 5 );
         ImmutableSetMultimap<String, Integer> expectedNonOrdered = ImmutableSetMultimap.of( "foo", 3 );
 
         assertEquals( LinkedHashMultimap.create( expectedOrderedKeysAndValues ), result.multimap );

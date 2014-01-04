@@ -30,8 +30,8 @@ import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
  */
 public final class PolymorphismIdMinimalClassAsWrapperArrayTester extends AbstractTester {
 
-    @JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY)
-    @JsonPropertyOrder(alphabetic = true)
+    @JsonTypeInfo( use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY )
+    @JsonPropertyOrder( alphabetic = true )
     public static abstract class Person {
 
         public String name;
@@ -89,114 +89,114 @@ public final class PolymorphismIdMinimalClassAsWrapperArrayTester extends Abstra
         String result = writer.write( persons );
 
         String expected = "[" +
-            "[" +
-            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
-            "{" +
-            "\"id\":2," +
-            "\"name\":\"Thomas\"," +
-            "\"title\":\"Waiter\"" +
-            "}" +
-            "]," +
-            "[" +
-            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
-            "{" +
-            "\"id\":3," +
-            "\"name\":\"Patricia\"," +
-            "\"title\":\"Cook\"" +
-            "}" +
-            "]," +
-            "[" +
-            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Manager\"," +
-            "{" +
-            "\"id\":1," +
-            "\"managedEmployees\":" +
-            "[" +
-            "[" +
-            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
-            "{" +
-            "\"id\":2," +
-            "\"name\":\"Thomas\"," +
-            "\"title\":\"Waiter\"" +
-            "}" +
-            "]," +
-            "[" +
-            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
-            "{" +
-            "\"id\":3," +
-            "\"name\":\"Patricia\"," +
-            "\"title\":\"Cook\"" +
-            "}" +
-            "]" +
-            "]," +
-            "\"name\":\"Bob\"," +
-            "\"title\":\"Boss\"" +
-            "}" +
-            "]," +
-            "[" +
-            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Customer\"," +
-            "{" +
-            "\"name\":\"Brad\"," +
-            "\"satisfaction\":90" +
-            "}" +
-            "]" +
-            "]";
+                "[" +
+                "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
+                "{" +
+                "\"id\":2," +
+                "\"name\":\"Thomas\"," +
+                "\"title\":\"Waiter\"" +
+                "}" +
+                "]," +
+                "[" +
+                "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
+                "{" +
+                "\"id\":3," +
+                "\"name\":\"Patricia\"," +
+                "\"title\":\"Cook\"" +
+                "}" +
+                "]," +
+                "[" +
+                "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Manager\"," +
+                "{" +
+                "\"id\":1," +
+                "\"managedEmployees\":" +
+                "[" +
+                "[" +
+                "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
+                "{" +
+                "\"id\":2," +
+                "\"name\":\"Thomas\"," +
+                "\"title\":\"Waiter\"" +
+                "}" +
+                "]," +
+                "[" +
+                "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
+                "{" +
+                "\"id\":3," +
+                "\"name\":\"Patricia\"," +
+                "\"title\":\"Cook\"" +
+                "}" +
+                "]" +
+                "]," +
+                "\"name\":\"Bob\"," +
+                "\"title\":\"Boss\"" +
+                "}" +
+                "]," +
+                "[" +
+                "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Customer\"," +
+                "{" +
+                "\"name\":\"Brad\"," +
+                "\"satisfaction\":90" +
+                "}" +
+                "]" +
+                "]";
 
         assertEquals( expected, result );
     }
 
     public void testDeserialize( ObjectReaderTester<Person[]> reader ) {
         String input = "[" +
-            "[" +
-            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
-            "{" +
-            "\"id\":2," +
-            "\"name\":\"Thomas\"," +
-            "\"title\":\"Waiter\"" +
-            "}" +
-            "]," +
-            "[" +
-            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
-            "{" +
-            "\"id\":3," +
-            "\"name\":\"Patricia\"," +
-            "\"title\":\"Cook\"" +
-            "}" +
-            "]," +
-            "[" +
-            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Manager\"," +
-            "{" +
-            "\"id\":1," +
-            "\"managedEmployees\":" +
-            "[" +
-            "[" +
-            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
-            "{" +
-            "\"id\":2," +
-            "\"name\":\"Thomas\"," +
-            "\"title\":\"Waiter\"" +
-            "}" +
-            "]," +
-            "[" +
-            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
-            "{" +
-            "\"id\":3," +
-            "\"name\":\"Patricia\"," +
-            "\"title\":\"Cook\"" +
-            "}" +
-            "]" +
-            "]," +
-            "\"name\":\"Bob\"," +
-            "\"title\":\"Boss\"" +
-            "}" +
-            "]," +
-            "[" +
-            "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Customer\"," +
-            "{" +
-            "\"name\":\"Brad\"," +
-            "\"satisfaction\":90" +
-            "}" +
-            "]" +
-            "]";
+                "[" +
+                "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
+                "{" +
+                "\"id\":2," +
+                "\"name\":\"Thomas\"," +
+                "\"title\":\"Waiter\"" +
+                "}" +
+                "]," +
+                "[" +
+                "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
+                "{" +
+                "\"id\":3," +
+                "\"name\":\"Patricia\"," +
+                "\"title\":\"Cook\"" +
+                "}" +
+                "]," +
+                "[" +
+                "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Manager\"," +
+                "{" +
+                "\"id\":1," +
+                "\"managedEmployees\":" +
+                "[" +
+                "[" +
+                "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
+                "{" +
+                "\"id\":2," +
+                "\"name\":\"Thomas\"," +
+                "\"title\":\"Waiter\"" +
+                "}" +
+                "]," +
+                "[" +
+                "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Employee\"," +
+                "{" +
+                "\"id\":3," +
+                "\"name\":\"Patricia\"," +
+                "\"title\":\"Cook\"" +
+                "}" +
+                "]" +
+                "]," +
+                "\"name\":\"Bob\"," +
+                "\"title\":\"Boss\"" +
+                "}" +
+                "]," +
+                "[" +
+                "\".PolymorphismIdMinimalClassAsWrapperArrayTester$Customer\"," +
+                "{" +
+                "\"name\":\"Brad\"," +
+                "\"satisfaction\":90" +
+                "}" +
+                "]" +
+                "]";
 
         Person[] result = reader.read( input );
         {

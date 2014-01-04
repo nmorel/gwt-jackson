@@ -29,8 +29,8 @@ import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
 
 public final class JsonTypeWithGenericsTester extends AbstractTester {
 
-    @JsonTypeInfo( use = Id.NAME, include = As.PROPERTY, property = "object-type" )
-    @JsonSubTypes( {@Type( value = Dog.class, name = "doggy" )} )
+    @JsonTypeInfo(use = Id.NAME, include = As.PROPERTY, property = "object-type")
+    @JsonSubTypes({@Type(value = Dog.class, name = "doggy")})
     public static abstract class Animal {
 
         public String name;
@@ -41,7 +41,7 @@ public final class JsonTypeWithGenericsTester extends AbstractTester {
         public int boneCount;
 
         @JsonCreator
-        public Dog( @JsonProperty( "name" ) String name, @JsonProperty( "boneCount" ) int b ) {
+        public Dog( @JsonProperty("name") String name, @JsonProperty("boneCount") int b ) {
             super();
             this.name = name;
             boneCount = b;

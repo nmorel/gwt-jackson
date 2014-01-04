@@ -53,7 +53,7 @@ public abstract class JsonDeserializer<T> {
      * @throws JsonDeserializationException if an error occurs during the deserialization
      */
     public T deserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-        JsonDeserializationException {
+            JsonDeserializationException {
         try {
             if ( JsonToken.NULL.equals( reader.peek() ) ) {
                 return deserializeNullValue( reader, ctx, params );
@@ -80,7 +80,7 @@ public abstract class JsonDeserializer<T> {
      * @throws IOException if an error occurs reading the input
      */
     protected T deserializeNullValue( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-        IOException {
+            IOException {
         reader.skipValue();
         return null;
     }
@@ -96,7 +96,7 @@ public abstract class JsonDeserializer<T> {
      * @throws IOException if an error occurs reading the input
      */
     protected abstract T doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-        IOException;
+            IOException;
 
     /**
      * Set the back reference.

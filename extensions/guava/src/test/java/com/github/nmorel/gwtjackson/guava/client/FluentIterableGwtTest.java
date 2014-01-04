@@ -28,7 +28,7 @@ import com.google.gwt.core.client.GWT;
 public class FluentIterableGwtTest extends GwtJacksonGuavaTestCase {
 
     public interface FluentIterableIntegerWriter extends ObjectWriter<FluentIterable<Integer>>,
-        ObjectWriterTester<FluentIterable<Integer>> {
+            ObjectWriterTester<FluentIterable<Integer>> {
 
         static FluentIterableIntegerWriter INSTANCE = GWT.create( FluentIterableIntegerWriter.class );
     }

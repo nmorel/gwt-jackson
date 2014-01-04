@@ -5,18 +5,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.fasterxml.jackson.annotation.JacksonAnnotation;
-
 /**
  * Super source for {@link com.fasterxml.jackson.annotation.JsonFormat} to remove the use of java.util.Locale and java.util.TimeZone
  * classes
  */
-@Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER,
-    ElementType.TYPE})
+@Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @JacksonAnnotation
-public @interface JsonFormat
-{
+public @interface JsonFormat {
+
     /**
      * Value that indicates that default {@link java.util.Locale}
      * (from deserialization or serialization context) should be used:
@@ -78,8 +75,7 @@ public @interface JsonFormat
      * loosely to JSON types, with some extra values to indicate less precise
      * choices (i.e. allowing one of multiple actual shapes)
      */
-    public enum Shape
-    {
+    public enum Shape {
         /**
          * Marker enum value that indicates "default" (or "whatever") choice; needed
          * since Annotations can not have null values for enums.
@@ -129,8 +125,7 @@ public @interface JsonFormat
          * Value that indicates that (JSON) boolean type
          * (true, false) should be used.
          */
-        BOOLEAN
-        ;
+        BOOLEAN;
 
         public boolean isNumeric() {
             return (this == NUMBER) || (this == NUMBER_INT) || (this == NUMBER_FLOAT);

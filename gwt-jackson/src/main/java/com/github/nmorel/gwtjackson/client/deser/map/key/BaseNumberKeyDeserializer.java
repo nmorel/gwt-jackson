@@ -20,7 +20,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
-import com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer;
 
 /**
  * Base implementation of {@link KeyDeserializer} for {@link Number}s.

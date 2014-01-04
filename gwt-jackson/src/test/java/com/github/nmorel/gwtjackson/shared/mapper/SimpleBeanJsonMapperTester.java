@@ -42,41 +42,41 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
     public void testDeserializeValue( ObjectReaderTester<SimpleBean> reader ) {
 
         String input = "{" +
-            "\"string\":\"toto\"," +
-            "\"bytePrimitive\":34," +
-            "\"byteBoxed\":87," +
-            "\"shortPrimitive\":12," +
-            "\"shortBoxed\":15," +
-            "\"intPrimitive\":234," +
-            "\"intBoxed\":456," +
-            "\"longPrimitive\":-9223372036854775808," +
-            "\"longBoxed\":\"9223372036854775807\"," +
-            "\"doublePrimitive\":126.23," +
-            "\"doubleBoxed\":1256.98," +
-            "\"floatPrimitive\":12.89," +
-            "\"floatBoxed\":67.3," +
-            "\"booleanPrimitive\":true," +
-            "\"booleanBoxed\":\"false\"," +
-            "\"charPrimitive\":231," +
-            "\"charBoxed\":232," +
-            "\"bigInteger\":123456789098765432345678987654," +
-            "\"bigDecimal\":\"12345678987654.456789\"," +
-            "\"enumProperty\":\"B\"," +
-            "\"date\":1345304756543," +
-            "\"sqlDate\":\"2012-08-18\"," +
-            "\"sqlTime\":\"15:45:56\"," +
-            "\"sqlTimestamp\":1345304756546," +
-            "\"stringArray\":[\"Hello\",null,\"World\",\"!\"]," +
-            "\"booleanPrimitiveArray\":[true, null, false, 1, 0]," +
-            "\"bytePrimitiveArray\":\"SGVsbG8=\"," +
-            "\"characterPrimitiveArray\":\"çou\"," +
-            "\"doublePrimitiveArray\":[45.789,null,5.1024]," +
-            "\"floatPrimitiveArray\":[null]," +
-            "\"integerPrimitiveArray\":[4,5,6,null,7,8]," +
-            "\"longPrimitiveArray\":[9223372036854775807,null,-9223372036854775808]," +
-            "\"shortPrimitiveArray\":[9,null,7,8,15]," +
-            "\"voidProperty\":null" +
-            "}";
+                "\"string\":\"toto\"," +
+                "\"bytePrimitive\":34," +
+                "\"byteBoxed\":87," +
+                "\"shortPrimitive\":12," +
+                "\"shortBoxed\":15," +
+                "\"intPrimitive\":234," +
+                "\"intBoxed\":456," +
+                "\"longPrimitive\":-9223372036854775808," +
+                "\"longBoxed\":\"9223372036854775807\"," +
+                "\"doublePrimitive\":126.23," +
+                "\"doubleBoxed\":1256.98," +
+                "\"floatPrimitive\":12.89," +
+                "\"floatBoxed\":67.3," +
+                "\"booleanPrimitive\":true," +
+                "\"booleanBoxed\":\"false\"," +
+                "\"charPrimitive\":231," +
+                "\"charBoxed\":232," +
+                "\"bigInteger\":123456789098765432345678987654," +
+                "\"bigDecimal\":\"12345678987654.456789\"," +
+                "\"enumProperty\":\"B\"," +
+                "\"date\":1345304756543," +
+                "\"sqlDate\":\"2012-08-18\"," +
+                "\"sqlTime\":\"15:45:56\"," +
+                "\"sqlTimestamp\":1345304756546," +
+                "\"stringArray\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"booleanPrimitiveArray\":[true, null, false, 1, 0]," +
+                "\"bytePrimitiveArray\":\"SGVsbG8=\"," +
+                "\"characterPrimitiveArray\":\"çou\"," +
+                "\"doublePrimitiveArray\":[45.789,null,5.1024]," +
+                "\"floatPrimitiveArray\":[null]," +
+                "\"integerPrimitiveArray\":[4,5,6,null,7,8]," +
+                "\"longPrimitiveArray\":[9223372036854775807,null,-9223372036854775808]," +
+                "\"shortPrimitiveArray\":[9,null,7,8,15]," +
+                "\"voidProperty\":null" +
+                "}";
 
         SimpleBean bean = reader.read( input );
         assertNotNull( bean );
@@ -155,41 +155,41 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
         bean.setVoidProperty( null );
 
         String expected = "{" +
-            "\"string\":\"toto\"," +
-            "\"bytePrimitive\":34," +
-            "\"byteBoxed\":87," +
-            "\"shortPrimitive\":12," +
-            "\"shortBoxed\":15," +
-            "\"intPrimitive\":234," +
-            "\"intBoxed\":456," +
-            "\"longPrimitive\":-9223372036854775808," +
-            "\"longBoxed\":9223372036854775807," +
-            "\"doublePrimitive\":126.23," +
-            "\"doubleBoxed\":1256.98," +
-            "\"floatPrimitive\":12.89," +
-            "\"floatBoxed\":67.3," +
-            "\"booleanPrimitive\":true," +
-            "\"booleanBoxed\":false," +
-            "\"charPrimitive\":\"ç\"," +
-            "\"charBoxed\":\"è\"," +
-            "\"bigInteger\":123456789098765432345678987654," +
-            "\"bigDecimal\":12345678987654.456789," +
-            "\"enumProperty\":\"A\"," +
-            "\"date\":1345304756543," +
-            "\"sqlDate\":\"2012-08-18\"," +
-            "\"sqlTime\":\"" + bean.getSqlTime().toString() + "\"," +
-            "\"sqlTimestamp\":1345304756546," +
-            "\"stringArray\":[\"Hello\",\"World\",\"!\"]," +
-            "\"booleanPrimitiveArray\":[true,false,true,false]," +
-            "\"bytePrimitiveArray\":\"SGVsbG8=\"," +
-            "\"characterPrimitiveArray\":\"çou\"," +
-            "\"doublePrimitiveArray\":[45.789,5.1024]," +
-            "\"floatPrimitiveArray\":[]," +
-            "\"integerPrimitiveArray\":[4,5,6,7,8]," +
-            "\"longPrimitiveArray\":[9223372036854775807,-9223372036854775808]," +
-            "\"shortPrimitiveArray\":[9,7,8,15]," +
-            "\"voidProperty\":null" +
-            "}";
+                "\"string\":\"toto\"," +
+                "\"bytePrimitive\":34," +
+                "\"byteBoxed\":87," +
+                "\"shortPrimitive\":12," +
+                "\"shortBoxed\":15," +
+                "\"intPrimitive\":234," +
+                "\"intBoxed\":456," +
+                "\"longPrimitive\":-9223372036854775808," +
+                "\"longBoxed\":9223372036854775807," +
+                "\"doublePrimitive\":126.23," +
+                "\"doubleBoxed\":1256.98," +
+                "\"floatPrimitive\":12.89," +
+                "\"floatBoxed\":67.3," +
+                "\"booleanPrimitive\":true," +
+                "\"booleanBoxed\":false," +
+                "\"charPrimitive\":\"ç\"," +
+                "\"charBoxed\":\"è\"," +
+                "\"bigInteger\":123456789098765432345678987654," +
+                "\"bigDecimal\":12345678987654.456789," +
+                "\"enumProperty\":\"A\"," +
+                "\"date\":1345304756543," +
+                "\"sqlDate\":\"2012-08-18\"," +
+                "\"sqlTime\":\"" + bean.getSqlTime().toString() + "\"," +
+                "\"sqlTimestamp\":1345304756546," +
+                "\"stringArray\":[\"Hello\",\"World\",\"!\"]," +
+                "\"booleanPrimitiveArray\":[true,false,true,false]," +
+                "\"bytePrimitiveArray\":\"SGVsbG8=\"," +
+                "\"characterPrimitiveArray\":\"çou\"," +
+                "\"doublePrimitiveArray\":[45.789,5.1024]," +
+                "\"floatPrimitiveArray\":[]," +
+                "\"integerPrimitiveArray\":[4,5,6,7,8]," +
+                "\"longPrimitiveArray\":[9223372036854775807,-9223372036854775808]," +
+                "\"shortPrimitiveArray\":[9,7,8,15]," +
+                "\"voidProperty\":null" +
+                "}";
 
         assertEquals( expected, writer.write( bean ) );
     }
@@ -198,13 +198,13 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
         String doubleAndFloatZeroString = GWT.isProdMode() ? "0" : "0.0";
 
         String expected = "{\"bytePrimitive\":0," +
-            "\"shortPrimitive\":0," +
-            "\"intPrimitive\":0," +
-            "\"longPrimitive\":0," +
-            "\"doublePrimitive\":" + doubleAndFloatZeroString + "," +
-            "\"floatPrimitive\":" + doubleAndFloatZeroString + "," +
-            "\"booleanPrimitive\":false," +
-            "\"charPrimitive\":\"\\u0000\"}";
+                "\"shortPrimitive\":0," +
+                "\"intPrimitive\":0," +
+                "\"longPrimitive\":0," +
+                "\"doublePrimitive\":" + doubleAndFloatZeroString + "," +
+                "\"floatPrimitive\":" + doubleAndFloatZeroString + "," +
+                "\"booleanPrimitive\":false," +
+                "\"charPrimitive\":\"\\u0000\"}";
 
         assertEquals( expected, writer.write( new SimpleBean() ) );
     }

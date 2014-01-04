@@ -58,7 +58,7 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
                 String name = reader.nextName();
                 if ( !name.equals( rootName ) ) {
                     throw ctx.traceError( "Unwrap root value is enabled but the name '" + name + "' don't match the expected rootName " +
-                        "'" + rootName + "'", reader );
+                            "'" + rootName + "'", reader );
                 }
                 T result = newDeserializer( ctx ).deserialize( reader, ctx );
                 reader.endObject();

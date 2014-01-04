@@ -27,9 +27,9 @@ public class BooleanKeySerializerTest extends AbstractKeySerializerTest<Boolean>
     }
 
     public void testSerializeValue() {
-        assertSerialization("true", true);
-        assertSerialization("true", Boolean.TRUE);
-        assertSerialization("false", false);
-        assertSerialization("false", Boolean.FALSE);
+        assertSerialization( "true", true );
+        assertSerialization( "true", Boolean.TRUE );
+        assertSerialization( "false", false );
+        assertSerialization( "false", Boolean.FALSE );
     }
 }

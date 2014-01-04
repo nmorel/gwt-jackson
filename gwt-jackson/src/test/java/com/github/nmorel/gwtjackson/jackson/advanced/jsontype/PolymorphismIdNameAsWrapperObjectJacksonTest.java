@@ -29,13 +29,13 @@ public class PolymorphismIdNameAsWrapperObjectJacksonTest extends AbstractJackso
     @Test
     public void testSerialize() {
         PolymorphismIdNameAsWrapperObjectTester.INSTANCE
-            .testSerialize( createWriter( PolymorphismIdNameAsWrapperObjectTester.Person[].class ) );
+                .testSerialize( createWriter( PolymorphismIdNameAsWrapperObjectTester.Person[].class ) );
     }
 
     @Test
     @Ignore("jackson can't event find the subtype, booooo")
     public void testDeserialize() {
         PolymorphismIdNameAsWrapperObjectTester.INSTANCE
-            .testDeserialize( createReader( PolymorphismIdNameAsWrapperObjectTester.Person[].class ) );
+                .testDeserialize( createReader( PolymorphismIdNameAsWrapperObjectTester.Person[].class ) );
     }
 }

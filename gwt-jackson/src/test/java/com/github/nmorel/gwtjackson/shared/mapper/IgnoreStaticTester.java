@@ -56,9 +56,9 @@ public final class IgnoreStaticTester extends AbstractTester {
     public void testDeserializeValue( ObjectReaderTester<IgnoreStaticBean> reader ) {
 
         String input = "{" +
-            "\"string\":\"aString\"," +
-            "\"STATIC_FIELD\":\"shouldBeIgnored\"" +
-            "}";
+                "\"string\":\"aString\"," +
+                "\"STATIC_FIELD\":\"shouldBeIgnored\"" +
+                "}";
 
         assertEquals( "static", IgnoreStaticBean.STATIC_FIELD );
         assertEquals( "static", IgnoreStaticBean.getSTATIC_FIELD() );
@@ -76,8 +76,8 @@ public final class IgnoreStaticTester extends AbstractTester {
         bean.setString( "aString" );
 
         String expected = "{" +
-            "\"string\":\"aString\"" +
-            "}";
+                "\"string\":\"aString\"" +
+                "}";
 
         assertEquals( expected, writer.write( bean ) );
     }

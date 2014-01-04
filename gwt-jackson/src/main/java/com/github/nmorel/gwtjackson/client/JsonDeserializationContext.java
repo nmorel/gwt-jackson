@@ -203,7 +203,7 @@ public class JsonDeserializationContext extends JsonMappingContext {
     private void traceReaderInfo( JsonReader reader ) {
         if ( null != reader && getLogger().isLoggable( Level.INFO ) ) {
             getLogger().log( Level.INFO, "Error at line " + reader.getLineNumber() + " and column " + reader
-                .getColumnNumber() + " of input <" + reader.getInput() + ">" );
+                    .getColumnNumber() + " of input <" + reader.getInput() + ">" );
         }
     }
 

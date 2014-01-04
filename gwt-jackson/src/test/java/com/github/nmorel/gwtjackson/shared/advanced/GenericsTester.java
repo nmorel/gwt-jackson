@@ -65,20 +65,20 @@ public final class GenericsTester extends AbstractTester {
         bean.listWithGenericValues = Arrays.asList( "Hello", "World" );
 
         String expected = "{" +
-            "\"name\":\"generic\"," +
-            "\"genericValue\":\"value\"," +
-            "\"listWithGenericValues\":[\"Hello\",\"World\"]" +
-            "}";
+                "\"name\":\"generic\"," +
+                "\"genericValue\":\"value\"," +
+                "\"listWithGenericValues\":[\"Hello\",\"World\"]" +
+                "}";
 
         assertEquals( expected, writer.write( bean ) );
     }
 
     public void testDeserializeString( ObjectReaderTester<GenericOneType<String>> reader ) {
         String input = "{" +
-            "\"name\":\"generic\"," +
-            "\"genericValue\":\"value\"," +
-            "\"listWithGenericValues\":[\"Hello\",\"World\"]" +
-            "}";
+                "\"name\":\"generic\"," +
+                "\"genericValue\":\"value\"," +
+                "\"listWithGenericValues\":[\"Hello\",\"World\"]" +
+                "}";
 
         GenericOneType<String> bean = reader.read( input );
         assertNotNull( bean );
@@ -95,11 +95,11 @@ public final class GenericsTester extends AbstractTester {
         bean.setSecondType = new LinkedHashSet<String>( Arrays.asList( "Bonjour", "le", "monde" ) );
 
         String expected = "{" +
-            "\"firstType\":\"first\"," +
-            "\"secondType\":\"second\"," +
-            "\"listFirstType\":[\"Hello\",\"World\"]," +
-            "\"setSecondType\":[\"Bonjour\",\"le\",\"monde\"]" +
-            "}";
+                "\"firstType\":\"first\"," +
+                "\"secondType\":\"second\"," +
+                "\"listFirstType\":[\"Hello\",\"World\"]," +
+                "\"setSecondType\":[\"Bonjour\",\"le\",\"monde\"]" +
+                "}";
         String result = writer.write( bean );
 
         assertEquals( expected, result );
@@ -107,11 +107,11 @@ public final class GenericsTester extends AbstractTester {
 
     public void testDeserializeStringString( ObjectReaderTester<GenericTwoType<String, String>> reader ) {
         String input = "{" +
-            "\"firstType\":\"first\"," +
-            "\"secondType\":\"second\"," +
-            "\"listFirstType\":[\"Hello\",\"World\"]," +
-            "\"setSecondType\":[\"Bonjour\",\"le\",\"monde\"]" +
-            "}";
+                "\"firstType\":\"first\"," +
+                "\"secondType\":\"second\"," +
+                "\"listFirstType\":[\"Hello\",\"World\"]," +
+                "\"setSecondType\":[\"Bonjour\",\"le\",\"monde\"]" +
+                "}";
 
         GenericTwoType<String, String> bean = reader.read( input );
         assertNotNull( bean );
@@ -129,11 +129,11 @@ public final class GenericsTester extends AbstractTester {
         bean.setSecondType = new LinkedHashSet<String>( Arrays.asList( "Bonjour", "le", "monde" ) );
 
         String expected = "{" +
-            "\"firstType\":1," +
-            "\"secondType\":\"second\"," +
-            "\"listFirstType\":[1,2]," +
-            "\"setSecondType\":[\"Bonjour\",\"le\",\"monde\"]" +
-            "}";
+                "\"firstType\":1," +
+                "\"secondType\":\"second\"," +
+                "\"listFirstType\":[1,2]," +
+                "\"setSecondType\":[\"Bonjour\",\"le\",\"monde\"]" +
+                "}";
         String result = writer.write( bean );
 
         assertEquals( expected, result );
@@ -141,11 +141,11 @@ public final class GenericsTester extends AbstractTester {
 
     public void testDeserializeIntegerString( ObjectReaderTester<GenericTwoType<Integer, String>> reader ) {
         String input = "{" +
-            "\"firstType\":1," +
-            "\"secondType\":\"second\"," +
-            "\"listFirstType\":[1,2]," +
-            "\"setSecondType\":[\"Bonjour\",\"le\",\"monde\"]" +
-            "}";
+                "\"firstType\":1," +
+                "\"secondType\":\"second\"," +
+                "\"listFirstType\":[1,2]," +
+                "\"setSecondType\":[\"Bonjour\",\"le\",\"monde\"]" +
+                "}";
 
         GenericTwoType<Integer, String> bean = reader.read( input );
         assertNotNull( bean );
@@ -175,21 +175,21 @@ public final class GenericsTester extends AbstractTester {
         bean.setSecondType.add( gen1 );
 
         String expected = "{" +
-            "\"firstType\":1," +
-            "\"secondType\":{" +
-            "\"name\":\"generic1\"," +
-            "\"genericValue\":\"value1\"," +
-            "\"listWithGenericValues\":[\"Hello\",\"World\"]" +
-            "}," +
-            "\"listFirstType\":[1,2]," +
-            "\"setSecondType\":[" +
-            "{" +
-            "\"name\":\"generic2\"," +
-            "\"genericValue\":\"value2\"," +
-            "\"listWithGenericValues\":[\"I\",\"Am\",\"2\"]" +
-            "}," +
-            "\"generic1\"]" +
-            "}";
+                "\"firstType\":1," +
+                "\"secondType\":{" +
+                "\"name\":\"generic1\"," +
+                "\"genericValue\":\"value1\"," +
+                "\"listWithGenericValues\":[\"Hello\",\"World\"]" +
+                "}," +
+                "\"listFirstType\":[1,2]," +
+                "\"setSecondType\":[" +
+                "{" +
+                "\"name\":\"generic2\"," +
+                "\"genericValue\":\"value2\"," +
+                "\"listWithGenericValues\":[\"I\",\"Am\",\"2\"]" +
+                "}," +
+                "\"generic1\"]" +
+                "}";
         String result = writer.write( bean );
 
         assertEquals( expected, result );
@@ -197,21 +197,21 @@ public final class GenericsTester extends AbstractTester {
 
     public void testDeserializeIntegerGenericString( ObjectReaderTester<GenericTwoType<Integer, GenericOneType<String>>> reader ) {
         String input = "{" +
-            "\"firstType\":1," +
-            "\"secondType\":{" +
-            "\"name\":\"generic1\"," +
-            "\"genericValue\":\"value1\"," +
-            "\"listWithGenericValues\":[\"Hello\",\"World\"]" +
-            "}," +
-            "\"listFirstType\":[1,2]," +
-            "\"setSecondType\":[" +
-            "{" +
-            "\"name\":\"generic2\"," +
-            "\"genericValue\":\"value2\"," +
-            "\"listWithGenericValues\":[\"I\",\"Am\",\"2\"]" +
-            "}," +
-            "\"generic1\"]" +
-            "}";
+                "\"firstType\":1," +
+                "\"secondType\":{" +
+                "\"name\":\"generic1\"," +
+                "\"genericValue\":\"value1\"," +
+                "\"listWithGenericValues\":[\"Hello\",\"World\"]" +
+                "}," +
+                "\"listFirstType\":[1,2]," +
+                "\"setSecondType\":[" +
+                "{" +
+                "\"name\":\"generic2\"," +
+                "\"genericValue\":\"value2\"," +
+                "\"listWithGenericValues\":[\"I\",\"Am\",\"2\"]" +
+                "}," +
+                "\"generic1\"]" +
+                "}";
 
         GenericTwoType<Integer, GenericOneType<String>> bean = reader.read( input );
         assertNotNull( bean );

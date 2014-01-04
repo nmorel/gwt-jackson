@@ -81,11 +81,11 @@ public final class PropertyInfo {
         boolean hasAnyAnnotation = null != jsonProperty || null != jsonManagedReference || null != jsonBackReference;
 
         boolean getterAutoDetected = null != fieldAccessors.getGetter() && (hasAnyAnnotation || isGetterAutoDetected( fieldAccessors
-            .getGetter(), mapperInfo.getBeanInfo() ));
+                .getGetter(), mapperInfo.getBeanInfo() ));
         boolean setterAutoDetected = null != fieldAccessors.getSetter() && (hasAnyAnnotation || isSetterAutoDetected( fieldAccessors
-            .getSetter(), mapperInfo.getBeanInfo() ));
+                .getSetter(), mapperInfo.getBeanInfo() ));
         boolean fieldAutoDetected = null != fieldAccessors.getField() && (hasAnyAnnotation || isFieldAutoDetected( fieldAccessors
-            .getField(), mapperInfo.getBeanInfo() ));
+                .getField(), mapperInfo.getBeanInfo() ));
 
         if ( !getterAutoDetected && !setterAutoDetected && !fieldAutoDetected ) {
             // none of the field have been auto-detected, we ignore the field
@@ -155,7 +155,7 @@ public final class PropertyInfo {
         // if type is ignored, we ignore the property
         if ( null != type.isClassOrInterface() ) {
             JsonIgnoreType jsonIgnoreType = findFirstEncounteredAnnotationsOnAllHierarchy( type
-                .isClassOrInterface(), JsonIgnoreType.class );
+                    .isClassOrInterface(), JsonIgnoreType.class );
             if ( null != jsonIgnoreType && jsonIgnoreType.value() ) {
                 return true;
             }
@@ -178,12 +178,12 @@ public final class PropertyInfo {
 
     private static boolean isSetterAutoDetected( JMethod setter, BeanInfo info ) {
         return isAutoDetected( info.getSetterVisibility(), setter.isPrivate(), setter.isProtected(), setter.isPublic(), setter
-            .isDefaultAccess() );
+                .isDefaultAccess() );
     }
 
     private static boolean isFieldAutoDetected( JField field, BeanInfo info ) {
         return isAutoDetected( info.getFieldVisibility(), field.isPrivate(), field.isProtected(), field.isPublic(), field
-            .isDefaultAccess() );
+                .isDefaultAccess() );
     }
 
     private static boolean isAutoDetected( JsonAutoDetect.Visibility visibility, boolean isPrivate, boolean isProtected,
@@ -209,7 +209,7 @@ public final class PropertyInfo {
                                          final PropertyInfo result ) {
         if ( getterAutoDetect || fieldAutoDetect ) {
             result.getterAccessor = Optional.of( new FieldReadAccessor( result.propertyName, fieldAutoDetect ? fieldAccessors
-                .getField() : null, getterAutoDetect ? fieldAccessors.getGetter() : null ) );
+                    .getField() : null, getterAutoDetect ? fieldAccessors.getGetter() : null ) );
         }
     }
 
@@ -217,7 +217,7 @@ public final class PropertyInfo {
                                          final boolean fieldAutoDetect, final PropertyInfo result ) {
         if ( setterAutoDetect || fieldAutoDetect ) {
             result.setterAccessor = Optional.of( new FieldWriteAccessor( result.propertyName, fieldAutoDetect ? fieldAccessors
-                .getField() : null, setterAutoDetect ? fieldAccessors.getSetter() : null ) );
+                    .getField() : null, setterAutoDetect ? fieldAccessors.getSetter() : null ) );
         }
     }
 

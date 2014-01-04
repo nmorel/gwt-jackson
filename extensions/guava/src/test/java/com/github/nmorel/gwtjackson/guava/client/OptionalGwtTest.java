@@ -36,7 +36,7 @@ public class OptionalGwtTest extends GwtJacksonGuavaTestCase {
     }
 
     public interface OptionalGenericDataMapper extends ObjectMapper<Optional<OptionalGenericData<String>>>,
-        ObjectMapperTester<Optional<OptionalGenericData<String>>> {
+            ObjectMapperTester<Optional<OptionalGenericData<String>>> {
 
         static OptionalGenericDataMapper INSTANCE = GWT.create( OptionalGenericDataMapper.class );
     }
@@ -49,7 +49,7 @@ public class OptionalGwtTest extends GwtJacksonGuavaTestCase {
 
     public void testSerializeWithNonNullSerialization() {
         tester.testSerializeWithNonNullSerialization( createWriter( BeanWithOptionalMapper.INSTANCE, new Builder().serializeNulls( false )
-            .build() ) );
+                .build() ) );
     }
 
     public void testDeserialize() {

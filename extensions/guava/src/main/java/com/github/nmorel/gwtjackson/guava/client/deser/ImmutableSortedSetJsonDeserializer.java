@@ -32,7 +32,7 @@ import com.google.common.collect.ImmutableSortedSet;
  * @author Nicolas Morel
  */
 public final class ImmutableSortedSetJsonDeserializer<T extends Comparable<T>> extends
-    BaseImmutableCollectionJsonDeserializer<ImmutableSortedSet<T>, T> {
+        BaseImmutableCollectionJsonDeserializer<ImmutableSortedSet<T>, T> {
 
     /**
      * @param deserializer {@link JsonDeserializer} used to deserialize the objects inside the {@link ImmutableSortedSet}.

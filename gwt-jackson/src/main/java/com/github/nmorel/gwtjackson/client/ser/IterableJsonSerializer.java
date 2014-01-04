@@ -58,7 +58,7 @@ public class IterableJsonSerializer<I extends Iterable<T>, T> extends JsonSerial
 
     @Override
     public void doSerialize( JsonWriter writer, @Nonnull I values, JsonSerializationContext ctx, JsonSerializerParameters params ) throws
-        IOException {
+            IOException {
         Iterator<T> iterator = values.iterator();
 
         if ( !iterator.hasNext() ) {

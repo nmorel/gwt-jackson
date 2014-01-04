@@ -84,8 +84,8 @@ public final class ObjectIdWithPolymorphicTester extends AbstractTester {
 
         String json = mapper.write( in1 );
         assertEquals( "{\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdWithPolymorphicTester$Impl\",\"id\":1," +
-            "\"extra\":456,\"next\":{\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.identity" +
-            ".ObjectIdWithPolymorphicTester$Impl\",\"id\":2,\"extra\":222,\"next\":1,\"value\":111},\"value\":123}", json );
+                "\"extra\":456,\"next\":{\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.identity" +
+                ".ObjectIdWithPolymorphicTester$Impl\",\"id\":2,\"extra\":222,\"next\":1,\"value\":111},\"value\":123}", json );
 
         // then bring back...
         Base result0 = mapper.read( json );

@@ -54,7 +54,7 @@ public class PrimitiveDoubleArrayJsonDeserializer extends AbstractArrayJsonDeser
 
     @Override
     public double[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-        IOException {
+            IOException {
         JsArrayNumber jsArray = JsArrayNumber.createArray().cast();
         reader.beginArray();
         while ( JsonToken.END_ARRAY != reader.peek() ) {

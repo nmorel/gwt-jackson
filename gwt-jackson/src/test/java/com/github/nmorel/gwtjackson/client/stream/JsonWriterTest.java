@@ -188,10 +188,10 @@ public class JsonWriterTest extends GwtJacksonTestCase {
             // in compiled mode, the .0 are removed, the power is written with 'e+' instead of 'E' and 'e-' instead of 'E-' and the Double
             // .MIN_VALUE is 5e-324
             assertEquals( "[0," + "1," + "1.7976931348623157e+308," + "5e-324," + "0," + "-0.5," + "2.2250738585072014e-308," +
-                "" + "3.141592653589793," + "2.718281828459045]", StringBuilder.toString() );
+                    "" + "3.141592653589793," + "2.718281828459045]", StringBuilder.toString() );
         } else {
             assertEquals( "[-0.0," + "1.0," + "1.7976931348623157E308," + "4.9E-324," + "0.0," + "-0.5," + "2.2250738585072014E-308," +
-                "" + "3.141592653589793," + "2.718281828459045]", StringBuilder.toString() );
+                    "" + "3.141592653589793," + "2.718281828459045]", StringBuilder.toString() );
         }
     }
 
@@ -220,7 +220,7 @@ public class JsonWriterTest extends GwtJacksonTestCase {
         jsonWriter.endArray();
         jsonWriter.close();
         assertEquals( "[0," + "9223372036854775808," + "-9223372036854775809," + "3.141592653589793238462643383]", StringBuilder
-            .toString() );
+                .toString() );
     }
 
     public void testBooleans() throws IOException {
@@ -266,9 +266,9 @@ public class JsonWriterTest extends GwtJacksonTestCase {
         jsonWriter.value( "\u0019" );
         jsonWriter.endArray();
         assertEquals( "[\"a\"," + "\"a\\\"\"," + "\"\\\"\"," + "\":\"," + "\",\"," + "\"\\b\"," + "\"\\f\"," + "\"\\n\"," + "\"\\r\"," +
-            "" + "\"\\t\"," + "\" \"," + "\"\\\\\"," + "\"{\"," + "\"}\"," + "\"[\"," + "\"]\"," + "\"\\u0000\"," + "\"\\u0019\"]",
-            StringBuilder
-            .toString() );
+                "" + "\"\\t\"," + "\" \"," + "\"\\\\\"," + "\"{\"," + "\"}\"," + "\"[\"," + "\"]\"," + "\"\\u0000\"," + "\"\\u0019\"]",
+                StringBuilder
+                .toString() );
     }
 
     public void testUnicodeLineBreaksEscaped() throws IOException {
@@ -355,7 +355,8 @@ public class JsonWriterTest extends GwtJacksonTestCase {
         }
         jsonWriter.endObject();
         assertEquals( "{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":" +
-            "{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{" + "}}}}}}}}}}}}}}}}}}}}}", StringBuilder.toString() );
+                "{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{" + "}}}}}}}}}}}}}}}}}}}}}", StringBuilder
+                .toString() );
     }
 
     public void testRepeatedName() throws IOException {
@@ -390,8 +391,8 @@ public class JsonWriterTest extends GwtJacksonTestCase {
         jsonWriter.endObject();
 
         String expected = "{\n" + "   \"a\": true,\n" + "   \"b\": false,\n" + "   \"c\": 5,\n" + "   \"e\": null," +
-            "\n" + "   \"f\": [\n" + "      6,\n" + "      7\n" + "   ],\n" + "   \"g\": {\n" + "      \"h\": 8," +
-            "\n" + "      \"i\": 9\n" + "   }\n" + "}";
+                "\n" + "   \"f\": [\n" + "      6,\n" + "      7\n" + "   ],\n" + "   \"g\": {\n" + "      \"h\": 8," +
+                "\n" + "      \"i\": 9\n" + "   }\n" + "}";
         assertEquals( expected, StringBuilder.toString() );
     }
 
@@ -416,7 +417,7 @@ public class JsonWriterTest extends GwtJacksonTestCase {
         jsonWriter.endArray();
 
         String expected = "[\n" + "   true,\n" + "   false,\n" + "   5,\n" + "   null,\n" + "   {\n" + "      \"a\": 6," +
-            "\n" + "      \"b\": 7\n" + "   },\n" + "   [\n" + "      8,\n" + "      9\n" + "   ]\n" + "]";
+                "\n" + "      \"b\": 7\n" + "   },\n" + "   [\n" + "      8,\n" + "      9\n" + "   ]\n" + "]";
         assertEquals( expected, StringBuilder.toString() );
     }
 

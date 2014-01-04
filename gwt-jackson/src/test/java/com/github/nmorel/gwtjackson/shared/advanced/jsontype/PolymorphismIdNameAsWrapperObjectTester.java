@@ -32,9 +32,9 @@ import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
  */
 public final class PolymorphismIdNameAsWrapperObjectTester extends AbstractTester {
 
-    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
-    @JsonPropertyOrder(alphabetic = true)
-    @JsonSubTypes({@JsonSubTypes.Type(value = Employee.class, name = "Employee")})
+    @JsonTypeInfo( use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT )
+    @JsonPropertyOrder( alphabetic = true )
+    @JsonSubTypes( {@JsonSubTypes.Type( value = Employee.class, name = "Employee" )} )
     public static abstract class Person {
 
         public String name;
@@ -47,7 +47,7 @@ public final class PolymorphismIdNameAsWrapperObjectTester extends AbstractTeste
         public String title;
     }
 
-    @JsonTypeName("Manager")
+    @JsonTypeName( "Manager" )
     public static class Manager extends Employee {
 
         public List<Employee> managedEmployees;
@@ -93,114 +93,114 @@ public final class PolymorphismIdNameAsWrapperObjectTester extends AbstractTeste
         String result = writer.write( persons );
 
         String expected = "[" +
-            "{" +
-            "\"Employee\":" +
-            "{" +
-            "\"id\":2," +
-            "\"name\":\"Thomas\"," +
-            "\"title\":\"Waiter\"" +
-            "}" +
-            "}," +
-            "{" +
-            "\"Employee\":" +
-            "{" +
-            "\"id\":3," +
-            "\"name\":\"Patricia\"," +
-            "\"title\":\"Cook\"" +
-            "}" +
-            "}," +
-            "{" +
-            "\"Manager\":" +
-            "{" +
-            "\"id\":1," +
-            "\"managedEmployees\":" +
-            "[" +
-            "{" +
-            "\"Employee\":" +
-            "{" +
-            "\"id\":2," +
-            "\"name\":\"Thomas\"," +
-            "\"title\":\"Waiter\"" +
-            "}" +
-            "}," +
-            "{" +
-            "\"Employee\":" +
-            "{" +
-            "\"id\":3," +
-            "\"name\":\"Patricia\"," +
-            "\"title\":\"Cook\"" +
-            "}" +
-            "}" +
-            "]," +
-            "\"name\":\"Bob\"," +
-            "\"title\":\"Boss\"" +
-            "}" +
-            "}," +
-            "{" +
-            "\"PolymorphismIdNameAsWrapperObjectTester$Customer\":" +
-            "{" +
-            "\"name\":\"Brad\"," +
-            "\"satisfaction\":90" +
-            "}" +
-            "}" +
-            "]";
+                "{" +
+                "\"Employee\":" +
+                "{" +
+                "\"id\":2," +
+                "\"name\":\"Thomas\"," +
+                "\"title\":\"Waiter\"" +
+                "}" +
+                "}," +
+                "{" +
+                "\"Employee\":" +
+                "{" +
+                "\"id\":3," +
+                "\"name\":\"Patricia\"," +
+                "\"title\":\"Cook\"" +
+                "}" +
+                "}," +
+                "{" +
+                "\"Manager\":" +
+                "{" +
+                "\"id\":1," +
+                "\"managedEmployees\":" +
+                "[" +
+                "{" +
+                "\"Employee\":" +
+                "{" +
+                "\"id\":2," +
+                "\"name\":\"Thomas\"," +
+                "\"title\":\"Waiter\"" +
+                "}" +
+                "}," +
+                "{" +
+                "\"Employee\":" +
+                "{" +
+                "\"id\":3," +
+                "\"name\":\"Patricia\"," +
+                "\"title\":\"Cook\"" +
+                "}" +
+                "}" +
+                "]," +
+                "\"name\":\"Bob\"," +
+                "\"title\":\"Boss\"" +
+                "}" +
+                "}," +
+                "{" +
+                "\"PolymorphismIdNameAsWrapperObjectTester$Customer\":" +
+                "{" +
+                "\"name\":\"Brad\"," +
+                "\"satisfaction\":90" +
+                "}" +
+                "}" +
+                "]";
 
         assertEquals( expected, result );
     }
 
     public void testDeserialize( ObjectReaderTester<Person[]> reader ) {
         String input = "[" +
-            "{" +
-            "\"Employee\":" +
-            "{" +
-            "\"id\":2," +
-            "\"name\":\"Thomas\"," +
-            "\"title\":\"Waiter\"" +
-            "}" +
-            "}," +
-            "{" +
-            "\"Employee\":" +
-            "{" +
-            "\"id\":3," +
-            "\"name\":\"Patricia\"," +
-            "\"title\":\"Cook\"" +
-            "}" +
-            "}," +
-            "{" +
-            "\"Manager\":" +
-            "{" +
-            "\"id\":1," +
-            "\"managedEmployees\":" +
-            "[" +
-            "{" +
-            "\"Employee\":" +
-            "{" +
-            "\"id\":2," +
-            "\"name\":\"Thomas\"," +
-            "\"title\":\"Waiter\"" +
-            "}" +
-            "}," +
-            "{" +
-            "\"Employee\":" +
-            "{" +
-            "\"id\":3," +
-            "\"name\":\"Patricia\"," +
-            "\"title\":\"Cook\"" +
-            "}" +
-            "}" +
-            "]," +
-            "\"name\":\"Bob\"," +
-            "\"title\":\"Boss\"" +
-            "}" +
-            "}," +
-            "{" +
-            "\"PolymorphismIdNameAsWrapperObjectTester$Customer\":" +
-            "{" +
-            "\"name\":\"Brad\"," +
-            "\"satisfaction\":90" +
-            "}" +
-            "}" +
-            "]";
+                "{" +
+                "\"Employee\":" +
+                "{" +
+                "\"id\":2," +
+                "\"name\":\"Thomas\"," +
+                "\"title\":\"Waiter\"" +
+                "}" +
+                "}," +
+                "{" +
+                "\"Employee\":" +
+                "{" +
+                "\"id\":3," +
+                "\"name\":\"Patricia\"," +
+                "\"title\":\"Cook\"" +
+                "}" +
+                "}," +
+                "{" +
+                "\"Manager\":" +
+                "{" +
+                "\"id\":1," +
+                "\"managedEmployees\":" +
+                "[" +
+                "{" +
+                "\"Employee\":" +
+                "{" +
+                "\"id\":2," +
+                "\"name\":\"Thomas\"," +
+                "\"title\":\"Waiter\"" +
+                "}" +
+                "}," +
+                "{" +
+                "\"Employee\":" +
+                "{" +
+                "\"id\":3," +
+                "\"name\":\"Patricia\"," +
+                "\"title\":\"Cook\"" +
+                "}" +
+                "}" +
+                "]," +
+                "\"name\":\"Bob\"," +
+                "\"title\":\"Boss\"" +
+                "}" +
+                "}," +
+                "{" +
+                "\"PolymorphismIdNameAsWrapperObjectTester$Customer\":" +
+                "{" +
+                "\"name\":\"Brad\"," +
+                "\"satisfaction\":90" +
+                "}" +
+                "}" +
+                "]";
 
         Person[] result = reader.read( input );
         {

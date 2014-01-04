@@ -57,7 +57,8 @@ public class VisibleTypeIdGwtTest extends GwtJacksonTestCase {
         static ExternalIdWrapperMapper INSTANCE = GWT.create( ExternalIdWrapperMapper.class );
     }
 
-    public interface TypeIdFromFieldPropertyMapper extends ObjectMapper<TypeIdFromFieldProperty>, ObjectMapperTester<TypeIdFromFieldProperty> {
+    public interface TypeIdFromFieldPropertyMapper extends ObjectMapper<TypeIdFromFieldProperty>,
+            ObjectMapperTester<TypeIdFromFieldProperty> {
 
         static TypeIdFromFieldPropertyMapper INSTANCE = GWT.create( TypeIdFromFieldPropertyMapper.class );
     }

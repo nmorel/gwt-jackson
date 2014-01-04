@@ -96,7 +96,7 @@ public class ObjectMapperCreator extends AbstractCreator {
             abstractClass = ABSTRACT_OBJECT_WRITER_CLASS;
         }
         SourceWriter source = getSourceWriter( printWriter, packageName, mapperClassSimpleName, abstractClass + "<" +
-            mappedTypeClass.getParameterizedQualifiedSourceName() + ">", interfaceName );
+                mappedTypeClass.getParameterizedQualifiedSourceName() + ">", interfaceName );
 
         writeClassBody( source, mapperClassSimpleName, mappedTypeClass, reader, writer );
 
@@ -121,20 +121,20 @@ public class ObjectMapperCreator extends AbstractCreator {
             }
         }
         logger.log( TreeLogger.Type.ERROR, "Expected  " + interfaceClass + " to extend one of the interface " + OBJECT_MAPPER_CLASS + ", " +
-            OBJECT_READER_CLASS + " or " + OBJECT_WRITER_CLASS );
+                OBJECT_READER_CLASS + " or " + OBJECT_WRITER_CLASS );
         throw new UnableToCompleteException();
     }
 
     private JClassType extractParameterizedType( String clazz, JParameterizedType genericType ) throws UnableToCompleteException {
         if ( genericType == null ) {
             logger.log( TreeLogger.Type.ERROR, "Expected the " + clazz + " declaration to specify a " +
-                "parameterized type." );
+                    "parameterized type." );
             throw new UnableToCompleteException();
         }
         JClassType[] typeParameters = genericType.getTypeArgs();
         if ( typeParameters == null || typeParameters.length != 1 ) {
             logger.log( TreeLogger.Type.ERROR, "Expected the " + clazz + " declaration to specify 1 " +
-                "parameterized type." );
+                    "parameterized type." );
             throw new UnableToCompleteException();
         }
         return typeParameters[0];
@@ -173,7 +173,7 @@ public class ObjectMapperCreator extends AbstractCreator {
         if ( reader ) {
             source.println( "@Override" );
             source.println( "protected %s<%s> newDeserializer(%s ctx) {", JSON_DESERIALIZER_CLASS, mappedTypeClass
-                .getParameterizedQualifiedSourceName(), JSON_DESERIALIZATION_CONTEXT_CLASS );
+                    .getParameterizedQualifiedSourceName(), JSON_DESERIALIZATION_CONTEXT_CLASS );
             source.indent();
             source.println( "return %s;", getJsonDeserializerFromType( mappedTypeClass ).getInstance() );
             source.outdent();
@@ -185,7 +185,7 @@ public class ObjectMapperCreator extends AbstractCreator {
         if ( writer ) {
             source.println( "@Override" );
             source.println( "protected %s<%s> newSerializer(%s ctx) {", JSON_SERIALIZER_CLASS, mappedTypeClass
-                .getParameterizedQualifiedSourceName(), JSON_SERIALIZATION_CONTEXT_CLASS );
+                    .getParameterizedQualifiedSourceName(), JSON_SERIALIZATION_CONTEXT_CLASS );
             source.indent();
             source.println( "return %s;", getJsonSerializerFromType( mappedTypeClass ).getInstance() );
             source.outdent();

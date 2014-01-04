@@ -68,9 +68,9 @@ public final class JsonPropertyOrderTester extends AbstractTester {
         bean.doubleProperty = 45.7d;
 
         String expected = "{\"intProperty\":15," +
-            "\"stringProperty\":\"IAmAString\"," +
-            "\"aBooleanProperty\":true," +
-            "\"doubleProperty\":45.7}";
+                "\"stringProperty\":\"IAmAString\"," +
+                "\"aBooleanProperty\":true," +
+                "\"doubleProperty\":45.7}";
         String result = writer.write( bean );
 
         assertEquals( expected, result );
@@ -84,9 +84,9 @@ public final class JsonPropertyOrderTester extends AbstractTester {
         bean.doubleProperty = 45.7d;
 
         String expected = "{\"doubleProperty\":45.7," +
-            "\"stringProperty\":\"IAmAString\"," +
-            "\"aBooleanProperty\":true," +
-            "\"intProperty\":15}";
+                "\"stringProperty\":\"IAmAString\"," +
+                "\"aBooleanProperty\":true," +
+                "\"intProperty\":15}";
         String result = writer.write( bean );
 
         assertEquals( expected, result );
@@ -100,9 +100,9 @@ public final class JsonPropertyOrderTester extends AbstractTester {
         bean.doubleProperty = 45.7d;
 
         String expected = "{\"doubleProperty\":45.7," +
-            "\"intProperty\":15," +
-            "\"stringProperty\":\"IAmAString\"," +
-            "\"aBooleanProperty\":true}";
+                "\"intProperty\":15," +
+                "\"stringProperty\":\"IAmAString\"," +
+                "\"aBooleanProperty\":true}";
         String result = writer.write( bean );
 
         assertEquals( expected, result );
@@ -116,16 +116,16 @@ public final class JsonPropertyOrderTester extends AbstractTester {
         bean.doubleProperty = 45.7d;
 
         String expected = "{\"aBooleanProperty\":true," +
-            "\"doubleProperty\":45.7," +
-            "\"intProperty\":15," +
-            "\"stringProperty\":\"IAmAString\"}";
+                "\"doubleProperty\":45.7," +
+                "\"intProperty\":15," +
+                "\"stringProperty\":\"IAmAString\"}";
         String result = writer.write( bean );
 
         assertEquals( expected, result );
     }
 
     public void testSerializeBeanWithSomeDefinedAndRestAlphabeticOrder( ObjectWriterTester<BeanWithSomeDefinedAndRestAlphabeticOrder>
-                                                                            writer ) {
+                                                                                writer ) {
         BeanWithSomeDefinedAndRestAlphabeticOrder bean = new BeanWithSomeDefinedAndRestAlphabeticOrder();
         bean.intProperty = 15;
         bean.stringProperty = "IAmAString";
@@ -133,9 +133,9 @@ public final class JsonPropertyOrderTester extends AbstractTester {
         bean.doubleProperty = 45.7d;
 
         String expected = "{\"doubleProperty\":45.7," +
-            "\"aBooleanProperty\":true," +
-            "\"intProperty\":15," +
-            "\"stringProperty\":\"IAmAString\"}";
+                "\"aBooleanProperty\":true," +
+                "\"intProperty\":15," +
+                "\"stringProperty\":\"IAmAString\"}";
         String result = writer.write( bean );
 
         assertEquals( expected, result );
@@ -149,8 +149,8 @@ public final class JsonPropertyOrderTester extends AbstractTester {
         bean.doubleProperty = 45.7d;
 
         String input = "{\"intProperty\":15," +
-            "\"stringProperty\":\"IAmAString\"," +
-            "\"aBooleanProperty\":true}";
+                "\"stringProperty\":\"IAmAString\"," +
+                "\"aBooleanProperty\":true}";
 
         try {
             reader.read( input );

@@ -24,9 +24,9 @@
 
   <source path="client" />
 
-  <define-linker name="d8" class="com.google.gwt.core.linker.D8ScriptLinker"/>
+  <define-linker name="d8" class="com.google.gwt.core.linker.D8ScriptLinker" />
   <add-linker name="d8" />
   <set-property name="user.agent" value="safari" />
-  <set-property name="compiler.useSourceMaps" value="true"/>
+  <set-property name="compiler.useSourceMaps" value="true" />
 
 </module>

@@ -19,7 +19,6 @@ package com.github.nmorel.gwtjackson.client.deser.map.key;
 import java.util.UUID;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
-import com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer;
 
 /**
  * Default {@link KeyDeserializer} implementation for {@link UUID}.

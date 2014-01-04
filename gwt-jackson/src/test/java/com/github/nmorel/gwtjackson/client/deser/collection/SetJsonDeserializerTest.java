@@ -38,7 +38,7 @@ public class SetJsonDeserializerTest extends AbstractJsonDeserializerTest<Set<St
     @Override
     public void testDeserializeValue() {
         assertDeserialization( new HashSet<String>( Arrays.asList( "Hello", " ", "World", "!" ) ), "[Hello, \" \", \"World\", " +
-            "" + "\"!\"]" );
+                "" + "\"!\"]" );
         assertDeserialization( Collections.<String>emptySet(), "[]" );
     }
 

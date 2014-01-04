@@ -32,11 +32,11 @@ public class Minimal implements EntryPoint {
     public static class Person {
 
         private final String firstName;
+
         private final String lastName;
 
         @JsonCreator
-        public Person( @JsonProperty( "firstName" ) String firstName,
-                       @JsonProperty( "lastName" ) String lastName ) {
+        public Person( @JsonProperty( "firstName" ) String firstName, @JsonProperty( "lastName" ) String lastName ) {
             this.firstName = firstName;
             this.lastName = lastName;
         }

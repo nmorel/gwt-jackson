@@ -61,28 +61,28 @@ public class MultisetGwtTest extends GwtJacksonGuavaTestCase {
         bean.enumMultiset = EnumMultiset.create( Arrays.asList( AlphaEnum.B, AlphaEnum.A, AlphaEnum.D, AlphaEnum.A ) );
 
         String expected = "{" +
-            "\"multiset\":[\"foo\",\"abc\",\"abc\",null]," +
-            "\"hashMultiset\":[\"abc\",\"abc\"]," +
-            "\"linkedHashMultiset\":[\"foo\",\"abc\",\"abc\",null]," +
-            "\"sortedMultiset\":[\"abc\",\"abc\",\"bar\",\"foo\"]," +
-            "\"treeMultiset\":[\"abc\",\"abc\",\"bar\",\"foo\"]," +
-            "\"immutableMultiset\":[\"foo\",\"abc\",\"abc\",\"bar\"]," +
-            "\"enumMultiset\":[\"A\",\"A\",\"B\",\"D\"]" +
-            "}";
+                "\"multiset\":[\"foo\",\"abc\",\"abc\",null]," +
+                "\"hashMultiset\":[\"abc\",\"abc\"]," +
+                "\"linkedHashMultiset\":[\"foo\",\"abc\",\"abc\",null]," +
+                "\"sortedMultiset\":[\"abc\",\"abc\",\"bar\",\"foo\"]," +
+                "\"treeMultiset\":[\"abc\",\"abc\",\"bar\",\"foo\"]," +
+                "\"immutableMultiset\":[\"foo\",\"abc\",\"abc\",\"bar\"]," +
+                "\"enumMultiset\":[\"A\",\"A\",\"B\",\"D\"]" +
+                "}";
 
         assertEquals( expected, BeanWithMultisetTypesMapper.INSTANCE.write( bean ) );
     }
 
     public void testDeserialization() {
         String input = "{" +
-            "\"multiset\":[\"foo\",\"abc\",\"abc\",null]," +
-            "\"hashMultiset\":[\"abc\",\"abc\"]," +
-            "\"linkedHashMultiset\":[\"foo\",\"abc\",\"abc\",null]," +
-            "\"sortedMultiset\":[\"foo\",\"abc\",\"bar\",\"abc\",null]," +
-            "\"treeMultiset\":[\"bar\",\"abc\",\"abc\",\"foo\",null]," +
-            "\"immutableMultiset\":[\"foo\",\"abc\",\"abc\",\"bar\",null]," +
-            "\"enumMultiset\":[\"B\",\"A\",\"A\",\"D\",null]" +
-            "}";
+                "\"multiset\":[\"foo\",\"abc\",\"abc\",null]," +
+                "\"hashMultiset\":[\"abc\",\"abc\"]," +
+                "\"linkedHashMultiset\":[\"foo\",\"abc\",\"abc\",null]," +
+                "\"sortedMultiset\":[\"foo\",\"abc\",\"bar\",\"abc\",null]," +
+                "\"treeMultiset\":[\"bar\",\"abc\",\"abc\",\"foo\",null]," +
+                "\"immutableMultiset\":[\"foo\",\"abc\",\"abc\",\"bar\",null]," +
+                "\"enumMultiset\":[\"B\",\"A\",\"A\",\"D\",null]" +
+                "}";
 
         BeanWithMultisetTypes result = BeanWithMultisetTypesMapper.INSTANCE.read( input );
         assertNotNull( result );

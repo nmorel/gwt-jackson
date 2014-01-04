@@ -150,9 +150,9 @@ public class JsonReaderTest extends GwtJacksonTestCase {
 
     public void testHelloWorld() throws IOException {
         String json = "{\n" +
-            "   \"hello\": true,\n" +
-            "   \"foo\": [\"world\"]\n" +
-            "}";
+                "   \"hello\": true,\n" +
+                "   \"foo\": [\"world\"]\n" +
+                "}";
         JsonReader reader = new JsonReader( reader( json ) );
         reader.beginObject();
         assertEquals( "hello", reader.nextName() );
@@ -193,8 +193,8 @@ public class JsonReaderTest extends GwtJacksonTestCase {
 
     public void testCharacterUnescaping() throws IOException {
         String json = "[\"a\"," + "\"a\\\"\"," + "\"\\\"\"," + "\":\"," + "\",\"," + "\"\\b\"," + "\"\\f\"," + "\"\\n\"," + "\"\\r\"," +
-            "" + "\"\\t\"," + "\" \"," + "\"\\\\\"," + "\"{\"," + "\"}\"," + "\"[\"," + "\"]\"," + "\"\\u0000\"," + "\"\\u0019\"," +
-            "" + "\"\\u20AC\"" + "]";
+                "" + "\"\\t\"," + "\" \"," + "\"\\\\\"," + "\"{\"," + "\"}\"," + "\"[\"," + "\"]\"," + "\"\\u0000\"," + "\"\\u0019\"," +
+                "" + "\"\\u20AC\"" + "]";
         JsonReader reader = new JsonReader( reader( json ) );
         reader.beginArray();
         assertEquals( "a", reader.nextString() );
@@ -263,7 +263,7 @@ public class JsonReaderTest extends GwtJacksonTestCase {
 
     public void testDoubles() throws IOException {
         String json = "[-0.0," + "1.0," + "1.7976931348623157E308," + "4.9E-324," + "0.0," + "-0.5," + "2.2250738585072014E-308," +
-            "" + "3.141592653589793," + "2.718281828459045]";
+                "" + "3.141592653589793," + "2.718281828459045]";
         JsonReader reader = new JsonReader( reader( json ) );
         reader.beginArray();
         assertEquals( -0.0, reader.nextDouble() );
@@ -1688,6 +1688,6 @@ public class JsonReaderTest extends GwtJacksonTestCase {
      * Returns a reader that returns one character at a time.
      */
     private StringReader reader( final String s ) {
-        return new StringReader(s);
+        return new StringReader( s );
     }
 }

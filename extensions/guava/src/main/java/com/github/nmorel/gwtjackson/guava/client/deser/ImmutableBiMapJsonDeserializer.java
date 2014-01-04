@@ -46,7 +46,7 @@ public final class ImmutableBiMapJsonDeserializer<K, V> extends BaseImmutableMap
      * @return a new instance of {@link ImmutableBiMapJsonDeserializer}
      */
     public static <K, V> ImmutableBiMapJsonDeserializer<K, V> newInstance( KeyDeserializer<K> keyDeserializer,
-                                                                         JsonDeserializer<V> valueDeserializer ) {
+                                                                           JsonDeserializer<V> valueDeserializer ) {
         return new ImmutableBiMapJsonDeserializer<K, V>( keyDeserializer, valueDeserializer );
     }
 
@@ -60,7 +60,7 @@ public final class ImmutableBiMapJsonDeserializer<K, V> extends BaseImmutableMap
 
     @Override
     protected ImmutableBiMap<K, V> doDeserialize( JsonReader reader, JsonDeserializationContext ctx,
-                                                JsonDeserializerParameters params ) throws IOException {
+                                                  JsonDeserializerParameters params ) throws IOException {
         ImmutableBiMap.Builder<K, V> builder = ImmutableBiMap.builder();
         buildMap( reader, ctx, params, builder );
         return builder.build();
