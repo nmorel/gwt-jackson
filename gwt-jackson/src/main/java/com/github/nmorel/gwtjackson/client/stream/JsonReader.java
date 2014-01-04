@@ -18,6 +18,8 @@ package com.github.nmorel.gwtjackson.client.stream;
 
 import java.io.IOException;
 
+import com.google.gwt.core.client.JsArrayInteger;
+
 /**
  * Reads a JSON (<a href="http://www.ietf.org/rfc/rfc4627.txt">RFC 4627</a>)
  * encoded value as a stream of tokens. This stream includes both literal
@@ -262,10 +264,10 @@ public class JsonReader
   /*
    * The nesting stack. Using a manual array rather than an ArrayList saves 20%.
    */
-  private int[] stack = new int[32];
+  private JsArrayInteger stack = JsArrayInteger.createArray().cast();
   private int stackSize = 0;
   {
-    stack[stackSize++] = JsonScope.EMPTY_DOCUMENT;
+    stack.set(stackSize++, JsonScope.EMPTY_DOCUMENT);
   }
 
   /**
@@ -451,9 +453,9 @@ public class JsonReader
 
   private int doPeek() throws IOException
   {
-    int peekStack = stack[stackSize - 1];
+    int peekStack = stack.get(stackSize - 1);
     if (peekStack == JsonScope.EMPTY_ARRAY) {
-      stack[stackSize - 1] = JsonScope.NONEMPTY_ARRAY;
+      stack.set(stackSize - 1, JsonScope.NONEMPTY_ARRAY);
     } else if (peekStack == JsonScope.NONEMPTY_ARRAY) {
       // Look for a comma before the next element.
       int c = nextNonWhitespace(true);
@@ -468,7 +470,7 @@ public class JsonReader
         throw syntaxError("Unterminated array");
       }
     } else if (peekStack == JsonScope.EMPTY_OBJECT || peekStack == JsonScope.NONEMPTY_OBJECT) {
-      stack[stackSize - 1] = JsonScope.DANGLING_NAME;
+      stack.set(stackSize - 1, JsonScope.DANGLING_NAME);
       // Look for a comma before the next element.
       if (peekStack == JsonScope.NONEMPTY_OBJECT) {
         int c = nextNonWhitespace(true);
@@ -506,7 +508,7 @@ public class JsonReader
         }
       }
     } else if (peekStack == JsonScope.DANGLING_NAME) {
-      stack[stackSize - 1] = JsonScope.NONEMPTY_OBJECT;
+      stack.set(stackSize - 1, JsonScope.NONEMPTY_OBJECT);
       // Look for a colon before the value.
       int c = nextNonWhitespace(true);
       switch (c) {
@@ -525,7 +527,7 @@ public class JsonReader
       if (lenient) {
         consumeNonExecutePrefix();
       }
-      stack[stackSize - 1] = JsonScope.NONEMPTY_DOCUMENT;
+      stack.set(stackSize - 1, JsonScope.NONEMPTY_DOCUMENT);
     } else if (peekStack == JsonScope.NONEMPTY_DOCUMENT) {
       int c = nextNonWhitespace(false);
       if (c == -1) {
@@ -1209,7 +1211,7 @@ public class JsonReader
   public void close() throws IOException
   {
     peeked = PEEKED_NONE;
-    stack[0] = JsonScope.CLOSED;
+    stack.set(0, JsonScope.CLOSED);
     stackSize = 1;
   }
 
@@ -1253,12 +1255,7 @@ public class JsonReader
   }
 
   private void push(int newTop) {
-    if (stackSize == stack.length) {
-      int[] newStack = new int[stackSize * 2];
-      System.arraycopy( stack, 0, newStack, 0, stackSize );
-      stack = newStack;
-    }
-    stack[stackSize++] = newTop;
+    stack.set(stackSize++, newTop);
   }
 
   /**

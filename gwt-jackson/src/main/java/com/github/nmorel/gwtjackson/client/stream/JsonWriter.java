@@ -18,6 +18,8 @@ package com.github.nmorel.gwtjackson.client.stream;
 
 import java.io.IOException;
 
+import com.google.gwt.core.client.JsArrayInteger;
+
 import static com.github.nmorel.gwtjackson.client.stream.JsonScope.DANGLING_NAME;
 import static com.github.nmorel.gwtjackson.client.stream.JsonScope.EMPTY_ARRAY;
 import static com.github.nmorel.gwtjackson.client.stream.JsonScope.EMPTY_DOCUMENT;
@@ -172,7 +174,7 @@ public class JsonWriter {
   /** The output data, containing at most one top-level array or object. */
   private final StringBuilder out;
 
-  private int[] stack = new int[32];
+  private JsArrayInteger stack = JsArrayInteger.createArray().cast();
   private int stackSize = 0;
   {
     push(EMPTY_DOCUMENT);
@@ -357,12 +359,7 @@ public class JsonWriter {
   }
 
   private void push(int newTop) {
-    if (stackSize == stack.length) {
-      int[] newStack = new int[stackSize * 2];
-      System.arraycopy(stack, 0, newStack, 0, stackSize);
-      stack = newStack;
-    }
-    stack[stackSize++] = newTop;
+    stack.set(stackSize++, newTop);
   }
 
   /**
@@ -372,14 +369,14 @@ public class JsonWriter {
     if (stackSize == 0) {
       throw new IllegalStateException("JsonWriter is closed.");
     }
-    return stack[stackSize - 1];
+    return stack.get(stackSize - 1);
   }
 
   /**
    * Replace the value on the top of the stack with the given value.
    */
   private void replaceTop(int topOfStack) {
-    stack[stackSize - 1] = topOfStack;
+    stack.set(stackSize - 1, topOfStack);
   }
 
   /**
@@ -549,7 +546,7 @@ public class JsonWriter {
    */
   public void close() throws IOException {
     int size = stackSize;
-    if (size > 1 || size == 1 && stack[size - 1] != NONEMPTY_DOCUMENT) {
+    if (size > 1 || size == 1 && stack.get(size - 1) != NONEMPTY_DOCUMENT) {
       throw new IOException("Incomplete document");
     }
     stackSize = 0;
