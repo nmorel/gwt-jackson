@@ -34,6 +34,15 @@
     <gwt.module>com.github.nmorel.gwtjackson.benchmark.Benchmark</gwt.module>
   </properties>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.gwtbootstrap3</groupId>
+      <artifactId>gwtbootstrap3</artifactId>
+      <version>0.4</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
   <build>
     <plugins>
       <plugin>

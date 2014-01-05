@@ -16,6 +16,8 @@
 
 package com.github.nmorel.gwtjackson.benchmark.client;
 
+import java.math.BigDecimal;
+
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -23,47 +25,39 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 /**
  * @author Nicolas Morel
  */
-public abstract class Operation<T> implements RepeatingCommand {
+public abstract class Operation implements RepeatingCommand {
 
     private final int nbIterations;
+
+    private final ResultLineWidget result;
 
     private int count = 0;
 
     private long totalTime = 0l;
 
-    private T result;
-
-    public Operation( int nbIterations ) {
+    public Operation( int nbIterations, ResultLineWidget result ) {
         this.nbIterations = nbIterations;
+        this.result = result;
     }
 
     @Override
     public boolean execute() {
         long startTime = System.currentTimeMillis();
-        result = doExecute();
+        doExecute();
         totalTime += System.currentTimeMillis() - startTime;
         if ( ++count == nbIterations ) {
             Scheduler.get().scheduleDeferred( new ScheduledCommand() {
                 @Override
                 public void execute() {
-                    onEnd();
+                    result.setResult( totalTime / count );
                 }
             } );
             return false;
         } else {
+            result.setPercent( new BigDecimal( count ).divide( new BigDecimal( nbIterations ) ).movePointRight( 2 ).intValue() );
             return true;
         }
     }
 
-    protected abstract T doExecute();
-
-    protected abstract void onEnd();
-
-    public long getTotalTime() {
-        return totalTime;
-    }
-
-    public T getResult() {
-        return result;
-    }
+    protected abstract void doExecute();
 }

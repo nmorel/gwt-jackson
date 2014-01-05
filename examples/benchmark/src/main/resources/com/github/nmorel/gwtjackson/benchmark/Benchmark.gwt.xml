@@ -18,7 +18,7 @@
 <module rename-to='benchmark'>
 
   <inherits name="com.google.gwt.user.User" />
-  <inherits name="com.google.gwt.user.theme.clean.Clean" />
+  <inherits name="org.gwtbootstrap3.GwtBootstrap3CDN"/>
 
   <inherits name="com.github.nmorel.gwtjackson.GwtJackson" />
 
@@ -26,7 +26,6 @@
 
   <add-linker name="xsiframe" />
   <set-configuration-property name="devModeRedirectEnabled" value="true" />
-  <set-configuration-property name="gwt.superdevmode" value="on" />
 
   <source path="client" />
 

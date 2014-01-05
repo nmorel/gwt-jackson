@@ -15,36 +15,56 @@
   -->
 
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:b="urn:import:org.gwtbootstrap3.client.ui"
+    >
 
-  <g:HTMLPanel>
+  <ui:style>
+    .headerMargin {
+      margin-top: 71px;
+    }
+  </ui:style>
 
-    <h1>gwt-jackson</h1>
+  <g:ScrollPanel>
 
-    <div>
-      <span>Number of items :</span>
-      <g:IntegerBox ui:field='nbItems' text='1000' />
-    </div>
+    <b:Container>
 
-    <div>
-      <span>Number of iterations :</span>
-      <g:IntegerBox ui:field='nbIterations' text='100' />
-    </div>
+      <b:Navbar position="FIXED_TOP">
+        <b:NavbarBrand>gwt-jackson - Benchmark</b:NavbarBrand>
+      </b:Navbar>
 
-    <div>
-      <g:Button ui:field='launchBtn'>Launch</g:Button>
-    </div>
+      <g:FlowPanel addStyleNames="{style.headerMargin}">
 
-    <h3>Result :</h3>
-    <div>
-      <span>Serialization average time (ms) :</span>
-      <g:InlineLabel ui:field='resultSer' />
-    </div>
-    <div>
-      <span>Deserialization average time (ms) :</span>
-      <g:InlineLabel ui:field='resultDeser' />
-    </div>
+        <b:Form>
+          <b:Legend>Benchmark options</b:Legend>
 
-  </g:HTMLPanel>
+          <b:FieldSet>
+            <b:Row>
+              <b:Column size='MD_6'>
+                <b:FormGroup>
+                  <b:FormLabel for="nbItems">Number of items</b:FormLabel>
+                  <b:IntegerBox b:id="nbItems" ui:field='nbItems' text='1000' />
+                </b:FormGroup>
+              </b:Column>
+              <b:Column size='MD_6'>
+                <b:FormGroup>
+                  <b:FormLabel for="nbIterations">Number of iterations</b:FormLabel>
+                  <b:IntegerBox b:id="nbIterations" ui:field='nbIterations' text='100' />
+                </b:FormGroup>
+              </b:Column>
+            </b:Row>
+
+            <b:Button type="PRIMARY" ui:field='launchBtn'>Launch</b:Button>
+
+          </b:FieldSet>
+        </b:Form>
+
+        <b:Hr />
+
+        <b:Row ui:field='resultRow' />
+
+      </g:FlowPanel>
+    </b:Container>
+
+  </g:ScrollPanel>
 
 </ui:UiBinder>

@@ -1,0 +1,35 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
+
+  <ui:style>
+    .row {
+      margin-top: 15px;
+      margin-bottom: 15px;
+    }
+
+    .no-margin-bottom {
+      margin-bottom: 0;
+    }
+
+    .no-transition {
+      -webkit-transition: none;
+      -moz-transition: none;
+      -ms-transition: none;
+      -o-transition: none;
+      transition: none;
+    }
+  </ui:style>
+
+  <b:Row addStyleNames="{style.row}">
+    <b:Column size="MD_3">
+      <g:Label ui:field='label' />
+    </b:Column>
+    <b:Column size="MD_9">
+      <b:Progress ui:field='progress' addStyleNames="{style.no-margin-bottom}">
+        <b:ProgressBar ui:field='progressBar' addStyleNames="{style.no-transition}" />
+      </b:Progress>
+      <g:NumberLabel ui:field='resultLabel' />
+    </b:Column>
+  </b:Row>
+
+</ui:UiBinder>

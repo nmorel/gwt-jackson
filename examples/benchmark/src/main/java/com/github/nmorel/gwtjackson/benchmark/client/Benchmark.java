@@ -28,6 +28,5 @@ public class Benchmark implements EntryPoint {
     public void onModuleLoad() {
         BenchmarkView view = new BenchmarkView();
         RootPanel.get().add( view );
-
     }
 }
