@@ -1,4 +1,6 @@
-package com.github.nmorel.gwtjackson.benchmark.client;
+package com.github.nmorel.gwtjackson.benchmark.client.ui;
+
+import java.math.BigDecimal;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -30,7 +32,7 @@ public class ResultLineWidget extends Composite {
     ProgressBar progressBar;
 
     @UiField
-    NumberLabel<Long> resultLabel;
+    NumberLabel<BigDecimal> resultLabel;
 
     @UiConstructor
     public ResultLineWidget( String text ) {
@@ -43,7 +45,7 @@ public class ResultLineWidget extends Composite {
         progressBar.setText( percent + "%" );
     }
 
-    public void setResult( Long result ) {
+    public void setResult( BigDecimal result ) {
         progress.setVisible( null == result );
         resultLabel.setVisible( null != result );
         setPercent( 0 );

@@ -18,6 +18,7 @@ package com.github.nmorel.gwtjackson.benchmark.client;
 
 import java.math.BigDecimal;
 
+import com.github.nmorel.gwtjackson.benchmark.client.ui.ResultLineWidget;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -49,7 +50,7 @@ public abstract class Operation implements RepeatingCommand {
             Scheduler.get().scheduleDeferred( new ScheduledCommand() {
                 @Override
                 public void execute() {
-                    result.setResult( totalTime / count );
+                    result.setResult( new BigDecimal( totalTime ).divide( new BigDecimal( count ) ) );
                 }
             } );
             return false;

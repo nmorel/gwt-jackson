@@ -16,11 +16,16 @@
 
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:b="urn:import:org.gwtbootstrap3.client.ui"
+             xmlns:j="urn:import:com.github.nmorel.gwtjackson.benchmark.client.ui"
     >
 
   <ui:style>
     .headerMargin {
       margin-top: 71px;
+    }
+
+    .textCenter {
+      text-align: center;
     }
   </ui:style>
 
@@ -34,27 +39,60 @@
 
       <g:FlowPanel addStyleNames="{style.headerMargin}">
 
-        <b:Form>
+        <b:Form type="HORIZONTAL">
           <b:Legend>Benchmark options</b:Legend>
 
           <b:FieldSet>
-            <b:Row>
-              <b:Column size='MD_6'>
-                <b:FormGroup>
-                  <b:FormLabel for="nbItems">Number of items</b:FormLabel>
-                  <b:IntegerBox b:id="nbItems" ui:field='nbItems' text='1000' />
-                </b:FormGroup>
-              </b:Column>
-              <b:Column size='MD_6'>
-                <b:FormGroup>
-                  <b:FormLabel for="nbIterations">Number of iterations</b:FormLabel>
-                  <b:IntegerBox b:id="nbIterations" ui:field='nbIterations' text='100' />
-                </b:FormGroup>
-              </b:Column>
-            </b:Row>
+            <b:FormGroup>
+              <b:FormLabel for="nbItems" addStyleNames="col-lg-6">Number of items</b:FormLabel>
+              <g:FlowPanel addStyleNames="col-lg-6">
+                <b:IntegerBox b:id="nbItems" ui:field='nbItems' />
+              </g:FlowPanel>
+            </b:FormGroup>
 
-            <b:Button type="PRIMARY" ui:field='launchBtn'>Launch</b:Button>
+            <b:FormGroup>
+              <b:FormLabel for="nbIterations" addStyleNames="col-lg-6">Number of iterations</b:FormLabel>
+              <g:FlowPanel addStyleNames="col-lg-6">
+                <b:IntegerBox b:id="nbIterations" ui:field='nbIterations' />
+              </g:FlowPanel>
+            </b:FormGroup>
 
+            <b:FormGroup>
+              <g:HTMLPanel>
+                <b:FormLabel for="singletonMapper" addStyleNames="col-lg-6">Use same mapper's instance</b:FormLabel>
+                <g:FlowPanel addStyleNames="col-lg-6">
+                  <g:FlowPanel addStyleNames="checkbox">
+                    <j:InputCheckbox forId="singletonMapper" ui:field='singletonMapper' />
+                  </g:FlowPanel>
+                </g:FlowPanel>
+              </g:HTMLPanel>
+            </b:FormGroup>
+
+            <b:FormGroup>
+              <g:HTMLPanel>
+                <b:FormLabel for="serialization" addStyleNames="col-lg-6">Serialization</b:FormLabel>
+                <g:FlowPanel addStyleNames="col-lg-6">
+                  <g:FlowPanel addStyleNames="checkbox">
+                    <j:InputCheckbox forId="serialization" ui:field='serialization' />
+                  </g:FlowPanel>
+                </g:FlowPanel>
+              </g:HTMLPanel>
+            </b:FormGroup>
+
+            <b:FormGroup>
+              <g:HTMLPanel>
+                <b:FormLabel for="deserialization" addStyleNames="col-lg-6">Deserialization</b:FormLabel>
+                <g:FlowPanel addStyleNames="col-lg-6">
+                  <g:FlowPanel addStyleNames="checkbox">
+                    <j:InputCheckbox forId="deserialization" ui:field='deserialization' />
+                  </g:FlowPanel>
+                </g:FlowPanel>
+              </g:HTMLPanel>
+            </b:FormGroup>
+
+            <g:HTMLPanel addStyleNames="{style.textCenter}">
+              <b:Button type="PRIMARY" ui:field='launchBtn'>Launch</b:Button>
+            </g:HTMLPanel>
           </b:FieldSet>
         </b:Form>
 

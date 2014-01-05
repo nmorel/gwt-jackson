@@ -16,11 +16,19 @@
 
 package com.github.nmorel.gwtjackson.benchmark.client;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.github.nmorel.gwtjackson.benchmark.client.data.DataProvider;
+import com.github.nmorel.gwtjackson.benchmark.client.data.Person;
+import com.github.nmorel.gwtjackson.benchmark.client.mechanism.GwtJackson;
+import com.github.nmorel.gwtjackson.benchmark.client.mechanism.Mechanism;
+import com.github.nmorel.gwtjackson.benchmark.client.ui.InputCheckbox;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.editor.client.Editor;
+import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -36,9 +44,11 @@ import org.gwtbootstrap3.client.ui.Row;
 /**
  * @author Nicolas Morel
  */
-public class BenchmarkView extends Composite {
+public class BenchmarkView extends Composite implements Editor<Criteria> {
 
     public static interface PersonMapper extends ObjectMapper<List<Person>> {}
+
+    interface CriteriaDriver extends SimpleBeanEditorDriver<Criteria, BenchmarkView> {}
 
     interface BenchmarkViewUiBinder extends UiBinder<Widget, BenchmarkView> {}
 
@@ -51,6 +61,15 @@ public class BenchmarkView extends Composite {
     IntegerBox nbIterations;
 
     @UiField
+    InputCheckbox singletonMapper;
+
+    @UiField
+    InputCheckbox serialization;
+
+    @UiField
+    InputCheckbox deserialization;
+
+    @UiField
     Button launchBtn;
 
     @UiField
@@ -58,10 +77,23 @@ public class BenchmarkView extends Composite {
 
     private final List<Mechanism> mechanisms;
 
+    private final CriteriaDriver driver;
+
     public BenchmarkView() {
         mechanisms = Arrays.<Mechanism>asList( new GwtJackson() );
 
         initWidget( ourUiBinder.createAndBindUi( this ) );
+
+        driver = GWT.create( CriteriaDriver.class );
+        driver.initialize( this );
+
+        Criteria criteria = new Criteria();
+        criteria.setNbItems( 1000 );
+        criteria.setNbIterations( 100 );
+        criteria.setSingletonMapper( true );
+        criteria.setSerialization( true );
+        criteria.setDeserialization( true );
+        driver.edit( criteria );
     }
 
     @UiHandler( {"nbIterations", "nbItems"} )
@@ -72,6 +104,8 @@ public class BenchmarkView extends Composite {
 
     @UiHandler( "launchBtn" )
     void onClickLaunch( ClickEvent event ) {
+        Criteria criteria = driver.flush();
+
         int colLength = 12 / mechanisms.size();
         String colClass = "col-lg-" + colLength;
 
@@ -85,11 +119,14 @@ public class BenchmarkView extends Composite {
         }
 
         // initialize data
-        final List<Person> persons = DataProvider.generateData( nbItems.getValue() );
+        final List<Person> persons = DataProvider.generateData( criteria.getNbItems() );
 
-        // launch the test
+        // prepare the test
+        final List<Operation> operations = new ArrayList<>();
         for ( Mechanism mechanism : mechanisms ) {
-            mechanism.test( persons, nbIterations.getValue() );
+            operations.addAll( mechanism.prepare( persons, criteria ) );
         }
+
+        new Launcher( operations ).launch();
     }
 }

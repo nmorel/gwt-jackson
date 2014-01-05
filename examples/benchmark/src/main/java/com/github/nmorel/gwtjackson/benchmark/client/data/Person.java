@@ -1,4 +1,4 @@
-package com.github.nmorel.gwtjackson.benchmark.client;
+package com.github.nmorel.gwtjackson.benchmark.client.data;
 
 import java.util.Arrays;
 import java.util.Collections;

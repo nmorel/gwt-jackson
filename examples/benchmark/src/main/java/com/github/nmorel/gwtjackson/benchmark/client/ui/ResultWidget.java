@@ -1,4 +1,4 @@
-package com.github.nmorel.gwtjackson.benchmark.client;
+package com.github.nmorel.gwtjackson.benchmark.client.ui;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
