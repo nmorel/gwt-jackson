@@ -21,6 +21,7 @@
   <inherits name="org.gwtbootstrap3.GwtBootstrap3CDN"/>
 
   <inherits name="com.github.nmorel.gwtjackson.GwtJackson" />
+  <inherits name="org.fusesource.restygwt.RestyGWT" />
 
   <entry-point class="com.github.nmorel.gwtjackson.benchmark.client.Benchmark" />
 

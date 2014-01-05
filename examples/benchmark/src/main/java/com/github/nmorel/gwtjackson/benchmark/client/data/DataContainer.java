@@ -14,25 +14,29 @@
  * limitations under the License.
  */
 
-package com.github.nmorel.gwtjackson.benchmark.client.mechanism;
+package com.github.nmorel.gwtjackson.benchmark.client.data;
 
-import com.github.nmorel.gwtjackson.benchmark.client.data.DataContainer;
-import com.github.nmorel.gwtjackson.client.ObjectMapper;
-import com.google.gwt.core.client.GWT;
+import java.util.List;
 
 /**
  * @author Nicolas Morel
  */
-public class GwtJackson extends Mechanism {
+public class DataContainer {
 
-    public static interface DataContainerMapper extends ObjectMapper<DataContainer> {}
+    private List<Person> persons;
 
-    public GwtJackson() {
-        super( "gwt-jackson" );
+    public DataContainer() {
     }
 
-    @Override
-    protected ObjectMapper<DataContainer> newMapper() {
-        return GWT.create( DataContainerMapper.class );
+    public DataContainer( List<Person> persons ) {
+        this.persons = persons;
+    }
+
+    public List<Person> getPersons() {
+        return persons;
+    }
+
+    public void setPersons( List<Person> persons ) {
+        this.persons = persons;
     }
 }

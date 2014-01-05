@@ -20,10 +20,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.github.nmorel.gwtjackson.benchmark.client.data.DataContainer;
 import com.github.nmorel.gwtjackson.benchmark.client.data.DataProvider;
 import com.github.nmorel.gwtjackson.benchmark.client.data.Person;
 import com.github.nmorel.gwtjackson.benchmark.client.mechanism.GwtJackson;
 import com.github.nmorel.gwtjackson.benchmark.client.mechanism.Mechanism;
+import com.github.nmorel.gwtjackson.benchmark.client.mechanism.RestyGwt;
 import com.github.nmorel.gwtjackson.benchmark.client.ui.InputCheckbox;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;
 import com.google.gwt.core.client.GWT;
@@ -80,7 +82,7 @@ public class BenchmarkView extends Composite implements Editor<Criteria> {
     private final CriteriaDriver driver;
 
     public BenchmarkView() {
-        mechanisms = Arrays.<Mechanism>asList( new GwtJackson() );
+        mechanisms = Arrays.asList( new GwtJackson(), new RestyGwt() );
 
         initWidget( ourUiBinder.createAndBindUi( this ) );
 
@@ -119,12 +121,12 @@ public class BenchmarkView extends Composite implements Editor<Criteria> {
         }
 
         // initialize data
-        final List<Person> persons = DataProvider.generateData( criteria.getNbItems() );
+        final DataContainer container = DataProvider.generateData( criteria.getNbItems() );
 
         // prepare the test
         final List<Operation> operations = new ArrayList<>();
         for ( Mechanism mechanism : mechanisms ) {
-            operations.addAll( mechanism.prepare( persons, criteria ) );
+            operations.addAll( mechanism.prepare( container, criteria ) );
         }
 
         new Launcher( operations ).launch();

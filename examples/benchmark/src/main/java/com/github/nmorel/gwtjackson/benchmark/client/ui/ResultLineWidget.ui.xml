@@ -21,10 +21,10 @@
   </ui:style>
 
   <b:Row addStyleNames="{style.row}">
-    <b:Column size="MD_3">
+    <b:Column size="MD_6">
       <g:Label ui:field='label' />
     </b:Column>
-    <b:Column size="MD_9">
+    <b:Column size="MD_6">
       <b:Progress ui:field='progress' addStyleNames="{style.no-margin-bottom}">
         <b:ProgressBar ui:field='progressBar' addStyleNames="{style.no-transition}" />
       </b:Progress>

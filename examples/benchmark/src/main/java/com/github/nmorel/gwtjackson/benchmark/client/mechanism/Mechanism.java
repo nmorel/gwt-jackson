@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.github.nmorel.gwtjackson.benchmark.client.Criteria;
 import com.github.nmorel.gwtjackson.benchmark.client.Operation;
-import com.github.nmorel.gwtjackson.benchmark.client.data.Person;
+import com.github.nmorel.gwtjackson.benchmark.client.data.DataContainer;
 import com.github.nmorel.gwtjackson.benchmark.client.ui.ResultWidget;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;
 
@@ -16,15 +16,15 @@ public abstract class Mechanism {
 
     interface ObjectMapperProvider {
 
-        ObjectMapper<List<Person>> getMapper();
+        ObjectMapper<DataContainer> getMapper();
     }
 
     class ObjectMapperProviderSingleton implements ObjectMapperProvider {
 
-        private ObjectMapper<List<Person>> singleton = newMapper();
+        private ObjectMapper<DataContainer> singleton = newMapper();
 
         @Override
-        public ObjectMapper<List<Person>> getMapper() {
+        public ObjectMapper<DataContainer> getMapper() {
             return singleton;
         }
     }
@@ -32,7 +32,7 @@ public abstract class Mechanism {
     class ObjectMapperProviderPrototype implements ObjectMapperProvider {
 
         @Override
-        public ObjectMapper<List<Person>> getMapper() {
+        public ObjectMapper<DataContainer> getMapper() {
             return newMapper();
         }
     }
@@ -43,7 +43,7 @@ public abstract class Mechanism {
         this.result = new ResultWidget( title );
     }
 
-    public List<Operation> prepare( final List<Person> datas, Criteria criteria ) {
+    public List<Operation> prepare( final DataContainer datas, Criteria criteria ) {
         final ObjectMapperProvider mapperProvider;
         if ( criteria.isSingletonMapper() ) {
             mapperProvider = new ObjectMapperProviderSingleton();
@@ -91,5 +91,5 @@ public abstract class Mechanism {
         result.getResultDeser().setResult( null );
     }
 
-    protected abstract ObjectMapper<List<Person>> newMapper();
+    protected abstract ObjectMapper<DataContainer> newMapper();
 }
