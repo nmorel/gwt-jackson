@@ -35,7 +35,6 @@ public abstract class AbstractJsonSerializerTest<T> extends GwtJacksonTestCase {
     protected String serialize( T value ) {
         JsonSerializationContext ctx = new JsonSerializationContext.Builder().build();
         JsonWriter writer = ctx.newJsonWriter();
-        writer.setLenient( true );
         createSerializer().serialize( writer, value, ctx );
         return writer.getOutput();
     }

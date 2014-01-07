@@ -132,8 +132,10 @@ import com.github.nmorel.gwtjackson.client.ser.number.FloatJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.number.IntegerJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.number.LongJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.number.ShortJsonSerializerTest;
-import com.github.nmorel.gwtjackson.client.stream.JsonReaderTest;
-import com.github.nmorel.gwtjackson.client.stream.JsonWriterTest;
+import com.github.nmorel.gwtjackson.client.stream.AbstractJsonWriterTest;
+import com.github.nmorel.gwtjackson.client.stream.impl.DefaultJsonReaderTest;
+import com.github.nmorel.gwtjackson.client.stream.impl.DefaultJsonWriterTest;
+import com.github.nmorel.gwtjackson.client.stream.impl.NonBufferedJsonReaderTest;
 import com.google.gwt.junit.tools.GWTTestSuite;
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -147,8 +149,9 @@ public class GwtJacksonTestSuite extends TestCase {
         GWTTestSuite suite = new GWTTestSuite();
 
         // Stream - tests from gson
-        suite.addTestSuite( JsonReaderTest.class );
-        suite.addTestSuite( JsonWriterTest.class );
+        suite.addTestSuite( DefaultJsonReaderTest.class );
+        suite.addTestSuite( NonBufferedJsonReaderTest.class );
+        suite.addTestSuite( DefaultJsonWriterTest.class );
 
         // Default json serializers
         suite.addTestSuite( ArrayJsonSerializerTest.class );

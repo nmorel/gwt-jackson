@@ -29,6 +29,7 @@ import com.github.nmorel.gwtjackson.client.exception.JsonSerializationException;
 import com.github.nmorel.gwtjackson.client.ser.bean.AbstractBeanJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.ObjectIdSerializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
+import com.github.nmorel.gwtjackson.client.stream.impl.DefaultJsonWriter;
 
 /**
  * Context for the serialization process.
@@ -327,7 +328,7 @@ public class JsonSerializationContext extends JsonMappingContext {
     }
 
     public JsonWriter newJsonWriter() {
-        JsonWriter writer = new JsonWriter( new StringBuilder() );
+        JsonWriter writer = new DefaultJsonWriter( new StringBuilder() );
         writer.setLenient( true );
         writer.setSerializeNulls( serializeNulls );
         if ( indent ) {

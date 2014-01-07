@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.nmorel.gwtjackson.client.stream;
+package com.github.nmorel.gwtjackson.client.stream.impl;
 
 import java.io.IOException;
 
