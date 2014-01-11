@@ -24,8 +24,7 @@ import java.util.logging.Logger;
 import com.fasterxml.jackson.annotation.ObjectIdGenerator.IdKey;
 import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
-import com.github.nmorel.gwtjackson.client.stream.impl.DefaultJsonReader;
-import com.github.nmorel.gwtjackson.client.stream.impl.StringReader;
+import com.github.nmorel.gwtjackson.client.stream.impl.NonBufferedJsonReader;
 
 /**
  * Context for the deserialization process.
@@ -143,7 +142,7 @@ public class JsonDeserializationContext extends JsonMappingContext {
     }
 
     public JsonReader newJsonReader( String input ) {
-        JsonReader reader = new DefaultJsonReader( new StringReader( input ) );
+        JsonReader reader = new NonBufferedJsonReader( input );
         reader.setLenient( true );
         return reader;
     }
