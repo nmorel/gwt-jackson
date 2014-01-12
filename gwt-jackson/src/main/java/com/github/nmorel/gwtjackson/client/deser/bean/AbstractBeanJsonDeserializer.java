@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -38,10 +37,9 @@ import com.github.nmorel.gwtjackson.client.stream.JsonToken;
  */
 public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T> {
 
-    private final Map<String, BeanPropertyDeserializer<T, ?>> deserializers = new LinkedHashMap<String, BeanPropertyDeserializer<T, ?>>();
+    private final SimpleStringMap<BeanPropertyDeserializer<T, ?>> deserializers = SimpleStringMap.createObject().cast();
 
-    private final Map<String, BackReferenceProperty<T, ?>> backReferenceDeserializers = new LinkedHashMap<String,
-            BackReferenceProperty<T, ?>>();
+    private final SimpleStringMap<BackReferenceProperty<T, ?>> backReferenceDeserializers = SimpleStringMap.createObject().cast();
 
     private final Map<Class<? extends T>, SubtypeDeserializer<? extends T>> subtypeClassToDeserializer = new IdentityHashMap<Class<?
             extends T>, SubtypeDeserializer<? extends T>>();
