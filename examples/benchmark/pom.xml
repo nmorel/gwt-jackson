@@ -55,6 +55,18 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
+        <configuration>
+          <disableCastChecking>true</disableCastChecking>
+          <disableClassMetadata>true</disableClassMetadata>
+          <!--<style>DETAILED</style>-->
+          <!--<draftCompile>true</draftCompile>-->
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.tomcat.maven</groupId>
+        <artifactId>tomcat7-maven-plugin</artifactId>
+        <version>2.2</version>
       </plugin>
     </plugins>
   </build>
