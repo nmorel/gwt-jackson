@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import com.github.nmorel.gwtjackson.client.stream.impl.DefaultJsonWriter;
-
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.google.gwt.core.client.GWT;
 
@@ -31,7 +29,7 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
     public abstract JsonWriter newJsonWriter();
 
     public void testWrongTopLevelType() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         try {
             jsonWriter.value( "a" );
             fail();
@@ -40,7 +38,7 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
     }
 
     public void testTwoNames() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.beginObject();
         jsonWriter.name( "a" );
         try {
@@ -51,7 +49,7 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
     }
 
     public void testNameWithoutValue() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.beginObject();
         jsonWriter.name( "a" );
         try {
@@ -62,7 +60,7 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
     }
 
     public void testValueWithoutName() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.beginObject();
         try {
             jsonWriter.value( true );
@@ -72,7 +70,7 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
     }
 
     public void testMultipleTopLevelValues() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.beginArray().endArray();
         try {
             jsonWriter.beginArray();
@@ -82,7 +80,7 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
     }
 
     public void testBadNestingObject() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.beginArray();
         jsonWriter.beginObject();
         try {
@@ -93,7 +91,7 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
     }
 
     public void testBadNestingArray() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.beginArray();
         jsonWriter.beginArray();
         try {
@@ -104,7 +102,7 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
     }
 
     public void testNullName() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.beginObject();
         try {
             jsonWriter.name( null );
@@ -114,7 +112,7 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
     }
 
     public void testNullStringValue() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.beginObject();
         jsonWriter.name( "a" );
         jsonWriter.value( (String) null );
@@ -123,7 +121,7 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
     }
 
     public void testNonFiniteDoubles() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.beginArray();
         try {
             jsonWriter.value( Double.NaN );
@@ -143,7 +141,7 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
     }
 
     public void testNonFiniteBoxedDoubles() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.beginArray();
         try {
             jsonWriter.value( new Double( Double.NaN ) );
@@ -163,7 +161,7 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
     }
 
     public void testDoubles() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.beginArray();
         jsonWriter.value( -0.0 );
         jsonWriter.value( 1.0 );
@@ -188,7 +186,7 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
     }
 
     public void testLongs() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.beginArray();
         jsonWriter.value( 0 );
         jsonWriter.value( 1 );
@@ -201,7 +199,7 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
     }
 
     public void testNumbers() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.beginArray();
         jsonWriter.value( new BigInteger( "0" ) );
         jsonWriter.value( new BigInteger( "9223372036854775808" ) );
@@ -213,7 +211,7 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
     }
 
     public void testBooleans() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.beginArray();
         jsonWriter.value( true );
         jsonWriter.value( false );
@@ -222,7 +220,7 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
     }
 
     public void testNulls() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.beginArray();
         jsonWriter.nullValue();
         jsonWriter.endArray();
@@ -230,7 +228,7 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
     }
 
     public void testStrings() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.beginArray();
         jsonWriter.value( "a" );
         jsonWriter.value( "a\"" );
@@ -253,11 +251,12 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
         jsonWriter.endArray();
         assertEquals( "[\"a\"," + "\"a\\\"\"," + "\"\\\"\"," + "\":\"," + "\",\"," + "\"\\b\"," + "\"\\f\"," + "\"\\n\"," + "\"\\r\"," +
                 "" + "\"\\t\"," + "\" \"," + "\"\\\\\"," + "\"{\"," + "\"}\"," + "\"[\"," + "\"]\"," + "\"\\u0000\"," + "\"\\u0019\"]",
-                jsonWriter.getOutput() );
+                jsonWriter
+                .getOutput() );
     }
 
     public void testUnicodeLineBreaksEscaped() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.beginArray();
         jsonWriter.value( "\u2028\u2029" );
         jsonWriter.endArray();
@@ -265,21 +264,21 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
     }
 
     public void testEmptyArray() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.beginArray();
         jsonWriter.endArray();
         assertEquals( "[]", jsonWriter.getOutput() );
     }
 
     public void testEmptyObject() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.beginObject();
         jsonWriter.endObject();
         assertEquals( "{}", jsonWriter.getOutput() );
     }
 
     public void testObjectsInArrays() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.beginArray();
         jsonWriter.beginObject();
         jsonWriter.name( "a" ).value( 5 );
@@ -294,7 +293,7 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
     }
 
     public void testArraysInObjects() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.beginObject();
         jsonWriter.name( "a" );
         jsonWriter.beginArray();
@@ -311,7 +310,7 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
     }
 
     public void testDeepNestingArrays() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         for ( int i = 0; i < 20; i++ ) {
             jsonWriter.beginArray();
         }
@@ -322,7 +321,7 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
     }
 
     public void testDeepNestingObjects() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.beginObject();
         for ( int i = 0; i < 20; i++ ) {
             jsonWriter.name( "a" );
@@ -333,11 +332,12 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
         }
         jsonWriter.endObject();
         assertEquals( "{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":" +
-                "{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{" + "}}}}}}}}}}}}}}}}}}}}}", jsonWriter.getOutput() );
+                "{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{" + "}}}}}}}}}}}}}}}}}}}}}", jsonWriter
+                .getOutput() );
     }
 
     public void testRepeatedName() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.beginObject();
         jsonWriter.name( "a" ).value( true );
         jsonWriter.name( "a" ).value( false );
@@ -347,7 +347,7 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
     }
 
     public void testPrettyPrintObject() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.setIndent( "   " );
 
         jsonWriter.beginObject();
@@ -372,7 +372,7 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
     }
 
     public void testPrettyPrintArray() throws IOException {
-        JsonWriter jsonWriter = newJsonWriter( );
+        JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.setIndent( "   " );
 
         jsonWriter.beginArray();
@@ -486,5 +486,16 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
         jsonWriter.endArray();
         jsonWriter.close();
         jsonWriter.close();
+    }
+
+    public void testEscaping() throws IOException {
+        JsonWriter jsonWriter = newJsonWriter();
+        jsonWriter.beginObject();
+        jsonWriter.name( "json" );
+        jsonWriter.value( "{\"key\":\"value\"}" );
+        jsonWriter.endObject();
+        jsonWriter.close();
+
+        assertEquals( "{\"json\":\"{\\\"key\\\":\\\"value\\\"}\"}", jsonWriter.getOutput() );
     }
 }

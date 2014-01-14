@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.nmorel.gwtjackson.jackson.AbstractJacksonTest;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonRawValueTester;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonRawValueTester.ClassGetter;
+import com.github.nmorel.gwtjackson.shared.annotations.JsonRawValueTester.ClassWithJsonAsString;
 import org.junit.Test;
 
 /**
@@ -40,5 +41,10 @@ public class JsonRawValueJacksonTest extends AbstractJacksonTest {
     @Test
     public void testNullStringGetter() {
         JsonRawValueTester.INSTANCE.testNullStringGetter( createMapper( new TypeReference<ClassGetter<String>>() {} ) );
+    }
+
+    @Test
+    public void testJsonString() {
+        JsonRawValueTester.INSTANCE.testJsonString( createMapper( new TypeReference<ClassWithJsonAsString>() {} ) );
     }
 }

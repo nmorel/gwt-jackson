@@ -16,10 +16,12 @@
 
 package com.github.nmorel.gwtjackson.shared.annotations;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
+import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
 import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
 
 /**
@@ -53,6 +55,20 @@ public final class JsonRawValueTester extends AbstractTester {
         protected T value() { return _value; }
     }
 
+    public final static class ClassWithJsonAsString {
+
+        public String json;
+
+        @JsonRawValue
+        public String jsonRaw;
+
+        @JsonCreator
+        public ClassWithJsonAsString( @JsonProperty("json") String json, @JsonProperty( "jsonRaw" ) String jsonRaw ) {
+            this.json = json;
+            this.jsonRaw = jsonRaw;
+        }
+    }
+
     public static final JsonRawValueTester INSTANCE = new JsonRawValueTester();
 
     private JsonRawValueTester() {
@@ -76,5 +92,15 @@ public final class JsonRawValueTester extends AbstractTester {
     public void testNullStringGetter( ObjectWriterTester<ClassGetter<String>> writer ) {
         String result = writer.write( new ClassGetter<String>( null ) );
         assertEquals( "{\"nonRaw\":null,\"raw\":null,\"value\":null}", result );
+    }
+
+    public void testJsonString( ObjectMapperTester<ClassWithJsonAsString> mapper ) {
+        String json = "{\"key\":\"value\"}";
+        String result = mapper.write( new ClassWithJsonAsString( json, json ) );
+        assertEquals( "{\"json\":\"{\\\"key\\\":\\\"value\\\"}\",\"jsonRaw\":{\"key\":\"value\"}}", result );
+
+        ClassWithJsonAsString bean = mapper.read( "{\"json\":\"{\\\"key\\\":\\\"value\\\"}\"}" );
+        assertEquals( bean.json, json );
+        assertNull( bean.jsonRaw );
     }
 }

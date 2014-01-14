@@ -17,10 +17,13 @@
 package com.github.nmorel.gwtjackson.client.annotations;
 
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
+import com.github.nmorel.gwtjackson.client.ObjectMapper;
 import com.github.nmorel.gwtjackson.client.ObjectWriter;
+import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
 import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonRawValueTester;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonRawValueTester.ClassGetter;
+import com.github.nmorel.gwtjackson.shared.annotations.JsonRawValueTester.ClassWithJsonAsString;
 import com.google.gwt.core.client.GWT;
 
 /**
@@ -38,6 +41,11 @@ public class JsonRawValueGwtTest extends GwtJacksonTestCase {
         static ClassGetterInteger INSTANCE = GWT.create( ClassGetterInteger.class );
     }
 
+    public interface ClassWithJsonAsStringMapper extends ObjectMapper<ClassWithJsonAsString>, ObjectMapperTester<ClassWithJsonAsString> {
+
+        static ClassWithJsonAsStringMapper INSTANCE = GWT.create( ClassWithJsonAsStringMapper.class );
+    }
+
     private JsonRawValueTester tester = JsonRawValueTester.INSTANCE;
 
     public void testSimpleStringGetter() {
@@ -50,5 +58,9 @@ public class JsonRawValueGwtTest extends GwtJacksonTestCase {
 
     public void testNullStringGetter() {
         tester.testNullStringGetter( ClassGetterString.INSTANCE );
+    }
+
+    public void testJsonString() {
+        tester.testJsonString( ClassWithJsonAsStringMapper.INSTANCE );
     }
 }
