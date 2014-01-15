@@ -194,9 +194,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
             return result;
         }
 
-        Map<String, FieldAccessors> fieldsMap = new LinkedHashMap<String, FieldAccessors>();
-        parseFields( info.getType(), fieldsMap );
-        parseMethods( info.getType(), fieldsMap );
+        Map<String, FieldAccessors> fieldsMap = findPropertyAccessors( info );
 
         // Processing all the properties accessible via field, getter or setter
         Map<String, PropertyInfo> propertiesMap = new LinkedHashMap<String, PropertyInfo>();
@@ -206,18 +204,6 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
                 logger.log( TreeLogger.Type.DEBUG, "Field " + field.getFieldName() + " of type " + info.getType() + " is not visible" );
             } else {
                 propertiesMap.put( property.getPropertyName(), property );
-            }
-        }
-
-        // We look if there is any constructor parameters not found yet
-        if ( !info.getCreatorParameters().isEmpty() ) {
-            for ( Map.Entry<String, JParameter> entry : info.getCreatorParameters().entrySet() ) {
-                PropertyInfo property = propertiesMap.get( entry.getKey() );
-                if ( null == property ) {
-                    propertiesMap.put( entry.getKey(), PropertyInfo.process( logger, typeOracle, entry.getKey(), entry.getValue(), info ) );
-                } else if ( entry.getValue().getAnnotation( JsonProperty.class ).required() ) {
-                    property.setRequired( true );
-                }
             }
         }
 
@@ -248,6 +234,32 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
         }
 
         return result;
+    }
+
+    private Map<String, FieldAccessors> findPropertyAccessors( BeanInfo beanInfo ) {
+        Map<String, FieldAccessors> fieldsAndMethodsMap = new LinkedHashMap<String, FieldAccessors>();
+        parseFields( beanInfo.getType(), fieldsAndMethodsMap );
+        parseMethods( beanInfo.getType(), fieldsAndMethodsMap );
+
+        Map<String, FieldAccessors> propertyAccessors = new LinkedHashMap<String, FieldAccessors>();
+        for ( FieldAccessors fieldAccessors : fieldsAndMethodsMap.values() ) {
+            String propertyName = fieldAccessors.getPropertyName();
+            propertyAccessors.put( propertyName, fieldAccessors );
+        }
+
+        if ( !beanInfo.getCreatorParameters().isEmpty() ) {
+            for ( Entry<String, JParameter> entry : beanInfo.getCreatorParameters().entrySet() ) {
+                // If there is a constructor parameter referencing this property, we add it to the accessors
+                FieldAccessors fieldAccessors = propertyAccessors.get( entry.getKey() );
+                if ( null == fieldAccessors ) {
+                    fieldAccessors = new FieldAccessors( entry.getKey() );
+                    propertyAccessors.put( entry.getKey(), fieldAccessors );
+                }
+                fieldAccessors.setParameter( entry.getValue() );
+            }
+        }
+
+        return propertyAccessors;
     }
 
     private void parseFields( JClassType type, Map<String, FieldAccessors> propertiesMap ) {

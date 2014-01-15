@@ -19,8 +19,12 @@ package com.github.nmorel.gwtjackson.rebind;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gwt.core.ext.typeinfo.JField;
 import com.google.gwt.core.ext.typeinfo.JMethod;
+import com.google.gwt.core.ext.typeinfo.JParameter;
+
+import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findAnnotationOnAnyAccessor;
 
 /**
  * Used to aggregate field, getter method and setter method of the same field
@@ -29,8 +33,8 @@ import com.google.gwt.core.ext.typeinfo.JMethod;
  */
 public class FieldAccessors {
 
-    // name fo the field
-    private String fieldName;
+    // name of the field
+    private final String fieldName;
 
     // field
     private JField field;
@@ -47,16 +51,18 @@ public class FieldAccessors {
     // additionnal setters found on superclass or interfaces that may contains annotations
     private List<JMethod> setters = new ArrayList<JMethod>();
 
+    // the property's name. the same as fieldName unless a @JsonProperty annotation is found overriding the name
+    private String propertyName;
+
+    // constructor parameter
+    private JParameter parameter;
+
     public FieldAccessors( String fieldName ) {
         this.fieldName = fieldName;
     }
 
     public String getFieldName() {
         return fieldName;
-    }
-
-    public void setFieldName( String fieldName ) {
-        this.fieldName = fieldName;
     }
 
     public JField getField() {
@@ -97,5 +103,26 @@ public class FieldAccessors {
 
     public List<JMethod> getSetters() {
         return setters;
+    }
+
+    public String getPropertyName() {
+        if ( null == propertyName ) {
+            // determine the property name
+            JsonProperty jsonProperty = findAnnotationOnAnyAccessor( this, JsonProperty.class );
+            if ( null != jsonProperty && null != jsonProperty.value() && !JsonProperty.USE_DEFAULT_NAME.equals( jsonProperty.value() ) ) {
+                propertyName = jsonProperty.value();
+            } else {
+                propertyName = getFieldName();
+            }
+        }
+        return propertyName;
+    }
+
+    public JParameter getParameter() {
+        return parameter;
+    }
+
+    public void setParameter( JParameter parameter ) {
+        this.parameter = parameter;
     }
 }

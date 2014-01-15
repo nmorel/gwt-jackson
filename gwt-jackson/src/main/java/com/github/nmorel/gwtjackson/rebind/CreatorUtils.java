@@ -74,6 +74,9 @@ public final class CreatorUtils {
         // TODO with this current setup, an annotation present on a getter method in superclass will be returned instead of the same
         // annotation present on field in the child class. Test the behaviour in jackson.
 
+        if ( null != fieldAccessors.getParameter() && fieldAccessors.getParameter().isAnnotationPresent( annotation ) ) {
+            return fieldAccessors.getParameter().getAnnotation( annotation );
+        }
         if ( null != fieldAccessors.getGetter() && fieldAccessors.getGetter().isAnnotationPresent( annotation ) ) {
             return fieldAccessors.getGetter().getAnnotation( annotation );
         }

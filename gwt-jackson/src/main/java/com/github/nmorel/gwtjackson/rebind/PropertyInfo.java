@@ -28,10 +28,10 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.google.gwt.core.ext.TreeLogger;
+import com.google.gwt.core.ext.TreeLogger.Type;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JField;
 import com.google.gwt.core.ext.typeinfo.JMethod;
-import com.google.gwt.core.ext.typeinfo.JParameter;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.thirdparty.guava.common.base.Optional;
 import com.google.gwt.user.rebind.SourceWriter;
@@ -54,7 +54,7 @@ public final class PropertyInfo {
         PropertyInfo result = new PropertyInfo();
 
         // find the type of the property
-        result.type = findType( fieldAccessors );
+        result.type = findType( logger, fieldAccessors );
 
         // determine the property name
         JsonProperty jsonProperty = findAnnotationOnAnyAccessor( fieldAccessors, JsonProperty.class );
@@ -87,7 +87,7 @@ public final class PropertyInfo {
         boolean fieldAutoDetected = null != fieldAccessors.getField() && (hasAnyAnnotation || isFieldAutoDetected( fieldAccessors
                 .getField(), mapperInfo.getBeanInfo() ));
 
-        if ( !getterAutoDetected && !setterAutoDetected && !fieldAutoDetected ) {
+        if ( !getterAutoDetected && !setterAutoDetected && !fieldAutoDetected && null == fieldAccessors.getParameter() ) {
             // none of the field have been auto-detected, we ignore the field
             result.visible = false;
             return result;
@@ -122,25 +122,18 @@ public final class PropertyInfo {
         return result;
     }
 
-    /**
-     * Processes and construct a {@link PropertyInfo} for a constructor parameter.
-     */
-    public static PropertyInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, String propertyName,
-                                        JParameter constructorParameter, BeanInfo beanInfo ) {
-        PropertyInfo result = new PropertyInfo();
-        result.type = constructorParameter.getType();
-        result.required = constructorParameter.getAnnotation( JsonProperty.class ).required();
-        result.propertyName = propertyName;
-        return result;
-    }
-
-    private static JType findType( FieldAccessors fieldAccessors ) {
+    private static JType findType( TreeLogger logger, FieldAccessors fieldAccessors ) throws UnableToCompleteException {
         if ( null != fieldAccessors.getGetter() ) {
             return fieldAccessors.getGetter().getReturnType();
         } else if ( null != fieldAccessors.getSetter() ) {
             return fieldAccessors.getSetter().getParameters()[0].getType();
-        } else {
+        } else if ( null != fieldAccessors.getField() ) {
             return fieldAccessors.getField().getType();
+        } else if ( null != fieldAccessors.getParameter() ) {
+            return fieldAccessors.getParameter().getType();
+        } else {
+            logger.log( Type.ERROR, "Cannot find the type of the property " + fieldAccessors.getPropertyName() );
+            throw new UnableToCompleteException();
         }
     }
 
@@ -270,10 +263,6 @@ public final class PropertyInfo {
 
     public boolean isRequired() {
         return required;
-    }
-
-    public void setRequired( boolean required ) {
-        this.required = required;
     }
 
     public String getPropertyName() {
