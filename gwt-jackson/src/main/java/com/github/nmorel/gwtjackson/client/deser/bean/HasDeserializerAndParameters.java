@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Nicolas Morel
+ * Copyright 2014 Nicolas Morel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,26 +18,36 @@ package com.github.nmorel.gwtjackson.client.deser.bean;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 
 /**
- * Deserializes a bean's property
+ * Lazy initialize a {@link JsonDeserializer}
  *
  * @author Nicolas Morel
  */
-public abstract class BeanPropertyDeserializer<T, V> extends HasDeserializerAndParameters<V, JsonDeserializer<V>> {
+public abstract class HasDeserializerAndParameters<V, S extends JsonDeserializer<V>> extends HasDeserializer<V, S> {
+
+    private JsonDeserializerParameters parameters;
+
+    protected JsonDeserializerParameters getParameters( JsonDeserializationContext ctx ) {
+        if ( null == parameters ) {
+            parameters = newParameters( ctx );
+        }
+        return parameters;
+    }
+
+    protected JsonDeserializerParameters newParameters( JsonDeserializationContext ctx ) {
+        return JsonDeserializerParameters.DEFAULT;
+    }
 
     /**
      * Deserializes the property defined for this instance.
      *
      * @param reader reader
-     * @param bean bean to set the deserialized property to
      * @param ctx context of the deserialization process
      */
-    public void deserialize( JsonReader reader, T bean, JsonDeserializationContext ctx ) {
-        setValue( bean, deserialize( reader, ctx ), ctx );
+    public V deserialize( JsonReader reader, JsonDeserializationContext ctx ) {
+        return getDeserializer( ctx ).deserialize( reader, ctx, getParameters( ctx ) );
     }
-
-    public abstract void setValue( T bean, V value, JsonDeserializationContext ctx );
 }
-

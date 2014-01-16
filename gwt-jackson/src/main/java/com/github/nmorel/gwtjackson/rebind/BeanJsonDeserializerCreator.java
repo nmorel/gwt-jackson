@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.github.nmorel.gwtjackson.client.deser.bean.HasDeserializerAndParameters;
 import com.github.nmorel.gwtjackson.client.deser.bean.SubtypeDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
@@ -167,9 +168,18 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         source.indent();
 
         if ( null != beanInfo.getCreatorParameters() && !beanInfo.getCreatorParameters().isEmpty() ) {
+            // for each constructor parameters, we initialize its deserializer.
             for ( Entry<String, JParameter> entry : beanInfo.getCreatorParameters().entrySet() ) {
-                source.println( "private %s<%s> %s;", JSON_DESERIALIZER_CLASS, getQualifiedClassName( entry.getValue().getType() ), String
-                        .format( INSTANCE_BUILDER_DESERIALIZER_FORMAT, entry.getKey() ) );
+                String qualifiedTypeName = getQualifiedClassName( entry.getValue().getType() );
+                String deserializerClass = String.format( "%s<%s, %s<%s>>", HasDeserializerAndParameters.class
+                        .getCanonicalName(), qualifiedTypeName, JSON_DESERIALIZER_CLASS, qualifiedTypeName );
+                source.println( "private final %s %s = new %s() {", deserializerClass, String
+                        .format( INSTANCE_BUILDER_DESERIALIZER_FORMAT, entry.getKey() ), deserializerClass );
+
+                source.indent();
+                generateCommonPropertyDeserializerBody( source, beanInfo, properties.get( entry.getKey() ) );
+                source.outdent();
+                source.println( "};" );
             }
             source.println();
         }
@@ -263,14 +273,6 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
             source.println( "if(\"%s\".equals(name)) {", name );
             source.indent();
-            source.println( "if(null == %s) {", String.format( INSTANCE_BUILDER_DESERIALIZER_FORMAT, name ) );
-            source.indent();
-            // FIXME check this, we might have to do something now that the parameters are not passed to this method anymore
-            source.println( "%s = %s;", String
-                    .format( INSTANCE_BUILDER_DESERIALIZER_FORMAT, name ), getJsonDeserializerFromType( propertyInfo.getType() )
-                    .getInstance() );
-            source.outdent();
-            source.println( "}" );
             source.println( "%s = %s.deserialize(reader, ctx);", FORMAT_VARIABLE.apply( name ), String
                     .format( INSTANCE_BUILDER_DESERIALIZER_FORMAT, name ) );
             source.println( "nbParamToFind--;" );
@@ -395,18 +397,9 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
                         .getPropertyName(), property.isRequired(), info.getType()
                         .getParameterizedQualifiedSourceName(), getQualifiedClassName( property.getType() ) );
 
-                JDeserializerType deserializerType = getJsonDeserializerFromType( property.getType() );
-
                 source.indent();
-                source.println( "@Override" );
-                source.println( "protected %s<%s> newDeserializer(%s ctx) {", JSON_DESERIALIZER_CLASS, getQualifiedClassName( property
-                        .getType() ), JSON_DESERIALIZATION_CONTEXT_CLASS );
-                source.indent();
-                source.println( "return %s;", deserializerType.getInstance() );
-                source.outdent();
-                source.println( "}" );
 
-                generatePropertyDeserializerParameters( source, property, deserializerType );
+                generateCommonPropertyDeserializerBody( source, info, property );
 
                 source.println();
 
@@ -420,6 +413,9 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
                     source.println( "getDeserializer(ctx).setBackReference(\"%s\", bean, value, ctx);", property.getManagedReference()
                             .get() );
                 }
+
+                source.outdent();
+                source.println( "}" );
             } else {
                 // this is a back reference, we add the special back reference property that will be called by the parent
                 source.println( "addBackReferenceDeserializer(\"%s\", new " + BACK_REFERENCE_PROPERTY_BEAN_CLASS + "<%s, %s>() {", property
@@ -434,10 +430,10 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
                 source.indent();
 
                 source.println( accessor.getAccessor() + ";", "reference" );
-            }
 
-            source.outdent();
-            source.println( "}" );
+                source.outdent();
+                source.println( "}" );
+            }
 
             if ( accessor.getAdditionalMethod().isPresent() ) {
                 source.println();
@@ -448,6 +444,21 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
             source.println( "});" );
             source.println();
         }
+    }
+
+    private void generateCommonPropertyDeserializerBody( SourceWriter source, BeanInfo info,
+                                                         PropertyInfo property ) throws UnableToCompleteException {
+        JDeserializerType deserializerType = getJsonDeserializerFromType( property.getType() );
+
+        source.println( "@Override" );
+        source.println( "protected %s<%s> newDeserializer(%s ctx) {", JSON_DESERIALIZER_CLASS, getQualifiedClassName( property
+                .getType() ), JSON_DESERIALIZATION_CONTEXT_CLASS );
+        source.indent();
+        source.println( "return %s;", deserializerType.getInstance() );
+        source.outdent();
+        source.println( "}" );
+
+        generatePropertyDeserializerParameters( source, property, deserializerType );
     }
 
     private void generatePropertyDeserializerParameters( SourceWriter source, PropertyInfo property,
