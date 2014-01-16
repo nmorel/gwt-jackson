@@ -21,6 +21,7 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
 import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
 
@@ -30,7 +31,7 @@ import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
 public final class JsonFormatTester extends AbstractTester {
 
     // currently, jackson does not take JsonFormat on parent into account
-    @JsonFormat( pattern = "/yyyy/MM/dd/HH/mm/ss" )
+    @JsonFormat(pattern = "/yyyy/MM/dd/HH/mm/ss")
     public static class FormatDateBean {
 
         @JsonFormat( shape = Shape.STRING, pattern = "/yyyy/MM/dd/" )
@@ -50,6 +51,15 @@ public final class JsonFormatTester extends AbstractTester {
         public Timestamp timestampNumber;
 
         public Timestamp timestamp;
+
+        private final Date dateInParameter;
+
+        public FormatDateBean( @JsonProperty( "dateInParameter" ) @JsonFormat( shape = Shape.STRING,
+                pattern = "'P'yyyy/MM/dd" ) Date dateParameter ) {this.dateInParameter = dateParameter;}
+
+        public Date getDateInParameter() {
+            return dateInParameter;
+        }
     }
 
     public static final JsonFormatTester INSTANCE = new JsonFormatTester();
@@ -62,7 +72,7 @@ public final class JsonFormatTester extends AbstractTester {
         Date date = new Date( millis );
         Timestamp timestamp = new Timestamp( millis );
 
-        FormatDateBean bean = new FormatDateBean();
+        FormatDateBean bean = new FormatDateBean( new Date( millis ) );
         bean.dateString = date;
         bean.dateNumber = date;
         bean.date = date;
@@ -71,6 +81,7 @@ public final class JsonFormatTester extends AbstractTester {
         bean.timestamp = timestamp;
 
         String expected = "{" +
+                "\"dateInParameter\":\"P2013/12/25\"," +
                 "\"dateString\":\"/2013/12/25/\"," +
                 "\"dateNumber\":" + millis + "," +
                 "\"date\":\"2013-12-25T00:00:00.000+0000\"," +
@@ -85,6 +96,7 @@ public final class JsonFormatTester extends AbstractTester {
         assertEquals( date, actual.dateString );
         assertEquals( date, actual.dateNumber );
         assertEquals( date, actual.date );
+        assertEquals( date, actual.dateInParameter );
         assertEquals( timestamp, actual.timestampString );
         assertEquals( timestamp, actual.timestampNumber );
         assertEquals( timestamp, actual.timestamp );

@@ -22,8 +22,10 @@ import com.github.nmorel.gwtjackson.client.ObjectReader;
 import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
 import com.github.nmorel.gwtjackson.shared.ObjectReaderTester;
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester;
-import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester.IdWrapper;
-import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester.IdWrapperExt;
+import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester.IdParameterWrapper;
+import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester.IdParameterWrapperExt;
+import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester.IdPropertyWrapper;
+import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester.IdPropertyWrapperExt;
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester.Identifiable;
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester.IdentifiableCustom;
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester.UUIDNode;
@@ -44,9 +46,14 @@ public class ObjectIdDeserializationGwtTest extends GwtJacksonTestCase {
         static UUIDNodeMapper INSTANCE = GWT.create( UUIDNodeMapper.class );
     }
 
-    public interface IdWrapperMapper extends ObjectReader<IdWrapper>, ObjectReaderTester<IdWrapper> {
+    public interface IdPropertyWrapperMapper extends ObjectReader<IdPropertyWrapper>, ObjectReaderTester<IdPropertyWrapper> {
 
-        static IdWrapperMapper INSTANCE = GWT.create( IdWrapperMapper.class );
+        static IdPropertyWrapperMapper INSTANCE = GWT.create( IdPropertyWrapperMapper.class );
+    }
+
+    public interface IdParameterWrapperMapper extends ObjectReader<IdParameterWrapper>, ObjectReaderTester<IdParameterWrapper> {
+
+        static IdParameterWrapperMapper INSTANCE = GWT.create( IdParameterWrapperMapper.class );
     }
 
     public interface IdentifiableCustomMapper extends ObjectReader<IdentifiableCustom>, ObjectReaderTester<IdentifiableCustom> {
@@ -54,9 +61,14 @@ public class ObjectIdDeserializationGwtTest extends GwtJacksonTestCase {
         static IdentifiableCustomMapper INSTANCE = GWT.create( IdentifiableCustomMapper.class );
     }
 
-    public interface IdWrapperExtMapper extends ObjectReader<IdWrapperExt>, ObjectReaderTester<IdWrapperExt> {
+    public interface IdPropertyWrapperExtMapper extends ObjectReader<IdPropertyWrapperExt>, ObjectReaderTester<IdPropertyWrapperExt> {
 
-        static IdWrapperExtMapper INSTANCE = GWT.create( IdWrapperExtMapper.class );
+        static IdPropertyWrapperExtMapper INSTANCE = GWT.create( IdPropertyWrapperExtMapper.class );
+    }
+
+    public interface IdParameterWrapperExtMapper extends ObjectReader<IdParameterWrapperExt>, ObjectReaderTester<IdParameterWrapperExt> {
+
+        static IdParameterWrapperExtMapper INSTANCE = GWT.create( IdParameterWrapperExtMapper.class );
     }
 
     private ObjectIdDeserializationTester tester = ObjectIdDeserializationTester.INSTANCE;
@@ -70,11 +82,11 @@ public class ObjectIdDeserializationGwtTest extends GwtJacksonTestCase {
     }
 
     public void testSimpleDeserializationProperty() {
-        tester.testSimpleDeserializationProperty( IdWrapperMapper.INSTANCE );
+        tester.testSimpleDeserializationProperty( IdPropertyWrapperMapper.INSTANCE );
     }
 
     public void testSimpleDeserWithForwardRefs() {
-        tester.testSimpleDeserWithForwardRefs( IdWrapperMapper.INSTANCE );
+        tester.testSimpleDeserWithForwardRefs( IdPropertyWrapperMapper.INSTANCE );
     }
 
     public void testCustomDeserializationClass() {
@@ -82,6 +94,14 @@ public class ObjectIdDeserializationGwtTest extends GwtJacksonTestCase {
     }
 
     public void testCustomDeserializationProperty() {
-        tester.testCustomDeserializationProperty( IdWrapperExtMapper.INSTANCE );
+        tester.testCustomDeserializationProperty( IdPropertyWrapperExtMapper.INSTANCE );
+    }
+
+    public void testSimpleDeserializationParameter() {
+        tester.testSimpleDeserializationParameter( IdParameterWrapperMapper.INSTANCE );
+    }
+
+    public void testCustomDeserializationParameter() {
+        tester.testCustomDeserializationParameter( IdParameterWrapperExtMapper.INSTANCE );
     }
 }

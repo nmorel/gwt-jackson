@@ -24,6 +24,7 @@ import com.github.nmorel.gwtjackson.client.advanced.identity.ObjectIdGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.identity.ObjectIdSerializationGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.identity.ObjectIdWithEqualsGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.identity.ObjectIdWithPolymorphicGwtTest;
+import com.github.nmorel.gwtjackson.client.advanced.jsontype.JsonTypeOnParametersGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.jsontype.JsonTypeOnPropertiesGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.jsontype.JsonTypeWithGenericsGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.jsontype.PolymorphismIdClassAsPropertyGwtTest;
@@ -272,6 +273,7 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( PolymorphismIdNameAsWrapperObjectGwtTest.class );
         suite.addTestSuite( JsonTypeWithGenericsGwtTest.class );
         suite.addTestSuite( JsonTypeOnPropertiesGwtTest.class );
+        suite.addTestSuite( JsonTypeOnParametersGwtTest.class );
         suite.addTestSuite( TypeNamesGwtTest.class );
         // TODO this class isn't working at all, the current implementation don't support JsonTypeInfo on a single type without any subtype
         // suite.addTestSuite( VisibleTypeIdGwtTest.class );

@@ -55,30 +55,27 @@ public final class PropertyInfo {
 
         // find the type of the property
         result.type = findType( logger, fieldAccessors );
+        result.propertyName = fieldAccessors.getPropertyName();
 
         // determine the property name
         JsonProperty jsonProperty = findAnnotationOnAnyAccessor( fieldAccessors, JsonProperty.class );
         result.required = null != jsonProperty && jsonProperty.required();
-        if ( null != jsonProperty && null != jsonProperty.value() && !JsonProperty.USE_DEFAULT_NAME.equals( jsonProperty.value() ) ) {
-            result.propertyName = jsonProperty.value();
-        } else {
-            result.propertyName = fieldAccessors.getFieldName();
-        }
 
         result.ignored = isPropertyIgnored( fieldAccessors, mapperInfo, result.type, result.propertyName );
         if ( result.ignored ) {
             return result;
         }
 
-        JsonManagedReference jsonManagedReference = findAnnotationOnAnyAccessor( fieldAccessors, JsonManagedReference.class );
+        JsonManagedReference jsonManagedReference = findAnnotationOnAnyAccessor( fieldAccessors, JsonManagedReference.class, true );
         result.managedReference = Optional.fromNullable( null == jsonManagedReference ? null : jsonManagedReference.value() );
 
-        JsonBackReference jsonBackReference = findAnnotationOnAnyAccessor( fieldAccessors, JsonBackReference.class );
+        JsonBackReference jsonBackReference = findAnnotationOnAnyAccessor( fieldAccessors, JsonBackReference.class, true );
         result.backReference = Optional.fromNullable( null == jsonBackReference ? null : jsonBackReference.value() );
 
         // if an accessor has jackson annotation, the property is considered auto detected.
         // TODO can we do a search on @JacksonAnnotation instead of enumerating all of them ?
-        boolean hasAnyAnnotation = null != jsonProperty || null != jsonManagedReference || null != jsonBackReference;
+        boolean hasAnyAnnotation = null != findAnnotationOnAnyAccessor( fieldAccessors, JsonProperty.class,
+                true ) || null != jsonManagedReference || null != jsonBackReference;
 
         boolean getterAutoDetected = null != fieldAccessors.getGetter() && (hasAnyAnnotation || isGetterAutoDetected( fieldAccessors
                 .getGetter(), mapperInfo.getBeanInfo() ));

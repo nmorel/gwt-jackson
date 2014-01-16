@@ -67,37 +67,59 @@ public final class ObjectIdDeserializationTester extends AbstractTester {
 
     // // Classes for external id from property annotations:
 
-    public static class IdWrapper {
+    public static class IdPropertyWrapper {
 
-        @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-        public ValueNode node;
+        @JsonIdentityInfo( generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id" )
+        public ValuePropertyNode node;
 
-        public IdWrapper() {
+        public IdPropertyWrapper() {
         }
 
-        public IdWrapper( int v ) {
-            node = new ValueNode( v );
+        public IdPropertyWrapper( int v ) {
+            node = new ValuePropertyNode( v );
         }
     }
 
-    public static class ValueNode {
+    public static class ValuePropertyNode {
 
         public int value;
 
-        public IdWrapper next;
+        public IdPropertyWrapper next;
 
-        public ValueNode() {
+        public ValuePropertyNode() {
             this( 0 );
         }
 
-        public ValueNode( int v ) {
+        public ValuePropertyNode( int v ) {
             value = v;
+        }
+    }
+
+    // // Classes for external id from parameter annotation
+
+    public static class IdParameterWrapper {
+
+        private final ValueParameterNode test;
+
+        public IdParameterWrapper( @JsonProperty( "node" ) @JsonIdentityInfo( generator = ObjectIdGenerators.IntSequenceGenerator.class,
+                property = "@id" ) ValueParameterNode node ) {
+            this.test = node;
+        }
+    }
+
+    public static class ValueParameterNode {
+
+        public int value;
+
+        public IdParameterWrapper next;
+
+        public ValueParameterNode() {
         }
     }
 
     // // Classes for external id use
 
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "customId")
+    @JsonIdentityInfo( generator = ObjectIdGenerators.PropertyGenerator.class, property = "customId" )
     public static class IdentifiableCustom {
 
         public int value;
@@ -116,35 +138,58 @@ public final class ObjectIdDeserializationTester extends AbstractTester {
         }
     }
 
-    public static class IdWrapperExt {
+    public static class IdPropertyWrapperExt {
 
-        @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
-                property = "customId")
-        public ValueNodeExt node;
+        @JsonIdentityInfo( generator = ObjectIdGenerators.PropertyGenerator.class,
+                property = "customId" )
+        public ValuePropertyNodeExt node;
 
-        public IdWrapperExt() {
+        public IdPropertyWrapperExt() {
         }
 
-        public IdWrapperExt( int v ) {
-            node = new ValueNodeExt( v );
+        public IdPropertyWrapperExt( int v ) {
+            node = new ValuePropertyNodeExt( v );
         }
     }
 
-    public static class ValueNodeExt {
+    public static class ValuePropertyNodeExt {
 
         public int value;
 
-        public IdWrapperExt next;
+        public IdPropertyWrapperExt next;
 
         @JsonProperty
         private int customId;
 
-        public ValueNodeExt() {
+        public ValuePropertyNodeExt() {
             this( 0 );
         }
 
-        public ValueNodeExt( int v ) {
+        public ValuePropertyNodeExt( int v ) {
             value = v;
+        }
+    }
+
+    public static class IdParameterWrapperExt {
+
+        private final ValueParameterNodeExt test;
+
+        public IdParameterWrapperExt( @JsonProperty( "node" ) @JsonIdentityInfo( generator = ObjectIdGenerators.PropertyGenerator.class,
+                property = "customId" ) ValueParameterNodeExt node ) {
+            this.test = node;
+        }
+    }
+
+    public static class ValueParameterNodeExt {
+
+        public int value;
+
+        public IdParameterWrapperExt next;
+
+        @JsonProperty
+        private int customId;
+
+        public ValueParameterNodeExt() {
         }
     }
 
@@ -213,31 +258,42 @@ public final class ObjectIdDeserializationTester extends AbstractTester {
     /*****************************************************
      */
 
-    public void testSimpleDeserializationProperty( ObjectReaderTester<IdWrapper> reader ) {
-        IdWrapper result = reader.read( EXP_SIMPLE_INT_PROP );
+    public void testSimpleDeserializationProperty( ObjectReaderTester<IdPropertyWrapper> reader ) {
+        IdPropertyWrapper result = reader.read( EXP_SIMPLE_INT_PROP );
         assertEquals( 7, result.node.value );
         assertSame( result.node, result.node.next.node );
     }
 
     // Another test to ensure ordering is not required (i.e. can do front references)
-    public void testSimpleDeserWithForwardRefs( ObjectReaderTester<IdWrapper> reader ) {
-        IdWrapper result = reader.read( "{\"node\":{\"value\":7,\"next\":{\"node\":1}, \"@id\":1}}" );
+    public void testSimpleDeserWithForwardRefs( ObjectReaderTester<IdPropertyWrapper> reader ) {
+        IdPropertyWrapper result = reader.read( "{\"node\":{\"value\":7,\"next\":{\"node\":1}, \"@id\":1}}" );
         assertEquals( 7, result.node.value );
         assertSame( result.node, result.node.next.node );
     }
 
     public void testCustomDeserializationClass( ObjectReaderTester<IdentifiableCustom> reader ) {
-        // then bring back...
         IdentifiableCustom result = reader.read( EXP_CUSTOM_VIA_CLASS );
         assertEquals( -900, result.value );
         assertSame( result, result.next );
     }
 
-    public void testCustomDeserializationProperty( ObjectReaderTester<IdWrapperExt> reader ) {
-        // then bring back...
-        IdWrapperExt result = reader.read( EXP_CUSTOM_VIA_PROP );
+    public void testCustomDeserializationProperty( ObjectReaderTester<IdPropertyWrapperExt> reader ) {
+        IdPropertyWrapperExt result = reader.read( EXP_CUSTOM_VIA_PROP );
         assertEquals( 99, result.node.value );
         assertSame( result.node, result.node.next.node );
         assertEquals( 3, result.node.customId );
+    }
+
+    public void testSimpleDeserializationParameter( ObjectReaderTester<IdParameterWrapper> reader ) {
+        IdParameterWrapper result = reader.read( EXP_SIMPLE_INT_PROP );
+        assertEquals( 7, result.test.value );
+        assertSame( result.test, result.test.next.test );
+    }
+
+    public void testCustomDeserializationParameter( ObjectReaderTester<IdParameterWrapperExt> reader ) {
+        IdParameterWrapperExt result = reader.read( EXP_CUSTOM_VIA_PROP );
+        assertEquals( 99, result.test.value );
+        assertSame( result.test, result.test.next.test );
+        assertEquals( 3, result.test.customId );
     }
 }

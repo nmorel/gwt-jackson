@@ -71,10 +71,14 @@ public final class CreatorUtils {
     }
 
     public static <T extends Annotation> T findAnnotationOnAnyAccessor( FieldAccessors fieldAccessors, Class<T> annotation ) {
+        return findAnnotationOnAnyAccessor( fieldAccessors, annotation, false );
+    }
+
+    public static <T extends Annotation> T findAnnotationOnAnyAccessor( FieldAccessors fieldAccessors, Class<T> annotation, boolean ignoreParameter ) {
         // TODO with this current setup, an annotation present on a getter method in superclass will be returned instead of the same
         // annotation present on field in the child class. Test the behaviour in jackson.
 
-        if ( null != fieldAccessors.getParameter() && fieldAccessors.getParameter().isAnnotationPresent( annotation ) ) {
+        if ( !ignoreParameter && null != fieldAccessors.getParameter() && fieldAccessors.getParameter().isAnnotationPresent( annotation ) ) {
             return fieldAccessors.getParameter().getAnnotation( annotation );
         }
         if ( null != fieldAccessors.getGetter() && fieldAccessors.getGetter().isAnnotationPresent( annotation ) ) {
