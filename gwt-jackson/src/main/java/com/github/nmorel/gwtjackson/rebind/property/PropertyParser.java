@@ -46,8 +46,8 @@ public final class PropertyParser {
 
         Map<String, PropertyAccessorsBuilder> propertyAccessors = new LinkedHashMap<String, PropertyAccessorsBuilder>();
         for ( PropertyAccessorsBuilder fieldAccessors : fieldsAndMethodsMap.values() ) {
-            String propertyName = fieldAccessors.getPropertyName();
-            propertyAccessors.put( propertyName, fieldAccessors );
+            fieldAccessors.prebuild();
+            propertyAccessors.put( fieldAccessors.getPropertyName(), fieldAccessors );
         }
 
         if ( !beanInfo.getCreatorParameters().isEmpty() ) {

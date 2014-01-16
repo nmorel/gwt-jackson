@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.rebind.property;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -24,6 +23,8 @@ import com.google.gwt.core.ext.typeinfo.JField;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JParameter;
 import com.google.gwt.thirdparty.guava.common.base.Optional;
+import com.google.gwt.thirdparty.guava.common.collect.ImmutableList;
+import com.google.gwt.thirdparty.guava.common.collect.ImmutableList.Builder;
 
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findAnnotationOnAnyAccessor;
 
@@ -34,17 +35,23 @@ import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findAnnotationOnA
  */
 class PropertyAccessorsBuilder implements PropertyAccessors {
 
+    private boolean prebuilt;
+
     private final String fieldName;
 
     private Optional<JField> field = Optional.absent();
 
     private Optional<JMethod> getter = Optional.absent();
 
-    private List<JMethod> getters = new ArrayList<JMethod>();
+    private ImmutableList<JMethod> getters;
+
+    private Builder<JMethod> gettersBuilder = ImmutableList.builder();
 
     private Optional<JMethod> setter = Optional.absent();
 
-    private List<JMethod> setters = new ArrayList<JMethod>();
+    private ImmutableList<JMethod> setters;
+
+    private Builder<JMethod> settersBuilder = ImmutableList.builder();
 
     private String propertyName;
 
@@ -59,34 +66,14 @@ class PropertyAccessorsBuilder implements PropertyAccessors {
         return field;
     }
 
-    void setField( JField field ) {
-        this.field = Optional.of( field );
-    }
-
     @Override
     public Optional<JMethod> getGetter() {
         return getter;
     }
 
-    void addGetter( JMethod getter ) {
-        if ( !this.getter.isPresent() && !getter.isAbstract() ) {
-            this.getter = Optional.of( getter );
-        } else {
-            this.getters.add( getter );
-        }
-    }
-
     @Override
     public Optional<JMethod> getSetter() {
         return setter;
-    }
-
-    void addSetter( JMethod setter ) {
-        if ( !this.setter.isPresent() && !setter.isAbstract() ) {
-            this.setter = Optional.of( setter );
-        } else {
-            this.setters.add( setter );
-        }
     }
 
     @Override
@@ -101,15 +88,6 @@ class PropertyAccessorsBuilder implements PropertyAccessors {
 
     @Override
     public String getPropertyName() {
-        if ( null == propertyName ) {
-            // determine the property name
-            JsonProperty jsonProperty = findAnnotationOnAnyAccessor( this, JsonProperty.class );
-            if ( null != jsonProperty && null != jsonProperty.value() && !JsonProperty.USE_DEFAULT_NAME.equals( jsonProperty.value() ) ) {
-                propertyName = jsonProperty.value();
-            } else {
-                propertyName = fieldName;
-            }
-        }
         return propertyName;
     }
 
@@ -118,11 +96,54 @@ class PropertyAccessorsBuilder implements PropertyAccessors {
         return parameter;
     }
 
+    void setField( JField field ) {
+        assert !prebuilt : "cannot set field after prebuild";
+        this.field = Optional.of( field );
+    }
+
+    void addGetter( JMethod getter ) {
+        assert !prebuilt : "cannot add getter after prebuild";
+        if ( !this.getter.isPresent() && !getter.isAbstract() ) {
+            this.getter = Optional.of( getter );
+        } else {
+            this.gettersBuilder.add( getter );
+        }
+    }
+
+    void addSetter( JMethod setter ) {
+        assert !prebuilt : "cannot add setter after prebuild";
+        if ( !this.setter.isPresent() && !setter.isAbstract() ) {
+            this.setter = Optional.of( setter );
+        } else {
+            this.settersBuilder.add( setter );
+        }
+    }
+
     void setParameter( JParameter parameter ) {
         this.parameter = Optional.of( parameter );
     }
 
+    void prebuild() {
+        assert !prebuilt : "cannot call prebuild twice";
+
+        getters = gettersBuilder.build();
+        setters = settersBuilder.build();
+
+        // determine the property name
+        JsonProperty jsonProperty = findAnnotationOnAnyAccessor( this, JsonProperty.class );
+        if ( null != jsonProperty && null != jsonProperty.value() && !JsonProperty.USE_DEFAULT_NAME.equals( jsonProperty.value() ) ) {
+            propertyName = jsonProperty.value();
+        } else {
+            propertyName = fieldName;
+        }
+
+        prebuilt = true;
+    }
+
     PropertyAccessors build() {
+        if ( !prebuilt ) {
+            prebuild();
+        }
         return this;
     }
 }
