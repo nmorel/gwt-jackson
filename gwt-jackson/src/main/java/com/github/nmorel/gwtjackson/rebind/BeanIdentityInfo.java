@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.IntSequenceGenerator;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.UUIDGenerator;
+import com.github.nmorel.gwtjackson.rebind.property.PropertyAccessors;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
@@ -45,22 +46,22 @@ public class BeanIdentityInfo {
     }
 
     public static BeanIdentityInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, JType type,
-                                            FieldAccessors fieldAccessors ) throws UnableToCompleteException {
+                                            PropertyAccessors propertyAccessors ) throws UnableToCompleteException {
         JClassType classType = extractBeanType( logger, typeOracle, type );
         if ( null == classType ) {
             return null;
         } else {
-            return process( logger, typeOracle, classType, fieldAccessors, true );
+            return process( logger, typeOracle, classType, propertyAccessors, true );
         }
     }
 
     private static BeanIdentityInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, JClassType type,
-                                             FieldAccessors fieldAccessors, boolean property ) throws UnableToCompleteException {
+                                             PropertyAccessors propertyAccessors, boolean property ) throws UnableToCompleteException {
         JsonIdentityInfo jsonIdentityInfo = null;
         JsonIdentityReference jsonIdentityReference = null;
         if ( property ) {
-            jsonIdentityInfo = findAnnotationOnAnyAccessor( fieldAccessors, JsonIdentityInfo.class );
-            jsonIdentityReference = findAnnotationOnAnyAccessor( fieldAccessors, JsonIdentityReference.class );
+            jsonIdentityInfo = findAnnotationOnAnyAccessor( propertyAccessors, JsonIdentityInfo.class );
+            jsonIdentityReference = findAnnotationOnAnyAccessor( propertyAccessors, JsonIdentityReference.class );
             if ( null == jsonIdentityInfo && null == jsonIdentityReference ) {
                 // no override on field
                 return null;

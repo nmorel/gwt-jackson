@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.github.nmorel.gwtjackson.rebind.property.PropertyAccessors;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.TreeLogger.Type;
 import com.google.gwt.core.ext.UnableToCompleteException;
@@ -49,66 +50,66 @@ public final class PropertyInfo {
         void write( SourceWriter source );
     }
 
-    public static PropertyInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, FieldAccessors fieldAccessors,
+    public static PropertyInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, PropertyAccessors propertyAccessors,
                                         BeanJsonMapperInfo mapperInfo ) throws UnableToCompleteException {
         PropertyInfo result = new PropertyInfo();
 
         // find the type of the property
-        result.type = findType( logger, fieldAccessors );
-        result.propertyName = fieldAccessors.getPropertyName();
+        result.type = findType( logger, propertyAccessors );
+        result.propertyName = propertyAccessors.getPropertyName();
 
         // determine the property name
-        JsonProperty jsonProperty = findAnnotationOnAnyAccessor( fieldAccessors, JsonProperty.class );
+        JsonProperty jsonProperty = findAnnotationOnAnyAccessor( propertyAccessors, JsonProperty.class );
         result.required = null != jsonProperty && jsonProperty.required();
 
-        result.ignored = isPropertyIgnored( fieldAccessors, mapperInfo, result.type, result.propertyName );
+        result.ignored = isPropertyIgnored( propertyAccessors, mapperInfo, result.type, result.propertyName );
         if ( result.ignored ) {
             return result;
         }
 
-        JsonManagedReference jsonManagedReference = findAnnotationOnAnyAccessor( fieldAccessors, JsonManagedReference.class, true );
+        JsonManagedReference jsonManagedReference = findAnnotationOnAnyAccessor( propertyAccessors, JsonManagedReference.class, true );
         result.managedReference = Optional.fromNullable( null == jsonManagedReference ? null : jsonManagedReference.value() );
 
-        JsonBackReference jsonBackReference = findAnnotationOnAnyAccessor( fieldAccessors, JsonBackReference.class, true );
+        JsonBackReference jsonBackReference = findAnnotationOnAnyAccessor( propertyAccessors, JsonBackReference.class, true );
         result.backReference = Optional.fromNullable( null == jsonBackReference ? null : jsonBackReference.value() );
 
         // if an accessor has jackson annotation, the property is considered auto detected.
         // TODO can we do a search on @JacksonAnnotation instead of enumerating all of them ?
-        boolean hasAnyAnnotation = null != findAnnotationOnAnyAccessor( fieldAccessors, JsonProperty.class,
+        boolean hasAnyAnnotation = null != findAnnotationOnAnyAccessor( propertyAccessors, JsonProperty.class,
                 true ) || null != jsonManagedReference || null != jsonBackReference;
 
-        boolean getterAutoDetected = null != fieldAccessors.getGetter() && (hasAnyAnnotation || isGetterAutoDetected( fieldAccessors
-                .getGetter(), mapperInfo.getBeanInfo() ));
-        boolean setterAutoDetected = null != fieldAccessors.getSetter() && (hasAnyAnnotation || isSetterAutoDetected( fieldAccessors
-                .getSetter(), mapperInfo.getBeanInfo() ));
-        boolean fieldAutoDetected = null != fieldAccessors.getField() && (hasAnyAnnotation || isFieldAutoDetected( fieldAccessors
-                .getField(), mapperInfo.getBeanInfo() ));
+        boolean getterAutoDetected = propertyAccessors.getGetter()
+                .isPresent() && (hasAnyAnnotation || isGetterAutoDetected( propertyAccessors.getGetter().get(), mapperInfo.getBeanInfo() ));
+        boolean setterAutoDetected = propertyAccessors.getSetter()
+                .isPresent() && (hasAnyAnnotation || isSetterAutoDetected( propertyAccessors.getSetter().get(), mapperInfo.getBeanInfo() ));
+        boolean fieldAutoDetected = propertyAccessors.getField().isPresent() && (hasAnyAnnotation || isFieldAutoDetected( propertyAccessors
+                .getField().get(), mapperInfo.getBeanInfo() ));
 
-        if ( !getterAutoDetected && !setterAutoDetected && !fieldAutoDetected && null == fieldAccessors.getParameter() ) {
+        if ( !getterAutoDetected && !setterAutoDetected && !fieldAutoDetected && !propertyAccessors.getParameter().isPresent() ) {
             // none of the field have been auto-detected, we ignore the field
             result.visible = false;
             return result;
         }
 
         if ( !result.backReference.isPresent() ) {
-            determineGetter( fieldAccessors, getterAutoDetected, fieldAutoDetected, result );
+            determineGetter( propertyAccessors, getterAutoDetected, fieldAutoDetected, result );
 
-            JsonRawValue jsonRawValue = findAnnotationOnAnyAccessor( fieldAccessors, JsonRawValue.class );
+            JsonRawValue jsonRawValue = findAnnotationOnAnyAccessor( propertyAccessors, JsonRawValue.class );
             result.rawValue = null != jsonRawValue && jsonRawValue.value();
         }
-        determineSetter( fieldAccessors, setterAutoDetected, fieldAutoDetected, result );
+        determineSetter( propertyAccessors, setterAutoDetected, fieldAutoDetected, result );
 
-        result.identityInfo = Optional.fromNullable( BeanIdentityInfo.process( logger, typeOracle, result.type, fieldAccessors ) );
-        result.typeInfo = Optional.fromNullable( BeanTypeInfo.process( logger, typeOracle, result.type, fieldAccessors ) );
+        result.identityInfo = Optional.fromNullable( BeanIdentityInfo.process( logger, typeOracle, result.type, propertyAccessors ) );
+        result.typeInfo = Optional.fromNullable( BeanTypeInfo.process( logger, typeOracle, result.type, propertyAccessors ) );
 
-        result.format = Optional.fromNullable( findAnnotationOnAnyAccessor( fieldAccessors, JsonFormat.class ) );
+        result.format = Optional.fromNullable( findAnnotationOnAnyAccessor( propertyAccessors, JsonFormat.class ) );
 
-        JsonInclude jsonInclude = findAnnotationOnAnyAccessor( fieldAccessors, JsonInclude.class );
+        JsonInclude jsonInclude = findAnnotationOnAnyAccessor( propertyAccessors, JsonInclude.class );
         if ( null != jsonInclude ) {
             result.include = Optional.of( jsonInclude.value() );
         }
 
-        JsonIgnoreProperties jsonIgnoreProperties = findAnnotationOnAnyAccessor( fieldAccessors, JsonIgnoreProperties.class );
+        JsonIgnoreProperties jsonIgnoreProperties = findAnnotationOnAnyAccessor( propertyAccessors, JsonIgnoreProperties.class );
         if ( null != jsonIgnoreProperties ) {
             result.ignoreUnknown = Optional.of( jsonIgnoreProperties.ignoreUnknown() );
             if ( null != jsonIgnoreProperties.value() && jsonIgnoreProperties.value().length > 0 ) {
@@ -119,22 +120,22 @@ public final class PropertyInfo {
         return result;
     }
 
-    private static JType findType( TreeLogger logger, FieldAccessors fieldAccessors ) throws UnableToCompleteException {
-        if ( null != fieldAccessors.getGetter() ) {
-            return fieldAccessors.getGetter().getReturnType();
-        } else if ( null != fieldAccessors.getSetter() ) {
-            return fieldAccessors.getSetter().getParameters()[0].getType();
-        } else if ( null != fieldAccessors.getField() ) {
-            return fieldAccessors.getField().getType();
-        } else if ( null != fieldAccessors.getParameter() ) {
-            return fieldAccessors.getParameter().getType();
+    private static JType findType( TreeLogger logger, PropertyAccessors fieldAccessors ) throws UnableToCompleteException {
+        if ( fieldAccessors.getGetter().isPresent() ) {
+            return fieldAccessors.getGetter().get().getReturnType();
+        } else if ( fieldAccessors.getSetter().isPresent() ) {
+            return fieldAccessors.getSetter().get().getParameters()[0].getType();
+        } else if ( fieldAccessors.getField().isPresent() ) {
+            return fieldAccessors.getField().get().getType();
+        } else if ( fieldAccessors.getParameter().isPresent() ) {
+            return fieldAccessors.getParameter().get().getType();
         } else {
             logger.log( Type.ERROR, "Cannot find the type of the property " + fieldAccessors.getPropertyName() );
             throw new UnableToCompleteException();
         }
     }
 
-    private static boolean isPropertyIgnored( FieldAccessors fieldAccessors, BeanJsonMapperInfo mapperInfo, JType type,
+    private static boolean isPropertyIgnored( PropertyAccessors fieldAccessors, BeanJsonMapperInfo mapperInfo, JType type,
                                               String propertyName ) {
         // we first check if the property is ignored
         JsonIgnore jsonIgnore = findAnnotationOnAnyAccessor( fieldAccessors, JsonIgnore.class );
@@ -195,19 +196,19 @@ public final class PropertyInfo {
         }
     }
 
-    private static void determineGetter( final FieldAccessors fieldAccessors, final boolean getterAutoDetect, boolean fieldAutoDetect,
+    private static void determineGetter( final PropertyAccessors fieldAccessors, final boolean getterAutoDetect, boolean fieldAutoDetect,
                                          final PropertyInfo result ) {
         if ( getterAutoDetect || fieldAutoDetect ) {
-            result.getterAccessor = Optional.of( new FieldReadAccessor( result.propertyName, fieldAutoDetect ? fieldAccessors
-                    .getField() : null, getterAutoDetect ? fieldAccessors.getGetter() : null ) );
+            result.getterAccessor = Optional.of( new FieldReadAccessor( result.propertyName, fieldAutoDetect ? fieldAccessors.getField()
+                    .get() : null, getterAutoDetect ? fieldAccessors.getGetter().get() : null ) );
         }
     }
 
-    private static void determineSetter( final FieldAccessors fieldAccessors, final boolean setterAutoDetect,
+    private static void determineSetter( final PropertyAccessors fieldAccessors, final boolean setterAutoDetect,
                                          final boolean fieldAutoDetect, final PropertyInfo result ) {
         if ( setterAutoDetect || fieldAutoDetect ) {
-            result.setterAccessor = Optional.of( new FieldWriteAccessor( result.propertyName, fieldAutoDetect ? fieldAccessors
-                    .getField() : null, setterAutoDetect ? fieldAccessors.getSetter() : null ) );
+            result.setterAccessor = Optional.of( new FieldWriteAccessor( result.propertyName, fieldAutoDetect ? fieldAccessors.getField()
+                    .get() : null, setterAutoDetect ? fieldAccessors.getSetter().get() : null ) );
         }
     }
 

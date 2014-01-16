@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Nicolas Morel
+ * Copyright 2014 Nicolas Morel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.nmorel.gwtjackson.rebind;
+package com.github.nmorel.gwtjackson.rebind.property;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gwt.core.ext.typeinfo.JField;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JParameter;
+import com.google.gwt.thirdparty.guava.common.base.Optional;
 
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findAnnotationOnAnyAccessor;
 
@@ -31,80 +32,74 @@ import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findAnnotationOnA
  *
  * @author Nicolas Morel
  */
-public class FieldAccessors {
+class PropertyAccessorsBuilder implements PropertyAccessors {
 
-    // name of the field
     private final String fieldName;
 
-    // field
-    private JField field;
+    private Optional<JField> field = Optional.absent();
 
-    // getter method that will be called
-    private JMethod getter;
+    private Optional<JMethod> getter = Optional.absent();
 
-    // additionnal getters found on superclass or interfaces that may contains annotations
     private List<JMethod> getters = new ArrayList<JMethod>();
 
-    // setter method that will be called
-    private JMethod setter;
+    private Optional<JMethod> setter = Optional.absent();
 
-    // additionnal setters found on superclass or interfaces that may contains annotations
     private List<JMethod> setters = new ArrayList<JMethod>();
 
-    // the property's name. the same as fieldName unless a @JsonProperty annotation is found overriding the name
     private String propertyName;
 
-    // constructor parameter
-    private JParameter parameter;
+    private Optional<JParameter> parameter = Optional.absent();
 
-    public FieldAccessors( String fieldName ) {
+    public PropertyAccessorsBuilder( String fieldName ) {
         this.fieldName = fieldName;
     }
 
-    public String getFieldName() {
-        return fieldName;
-    }
-
-    public JField getField() {
+    @Override
+    public Optional<JField> getField() {
         return field;
     }
 
-    public void setField( JField field ) {
-        this.field = field;
+    void setField( JField field ) {
+        this.field = Optional.of( field );
     }
 
-    public JMethod getGetter() {
+    @Override
+    public Optional<JMethod> getGetter() {
         return getter;
     }
 
-    public void addGetter( JMethod getter ) {
-        if ( null == this.getter && !getter.isAbstract() ) {
-            this.getter = getter;
+    void addGetter( JMethod getter ) {
+        if ( !this.getter.isPresent() && !getter.isAbstract() ) {
+            this.getter = Optional.of( getter );
         } else {
             this.getters.add( getter );
         }
     }
 
-    public JMethod getSetter() {
+    @Override
+    public Optional<JMethod> getSetter() {
         return setter;
     }
 
-    public void addSetter( JMethod setter ) {
-        if ( null == this.setter && !setter.isAbstract() ) {
-            this.setter = setter;
+    void addSetter( JMethod setter ) {
+        if ( !this.setter.isPresent() && !setter.isAbstract() ) {
+            this.setter = Optional.of( setter );
         } else {
             this.setters.add( setter );
         }
     }
 
+    @Override
     public List<JMethod> getGetters() {
         return getters;
     }
 
+    @Override
     public List<JMethod> getSetters() {
         return setters;
     }
 
+    @Override
     public String getPropertyName() {
         if ( null == propertyName ) {
             // determine the property name
@@ -112,17 +107,22 @@ public class FieldAccessors {
             if ( null != jsonProperty && null != jsonProperty.value() && !JsonProperty.USE_DEFAULT_NAME.equals( jsonProperty.value() ) ) {
                 propertyName = jsonProperty.value();
             } else {
-                propertyName = getFieldName();
+                propertyName = fieldName;
             }
         }
         return propertyName;
     }
 
-    public JParameter getParameter() {
+    @Override
+    public Optional<JParameter> getParameter() {
         return parameter;
     }
 
-    public void setParameter( JParameter parameter ) {
-        this.parameter = parameter;
+    void setParameter( JParameter parameter ) {
+        this.parameter = Optional.of( parameter );
+    }
+
+    PropertyAccessors build() {
+        return this;
     }
 }
