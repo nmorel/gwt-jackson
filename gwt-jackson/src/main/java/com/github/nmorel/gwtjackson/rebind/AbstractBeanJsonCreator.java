@@ -84,10 +84,10 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
     protected static final String ABSTRACT_BEAN_JSON_SERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean" + "" +
             ".AbstractBeanJsonSerializer";
 
-    private static final String TYPE_DESERIALIZATION_INFO_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean" + "" +
+    protected static final String TYPE_DESERIALIZATION_INFO_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean" + "" +
             ".TypeDeserializationInfo";
 
-    private static final String TYPE_SERIALIZATION_INFO_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean" + "" +
+    protected static final String TYPE_SERIALIZATION_INFO_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean" + "" +
             ".TypeSerializationInfo";
 
     protected BeanJsonMapperInfo mapperInfo;

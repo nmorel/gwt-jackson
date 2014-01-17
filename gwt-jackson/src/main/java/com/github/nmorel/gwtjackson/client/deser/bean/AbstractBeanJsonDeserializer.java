@@ -19,7 +19,6 @@ package com.github.nmorel.gwtjackson.client.deser.bean;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -37,84 +36,76 @@ import com.github.nmorel.gwtjackson.client.stream.JsonToken;
  */
 public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T> {
 
-    private final SimpleStringMap<BeanPropertyDeserializer<T, ?>> deserializers = SimpleStringMap.createObject().cast();
-
-    private final SimpleStringMap<BackReferenceProperty<T, ?>> backReferenceDeserializers = SimpleStringMap.createObject().cast();
-
-    private final Map<Class<? extends T>, SubtypeDeserializer<? extends T>> subtypeClassToDeserializer = new IdentityHashMap<Class<?
-            extends T>, SubtypeDeserializer<? extends T>>();
-
-    private final Set<String> defaultIgnoredProperties = new HashSet<String>();
-
-    private boolean defaultIgnoreUnknown = false;
-
-    private final Set<String> requiredProperties = new HashSet<String>();
-
     private final InstanceBuilder<T> instanceBuilder;
+
+    private final SimpleStringMap<BeanPropertyDeserializer<T, ?>> deserializers;
+
+    private final SimpleStringMap<BackReferenceProperty<T, ?>> backReferenceDeserializers;
+
+    private final Set<String> defaultIgnoredProperties;
+
+    private final Set<String> requiredProperties;
 
     private final IdentityDeserializationInfo<T> defaultIdentityInfo;
 
     private final TypeDeserializationInfo<T> defaultTypeInfo;
 
-    protected AbstractBeanJsonDeserializer( InstanceBuilder<T> instanceBuilder, IdentityDeserializationInfo<T> defaultIdentityInfo,
-                                            TypeDeserializationInfo<T> defaultTypeInfo ) {
-        this.instanceBuilder = instanceBuilder;
-        this.defaultIdentityInfo = defaultIdentityInfo;
-        this.defaultTypeInfo = defaultTypeInfo;
+    private final Map<Class<? extends T>, SubtypeDeserializer<? extends T>> subtypeClassToDeserializer;
+
+    protected AbstractBeanJsonDeserializer() {
+        this.instanceBuilder = initInstanceBuilder();
+        this.deserializers = initDeserializers();
+        this.backReferenceDeserializers = initBackReferenceDeserializers();
+        this.defaultIgnoredProperties = initIgnoredProperties();
+        this.requiredProperties = initRequiredProperties();
+        this.defaultIdentityInfo = initIdentityInfo();
+        this.defaultTypeInfo = initTypeInfo();
+        this.subtypeClassToDeserializer = initMapSubtypeClassToDeserializer();
     }
 
-    public abstract Class getDeserializedType();
-
-    /**
-     * Add a {@link BeanPropertyDeserializer}
-     *
-     * @param propertyName name of the property
-     * @param deserializer deserializer
-     */
-    protected final void addPropertyDeserializer( String propertyName, boolean required, BeanPropertyDeserializer<T, ?> deserializer ) {
-        deserializers.put( propertyName, deserializer );
-        if ( required ) {
-            requiredProperties.add( propertyName );
-        }
+    protected InstanceBuilder<T> initInstanceBuilder() {
+        return null;
     }
 
-    /**
-     * Add a {@link BackReferenceProperty}
-     *
-     * @param referenceName name of the reference
-     * @param backReference backReference
-     */
-    protected final void addBackReferenceDeserializer( String referenceName, BackReferenceProperty<T, ?> backReference ) {
-        backReferenceDeserializers.put( referenceName, backReference );
+    protected SimpleStringMap<BeanPropertyDeserializer<T, ?>> initDeserializers() {
+        return SimpleStringMap.createObject().cast();
+
     }
 
-    /**
-     * Adds a {@link SubtypeDeserializer}.
-     *
-     * @param clazz {@link Class} associated to the deserializer
-     * @param subtypeDeserializer the deserializer
-     */
-    protected <S extends T> void addSubtypeDeserializer( Class<S> clazz, SubtypeDeserializer<S> subtypeDeserializer ) {
-        subtypeClassToDeserializer.put( clazz, subtypeDeserializer );
+    protected SimpleStringMap<BackReferenceProperty<T, ?>> initBackReferenceDeserializers() {
+        return SimpleStringMap.createObject().cast();
     }
 
-    /**
-     * Add an ignored property
-     *
-     * @param propertyName name of the property
-     */
-    protected final void addIgnoredProperty( String propertyName ) {
-        defaultIgnoredProperties.add( propertyName );
+    protected Set<String> initIgnoredProperties() {
+        return Collections.emptySet();
+    }
+
+    protected Set<String> initRequiredProperties() {
+        return Collections.emptySet();
+    }
+
+    protected IdentityDeserializationInfo<T> initIdentityInfo() {
+        return null;
+    }
+
+    protected TypeDeserializationInfo<T> initTypeInfo() {
+        return null;
+    }
+
+    protected Map<Class<? extends T>, SubtypeDeserializer<? extends T>> initMapSubtypeClassToDeserializer() {
+        return Collections.emptyMap();
     }
 
     /**
-     * Defines whether encountering of unknown
+     * Whether encountering of unknown
      * properties should result in a failure (by throwing a
      * {@link com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException}) or not.
      */
-    protected void setIgnoreUnknown( boolean ignoreUnknown ) {
-        this.defaultIgnoreUnknown = ignoreUnknown;
+    protected boolean isDefaultIgnoreUnknown() {
+        return false;
     }
+
+    public abstract Class getDeserializedType();
 
     @Override
     public T doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws IOException {
@@ -122,7 +113,7 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
         // Processing the parameters. We fallback to default if parameter is not present.
         final IdentityDeserializationInfo identityInfo = null == params.getIdentityInfo() ? defaultIdentityInfo : params.getIdentityInfo();
         final TypeDeserializationInfo typeInfo = null == params.getTypeInfo() ? defaultTypeInfo : params.getTypeInfo();
-        final boolean ignoreUnknown = params.isIgnoreUnknown() || defaultIgnoreUnknown;
+        final boolean ignoreUnknown = params.isIgnoreUnknown() || isDefaultIgnoreUnknown();
         final Set<String> ignoredProperties;
         if ( null == params.getIgnoredProperties() ) {
             ignoredProperties = defaultIgnoredProperties;

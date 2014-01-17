@@ -22,12 +22,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import com.github.nmorel.gwtjackson.client.deser.bean.HasDeserializerAndParameters;
+import com.github.nmorel.gwtjackson.client.deser.bean.IdentityDeserializationInfo;
+import com.github.nmorel.gwtjackson.client.deser.bean.SimpleStringMap;
 import com.github.nmorel.gwtjackson.client.deser.bean.SubtypeDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
@@ -94,14 +97,42 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
         TypeParameters typeParameters = generateTypeParameterMapperFields( source, beanInfo, JSON_DESERIALIZER_CLASS,
                 TYPE_PARAMETER_DESERIALIZER_FIELD_NAME );
-
         if ( null != typeParameters ) {
             source.println();
         }
 
         generateConstructors( source, beanInfo, properties, typeParameters );
-
         source.println();
+
+        if ( beanInfo.getCreatorMethod().isPresent() ) {
+            generateInitInstanceBuilderMethod( source, beanInfo, properties );
+            source.println();
+        }
+
+        if ( !properties.isEmpty() ) {
+            generateInitPropertiesMethods( source, beanInfo, properties );
+            source.println();
+        }
+
+        if ( beanInfo.getIdentityInfo().isPresent() ) {
+            generateInitIdentityInfoMethod( source, beanInfo );
+            source.println();
+        }
+
+        if ( beanInfo.getTypeInfo().isPresent() ) {
+            generateInitTypeInfoMethod( source, beanInfo );
+            source.println();
+        }
+
+        if ( beanInfo.getType().getSubtypes().length > 0 ) {
+            generateInitMapSubtypeClassToDeserializerMethod( source, beanInfo );
+            source.println();
+        }
+
+        if ( beanInfo.isIgnoreUnknown() ) {
+            generateIsDefaultIgnoreUnknownMethod( source, beanInfo );
+            source.println();
+        }
 
         generateClassGetterMethod( source, beanInfo );
     }
@@ -112,50 +143,264 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         if ( null != typeParameters ) {
             source.print( typeParameters.getJoinedTypeParameterMappersWithType() );
         }
-        source.println( ") {" );
-        source.indent();
-        source.print( "super(" );
-
-        if ( beanInfo.getCreatorMethod().isPresent() ) {
-            generateInstanceBuilderClass( source, beanInfo, properties );
-        } else {
-            source.print( "null" );
-        }
-        source.print( ", " );
-
-        if ( beanInfo.getIdentityInfo().isPresent() ) {
-            generateIdentifierDeserializationInfo( source, beanInfo.getType(), beanInfo.getIdentityInfo().get() );
-        } else {
-            source.print( "null" );
-        }
-        source.print( ", " );
-
-        if ( beanInfo.getTypeInfo().isPresent() ) {
-            generateTypeInfo( source, beanInfo.getTypeInfo().get(), false );
-        } else {
-            source.print( "null" );
-        }
-        source.println( ");" );
+        source.print( ") {" );
 
         if ( null != typeParameters ) {
             source.println();
+            source.indent();
             for ( String parameterizedDeserializer : typeParameters.getTypeParameterMapperNames() ) {
                 source.println( "this.%s = %s%s;", parameterizedDeserializer, TYPE_PARAMETER_PREFIX, parameterizedDeserializer );
             }
+            source.outdent();
         }
 
-        if ( beanInfo.isIgnoreUnknown() ) {
+        source.println( "}" );
+    }
+
+    private void generateInitInstanceBuilderMethod( SourceWriter source, BeanInfo beanInfo, Map<String,
+            PropertyInfo> properties ) throws UnableToCompleteException {
+        source.println( "@Override" );
+        source.println( "protected %s<%s> initInstanceBuilder() {", INSTANCE_BUILDER_CLASS, beanInfo.getType()
+                .getParameterizedQualifiedSourceName() );
+        source.indent();
+        source.print( "return " );
+        generateInstanceBuilderClass( source, beanInfo, properties );
+        source.println( ";" );
+        source.outdent();
+        source.println( "}" );
+    }
+
+    private void generateInitPropertiesMethods( SourceWriter source, BeanInfo beanInfo, Map<String,
+            PropertyInfo> properties ) throws UnableToCompleteException {
+
+        List<PropertyInfo> ignoredProperties = new ArrayList<PropertyInfo>();
+        List<PropertyInfo> requiredProperties = new ArrayList<PropertyInfo>();
+        List<PropertyInfo> deserializerProperties = new ArrayList<PropertyInfo>();
+        List<PropertyInfo> backReferenceProperties = new ArrayList<PropertyInfo>();
+
+        for ( PropertyInfo property : properties.values() ) {
+            if ( null != beanInfo.getCreatorParameters() && beanInfo.getCreatorParameters().containsKey( property.getPropertyName() ) ) {
+                // properties used in constructor are deserialized inside instance builder
+                continue;
+            }
+
+            if ( property.isIgnored() ) {
+                ignoredProperties.add( property );
+                continue;
+            }
+
+            if ( !property.getSetterAccessor().isPresent() ) {
+                // there is no setter visible
+                continue;
+            }
+
+            if ( !property.getBackReference().isPresent() ) {
+                deserializerProperties.add( property );
+                if ( property.isRequired() ) {
+                    requiredProperties.add( property );
+                }
+            } else {
+                backReferenceProperties.add( property );
+            }
+        }
+
+        if ( !deserializerProperties.isEmpty() ) {
+            generateInitDeserializersMethod( source, beanInfo, deserializerProperties );
             source.println();
-            source.println( "setIgnoreUnknown(true);" );
         }
 
-        source.println();
-
-        if ( beanInfo.getCreatorMethod().isPresent() ) {
-            generatePropertyDeserializers( source, beanInfo, properties );
+        if ( !backReferenceProperties.isEmpty() ) {
+            generateInitBackReferenceDeserializersMethod( source, beanInfo, backReferenceProperties );
+            source.println();
         }
 
-        generateSubtypeDeserializers( source, beanInfo );
+        if ( !ignoredProperties.isEmpty() ) {
+            generateInitIgnoredPropertiesMethod( source, ignoredProperties );
+            source.println();
+        }
+
+        if ( !requiredProperties.isEmpty() ) {
+            generateInitRequiredPropertiesMethod( source, requiredProperties );
+        }
+    }
+
+    private void generateInitDeserializersMethod( SourceWriter source, BeanInfo beanInfo, List<PropertyInfo> properties ) throws
+            UnableToCompleteException {
+        String resultType = String.format( "%s<%s<%s, ?>>", SimpleStringMap.class
+                .getCanonicalName(), BEAN_PROPERTY_DESERIALIZER_CLASS, beanInfo.getType().getParameterizedQualifiedSourceName() );
+
+        source.println( "@Override" );
+        source.println( "protected %s initDeserializers() {", resultType );
+        source.indent();
+        source.println( "%s map = %s.createObject().cast();", resultType, SimpleStringMap.class.getCanonicalName() );
+        for ( PropertyInfo property : properties ) {
+            Accessor accessor = property.getSetterAccessor().get().getAccessor( "bean", true );
+
+            source.println( "map.put(\"%s\", new %s<%s, %s>() {", property.getPropertyName(), BEAN_PROPERTY_DESERIALIZER_CLASS, beanInfo
+                    .getType().getParameterizedQualifiedSourceName(), getQualifiedClassName( property.getType() ) );
+
+            source.indent();
+
+            generateCommonPropertyDeserializerBody( source, beanInfo, property );
+
+            source.println();
+
+            source.println( "@Override" );
+            source.println( "public void setValue(%s bean, %s value, %s ctx) {", beanInfo.getType()
+                    .getParameterizedQualifiedSourceName(), getQualifiedClassName( property
+                    .getType() ), JSON_DESERIALIZATION_CONTEXT_CLASS );
+            source.indent();
+            source.println( accessor.getAccessor() + ";", "value" );
+
+            if ( property.getManagedReference().isPresent() ) {
+                source.println( "getDeserializer(ctx).setBackReference(\"%s\", bean, value, ctx);", property.getManagedReference().get() );
+            }
+
+            source.outdent();
+            source.println( "}" );
+
+            if ( accessor.getAdditionalMethod().isPresent() ) {
+                source.println();
+                accessor.getAdditionalMethod().get().write( source );
+            }
+
+            source.outdent();
+            source.println( "});" );
+            source.println();
+        }
+        source.println( "return map;" );
+        source.outdent();
+        source.println( "}" );
+    }
+
+    private void generateInitBackReferenceDeserializersMethod( SourceWriter source, BeanInfo beanInfo,
+                                                               List<PropertyInfo> properties ) throws UnableToCompleteException {
+        String resultType = String.format( "%s<%s<%s, ?>>", SimpleStringMap.class
+                .getCanonicalName(), BACK_REFERENCE_PROPERTY_BEAN_CLASS, beanInfo.getType().getParameterizedQualifiedSourceName() );
+
+        source.println( "@Override" );
+        source.println( "protected %s initBackReferenceDeserializers() {", resultType );
+        source.indent();
+        source.println( "%s map = %s.createObject().cast();", resultType, SimpleStringMap.class.getCanonicalName() );
+        for ( PropertyInfo property : properties ) {
+
+            Accessor accessor = property.getSetterAccessor().get().getAccessor( "bean", true );
+
+            // this is a back reference, we add the special back reference property that will be called by the parent
+            source.println( "map.put(\"%s\", new %s<%s, %s>() {", property.getBackReference()
+                    .get(), BACK_REFERENCE_PROPERTY_BEAN_CLASS, beanInfo.getType()
+                    .getParameterizedQualifiedSourceName(), getQualifiedClassName( property.getType() ) );
+
+            source.indent();
+            source.println( "@Override" );
+            source.println( "public void setBackReference(%s bean, %s reference, %s ctx) {", beanInfo.getType()
+                    .getParameterizedQualifiedSourceName(), property.getType()
+                    .getParameterizedQualifiedSourceName(), JSON_DESERIALIZATION_CONTEXT_CLASS );
+            source.indent();
+
+            source.println( accessor.getAccessor() + ";", "reference" );
+
+            source.outdent();
+            source.println( "}" );
+
+            if ( accessor.getAdditionalMethod().isPresent() ) {
+                source.println();
+                accessor.getAdditionalMethod().get().write( source );
+            }
+
+            source.outdent();
+            source.println( "});" );
+            source.println();
+        }
+        source.println( "return map;" );
+        source.outdent();
+        source.println( "}" );
+    }
+
+    private void generateInitIgnoredPropertiesMethod( SourceWriter source, List<PropertyInfo> properties ) {
+        source.println( "@Override" );
+        source.println( "protected %s<%s> initIgnoredProperties() {", Set.class.getCanonicalName(), String.class.getCanonicalName() );
+        source.indent();
+        source.println( "%s<%s> col = new %s<%s>(%s);", HashSet.class.getCanonicalName(), String.class.getCanonicalName(), HashSet.class
+                .getCanonicalName(), String.class.getCanonicalName(), properties.size() );
+        for ( PropertyInfo property : properties ) {
+            source.println( "col.add(\"%s\");", property.getPropertyName() );
+        }
+        source.println( "return col;" );
+        source.outdent();
+        source.println( "}" );
+    }
+
+    private void generateInitRequiredPropertiesMethod( SourceWriter source, List<PropertyInfo> properties ) {
+        source.println( "@Override" );
+        source.println( "protected %s<%s> initRequiredProperties() {", Set.class.getCanonicalName(), String.class.getCanonicalName() );
+        source.indent();
+        source.println( "%s<%s> col = new %s<%s>(%s);", HashSet.class.getCanonicalName(), String.class.getCanonicalName(), HashSet.class
+                .getCanonicalName(), String.class.getCanonicalName(), properties.size() );
+        for ( PropertyInfo property : properties ) {
+            source.println( "col.add(\"%s\");", property.getPropertyName() );
+        }
+        source.println( "return col;" );
+        source.outdent();
+        source.println( "}" );
+    }
+
+    private void generateInitIdentityInfoMethod( SourceWriter source, BeanInfo beanInfo ) throws UnableToCompleteException {
+        source.println( "@Override" );
+        source.println( "protected %s<%s> initIdentityInfo() {", IdentityDeserializationInfo.class.getCanonicalName(), beanInfo.getType()
+                .getParameterizedQualifiedSourceName() );
+        source.indent();
+        source.print( "return " );
+        generateIdentifierDeserializationInfo( source, beanInfo.getType(), beanInfo.getIdentityInfo().get() );
+        source.println( ";" );
+        source.outdent();
+        source.println( "}" );
+    }
+
+    private void generateInitTypeInfoMethod( SourceWriter source, BeanInfo beanInfo ) throws UnableToCompleteException {
+        source.println( "@Override" );
+        source.println( "protected %s<%s> initTypeInfo() {", TYPE_DESERIALIZATION_INFO_CLASS, beanInfo.getType()
+                .getParameterizedQualifiedSourceName() );
+        source.indent();
+        source.print( "return " );
+        generateTypeInfo( source, beanInfo.getTypeInfo().get(), false );
+        source.println( ";" );
+        source.outdent();
+        source.println( "}" );
+    }
+
+    private void generateInitMapSubtypeClassToDeserializerMethod( SourceWriter source,
+                                                                  BeanInfo beanInfo ) throws UnableToCompleteException {
+
+        String mapTypes = String.format( "<%s<? extends %s>, %s<? extends %s>>", Class.class.getCanonicalName(), beanInfo.getType()
+                .getParameterizedQualifiedSourceName(), SubtypeDeserializer.class.getName(), beanInfo.getType()
+                .getParameterizedQualifiedSourceName() );
+        String resultType = String.format( "%s%s", Map.class.getCanonicalName(), mapTypes );
+
+        source.println( "@Override" );
+        source.println( "protected %s initMapSubtypeClassToDeserializer() {", resultType );
+
+        JClassType[] subtypes = beanInfo.getType().getSubtypes();
+
+        source.println( "%s map = new %s%s(%s);", resultType, IdentityHashMap.class.getCanonicalName(), mapTypes, subtypes.length );
+        for ( JClassType subtype : subtypes ) {
+            source.println( "map.put( %s.class, new %s<%s>() {", subtype.getQualifiedSourceName(), SubtypeDeserializer.class
+                    .getName(), getQualifiedClassName( subtype ) );
+            source.indent();
+
+            source.println( "@Override" );
+            source.println( "protected %s<%s> newDeserializer(%s ctx) {", ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS,
+                    getQualifiedClassName( subtype ), JSON_DESERIALIZATION_CONTEXT_CLASS );
+            source.indent();
+            source.println( "return %s;", getJsonDeserializerFromType( subtype ).getInstance() );
+            source.outdent();
+            source.println( "}" );
+
+            source.outdent();
+            source.println( "});" );
+            source.println();
+        }
+        source.println( "return map;" );
 
         source.outdent();
         source.println( "}" );
@@ -370,82 +615,6 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         }
     }
 
-    private void generatePropertyDeserializers( SourceWriter source, BeanInfo info, Map<String,
-            PropertyInfo> properties ) throws UnableToCompleteException {
-        for ( PropertyInfo property : properties.values() ) {
-            if ( null != info.getCreatorParameters() && info.getCreatorParameters().containsKey( property.getPropertyName() ) ) {
-                // properties used in constructor are deserialized inside instance builder
-                continue;
-            }
-
-            if ( property.isIgnored() ) {
-                // we add the name of the property to the ignoredProperties list
-                source.println( "addIgnoredProperty(\"%s\");", property.getPropertyName() );
-                continue;
-            }
-
-            if ( !property.getSetterAccessor().isPresent() ) {
-                // there is no setter visible
-                continue;
-            }
-
-            Accessor accessor = property.getSetterAccessor().get().getAccessor( "bean", true );
-
-            if ( !property.getBackReference().isPresent() ) {
-                // this is not a back reference, we add the default deserializer
-                source.println( "addPropertyDeserializer(\"%s\", %s, new " + BEAN_PROPERTY_DESERIALIZER_CLASS + "<%s, %s>() {", property
-                        .getPropertyName(), property.isRequired(), info.getType()
-                        .getParameterizedQualifiedSourceName(), getQualifiedClassName( property.getType() ) );
-
-                source.indent();
-
-                generateCommonPropertyDeserializerBody( source, info, property );
-
-                source.println();
-
-                source.println( "@Override" );
-                source.println( "public void setValue(%s bean, %s value, %s ctx) {", info.getType()
-                        .getParameterizedQualifiedSourceName(), getQualifiedClassName( property
-                        .getType() ), JSON_DESERIALIZATION_CONTEXT_CLASS );
-                source.indent();
-                source.println( accessor.getAccessor() + ";", "value" );
-                if ( property.getManagedReference().isPresent() ) {
-                    source.println( "getDeserializer(ctx).setBackReference(\"%s\", bean, value, ctx);", property.getManagedReference()
-                            .get() );
-                }
-
-                source.outdent();
-                source.println( "}" );
-            } else {
-                // this is a back reference, we add the special back reference property that will be called by the parent
-                source.println( "addBackReferenceDeserializer(\"%s\", new " + BACK_REFERENCE_PROPERTY_BEAN_CLASS + "<%s, %s>() {", property
-                        .getBackReference().get(), info.getType().getParameterizedQualifiedSourceName(), getQualifiedClassName( property
-                        .getType() ) );
-
-                source.indent();
-                source.println( "@Override" );
-                source.println( "public void setBackReference(%s bean, %s reference, %s ctx) {", info.getType()
-                        .getParameterizedQualifiedSourceName(), property.getType()
-                        .getParameterizedQualifiedSourceName(), JSON_DESERIALIZATION_CONTEXT_CLASS );
-                source.indent();
-
-                source.println( accessor.getAccessor() + ";", "reference" );
-
-                source.outdent();
-                source.println( "}" );
-            }
-
-            if ( accessor.getAdditionalMethod().isPresent() ) {
-                source.println();
-                accessor.getAdditionalMethod().get().write( source );
-            }
-
-            source.outdent();
-            source.println( "});" );
-            source.println();
-        }
-    }
-
     private void generateCommonPropertyDeserializerBody( SourceWriter source, BeanInfo info,
                                                          PropertyInfo property ) throws UnableToCompleteException {
         JDeserializerType deserializerType = getJsonDeserializerFromType( property.getType() );
@@ -508,31 +677,6 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         }
     }
 
-    private void generateSubtypeDeserializers( SourceWriter source, BeanInfo beanInfo ) throws UnableToCompleteException {
-        JClassType[] subtypes = beanInfo.getType().getSubtypes();
-        if ( subtypes.length == 0 ) {
-            return;
-        }
-
-        for ( JClassType subtype : subtypes ) {
-            source.println( "addSubtypeDeserializer( %s.class, new %s<%s>() {", subtype.getQualifiedSourceName(), SubtypeDeserializer.class
-                    .getName(), getQualifiedClassName( subtype ) );
-            source.indent();
-
-            source.println( "@Override" );
-            source.println( "protected %s<%s> newDeserializer(%s ctx) {", ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS,
-                    getQualifiedClassName( subtype ), JSON_DESERIALIZATION_CONTEXT_CLASS );
-            source.indent();
-            source.println( "return %s;", getJsonDeserializerFromType( subtype ).getInstance() );
-            source.outdent();
-            source.println( "}" );
-
-            source.outdent();
-            source.println( "});" );
-            source.println();
-        }
-    }
-
     private void generateClassGetterMethod( SourceWriter source, BeanInfo beanInfo ) {
         source.println( "@Override" );
         source.println( "public %s getDeserializedType() {", Class.class.getName() );
@@ -540,5 +684,15 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         source.println( "return %s.class;", beanInfo.getType().getQualifiedSourceName() );
         source.outdent();
         source.println( "}" );
+    }
+
+    private void generateIsDefaultIgnoreUnknownMethod( SourceWriter source, BeanInfo beanInfo ) {
+        source.println( "@Override" );
+        source.println( "protected boolean isDefaultIgnoreUnknown() {" );
+        source.indent();
+        source.println( "return true;" );
+        source.outdent();
+        source.println( "}" );
+
     }
 }
