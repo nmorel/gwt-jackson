@@ -18,8 +18,10 @@ package com.github.nmorel.gwtjackson.jackson.advanced.identity;
 
 import com.github.nmorel.gwtjackson.jackson.AbstractJacksonTest;
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester;
-import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester.IdWrapper;
-import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester.IdWrapperExt;
+import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester.IdParameterWrapper;
+import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester.IdParameterWrapperExt;
+import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester.IdPropertyWrapper;
+import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester.IdPropertyWrapperExt;
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester.Identifiable;
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester.IdentifiableCustom;
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester.UUIDNode;
@@ -44,12 +46,12 @@ public class ObjectIdDeserializationJacksonTest extends AbstractJacksonTest {
 
     @Test
     public void testSimpleDeserializationProperty() {
-        tester.testSimpleDeserializationProperty( createMapper( IdWrapper.class ) );
+        tester.testSimpleDeserializationProperty( createMapper( IdPropertyWrapper.class ) );
     }
 
     @Test
     public void testSimpleDeserWithForwardRefs() {
-        tester.testSimpleDeserWithForwardRefs( createMapper( IdWrapper.class ) );
+        tester.testSimpleDeserWithForwardRefs( createMapper( IdPropertyWrapper.class ) );
     }
 
     @Test
@@ -59,6 +61,16 @@ public class ObjectIdDeserializationJacksonTest extends AbstractJacksonTest {
 
     @Test
     public void testCustomDeserializationProperty() {
-        tester.testCustomDeserializationProperty( createMapper( IdWrapperExt.class ) );
+        tester.testCustomDeserializationProperty( createMapper( IdPropertyWrapperExt.class ) );
+    }
+
+    @Test
+    public void testSimpleDeserializationParameter() {
+        tester.testSimpleDeserializationParameter( createMapper( IdParameterWrapper.class ) );
+    }
+
+    @Test
+    public void testCustomDeserializationParameter() {
+        tester.testCustomDeserializationParameter( createMapper( IdParameterWrapperExt.class ) );
     }
 }

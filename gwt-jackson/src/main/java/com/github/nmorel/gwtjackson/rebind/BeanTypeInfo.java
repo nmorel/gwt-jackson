@@ -26,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.github.nmorel.gwtjackson.rebind.property.PropertyAccessors;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
@@ -46,22 +47,22 @@ public class BeanTypeInfo {
     }
 
     public static BeanTypeInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, JType type,
-                                        FieldAccessors fieldAccessors ) throws UnableToCompleteException {
+                                        PropertyAccessors propertyAccessors ) throws UnableToCompleteException {
         JClassType classType = extractBeanType( logger, typeOracle, type );
         if ( null == classType ) {
             return null;
         } else {
-            return process( logger, typeOracle, classType, fieldAccessors, true );
+            return process( logger, typeOracle, classType, propertyAccessors, true );
         }
     }
 
-    private static BeanTypeInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, JClassType type, FieldAccessors fieldAccessors,
+    private static BeanTypeInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, JClassType type, PropertyAccessors propertyAccessors,
                                          boolean property ) throws UnableToCompleteException {
         JsonTypeInfo jsonTypeInfo = null;
         JsonSubTypes propertySubTypes = null;
         if ( property ) {
-            jsonTypeInfo = findAnnotationOnAnyAccessor( fieldAccessors, JsonTypeInfo.class );
-            propertySubTypes = findAnnotationOnAnyAccessor( fieldAccessors, JsonSubTypes.class );
+            jsonTypeInfo = findAnnotationOnAnyAccessor( propertyAccessors, JsonTypeInfo.class );
+            propertySubTypes = findAnnotationOnAnyAccessor( propertyAccessors, JsonSubTypes.class );
             if ( null == jsonTypeInfo && null == propertySubTypes ) {
                 // no override on field
                 return null;
