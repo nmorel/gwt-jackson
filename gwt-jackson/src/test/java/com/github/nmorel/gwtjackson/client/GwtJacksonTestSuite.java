@@ -136,6 +136,7 @@ import com.github.nmorel.gwtjackson.client.ser.number.ShortJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.stream.AbstractJsonWriterTest;
 import com.github.nmorel.gwtjackson.client.stream.impl.DefaultJsonReaderTest;
 import com.github.nmorel.gwtjackson.client.stream.impl.DefaultJsonWriterTest;
+import com.github.nmorel.gwtjackson.client.stream.impl.FastJsonWriterTest;
 import com.github.nmorel.gwtjackson.client.stream.impl.NonBufferedJsonReaderTest;
 import com.google.gwt.junit.tools.GWTTestSuite;
 import junit.framework.Test;
@@ -153,6 +154,7 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( DefaultJsonReaderTest.class );
         suite.addTestSuite( NonBufferedJsonReaderTest.class );
         suite.addTestSuite( DefaultJsonWriterTest.class );
+        suite.addTestSuite( FastJsonWriterTest.class );
 
         // Default json serializers
         suite.addTestSuite( ArrayJsonSerializerTest.class );
