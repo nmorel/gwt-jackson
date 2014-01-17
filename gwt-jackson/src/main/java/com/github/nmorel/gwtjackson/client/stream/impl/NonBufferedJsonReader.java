@@ -1,3 +1,4 @@
+//@formatter:off
 /*
  * Copyright (C) 2010 Google Inc.
  *
@@ -1443,3 +1444,4 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
     return builder.toString();
   }
 }
+//@formatter:on

@@ -1,3 +1,4 @@
+//@formatter:off
 /*
  * Copyright (C) 2010 Google Inc.
  *
@@ -48,3 +49,4 @@ public final class MalformedJsonException extends IOException
   }
 
 }
+//@formatter:on

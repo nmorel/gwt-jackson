@@ -1,3 +1,4 @@
+//@formatter:off
 /*
  * Copyright (C) 2010 Google Inc.
  *
@@ -1526,3 +1527,4 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     return builder.toString();
   }
 }
+//@formatter:on

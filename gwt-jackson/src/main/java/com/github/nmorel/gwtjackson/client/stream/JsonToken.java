@@ -1,3 +1,4 @@
+//@formatter:off
 /*
  * Copyright (C) 2010 Google Inc.
  *
@@ -83,3 +84,4 @@ public enum JsonToken {
    */
   END_DOCUMENT
 }
+//@formatter:on

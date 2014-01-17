@@ -1,3 +1,4 @@
+//@formatter:off
 /*
  * Copyright 2013 Nicolas Morel
  *
@@ -104,3 +105,4 @@ public class Base64 {
         return out.toString();
     }
 }
+//@formatter:on

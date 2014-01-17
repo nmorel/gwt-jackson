@@ -1,3 +1,4 @@
+//@formatter:off
 /*
  * Copyright (C) 2010 Google Inc.
  *
@@ -569,3 +570,4 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
     return out.toString();
   }
 }
+//@formatter:on
