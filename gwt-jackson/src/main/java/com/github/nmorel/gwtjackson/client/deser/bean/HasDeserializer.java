@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.deser.bean;
 
-import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 
 /**
@@ -28,12 +27,12 @@ public abstract class HasDeserializer<V, S extends JsonDeserializer<V>> {
 
     private S deserializer;
 
-    public S getDeserializer( JsonDeserializationContext ctx ) {
+    public S getDeserializer() {
         if ( null == deserializer ) {
-            deserializer = newDeserializer( ctx );
+            deserializer = newDeserializer();
         }
         return deserializer;
     }
 
-    protected abstract S newDeserializer( JsonDeserializationContext ctx );
+    protected abstract S newDeserializer();
 }

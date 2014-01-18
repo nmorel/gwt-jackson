@@ -154,7 +154,7 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
             Object id;
             if ( identityInfo.isProperty() ) {
                 BeanPropertyDeserializer<T, ?> propertyDeserializer = deserializers.get( identityInfo.getPropertyName() );
-                id = propertyDeserializer.getDeserializer( ctx ).deserialize( reader, ctx );
+                id = propertyDeserializer.getDeserializer().deserialize( reader, ctx );
             } else {
                 id = identityInfo.readId( reader, ctx );
             }
@@ -305,7 +305,7 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
             Object id;
             if ( identityInfo.isProperty() ) {
                 BeanPropertyDeserializer propertyDeserializer = deserializers.get( identityInfo.getPropertyName() );
-                id = propertyDeserializer.getDeserializer( ctx ).deserialize( identityReader, ctx );
+                id = propertyDeserializer.getDeserializer().deserialize( identityReader, ctx );
                 if ( null != id ) {
                     propertyDeserializer.setValue( instance.getInstance(), id, ctx );
                 }
@@ -371,7 +371,7 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
         if ( null == deserializer ) {
             throw ctx.traceError( "No deserializer found for the type " + typeClass.getName(), reader );
         }
-        return (AbstractBeanJsonDeserializer<T>) deserializer.getDeserializer( ctx );
+        return (AbstractBeanJsonDeserializer<T>) deserializer.getDeserializer();
     }
 
     @Override

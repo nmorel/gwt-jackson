@@ -29,7 +29,7 @@ public abstract class AbstractObjectWriter<T> extends AbstractObjectMapper<T> im
     }
 
     @Override
-    protected final JsonDeserializer<T> newDeserializer( JsonDeserializationContext ctx ) {
+    protected final JsonDeserializer<T> newDeserializer() {
         throw new UnsupportedOperationException( "ObjectWriter doesn't support deserialization" );
     }
 }

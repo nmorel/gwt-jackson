@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.ser.bean;
 
-import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 
 /**
@@ -28,12 +27,12 @@ public abstract class HasSerializer<V, S extends JsonSerializer<V>> {
 
     private S serializer;
 
-    protected S getSerializer( JsonSerializationContext ctx ) {
+    protected S getSerializer() {
         if ( null == serializer ) {
-            serializer = newSerializer( ctx );
+            serializer = newSerializer();
         }
         return serializer;
     }
 
-    protected abstract S newSerializer( JsonSerializationContext ctx );
+    protected abstract S newSerializer();
 }

@@ -29,7 +29,7 @@ public abstract class AbstractObjectReader<T> extends AbstractObjectMapper<T> im
     }
 
     @Override
-    protected final JsonSerializer<T> newSerializer( JsonSerializationContext ctx ) {
+    protected final JsonSerializer<T> newSerializer() {
         throw new UnsupportedOperationException( "ObjectReader doesn't support serialization" );
     }
 }

@@ -30,14 +30,14 @@ public abstract class BeanPropertySerializer<T, V> extends HasSerializer<V, Json
 
     private JsonSerializerParameters parameters;
 
-    protected JsonSerializerParameters getParameters( JsonSerializationContext ctx ) {
+    protected JsonSerializerParameters getParameters() {
         if ( null == parameters ) {
-            parameters = newParameters( ctx );
+            parameters = newParameters();
         }
         return parameters;
     }
 
-    protected JsonSerializerParameters newParameters( JsonSerializationContext ctx ) {
+    protected JsonSerializerParameters newParameters() {
         return JsonSerializerParameters.DEFAULT;
     }
 
@@ -57,6 +57,6 @@ public abstract class BeanPropertySerializer<T, V> extends HasSerializer<V, Json
      * @param ctx context of the serialization process
      */
     public void serialize( JsonWriter writer, T bean, JsonSerializationContext ctx ) {
-        getSerializer( ctx ).serialize( writer, getValue( bean, ctx ), ctx, getParameters( ctx ) );
+        getSerializer().serialize( writer, getValue( bean, ctx ), ctx, getParameters() );
     }
 }

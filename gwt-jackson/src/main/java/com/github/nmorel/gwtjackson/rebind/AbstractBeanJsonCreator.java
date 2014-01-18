@@ -284,8 +284,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
             source.indent();
 
             source.println( "@Override" );
-            source.println( "protected %s<%s> newSerializer(%s ctx) {", JSON_SERIALIZER_CLASS, qualifiedType,
-                    JSON_SERIALIZATION_CONTEXT_CLASS );
+            source.println( "protected %s<%s> newSerializer() {", JSON_SERIALIZER_CLASS, qualifiedType );
             source.indent();
             source.println( "return %s;", getJsonSerializerFromType( identityInfo.getType() ).getInstance() );
             source.outdent();
@@ -307,7 +306,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
             source.println( "ctx.addGenerator(scopedGen);" );
             source.outdent();
             source.println( "}" );
-            source.println( "return new %s<%s>(scopedGen.generateId(bean), getSerializer(ctx));", ObjectIdSerializer.class
+            source.println( "return new %s<%s>(scopedGen.generateId(bean), getSerializer());", ObjectIdSerializer.class
                     .getName(), qualifiedType );
 
             source.outdent();
@@ -338,8 +337,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
             source.indent();
 
             source.println( "@Override" );
-            source.println( "protected %s<%s> newDeserializer(%s ctx) {", JSON_DESERIALIZER_CLASS, qualifiedType,
-                    JSON_DESERIALIZATION_CONTEXT_CLASS );
+            source.println( "protected %s<%s> newDeserializer() {", JSON_DESERIALIZER_CLASS, qualifiedType );
             source.indent();
             source.println( "return %s;", getJsonDeserializerFromType( identityInfo.getType() ).getInstance() );
             source.outdent();

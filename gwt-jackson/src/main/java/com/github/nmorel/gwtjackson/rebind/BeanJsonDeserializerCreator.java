@@ -462,7 +462,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
             source.println( accessor.getAccessor() + ";", "value" );
 
             if ( property.getManagedReference().isPresent() ) {
-                source.println( "getDeserializer(ctx).setBackReference(\"%s\", bean, value, ctx);", property.getManagedReference().get() );
+                source.println( "getDeserializer().setBackReference(\"%s\", bean, value, ctx);", property.getManagedReference().get() );
             }
 
             source.outdent();
@@ -488,8 +488,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         JDeserializerType deserializerType = getJsonDeserializerFromType( property.getType() );
 
         source.println( "@Override" );
-        source.println( "protected %s<%s> newDeserializer(%s ctx) {", JSON_DESERIALIZER_CLASS, getQualifiedClassName( property
-                .getType() ), JSON_DESERIALIZATION_CONTEXT_CLASS );
+        source.println( "protected %s<%s> newDeserializer() {", JSON_DESERIALIZER_CLASS, getQualifiedClassName( property.getType() ) );
         source.indent();
         source.println( "return %s;", deserializerType.getInstance() );
         source.outdent();
@@ -509,8 +508,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
             source.println();
 
             source.println( "@Override" );
-            source.println( "protected %s newParameters(%s ctx) {", JSON_DESERIALIZER_PARAMETERS_CLASS,
-                    JSON_DESERIALIZATION_CONTEXT_CLASS );
+            source.println( "protected %s newParameters() {", JSON_DESERIALIZER_PARAMETERS_CLASS );
             source.indent();
             source.print( "return new %s()", JSON_DESERIALIZER_PARAMETERS_CLASS );
 
@@ -652,6 +650,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         source.println( "@Override" );
         source.println( "protected %s initMapSubtypeClassToDeserializer() {", resultType );
 
+        source.indent();
+
         JClassType[] subtypes = beanInfo.getType().getSubtypes();
 
         source.println( "%s map = new %s%s(%s);", resultType, IdentityHashMap.class.getCanonicalName(), mapTypes, subtypes.length );
@@ -663,8 +663,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
             source.indent();
 
             source.println( "@Override" );
-            source.println( "protected %s<%s> newDeserializer(%s ctx) {", ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS,
-                    getQualifiedClassName( subtype ), JSON_DESERIALIZATION_CONTEXT_CLASS );
+            source.println( "protected %s<%s> newDeserializer() {", ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS,
+                    getQualifiedClassName( subtype ) );
             source.indent();
             source.println( "return %s;", getJsonDeserializerFromType( subtype ).getInstance() );
             source.outdent();

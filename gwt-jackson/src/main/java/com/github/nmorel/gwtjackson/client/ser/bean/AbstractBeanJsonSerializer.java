@@ -103,7 +103,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
 
             if ( identityInfo.isProperty() ) {
                 BeanPropertySerializer<T, ?> propertySerializer = serializers.get( identityInfo.getPropertyName() );
-                idWriter = new ObjectIdSerializer( propertySerializer.getValue( value, ctx ), propertySerializer.getSerializer( ctx ) );
+                idWriter = new ObjectIdSerializer( propertySerializer.getValue( value, ctx ), propertySerializer.getSerializer() );
             } else {
                 idWriter = identityInfo.getObjectId( value, ctx );
             }
@@ -186,7 +186,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
         if ( null == subtypeSerializer ) {
             throw ctx.traceError( value, "Cannot find serializer for class " + value.getClass(), writer );
         }
-        return (AbstractBeanJsonSerializer<T>) subtypeSerializer.getSerializer( ctx );
+        return (AbstractBeanJsonSerializer<T>) subtypeSerializer.getSerializer();
     }
 
     /**

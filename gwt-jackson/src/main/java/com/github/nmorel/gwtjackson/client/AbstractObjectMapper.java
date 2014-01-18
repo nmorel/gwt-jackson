@@ -60,13 +60,13 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
                     throw ctx.traceError( "Unwrap root value is enabled but the name '" + name + "' don't match the expected rootName " +
                             "'" + rootName + "'", reader );
                 }
-                T result = newDeserializer( ctx ).deserialize( reader, ctx );
+                T result = newDeserializer().deserialize( reader, ctx );
                 reader.endObject();
                 return result;
 
             } else {
 
-                return newDeserializer( ctx ).deserialize( reader, ctx );
+                return newDeserializer().deserialize( reader, ctx );
 
             }
 
@@ -81,11 +81,9 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
     /**
      * Instantiates a new deserializer
      *
-     * @param ctx Context of the current deserialization process
-     *
      * @return a new deserializer
      */
-    protected abstract JsonDeserializer<T> newDeserializer( JsonDeserializationContext ctx );
+    protected abstract JsonDeserializer<T> newDeserializer();
 
     @Override
     public String write( T value ) throws JsonSerializationException {
@@ -99,10 +97,10 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
             if ( ctx.isWrapRootValue() ) {
                 writer.beginObject();
                 writer.name( rootName );
-                newSerializer( ctx ).serialize( writer, value, ctx );
+                newSerializer().serialize( writer, value, ctx );
                 writer.endObject();
             } else {
-                newSerializer( ctx ).serialize( writer, value, ctx );
+                newSerializer().serialize( writer, value, ctx );
             }
             return writer.getOutput();
         } catch ( JsonSerializationException e ) {
@@ -116,9 +114,7 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
     /**
      * Instantiates a new serializer
      *
-     * @param ctx Context of the current serialization process
-     *
      * @return a new serializer
      */
-    protected abstract JsonSerializer<T> newSerializer( JsonSerializationContext ctx );
+    protected abstract JsonSerializer<T> newSerializer();
 }

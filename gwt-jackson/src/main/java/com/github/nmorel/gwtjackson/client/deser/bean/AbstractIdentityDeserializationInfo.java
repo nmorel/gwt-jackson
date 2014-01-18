@@ -50,7 +50,7 @@ public abstract class AbstractIdentityDeserializationInfo<T, V> extends HasDeser
 
     @Override
     public final Object readId( JsonReader reader, JsonDeserializationContext ctx ) {
-        return getDeserializer( ctx ).deserialize( reader, ctx );
+        return getDeserializer().deserialize( reader, ctx );
     }
 
 }

@@ -144,16 +144,15 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
             JSerializerType serializerType;
             if ( property.isRawValue() ) {
                 serializerType = new JSerializerType.Builder().type( property.getType() ).instance( String
-                        .format( "%s.<%s>getInstance()", RawValueJsonSerializer.class.getCanonicalName(), property.getType().getParameterizedQualifiedSourceName() ) )
-                        .build();
+                        .format( "%s.<%s>getInstance()", RawValueJsonSerializer.class.getCanonicalName(), property.getType()
+                                .getParameterizedQualifiedSourceName() ) ).build();
             } else {
                 serializerType = getJsonSerializerFromType( property.getType() );
             }
 
             source.indent();
             source.println( "@Override" );
-            source.println( "protected %s<%s> newSerializer(%s ctx) {", JSON_SERIALIZER_CLASS, getQualifiedClassName( property
-                    .getType() ), JSON_SERIALIZATION_CONTEXT_CLASS );
+            source.println( "protected %s<%s> newSerializer() {", JSON_SERIALIZER_CLASS, getQualifiedClassName( property.getType() ) );
             source.indent();
             source.println( "return %s;", serializerType.getInstance() );
             source.outdent();
@@ -196,7 +195,7 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
             source.println();
 
             source.println( "@Override" );
-            source.println( "protected %s newParameters(%s ctx) {", JSON_SERIALIZER_PARAMETERS_CLASS, JSON_SERIALIZATION_CONTEXT_CLASS );
+            source.println( "protected %s newParameters() {", JSON_SERIALIZER_PARAMETERS_CLASS );
             source.indent();
             source.print( "return new %s()", JSON_SERIALIZER_PARAMETERS_CLASS );
 
@@ -265,6 +264,8 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
         source.println( "@Override" );
         source.println( "protected %s initMapSubtypeClassToSerializer() {", resultType );
 
+        source.indent();
+
         JClassType[] subtypes = beanInfo.getType().getSubtypes();
 
         source.println( "%s map = new %s%s(%s);", resultType, IdentityHashMap.class.getCanonicalName(), mapTypes, subtypes.length );
@@ -276,8 +277,8 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
             source.indent();
 
             source.println( "@Override" );
-            source.println( "protected %s<%s> newSerializer(%s ctx) {", ABSTRACT_BEAN_JSON_SERIALIZER_CLASS,
-                    getQualifiedClassName( subtype ), JSON_SERIALIZATION_CONTEXT_CLASS );
+            source.println( "protected %s<%s> newSerializer() {", ABSTRACT_BEAN_JSON_SERIALIZER_CLASS,
+                    getQualifiedClassName( subtype ) );
             source.indent();
             source.println( "return %s;", getJsonSerializerFromType( subtype ).getInstance() );
             source.outdent();
