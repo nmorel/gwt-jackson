@@ -20,10 +20,16 @@ import java.io.PrintWriter;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
+import com.github.nmorel.gwtjackson.client.deser.EnumJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.array.ArrayJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.array.ArrayJsonDeserializer.ArrayCreator;
 import com.github.nmorel.gwtjackson.client.deser.bean.AbstractBeanJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.map.key.EnumKeyDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer;
+import com.github.nmorel.gwtjackson.client.ser.EnumJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.array.ArrayJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.AbstractBeanJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.map.key.EnumKeySerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.key.KeySerializer;
 import com.github.nmorel.gwtjackson.rebind.RebindConfiguration.MapperInstance;
 import com.github.nmorel.gwtjackson.rebind.RebindConfiguration.MapperType;
@@ -101,10 +107,10 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      * @param type type
      *
      * @return the code instantiating the {@link JsonSerializer}. Examples:
-     *         <ul>
-     *         <li>ctx.getIntegerSerializer()</li>
-     *         <li>new org.PersonBeanJsonSerializer()</li>
-     *         </ul>
+     * <ul>
+     * <li>ctx.getIntegerSerializer()</li>
+     * <li>new org.PersonBeanJsonSerializer()</li>
+     * </ul>
      */
     protected JSerializerType getJsonSerializerFromType( JType type ) throws UnableToCompleteException {
         JSerializerType.Builder builder = new JSerializerType.Builder().type( type );
@@ -147,14 +153,16 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
         JEnumType enumType = type.isEnum();
         if ( null != enumType ) {
-            return builder.instance( String.format( "ctx.<%s>getEnumJsonSerializer()", enumType.getQualifiedSourceName() ) ).build();
+            return builder.instance( String.format( "%s.<%s>getInstance()", EnumJsonSerializer.class.getCanonicalName(), enumType
+                    .getQualifiedSourceName() ) ).build();
         }
 
         JArrayType arrayType = type.isArray();
         if ( null != arrayType ) {
             JSerializerType parameterSerializerType = getJsonSerializerFromType( arrayType.getComponentType() );
             builder.parameters( new JSerializerType[]{parameterSerializerType} );
-            return builder.instance( String.format( "ctx.newArrayJsonSerializer(%s)", parameterSerializerType.getInstance() ) ).build();
+            return builder.instance( String.format( "%s.newInstance(%s)", ArrayJsonSerializer.class
+                    .getCanonicalName(), parameterSerializerType.getInstance() ) ).build();
         }
 
         JClassType classType = type.isClassOrInterface();
@@ -220,7 +228,8 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
         JEnumType enumType = type.isEnum();
         if ( null != enumType ) {
-            builder.instance( String.format( "ctx.<%s>getEnumKeySerializer()", enumType.getQualifiedSourceName() ) );
+            builder.instance( String.format( "%s.<%s>getInstance()", EnumKeySerializer.class.getCanonicalName(), enumType
+                    .getQualifiedSourceName() ) );
             return builder.build();
         }
 
@@ -236,10 +245,10 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      * @param type type
      *
      * @return the code instantiating the deserializer. Examples:
-     *         <ul>
-     *         <li>ctx.getIntegerDeserializer()</li>
-     *         <li>new org .PersonBeanJsonDeserializer()</li>
-     *         </ul>
+     * <ul>
+     * <li>ctx.getIntegerDeserializer()</li>
+     * <li>new org .PersonBeanJsonDeserializer()</li>
+     * </ul>
      */
     protected JDeserializerType getJsonDeserializerFromType( JType type ) throws UnableToCompleteException {
         JDeserializerType.Builder builder = new JDeserializerType.Builder().type( type );
@@ -283,12 +292,13 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
         JEnumType enumType = type.isEnum();
         if ( null != enumType ) {
-            return builder.instance( "ctx.newEnumJsonDeserializer(" + enumType.getQualifiedSourceName() + ".class)" ).build();
+            return builder.instance( EnumJsonDeserializer.class.getCanonicalName() + ".newInstance(" + enumType
+                    .getQualifiedSourceName() + ".class)" ).build();
         }
 
         JArrayType arrayType = type.isArray();
         if ( null != arrayType ) {
-            String method = "ctx.newArrayJsonDeserializer(%s, %s)";
+            String method = "%s.newInstance(%s, %s)";
             String arrayCreator = "new " + ArrayCreator.class.getCanonicalName() + "<" + arrayType.getComponentType()
                     .getParameterizedQualifiedSourceName() + ">(){\n" +
                     "  @Override\n" +
@@ -299,7 +309,8 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
             JDeserializerType parameterDeserializerType = getJsonDeserializerFromType( arrayType.getComponentType() );
             builder.parameters( new JDeserializerType[]{parameterDeserializerType} );
-            return builder.instance( String.format( method, parameterDeserializerType.getInstance(), arrayCreator ) ).build();
+            return builder.instance( String.format( method, ArrayJsonDeserializer.class.getCanonicalName(), parameterDeserializerType
+                    .getInstance(), arrayCreator ) ).build();
         }
 
         JClassType classType = type.isClassOrInterface();
@@ -366,7 +377,8 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
         JEnumType enumType = type.isEnum();
         if ( null != enumType ) {
-            builder.instance( String.format( "ctx.newEnumKeyDeserializer(%s.class)", enumType.getQualifiedSourceName() ) );
+            builder.instance( String.format( "%s.newInstance(%s.class)", EnumKeyDeserializer.class.getCanonicalName(), enumType
+                    .getQualifiedSourceName() ) );
             return builder.build();
         }
 

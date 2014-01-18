@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.github.nmorel.gwtjackson.client.ser.RawValueJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.IdentitySerializationInfo;
 import com.github.nmorel.gwtjackson.client.ser.bean.SubtypeSerializer;
 import com.github.nmorel.gwtjackson.rebind.FieldAccessor.Accessor;
@@ -143,7 +144,7 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
             JSerializerType serializerType;
             if ( property.isRawValue() ) {
                 serializerType = new JSerializerType.Builder().type( property.getType() ).instance( String
-                        .format( "ctx" + ".<%s>getRawValueJsonSerializer()", property.getType().getParameterizedQualifiedSourceName() ) )
+                        .format( "%s.<%s>getInstance()", RawValueJsonSerializer.class.getCanonicalName(), property.getType().getParameterizedQualifiedSourceName() ) )
                         .build();
             } else {
                 serializerType = getJsonSerializerFromType( property.getType() );

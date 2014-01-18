@@ -18,66 +18,13 @@ package com.github.nmorel.gwtjackson.client;
 
 import java.util.logging.Logger;
 
-import com.github.nmorel.gwtjackson.client.deser.EnumJsonDeserializer;
-import com.github.nmorel.gwtjackson.client.deser.array.ArrayJsonDeserializer;
-import com.github.nmorel.gwtjackson.client.deser.map.key.EnumKeyDeserializer;
-import com.github.nmorel.gwtjackson.client.ser.EnumJsonSerializer;
-import com.github.nmorel.gwtjackson.client.ser.RawValueJsonSerializer;
-import com.github.nmorel.gwtjackson.client.ser.array.ArrayJsonSerializer;
-import com.github.nmorel.gwtjackson.client.ser.map.key.EnumKeySerializer;
-
 /**
  * Base class for serialization and deserialization context
  *
  * @author Nicolas Morel
  */
-@SuppressWarnings("UnusedDeclaration")
 public abstract class JsonMappingContext {
 
     public abstract Logger getLogger();
 
-    /*##############################*/
-    /*#####    Deserializers   #####*/
-    /*##############################*/
-
-    public <T> JsonDeserializer<T[]> newArrayJsonDeserializer( JsonDeserializer<T> deserializer,
-                                                               ArrayJsonDeserializer.ArrayCreator<T> arrayCreator ) {
-        return ArrayJsonDeserializer.newInstance( deserializer, arrayCreator );
-    }
-
-    public <T extends Enum<T>> EnumJsonDeserializer<T> newEnumJsonDeserializer( Class<T> enumClass ) {
-        return EnumJsonDeserializer.newInstance( enumClass );
-    }
-
-    /*##############################*/
-    /*####   Key deserializers  ####*/
-    /*##############################*/
-
-    public <T extends Enum<T>> EnumKeyDeserializer<T> newEnumKeyDeserializer( Class<T> enumClass ) {
-        return EnumKeyDeserializer.newInstance( enumClass );
-    }
-
-    /*##############################*/
-    /*#######   Serializers  #######*/
-    /*##############################*/
-
-    public <T> JsonSerializer<T> getRawValueJsonSerializer() {
-        return RawValueJsonSerializer.getInstance();
-    }
-
-    public <E extends Enum<E>> EnumJsonSerializer<E> getEnumJsonSerializer() {
-        return EnumJsonSerializer.getInstance();
-    }
-
-    public <T> JsonSerializer<T[]> newArrayJsonSerializer( JsonSerializer<T> serializer ) {
-        return ArrayJsonSerializer.newInstance( serializer );
-    }
-
-    /*##############################*/
-    /*#####   Key serializers  #####*/
-    /*##############################*/
-
-    public <T extends Enum<T>> EnumKeySerializer<T> getEnumKeySerializer() {
-        return EnumKeySerializer.getInstance();
-    }
 }
