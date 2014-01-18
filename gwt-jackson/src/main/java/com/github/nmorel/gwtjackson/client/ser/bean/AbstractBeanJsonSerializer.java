@@ -19,11 +19,11 @@ package com.github.nmorel.gwtjackson.client.ser.bean;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.IdentityHashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.JsonSerializerParameters;
@@ -36,41 +36,51 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  */
 public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
 
-    private final Map<String, BeanPropertySerializer<T, ?>> serializers = new LinkedHashMap<String, BeanPropertySerializer<T, ?>>();
+    private final Map<String, BeanPropertySerializer<T, ?>> serializers;// = new LinkedHashMap<String, BeanPropertySerializer<T, ?>>();
 
-    private final Map<Class<? extends T>, SubtypeSerializer<? extends T>> subtypeClassToSerializer = new IdentityHashMap<Class<? extends
-            T>, SubtypeSerializer<? extends T>>();
+    private final Map<Class<? extends T>, SubtypeSerializer<? extends T>> subtypeClassToSerializer;
 
     private final IdentitySerializationInfo<T> defaultIdentityInfo;
 
     private final TypeSerializationInfo<T> defaultTypeInfo;
 
-    protected AbstractBeanJsonSerializer( IdentitySerializationInfo<T> defaultIdentityInfo, TypeSerializationInfo<T> defaultTypeInfo ) {
-        this.defaultIdentityInfo = defaultIdentityInfo;
-        this.defaultTypeInfo = defaultTypeInfo;
+    protected AbstractBeanJsonSerializer() {
+        this.serializers = initSerializers();
+        this.defaultIdentityInfo = initIdentityInfo();
+        this.defaultTypeInfo = initTypeInfo();
+        this.subtypeClassToSerializer = initMapSubtypeClassToSerializer();
+    }
+
+    /**
+     * Initialize the {@link Map} containing the property serializers. Returns an empty map if there are no properties to
+     * serialize.
+     */
+    protected Map<String, BeanPropertySerializer<T, ?>> initSerializers() {
+        return Collections.emptyMap();
+    }
+
+    /**
+     * Initialize the {@link IdentitySerializationInfo}. Returns null if there is no {@link JsonIdentityInfo} annotation on bean.
+     */
+    protected IdentitySerializationInfo<T> initIdentityInfo() {
+        return null;
+    }
+
+    /**
+     * Initialize the {@link TypeSerializationInfo}. Returns null if there is no {@link JsonTypeInfo} annotation on bean.
+     */
+    protected TypeSerializationInfo<T> initTypeInfo() {
+        return null;
+    }
+
+    /**
+     * Initialize the {@link Map} containing the {@link SubtypeSerializer}. Returns an empty map if the bean has no subtypes.
+     */
+    protected Map<Class<? extends T>, SubtypeSerializer<? extends T>> initMapSubtypeClassToSerializer() {
+        return Collections.emptyMap();
     }
 
     public abstract Class getSerializedType();
-
-    /**
-     * Adds an {@link BeanPropertySerializer}.
-     *
-     * @param propertyName name of the property
-     * @param serializer serializer
-     */
-    protected void addPropertySerializer( String propertyName, BeanPropertySerializer<T, ?> serializer ) {
-        serializers.put( propertyName, serializer );
-    }
-
-    /**
-     * Adds a {@link SubtypeSerializer}.
-     *
-     * @param clazz {@link Class} associated to the serializer
-     * @param subtypeSerializer Serializer
-     */
-    protected <S extends T> void addSubtypeSerializer( Class<S> clazz, SubtypeSerializer<S> subtypeSerializer ) {
-        subtypeClassToSerializer.put( clazz, subtypeSerializer );
-    }
 
     @Override
     public void doSerialize( JsonWriter writer, @Nonnull T value, JsonSerializationContext ctx, JsonSerializerParameters params ) throws

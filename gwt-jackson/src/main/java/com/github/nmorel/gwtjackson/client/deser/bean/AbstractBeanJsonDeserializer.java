@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
@@ -63,35 +65,60 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
         this.subtypeClassToDeserializer = initMapSubtypeClassToDeserializer();
     }
 
+    /**
+     * Initialize the {@link InstanceBuilder}. Returns null if the class isn't instantiable.
+     */
     protected InstanceBuilder<T> initInstanceBuilder() {
         return null;
     }
 
+    /**
+     * Initialize the {@link SimpleStringMap} containing the property deserializers. Returns an empty map if there are no properties to
+     * deserialize.
+     */
     protected SimpleStringMap<BeanPropertyDeserializer<T, ?>> initDeserializers() {
         return SimpleStringMap.createObject().cast();
-
     }
 
+    /**
+     * Initialize the {@link SimpleStringMap} containing the back reference deserializers. Returns an empty map if there are no back
+     * reference on the bean.
+     */
     protected SimpleStringMap<BackReferenceProperty<T, ?>> initBackReferenceDeserializers() {
         return SimpleStringMap.createObject().cast();
     }
 
+    /**
+     * Initialize the {@link Set} containing the ignored property names. Returns an empty set if there are no ignored properties.
+     */
     protected Set<String> initIgnoredProperties() {
         return Collections.emptySet();
     }
 
+    /**
+     * Initialize the {@link Set} containing the required property names. Returns an empty set if there are no required properties.
+     */
     protected Set<String> initRequiredProperties() {
         return Collections.emptySet();
     }
 
+    /**
+     * Initialize the {@link IdentityDeserializationInfo}. Returns null if there is no {@link JsonIdentityInfo} annotation on bean.
+     */
     protected IdentityDeserializationInfo<T> initIdentityInfo() {
         return null;
     }
 
+    /**
+     * Initialize the {@link TypeDeserializationInfo}. Returns null if there is no {@link JsonTypeInfo} annotation on bean.
+     */
     protected TypeDeserializationInfo<T> initTypeInfo() {
         return null;
     }
 
+    /**
+     * Initialize the {@link Map} containing the {@link SubtypeDeserializer}. Returns an empty map if the bean has no subtypes.
+     */
     protected Map<Class<? extends T>, SubtypeDeserializer<? extends T>> initMapSubtypeClassToDeserializer() {
         return Collections.emptyMap();
     }

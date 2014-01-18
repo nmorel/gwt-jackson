@@ -34,7 +34,7 @@ public class SimpleStringMap<V> extends JavaScriptObject {
      * @return value associated to the key or {@code null} otherwise
      */
     public final native V get( String key )  /*-{
-        return this[key];
+        return this[':' + key];
     }-*/;
 
     /**
@@ -46,7 +46,7 @@ public class SimpleStringMap<V> extends JavaScriptObject {
      * @param value value to be stored
      */
     public final native void put( String key, V value )  /*-{
-        this[key] = value;
+        this[':' + key] = value;
     }-*/;
 
 }
