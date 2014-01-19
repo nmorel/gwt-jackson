@@ -192,8 +192,9 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         }
 
         source.println( "@Override" );
-        source.println( "public %s<%s> newInstance( %s reader, %s ctx ) {", INSTANCE_CLASS, beanInfo.getType()
-                .getParameterizedQualifiedSourceName(), JsonReader.class.getCanonicalName(), JSON_DESERIALIZATION_CONTEXT_CLASS );
+        source.println( "public %s<%s> newInstance( %s reader, %s ctx, %s<String, String> bufferedProperties ) {", INSTANCE_CLASS, beanInfo
+                .getType().getParameterizedQualifiedSourceName(), JsonReader.class
+                .getCanonicalName(), JSON_DESERIALIZATION_CONTEXT_CLASS, Map.class.getCanonicalName() );
         source.indent();
 
         if ( beanInfo.isCreatorDefaultConstructor() ) {
@@ -222,8 +223,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
      * @param beanInfo info on bean
      */
     private void generateInstanceBuilderForDefaultConstructor( SourceWriter source, BeanInfo beanInfo ) {
-        source.println( "return new %s<%s>(create());", INSTANCE_CLASS, beanInfo.getType().getParameterizedQualifiedSourceName(), beanInfo
-                .getType().getParameterizedQualifiedSourceName() );
+        source.println( "return new %s<%s>(create(), bufferedProperties);", INSTANCE_CLASS, beanInfo.getType()
+                .getParameterizedQualifiedSourceName(), beanInfo.getType().getParameterizedQualifiedSourceName() );
     }
 
     /**
@@ -236,11 +237,6 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
      */
     private void generateInstanceBuilderForConstructorOrFactoryMethod( SourceWriter source, BeanInfo info, Map<String,
             PropertyInfo> properties ) throws UnableToCompleteException {
-
-        source.println( "%s<%s, %s> bufferedProperties = new %s<%s, %s>();", Map.class.getName(), String.class.getName(), String.class
-                .getName(), HashMap.class.getName(), String.class.getName(), String.class.getName() );
-
-        source.println();
 
         List<String> requiredProperties = new ArrayList<String>();
         for ( String name : info.getCreatorParameters().keySet() ) {
@@ -260,16 +256,41 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
         if ( !requiredProperties.isEmpty() ) {
             String requiredList = Joiner.on( ", " ).join( Collections2.transform( requiredProperties, QUOTED_FUNCTION ) );
-            source.println( "%s<%s> requiredProperties = new %s<%s>(%s.asList(%s));", Set.class.getName(), String.class
-                    .getName(), HashSet.class.getName(), String.class.getName(), Arrays.class.getName(), requiredList );
+            source.println( "%s<String> requiredProperties = new %s<String>(%s.asList(%s));", Set.class.getName(), HashSet.class
+                    .getName(), Arrays.class.getName(), requiredList );
         }
 
         source.println();
 
+        source.println( "if(null != bufferedProperties) {" );
+        source.indent();
+        source.println( "String value;" );
+        for ( String name : info.getCreatorParameters().keySet() ) {
+            PropertyInfo propertyInfo = properties.get( name );
+
+            source.println();
+            source.println( "value = bufferedProperties.remove(\"%s\");", name );
+            source.println( "if(null != value) {" );
+            source.indent();
+            source.println( "%s = %s.deserialize(ctx.newJsonReader(value), ctx);", FORMAT_VARIABLE.apply( name ), String
+                    .format( INSTANCE_BUILDER_DESERIALIZER_FORMAT, name ) );
+            source.println( "nbParamToFind--;" );
+            if ( propertyInfo.isRequired() ) {
+                source.println( "requiredProperties.remove(\"%s\");", name );
+            }
+            source.outdent();
+            source.println( "}" );
+        }
+        source.outdent();
+        source.println( "}" );
+
+        source.println();
+
+        source.println( "String name;" );
         source.println( "while (nbParamToFind > 0 && %s.NAME == reader.peek()) {", JsonToken.class.getName() );
         source.indent();
 
-        source.println( "String name = reader.nextName();" );
+        source.println( "name = reader.nextName();" );
         source.println();
 
         for ( String name : info.getCreatorParameters().keySet() ) {
@@ -289,6 +310,11 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         }
 
         source.println();
+        source.println( "if(null == bufferedProperties) {" );
+        source.indent();
+        source.println( "bufferedProperties = new %s<String, String>();", HashMap.class.getName() );
+        source.outdent();
+        source.println( "}" );
         source.println( "bufferedProperties.put( name, reader.nextValue() );" );
 
         source.outdent();

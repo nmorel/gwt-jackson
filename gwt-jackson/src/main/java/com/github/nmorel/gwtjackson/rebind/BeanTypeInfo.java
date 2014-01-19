@@ -79,9 +79,7 @@ public class BeanTypeInfo {
         BeanTypeInfo result = new BeanTypeInfo();
         result.use = jsonTypeInfo.use();
         result.include = jsonTypeInfo.include();
-        if ( JsonTypeInfo.As.PROPERTY.equals( jsonTypeInfo.include() ) ) {
-            result.propertyName = jsonTypeInfo.property().isEmpty() ? jsonTypeInfo.use().getDefaultPropertyName() : jsonTypeInfo.property();
-        }
+        result.propertyName = jsonTypeInfo.property().isEmpty() ? jsonTypeInfo.use().getDefaultPropertyName() : jsonTypeInfo.property();
 
         Map<JClassType, String> classToMetadata = new HashMap<JClassType, String>();
         JsonSubTypes typeSubTypes = findFirstEncounteredAnnotationsOnAllHierarchy( type, JsonSubTypes.class );

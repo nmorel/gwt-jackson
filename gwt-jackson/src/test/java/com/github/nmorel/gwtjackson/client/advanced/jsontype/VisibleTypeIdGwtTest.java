@@ -102,31 +102,38 @@ public class VisibleTypeIdGwtTest extends GwtJacksonTestCase {
         tester.testVisibleWithWrapperObject( WrapperObjectBeanMapper.INSTANCE );
     }
 
-    public void testVisibleWithExternalId() {
-        tester.testVisibleWithExternalId( ExternalIdWrapperMapper.INSTANCE );
-    }
+    // TODO Support for JsonTypeInfo.As.EXTERNAL_PROPERTY
+    //    public void testVisibleWithExternalId() {
+    //        tester.testVisibleWithExternalId( ExternalIdWrapperMapper.INSTANCE );
+    //    }
 
-    public void testTypeIdFromProperty() {
-        tester.testTypeIdFromProperty( TypeIdFromFieldPropertyMapper.INSTANCE );
-    }
+    // TODO Support for @JsonTypeId
+    //    public void testTypeIdFromProperty() {
+    //        tester.testTypeIdFromProperty( TypeIdFromFieldPropertyMapper.INSTANCE );
+    //    }
 
-    public void testTypeIdFromArray() {
-        tester.testTypeIdFromArray( TypeIdFromFieldArrayMapper.INSTANCE );
-    }
+    // TODO Support for @JsonTypeId
+    //    public void testTypeIdFromArray() {
+    //        tester.testTypeIdFromArray( TypeIdFromFieldArrayMapper.INSTANCE );
+    //    }
 
-    public void testTypeIdFromObject() {
-        tester.testTypeIdFromObject( TypeIdFromMethodObjectMapper.INSTANCE );
-    }
+    // TODO Support for @JsonTypeId
+    //    public void testTypeIdFromObject() {
+    //        tester.testTypeIdFromObject( TypeIdFromMethodObjectMapper.INSTANCE );
+    //    }
 
-    public void testTypeIdFromExternal() {
-        tester.testTypeIdFromExternal( ExternalIdWrapper2Mapper.INSTANCE );
-    }
+    // TODO Support for JsonTypeInfo.As.EXTERNAL_PROPERTY
+    //    public void testTypeIdFromExternal() {
+    //        tester.testTypeIdFromExternal( ExternalIdWrapper2Mapper.INSTANCE );
+    //    }
 
-    public void testIssue263() {
-        tester.testIssue263( I263BaseMapper.INSTANCE );
-    }
+    // TODO Support for @JsonTypeId
+    //    public void testIssue263() {
+    //        tester.testIssue263( I263BaseMapper.INSTANCE );
+    //    }
 
-    public void testInvalidMultipleTypeIds() {
-        tester.testInvalidMultipleTypeIds( MultipleIdsMapper.INSTANCE );
-    }
+    // TODO Support for @JsonTypeId
+    //    public void testInvalidMultipleTypeIds() {
+    //        tester.testInvalidMultipleTypeIds( MultipleIdsMapper.INSTANCE );
+    //    }
 }

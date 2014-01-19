@@ -16,6 +16,8 @@
 
 package com.github.nmorel.gwtjackson.client.deser.bean;
 
+import java.util.Map;
+
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 
@@ -24,6 +26,6 @@ import com.github.nmorel.gwtjackson.client.stream.JsonReader;
  */
 public interface InstanceBuilder<T> {
 
-    Instance<T> newInstance( JsonReader reader, JsonDeserializationContext ctx );
+    Instance<T> newInstance( JsonReader reader, JsonDeserializationContext ctx, Map<String, String> bufferedProperties );
 
 }

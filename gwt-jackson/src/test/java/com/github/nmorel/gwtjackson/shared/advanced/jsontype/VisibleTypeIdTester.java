@@ -16,6 +16,8 @@
 
 package com.github.nmorel.gwtjackson.shared.advanced.jsontype;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeId;
@@ -37,9 +39,18 @@ public final class VisibleTypeIdTester extends AbstractTester {
     @JsonTypeName("BaseType")
     public static class PropertyBean {
 
-        public int a = 3;
+        private final int a;
 
         protected String type;
+
+        @JsonCreator
+        public PropertyBean( @JsonProperty( value = "a", required = true ) int a ) {
+            this.a = a;
+        }
+
+        public int getA() {
+            return a;
+        }
 
         public void setType( String t ) { type = t; }
     }
@@ -178,7 +189,7 @@ public final class VisibleTypeIdTester extends AbstractTester {
      */
 
     public void testVisibleWithProperty( ObjectMapperTester<PropertyBean> mapper ) {
-        String json = mapper.write( new PropertyBean() );
+        String json = mapper.write( new PropertyBean( 3 ) );
         // just default behavior:
         assertEquals( "{\"type\":\"BaseType\",\"a\":3}", json );
         // but then expect to read it back

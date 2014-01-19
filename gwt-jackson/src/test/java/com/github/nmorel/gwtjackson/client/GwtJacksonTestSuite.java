@@ -32,6 +32,7 @@ import com.github.nmorel.gwtjackson.client.advanced.jsontype.PolymorphismIdMinim
 import com.github.nmorel.gwtjackson.client.advanced.jsontype.PolymorphismIdNameAsWrapperObjectGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.jsontype.PolymorphismNoTypeInfoGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.jsontype.TypeNamesGwtTest;
+import com.github.nmorel.gwtjackson.client.advanced.jsontype.VisibleTypeIdGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonAutoDetectGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonCreatorGwtTest;
 import com.github.nmorel.gwtjackson.client.annotations.JsonFormatGwtTest;
@@ -277,8 +278,7 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( JsonTypeOnPropertiesGwtTest.class );
         suite.addTestSuite( JsonTypeOnParametersGwtTest.class );
         suite.addTestSuite( TypeNamesGwtTest.class );
-        // TODO this class isn't working at all, the current implementation don't support JsonTypeInfo on a single type without any subtype
-        // suite.addTestSuite( VisibleTypeIdGwtTest.class );
+        suite.addTestSuite( VisibleTypeIdGwtTest.class );
 
         // Identity
         suite.addTestSuite( ObjectIdGwtTest.class );

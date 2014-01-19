@@ -19,6 +19,7 @@ package com.github.nmorel.gwtjackson.shared.advanced.jsontype;
 import java.util.Arrays;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
@@ -53,6 +54,9 @@ public final class PolymorphismIdClassAsPropertyTester extends AbstractTester {
     public static class Customer extends Person {
 
         public int satisfaction;
+
+        @JsonIgnore
+        public Integer ignored;
     }
 
     public static final PolymorphismIdClassAsPropertyTester INSTANCE = new PolymorphismIdClassAsPropertyTester();
@@ -171,7 +175,8 @@ public final class PolymorphismIdClassAsPropertyTester extends AbstractTester {
                 "{" +
                 "\"@class\":\"com.github.nmorel.gwtjackson.shared.advanced.jsontype.PolymorphismIdClassAsPropertyTester$Customer\"," +
                 "\"name\":\"Brad\"," +
-                "\"satisfaction\":90" +
+                "\"satisfaction\":90," +
+                "\"ignored\":15" +
                 "}" +
                 "]";
 
@@ -213,6 +218,7 @@ public final class PolymorphismIdClassAsPropertyTester extends AbstractTester {
             Customer customer = (Customer) result[3];
             assertEquals( "Brad", customer.name );
             assertEquals( 90, customer.satisfaction );
+            assertNull( customer.ignored );
         }
     }
 

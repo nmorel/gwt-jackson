@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.deser.bean;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -27,11 +26,6 @@ public class Instance<T> {
     private final T instance;
 
     private final Map<String, String> bufferedProperties;
-
-    public Instance( T instance ) {
-        this.instance = instance;
-        this.bufferedProperties = new HashMap<String, String>();
-    }
 
     public Instance( T instance, Map<String, String> bufferedProperties ) {
         this.instance = instance;
