@@ -17,7 +17,6 @@
 package com.github.nmorel.gwtjackson.client.ser.bean;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -83,8 +82,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
     public abstract Class getSerializedType();
 
     @Override
-    public void doSerialize( JsonWriter writer, @Nonnull T value, JsonSerializationContext ctx, JsonSerializerParameters params ) throws
-            IOException {
+    public void doSerialize( JsonWriter writer, @Nonnull T value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
 
         // Processing the parameters. We fallback to default if parameter is not present.
         final IdentitySerializationInfo identityInfo = null == params.getIdentityInfo() ? defaultIdentityInfo : params.getIdentityInfo();
@@ -195,11 +193,9 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
      * @param writer writer
      * @param value bean to serialize
      * @param ctx context of the serialization process
-     *
-     * @throws IOException if an error occurs while writing a property
      */
     public final void serializeObject( JsonWriter writer, T value, JsonSerializationContext ctx, IdentitySerializationInfo identityInfo,
-                                       TypeSerializationInfo typeInfo, Set<String> ignoredProperties ) throws IOException {
+                                       TypeSerializationInfo typeInfo, Set<String> ignoredProperties ) {
         for ( Map.Entry<String, BeanPropertySerializer<T, ?>> entry : serializers.entrySet() ) {
             if ( (null == identityInfo || !identityInfo.isProperty() || !identityInfo.getPropertyName().equals( entry
                     .getKey() )) && !ignoredProperties.contains( entry.getKey() ) ) {

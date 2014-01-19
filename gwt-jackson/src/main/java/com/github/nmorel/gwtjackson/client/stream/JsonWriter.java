@@ -16,8 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.stream;
 
-import java.io.IOException;
-
 public interface JsonWriter {
 
     /**
@@ -58,14 +56,14 @@ public interface JsonWriter {
      *
      * @return this writer.
      */
-    JsonWriter beginArray() throws IOException;
+    JsonWriter beginArray();
 
     /**
      * Ends encoding the current array.
      *
      * @return this writer.
      */
-    JsonWriter endArray() throws IOException;
+    JsonWriter endArray();
 
     /**
      * Begins encoding a new object. Each call to this method must be paired
@@ -73,14 +71,14 @@ public interface JsonWriter {
      *
      * @return this writer.
      */
-    JsonWriter beginObject() throws IOException;
+    JsonWriter beginObject();
 
     /**
      * Ends encoding the current object.
      *
      * @return this writer.
      */
-    JsonWriter endObject() throws IOException;
+    JsonWriter endObject();
 
     /**
      * Encodes the property name.
@@ -88,7 +86,7 @@ public interface JsonWriter {
      * @param name the name of the forthcoming value. May not be null.
      * @return this writer.
      */
-    JsonWriter name( String name ) throws IOException;
+    JsonWriter name( String name );
 
     /**
      * Encodes {@code value}.
@@ -96,14 +94,14 @@ public interface JsonWriter {
      * @param value the literal string value, or null to encode a null literal.
      * @return this writer.
      */
-    JsonWriter value( String value ) throws IOException;
+    JsonWriter value( String value );
 
     /**
      * Encodes {@code null}.
      *
      * @return this writer.
      */
-    JsonWriter nullValue() throws IOException;
+    JsonWriter nullValue();
 
     JsonWriter cancelName();
 
@@ -112,7 +110,7 @@ public interface JsonWriter {
      *
      * @return this writer.
      */
-    JsonWriter value( boolean value ) throws IOException;
+    JsonWriter value( boolean value );
 
     /**
      * Encodes {@code value}.
@@ -121,14 +119,14 @@ public interface JsonWriter {
      *     {@link Double#isInfinite() infinities}.
      * @return this writer.
      */
-    JsonWriter value( double value ) throws IOException;
+    JsonWriter value( double value );
 
     /**
      * Encodes {@code value}.
      *
      * @return this writer.
      */
-    JsonWriter value( long value ) throws IOException;
+    JsonWriter value( long value );
 
     /**
      * Encodes {@code value}.
@@ -137,7 +135,7 @@ public interface JsonWriter {
      *     {@link Double#isInfinite() infinities}.
      * @return this writer.
      */
-    JsonWriter value( Number value ) throws IOException;
+    JsonWriter value( Number value );
 
     /**
      * Encodes {@code value}.toString() as is.
@@ -145,20 +143,18 @@ public interface JsonWriter {
      * @param value a value .
      * @return this writer.
      */
-    JsonWriter rawValue( Object value ) throws IOException;
+    JsonWriter rawValue( Object value );
 
     /**
      * Ensures all buffered data is written to the underlying {@link StringBuilder}
      * and flushes that writer.
      */
-    void flush() throws IOException;
+    void flush();
 
     /**
      * Flushes and closes this writer and the underlying {@link StringBuilder}.
-     *
-     * @throws IOException if the JSON document is incomplete.
      */
-    void close() throws IOException;
+    void close();
 
     /**
      * @return the output when the serialization is over

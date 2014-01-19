@@ -17,7 +17,6 @@
 package com.github.nmorel.gwtjackson.client.ser;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -53,7 +52,7 @@ public abstract class BaseDateJsonSerializer<D extends Date> extends JsonSeriali
 
         @Override
         protected void doSerialize( JsonWriter writer, @Nonnull Date value, JsonSerializationContext ctx,
-                                    JsonSerializerParameters params ) throws IOException {
+                                    JsonSerializerParameters params ) {
             if ( params.getShape().isNumeric() || ctx.isWriteDatesAsTimestamps() ) {
                 writer.value( value.getTime() );
             } else {
@@ -80,7 +79,7 @@ public abstract class BaseDateJsonSerializer<D extends Date> extends JsonSeriali
 
         @Override
         protected void doSerialize( JsonWriter writer, @Nonnull java.sql.Date value, JsonSerializationContext ctx,
-                                    JsonSerializerParameters params ) throws IOException {
+                                    JsonSerializerParameters params ) {
             writer.value( value.toString() );
         }
     }
@@ -103,7 +102,7 @@ public abstract class BaseDateJsonSerializer<D extends Date> extends JsonSeriali
 
         @Override
         protected void doSerialize( JsonWriter writer, @Nonnull Time value, JsonSerializationContext ctx,
-                                    JsonSerializerParameters params ) throws IOException {
+                                    JsonSerializerParameters params ) {
             writer.value( value.toString() );
         }
     }
@@ -126,7 +125,7 @@ public abstract class BaseDateJsonSerializer<D extends Date> extends JsonSeriali
 
         @Override
         protected void doSerialize( JsonWriter writer, @Nonnull Timestamp value, JsonSerializationContext ctx,
-                                    JsonSerializerParameters params ) throws IOException {
+                                    JsonSerializerParameters params ) {
             if ( params.getShape().isNumeric() || ctx.isWriteDatesAsTimestamps() ) {
                 writer.value( value.getTime() );
             } else {

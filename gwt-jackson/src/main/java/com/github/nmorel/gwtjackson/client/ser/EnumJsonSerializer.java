@@ -17,7 +17,6 @@
 package com.github.nmorel.gwtjackson.client.ser;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
@@ -44,8 +43,7 @@ public class EnumJsonSerializer<E extends Enum<E>> extends JsonSerializer<E> {
     private EnumJsonSerializer() { }
 
     @Override
-    public void doSerialize( JsonWriter writer, @Nonnull E value, JsonSerializationContext ctx, JsonSerializerParameters params ) throws
-            IOException {
+    public void doSerialize( JsonWriter writer, @Nonnull E value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         writer.value( value.name() );
     }
 }

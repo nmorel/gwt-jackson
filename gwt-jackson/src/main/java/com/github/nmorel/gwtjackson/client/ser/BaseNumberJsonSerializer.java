@@ -17,7 +17,6 @@
 package com.github.nmorel.gwtjackson.client.ser;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -101,8 +100,7 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         private DoubleJsonSerializer() { }
 
         @Override
-        public void doSerialize( JsonWriter writer, @Nonnull Double value, JsonSerializationContext ctx,
-                                 JsonSerializerParameters params ) throws IOException {
+        public void doSerialize( JsonWriter writer, @Nonnull Double value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
             // writer has a special method to write double, let's use instead of default Number method.
             writer.value( value.doubleValue() );
         }
@@ -159,8 +157,7 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         private LongJsonSerializer() { }
 
         @Override
-        public void doSerialize( JsonWriter writer, @Nonnull Long value, JsonSerializationContext ctx,
-                                 JsonSerializerParameters params ) throws IOException {
+        public void doSerialize( JsonWriter writer, @Nonnull Long value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
             // writer has a special method to write long, let's use instead of default Number method.
             writer.value( value.longValue() );
         }
@@ -184,8 +181,7 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
     }
 
     @Override
-    public void doSerialize( JsonWriter writer, @Nonnull N value, JsonSerializationContext ctx, JsonSerializerParameters params ) throws
-            IOException {
+    public void doSerialize( JsonWriter writer, @Nonnull N value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         writer.value( value );
     }
 }

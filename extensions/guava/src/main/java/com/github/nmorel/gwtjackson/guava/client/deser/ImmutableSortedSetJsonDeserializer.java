@@ -16,8 +16,6 @@
 
 package com.github.nmorel.gwtjackson.guava.client.deser;
 
-import java.io.IOException;
-
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
@@ -54,8 +52,7 @@ public final class ImmutableSortedSetJsonDeserializer<T extends Comparable<T>> e
     }
 
     @Override
-    protected ImmutableSortedSet<T> doDeserialize( JsonReader reader, JsonDeserializationContext ctx,
-                                                   JsonDeserializerParameters params ) throws IOException {
+    protected ImmutableSortedSet<T> doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         try {
             currentBuilder = ImmutableSortedSet.naturalOrder();
             buildCollection( reader, ctx, params );

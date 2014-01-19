@@ -16,8 +16,6 @@
 
 package com.github.nmorel.gwtjackson.guava.client.deser;
 
-import java.io.IOException;
-
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
@@ -60,7 +58,7 @@ public final class ImmutableSetMultimapJsonDeserializer<K, V> extends BaseImmuta
 
     @Override
     protected ImmutableSetMultimap<K, V> doDeserialize( JsonReader reader, JsonDeserializationContext ctx,
-                                                        JsonDeserializerParameters params ) throws IOException {
+                                                        JsonDeserializerParameters params ) {
         ImmutableSetMultimap.Builder<K, V> builder = ImmutableSetMultimap.builder();
         buildMultimap( reader, ctx, params, builder );
         return builder.build();

@@ -17,7 +17,6 @@
 package com.github.nmorel.gwtjackson.client.ser.map;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
@@ -72,8 +71,7 @@ public class MapJsonSerializer<M extends Map<K, V>, K, V> extends JsonSerializer
     }
 
     @Override
-    public void doSerialize( JsonWriter writer, @Nonnull M values, JsonSerializationContext ctx, JsonSerializerParameters params ) throws
-            IOException {
+    public void doSerialize( JsonWriter writer, @Nonnull M values, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         writer.beginObject();
 
         if ( !values.isEmpty() ) {

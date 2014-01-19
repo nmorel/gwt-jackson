@@ -39,17 +39,10 @@ public abstract class KeySerializer<T> {
      * @throws JsonSerializationException if an error occurs during the serialization
      */
     public String serialize( T value, JsonSerializationContext ctx ) throws JsonSerializationException {
-        try {
-            if ( null == value ) {
-                return null;
-            }
-            return doSerialize( value, ctx );
-        } catch ( JsonSerializationException e ) {
-            // already logged, we just throw it
-            throw e;
-        } catch ( Exception e ) {
-            throw ctx.traceError( value, e );
+        if ( null == value ) {
+            return null;
         }
+        return doSerialize( value, ctx );
     }
 
     /**

@@ -17,7 +17,6 @@
 package com.github.nmorel.gwtjackson.guava.client.ser;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Map.Entry;
 
@@ -71,8 +70,7 @@ public class MultimapJsonSerializer<M extends Multimap<K, V>, K, V> extends Json
     }
 
     @Override
-    public void doSerialize( JsonWriter writer, @Nonnull M multimap, JsonSerializationContext ctx,
-                             JsonSerializerParameters params ) throws IOException {
+    public void doSerialize( JsonWriter writer, @Nonnull M multimap, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         writer.beginObject();
 
         if ( !multimap.isEmpty() ) {

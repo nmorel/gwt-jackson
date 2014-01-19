@@ -16,8 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.stream.impl;
 
-import java.io.IOException;
-
 /**
  * @author Nicolas Morel
  */
@@ -50,12 +48,11 @@ public class StringReader {
      * @param len Maximum number of characters to read
      *
      * @return The number of characters read, or -1 if the end of the
-     *         stream has been reached
-     * @throws IOException If an I/O error occurs
+     * stream has been reached
      */
-    public int read( char cbuf[], int off, int len ) throws IOException {
+    public int read( char cbuf[], int off, int len ) {
         if ( (off < 0) || (off > cbuf.length) || (len < 0) ||
-            ((off + len) > cbuf.length) || ((off + len) < 0) ) {
+                ((off + len) > cbuf.length) || ((off + len) < 0) ) {
             throw new IndexOutOfBoundsException();
         } else if ( len == 0 ) {
             return 0;

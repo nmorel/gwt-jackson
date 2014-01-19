@@ -17,7 +17,6 @@
 package com.github.nmorel.gwtjackson.rebind;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -193,9 +192,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         }
 
         source.println( "@Override" );
-        source.println( "public %s<%s> newInstance( %s reader, %s ctx ) throws %s {", INSTANCE_CLASS, beanInfo.getType()
-                .getParameterizedQualifiedSourceName(), JsonReader.class
-                .getCanonicalName(), JSON_DESERIALIZATION_CONTEXT_CLASS, IOException.class.getName() );
+        source.println( "public %s<%s> newInstance( %s reader, %s ctx ) {", INSTANCE_CLASS, beanInfo.getType()
+                .getParameterizedQualifiedSourceName(), JsonReader.class.getCanonicalName(), JSON_DESERIALIZATION_CONTEXT_CLASS );
         source.indent();
 
         if ( beanInfo.isCreatorDefaultConstructor() ) {

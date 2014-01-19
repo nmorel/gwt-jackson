@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.deser.collection;
 
-import java.io.IOException;
 import java.util.Collection;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
@@ -43,7 +42,7 @@ public abstract class BaseCollectionJsonDeserializer<C extends Collection<T>, T>
     }
 
     @Override
-    public C doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws IOException {
+    public C doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         if ( JsonToken.BEGIN_ARRAY == reader.peek() ) {
 
             C result = newCollection();

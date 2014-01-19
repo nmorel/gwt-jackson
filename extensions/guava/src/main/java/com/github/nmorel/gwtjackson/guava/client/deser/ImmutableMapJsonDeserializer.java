@@ -16,8 +16,6 @@
 
 package com.github.nmorel.gwtjackson.guava.client.deser;
 
-import java.io.IOException;
-
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
@@ -59,8 +57,7 @@ public final class ImmutableMapJsonDeserializer<K, V> extends BaseImmutableMapJs
     }
 
     @Override
-    protected ImmutableMap<K, V> doDeserialize( JsonReader reader, JsonDeserializationContext ctx,
-                                                JsonDeserializerParameters params ) throws IOException {
+    protected ImmutableMap<K, V> doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         ImmutableMap.Builder<K, V> builder = ImmutableMap.builder();
         buildMap( reader, ctx, params, builder );
         return builder.build();

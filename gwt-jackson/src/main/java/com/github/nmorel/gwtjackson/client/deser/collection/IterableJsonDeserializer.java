@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.deser.collection;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -53,8 +52,7 @@ public class IterableJsonDeserializer<T> extends BaseIterableJsonDeserializer<It
     }
 
     @Override
-    public Iterable<T> doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-            IOException {
+    public Iterable<T> doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         if ( JsonToken.BEGIN_ARRAY == reader.peek() ) {
 
             Collection<T> result = new ArrayList<T>();

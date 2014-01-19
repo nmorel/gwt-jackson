@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.deser.array;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +33,7 @@ import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 public abstract class AbstractArrayJsonDeserializer<T> extends JsonDeserializer<T> {
 
     @Override
-    public T doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws IOException {
+    public T doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         if ( JsonToken.BEGIN_ARRAY == reader.peek() ) {
             return doDeserializeArray( reader, ctx, params );
         } else {
@@ -42,11 +41,9 @@ public abstract class AbstractArrayJsonDeserializer<T> extends JsonDeserializer<
         }
     }
 
-    protected abstract T doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx,
-                                             JsonDeserializerParameters params ) throws IOException;
+    protected abstract T doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params );
 
-    protected T doDeserializeNonArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-            IOException {
+    protected T doDeserializeNonArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         if ( ctx.isAcceptSingleValueAsArray() ) {
             return doDeserializeSingleArray( reader, ctx, params );
         } else {
@@ -54,8 +51,7 @@ public abstract class AbstractArrayJsonDeserializer<T> extends JsonDeserializer<
         }
     }
 
-    protected abstract T doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx,
-                                                   JsonDeserializerParameters params ) throws IOException;
+    protected abstract T doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params );
 
     /**
      * Deserializes the array into a {@link List}. We need the length of the array before creating it.
@@ -67,10 +63,9 @@ public abstract class AbstractArrayJsonDeserializer<T> extends JsonDeserializer<
      * @param <C> type of the element inside the array
      *
      * @return a list containing all the elements of the array
-     * @throws IOException if an error occurs while reading the array
      */
     protected <C> List<C> deserializeIntoList( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializer<C> deserializer,
-                                               JsonDeserializerParameters params ) throws IOException {
+                                               JsonDeserializerParameters params ) {
         List<C> list = new ArrayList<C>();
         reader.beginArray();
         while ( JsonToken.END_ARRAY != reader.peek() ) {

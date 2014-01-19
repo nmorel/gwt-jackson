@@ -16,8 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.deser;
 
-import java.io.IOException;
-
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
@@ -42,7 +40,7 @@ public class VoidJsonDeserializer extends JsonDeserializer<Void> {
     private VoidJsonDeserializer() { }
 
     @Override
-    public Void doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws IOException {
+    public Void doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         // we should never be here, the null value is already handled and it's the only possible value for Void
         reader.skipValue();
         return null;

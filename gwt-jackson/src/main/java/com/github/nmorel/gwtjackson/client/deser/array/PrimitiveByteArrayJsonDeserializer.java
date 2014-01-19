@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.deser.array;
 
-import java.io.IOException;
 import java.util.List;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
@@ -46,8 +45,7 @@ public class PrimitiveByteArrayJsonDeserializer extends AbstractArrayJsonDeseria
     private PrimitiveByteArrayJsonDeserializer() { }
 
     @Override
-    public byte[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-            IOException {
+    public byte[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         List<Byte> list = deserializeIntoList( reader, ctx, ByteJsonDeserializer.getInstance(), params );
 
         byte[] result = new byte[list.size()];
@@ -62,8 +60,7 @@ public class PrimitiveByteArrayJsonDeserializer extends AbstractArrayJsonDeseria
     }
 
     @Override
-    protected byte[] doDeserializeNonArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-            IOException {
+    protected byte[] doDeserializeNonArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         if ( JsonToken.STRING == reader.peek() ) {
             return Base64.decode( reader.nextString() ).getBytes();
         } else if ( ctx.isAcceptSingleValueAsArray() ) {
@@ -74,8 +71,7 @@ public class PrimitiveByteArrayJsonDeserializer extends AbstractArrayJsonDeseria
     }
 
     @Override
-    protected byte[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx,
-                                               JsonDeserializerParameters params ) throws IOException {
+    protected byte[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         return new byte[]{ByteJsonDeserializer.getInstance().deserialize( reader, ctx, params )};
     }
 }

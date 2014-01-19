@@ -17,15 +17,13 @@
 
 package com.github.nmorel.gwtjackson.client.stream.impl;
 
-import java.io.IOException;
-
-import com.github.nmorel.gwtjackson.client.stream.*;
+import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException;
 
 /**
  * Thrown when a reader encounters malformed JSON. Some syntax errors can be
  * ignored by calling {@link com.github.nmorel.gwtjackson.client.stream.JsonReader#setLenient(boolean)}.
  */
-public final class MalformedJsonException extends IOException
+public final class MalformedJsonException extends JsonDeserializationException
 {
   private static final long serialVersionUID = 1L;
 
@@ -33,19 +31,6 @@ public final class MalformedJsonException extends IOException
 
   public MalformedJsonException(String msg) {
     super(msg);
-  }
-
-  public MalformedJsonException(String msg, Throwable throwable) {
-    super(msg);
-    // Using initCause() instead of calling super() because Java 1.5 didn't retrofit IOException
-    // with a constructor with Throwable. This was done in Java 1.6
-    initCause(throwable);
-  }
-
-  public MalformedJsonException(Throwable throwable) {
-    // Using initCause() instead of calling super() because Java 1.5 didn't retrofit IOException
-    // with a constructor with Throwable. This was done in Java 1.6
-    initCause(throwable);
   }
 
 }

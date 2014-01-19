@@ -36,17 +36,10 @@ public abstract class KeyDeserializer<T> {
      * @throws JsonDeserializationException if an error occurs during the deserialization
      */
     public T deserialize( String key, JsonDeserializationContext ctx ) throws JsonDeserializationException {
-        try {
-            if ( null == key ) {
-                return null;
-            }
-            return doDeserialize( key, ctx );
-        } catch ( JsonDeserializationException e ) {
-            // already logged, we just throw it
-            throw e;
-        } catch ( Exception e ) {
-            throw ctx.traceError( e );
+        if ( null == key ) {
+            return null;
         }
+        return doDeserialize( key, ctx );
     }
 
     /**

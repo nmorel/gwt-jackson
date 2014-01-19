@@ -16,8 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.deser.array.cast;
 
-import java.io.IOException;
-
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
@@ -51,8 +49,7 @@ public class StringArrayJsonDeserializer extends AbstractArrayJsonDeserializer<S
     private StringArrayJsonDeserializer() { }
 
     @Override
-    public String[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-            IOException {
+    public String[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         JsArrayString jsArray = JsArrayString.createArray().cast();
         reader.beginArray();
         while ( JsonToken.END_ARRAY != reader.peek() ) {
@@ -78,8 +75,7 @@ public class StringArrayJsonDeserializer extends AbstractArrayJsonDeserializer<S
     }
 
     @Override
-    protected String[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx,
-                                                 JsonDeserializerParameters params ) throws IOException {
+    protected String[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         return new String[]{reader.nextString()};
     }
 }

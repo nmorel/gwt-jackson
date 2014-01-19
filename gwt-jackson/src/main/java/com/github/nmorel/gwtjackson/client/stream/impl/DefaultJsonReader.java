@@ -17,8 +17,10 @@
 
 package com.github.nmorel.gwtjackson.client.stream.impl;
 
-import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 import com.google.gwt.core.client.JsArrayInteger;
 
@@ -83,7 +85,7 @@ import com.google.gwt.core.client.JsArrayInteger;
  * ]}</pre>
  * This code implements the parser for the above structure: <pre>   {@code
  *
- *   public List<Message> readJsonStream(InputStream in) throws IOException {
+ *   public List<Message> readJsonStream(InputStream in) {
  *     JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
  *     try {
  *       return readMessagesArray(reader);
@@ -92,7 +94,7 @@ import com.google.gwt.core.client.JsArrayInteger;
  *     }
  *   }
  *
- *   public List<Message> readMessagesArray(JsonReader reader) throws IOException {
+ *   public List<Message> readMessagesArray(JsonReader reader) {
  *     List<Message> messages = new ArrayList<Message>();
  *
  *     reader.beginArray();
@@ -103,7 +105,7 @@ import com.google.gwt.core.client.JsArrayInteger;
  *     return messages;
  *   }
  *
- *   public Message readMessage(JsonReader reader) throws IOException {
+ *   public Message readMessage(JsonReader reader) {
  *     long id = -1;
  *     String text = null;
  *     User user = null;
@@ -128,7 +130,7 @@ import com.google.gwt.core.client.JsArrayInteger;
  *     return new Message(id, text, user, geo);
  *   }
  *
- *   public List<Double> readDoublesArray(JsonReader reader) throws IOException {
+ *   public List<Double> readDoublesArray(JsonReader reader) {
  *     List<Double> doubles = new ArrayList<Double>();
  *
  *     reader.beginArray();
@@ -139,7 +141,7 @@ import com.google.gwt.core.client.JsArrayInteger;
  *     return doubles;
  *   }
  *
- *   public User readUser(JsonReader reader) throws IOException {
+ *   public User readUser(JsonReader reader) {
  *     String username = null;
  *     int followersCount = -1;
  *
@@ -188,6 +190,8 @@ import com.google.gwt.core.client.JsArrayInteger;
  */
 public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.stream.JsonReader
 {
+  private static final Logger logger = Logger.getLogger( "JsonReader" );
+
   /** The only non-execute prefix this parser permits */
   private static final char[] NON_EXECUTE_PREFIX = ")]}'\n".toCharArray();
   private static final long MIN_INCOMPLETE_INTEGER = Long.MIN_VALUE / 10;
@@ -295,7 +299,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
-  public void beginArray() throws IOException
+  public void beginArray()
   {
     int p = peeked;
     if (p == PEEKED_NONE) {
@@ -311,7 +315,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
-  public void endArray() throws IOException
+  public void endArray()
   {
     int p = peeked;
     if (p == PEEKED_NONE) {
@@ -327,7 +331,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
-  public void beginObject() throws IOException
+  public void beginObject()
   {
     int p = peeked;
     if (p == PEEKED_NONE) {
@@ -343,7 +347,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
-  public void endObject() throws IOException
+  public void endObject()
   {
     int p = peeked;
     if (p == PEEKED_NONE) {
@@ -359,7 +363,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
-  public boolean hasNext() throws IOException
+  public boolean hasNext()
   {
     int p = peeked;
     if (p == PEEKED_NONE) {
@@ -369,7 +373,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
-  public JsonToken peek() throws IOException
+  public JsonToken peek()
   {
     int p = peeked;
     if (p == PEEKED_NONE) {
@@ -409,7 +413,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     }
   }
 
-  private int doPeek() throws IOException
+  private int doPeek()
   {
     int peekStack = stack.get(stackSize - 1);
     if (peekStack == JsonScope.EMPTY_ARRAY) {
@@ -553,7 +557,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     return peeked = PEEKED_UNQUOTED;
   }
 
-  private int peekKeyword() throws IOException
+  private int peekKeyword()
   {
     // Figure out which keyword we're matching against by its first character.
     char c = buffer[pos];
@@ -598,7 +602,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     return peeked = peeking;
   }
 
-  private int peekNumber() throws IOException
+  private int peekNumber()
   {
     // Like nextNonWhitespace, this uses locals 'p' and 'l' to save inner-loop field access.
     char[] buffer = this.buffer;
@@ -702,7 +706,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     }
   }
 
-  private boolean isLiteral(char c) throws IOException
+  private boolean isLiteral(char c)
   {
     switch (c) {
     case '/':
@@ -729,7 +733,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
-  public String nextName() throws IOException
+  public String nextName()
   {
     int p = peeked;
     if (p == PEEKED_NONE) {
@@ -751,7 +755,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
-  public String nextString() throws IOException
+  public String nextString()
   {
     int p = peeked;
     if (p == PEEKED_NONE) {
@@ -781,7 +785,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
-  public boolean nextBoolean() throws IOException
+  public boolean nextBoolean()
   {
     int p = peeked;
     if (p == PEEKED_NONE) {
@@ -799,7 +803,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
-  public void nextNull() throws IOException
+  public void nextNull()
   {
     int p = peeked;
     if (p == PEEKED_NONE) {
@@ -814,7 +818,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
-  public double nextDouble() throws IOException
+  public double nextDouble()
   {
     int p = peeked;
     if (p == PEEKED_NONE) {
@@ -841,8 +845,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     peeked = PEEKED_BUFFERED;
     double result = Double.parseDouble( peekedString ); // don't catch this NumberFormatException.
     if (!lenient && (Double.isNaN( result ) || Double.isInfinite( result ))) {
-      throw new MalformedJsonException("JSON forbids NaN and infinities: " + result
-          + " at line " + getLineNumber() + " column " + getColumnNumber());
+      throw syntaxError( "JSON forbids NaN and infinities: " + result);
     }
     peekedString = null;
     peeked = PEEKED_NONE;
@@ -850,7 +853,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
-  public long nextLong() throws IOException
+  public long nextLong()
   {
     int p = peeked;
     if (p == PEEKED_NONE) {
@@ -901,7 +904,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
    * @throws NumberFormatException if any unicode escape sequences are
    *     malformed.
    */
-  private String nextQuotedValue(char quote) throws IOException
+  private String nextQuotedValue(char quote)
   {
     // Like nextNonWhitespace, this uses locals 'p' and 'l' to save inner-loop field access.
     char[] buffer = this.buffer;
@@ -943,7 +946,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
    * Returns an unquoted value as a string.
    */
   @SuppressWarnings("fallthrough")
-  private String nextUnquotedValue() throws IOException
+  private String nextUnquotedValue()
   {
     StringBuilder builder = null;
     int i = 0;
@@ -1005,7 +1008,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     return result;
   }
 
-  private void skipQuotedValue(char quote) throws IOException
+  private void skipQuotedValue(char quote)
   {
     // Like nextNonWhitespace, this uses locals 'p' and 'l' to save inner-loop field access.
     char[] buffer = this.buffer;
@@ -1033,7 +1036,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     throw syntaxError("Unterminated string");
   }
 
-  private void skipUnquotedValue() throws IOException
+  private void skipUnquotedValue()
   {
     do {
       int i = 0;
@@ -1065,7 +1068,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
-  public int nextInt() throws IOException
+  public int nextInt()
   {
     int p = peeked;
     if (p == PEEKED_NONE) {
@@ -1113,7 +1116,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
-  public void close() throws IOException
+  public void close()
   {
     peeked = PEEKED_NONE;
     stack.set(0, JsonScope.CLOSED);
@@ -1121,7 +1124,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
-  public void skipValue() throws IOException
+  public void skipValue()
   {
     int count = 0;
     do {
@@ -1164,7 +1167,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
    * exhausted before that many characters are available, this returns
    * false.
    */
-  private boolean fillBuffer(int minimum) throws IOException
+  private boolean fillBuffer(int minimum)
   {
     char[] buffer = this.buffer;
     lineStart -= pos;
@@ -1210,7 +1213,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
    * {@code buffer[pos-1]}; this means the caller can always push back the
    * returned character by decrementing {@code pos}.
    */
-  private int nextNonWhitespace(boolean throwOnEof) throws IOException
+  private int nextNonWhitespace(boolean throwOnEof)
   {
     /*
      * This code uses ugly local variables 'p' and 'l' representing the 'pos'
@@ -1294,14 +1297,15 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
       }
     }
     if (throwOnEof) {
-      throw new IOException("End of input"
-          + " at line " + getLineNumber() + " column " + getColumnNumber());
+      String mess = "End of input at line " + getLineNumber() + " column " + getColumnNumber();
+      logger.log(Level.SEVERE, mess);
+      throw new JsonDeserializationException(mess);
     } else {
       return -1;
     }
   }
 
-  private void checkLenient() throws IOException
+  private void checkLenient()
   {
     if (!lenient) {
       throw syntaxError("Use JsonReader.setLenient(true) to accept malformed JSON");
@@ -1313,7 +1317,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
    * is terminated by "\r\n", the '\n' must be consumed as whitespace by the
    * caller.
    */
-  private void skipToEndOfLine() throws IOException
+  private void skipToEndOfLine()
   {
     while (pos < limit || fillBuffer(1)) {
       char c = buffer[pos++];
@@ -1330,7 +1334,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
   /**
    * @param toFind a string to search for. Must not contain a newline.
    */
-  private boolean skipTo(String toFind) throws IOException
+  private boolean skipTo(String toFind)
   {
     outer:
     for (; pos + toFind.length() <= limit || fillBuffer(toFind.length()); pos++) {
@@ -1363,7 +1367,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
    * @throws NumberFormatException if any unicode escape sequences are
    *     malformed.
    */
-  private char readEscapeCharacter() throws IOException
+  private char readEscapeCharacter()
   {
     if (pos == limit && !fillBuffer(1)) {
       throw syntaxError("Unterminated escape sequence");
@@ -1425,16 +1429,17 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
    * Throws a new IO exception with the given message and a context snippet
    * with this reader's content.
    */
-  private IOException syntaxError(String message) throws IOException
+  private MalformedJsonException syntaxError(String message)
   {
-    throw new MalformedJsonException(message
-        + " at line " + getLineNumber() + " column " + getColumnNumber());
+    String mess = message + " at line " + getLineNumber() + " column " + getColumnNumber();
+    logger.log(Level.SEVERE, mess);
+    throw new MalformedJsonException(mess);
   }
 
   /**
    * Consumes the non-execute prefix if it exists.
    */
-  private void consumeNonExecutePrefix() throws IOException
+  private void consumeNonExecutePrefix()
   {
     // fast forward through the leading whitespace
     nextNonWhitespace(true);
@@ -1460,7 +1465,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
-  public String nextValue() throws IOException
+  public String nextValue()
   {
     StringBuilder builder = new StringBuilder();
     int count = 0;

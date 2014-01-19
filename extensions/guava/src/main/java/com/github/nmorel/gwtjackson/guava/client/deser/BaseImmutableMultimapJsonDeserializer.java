@@ -16,8 +16,6 @@
 
 package com.github.nmorel.gwtjackson.guava.client.deser;
 
-import java.io.IOException;
-
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
@@ -69,11 +67,9 @@ public abstract class BaseImmutableMultimapJsonDeserializer<M extends ImmutableM
      * @param ctx Context for the full deserialization process
      * @param params Parameters for this deserialization
      * @param builder {@link ImmutableMultimap.Builder} used to collect the entries
-     *
-     * @throws IOException
      */
     protected void buildMultimap( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params,
-                                  ImmutableMultimap.Builder<K, V> builder ) throws IOException {
+                                  ImmutableMultimap.Builder<K, V> builder ) {
         reader.beginObject();
         while ( JsonToken.END_OBJECT != reader.peek() ) {
             String name = reader.nextName();

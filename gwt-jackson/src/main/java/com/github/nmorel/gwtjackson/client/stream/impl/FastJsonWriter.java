@@ -17,8 +17,10 @@
 
 package com.github.nmorel.gwtjackson.client.stream.impl;
 
-import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import com.github.nmorel.gwtjackson.client.exception.JsonSerializationException;
 import com.google.gwt.core.client.JsArrayInteger;
 import com.google.gwt.core.client.JsonUtils;
 
@@ -26,6 +28,8 @@ import com.google.gwt.core.client.JsonUtils;
  * Same as {@link DefaultJsonWriter} but uses {@link JsonUtils#escapeValue(String)} instead of the REPLACEMENT_CHARS array.
  */
 public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.stream.JsonWriter {
+
+  private static final Logger logger = Logger.getLogger( "JsonWriter" );
 
   /** The output data, containing at most one top-level array or object. */
   private final StringBuilder out;
@@ -101,24 +105,24 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
   }
 
   @Override
-  public FastJsonWriter beginArray() throws IOException {
+  public FastJsonWriter beginArray() {
     writeDeferredName();
     return open( JsonScope.EMPTY_ARRAY, "[");
   }
 
   @Override
-  public FastJsonWriter endArray() throws IOException {
+  public FastJsonWriter endArray() {
     return close( JsonScope.EMPTY_ARRAY, JsonScope.NONEMPTY_ARRAY, "]");
   }
 
   @Override
-  public FastJsonWriter beginObject() throws IOException {
+  public FastJsonWriter beginObject() {
     writeDeferredName();
     return open( JsonScope.EMPTY_OBJECT, "{");
   }
 
   @Override
-  public FastJsonWriter endObject() throws IOException {
+  public FastJsonWriter endObject() {
     return close( JsonScope.EMPTY_OBJECT, JsonScope.NONEMPTY_OBJECT, "}");
   }
 
@@ -126,7 +130,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
    * Enters a new scope by appending any necessary whitespace and the given
    * bracket.
    */
-  private FastJsonWriter open(int empty, String openBracket) throws IOException {
+  private FastJsonWriter open(int empty, String openBracket) {
     beforeValue(true);
     push(empty);
     out.append(openBracket);
@@ -138,7 +142,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
    * given bracket.
    */
   private FastJsonWriter close(int empty, int nonempty, String closeBracket)
-      throws IOException {
+      {
     int context = peek();
     if (context != nonempty && context != empty) {
       throw new IllegalStateException("Nesting problem.");
@@ -177,7 +181,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
   }
 
   @Override
-  public FastJsonWriter name( String name ) throws IOException {
+  public FastJsonWriter name( String name ) {
     if (name == null) {
       throw new NullPointerException("name == null");
     }
@@ -191,7 +195,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
     return this;
   }
 
-  private void writeDeferredName() throws IOException {
+  private void writeDeferredName() {
     if (deferredName != null) {
       beforeName();
       string(deferredName);
@@ -200,7 +204,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
   }
 
   @Override
-  public FastJsonWriter value( String value ) throws IOException {
+  public FastJsonWriter value( String value ) {
     if (value == null) {
       return nullValue();
     }
@@ -211,7 +215,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
   }
 
   @Override
-  public FastJsonWriter nullValue() throws IOException {
+  public FastJsonWriter nullValue() {
     if (deferredName != null) {
       if (serializeNulls) {
         writeDeferredName();
@@ -234,7 +238,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
   }
 
   @Override
-  public FastJsonWriter value( boolean value ) throws IOException {
+  public FastJsonWriter value( boolean value ) {
     writeDeferredName();
     beforeValue(false);
     out.append(value ? "true" : "false");
@@ -242,7 +246,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
   }
 
   @Override
-  public FastJsonWriter value( double value ) throws IOException {
+  public FastJsonWriter value( double value ) {
     if (Double.isNaN(value) || Double.isInfinite(value)) {
       throw new IllegalArgumentException("Numeric values must be finite, but was " + value);
     }
@@ -253,7 +257,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
   }
 
   @Override
-  public FastJsonWriter value( long value ) throws IOException {
+  public FastJsonWriter value( long value ) {
     writeDeferredName();
     beforeValue(false);
     out.append(Long.toString(value));
@@ -261,7 +265,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
   }
 
   @Override
-  public FastJsonWriter value( Number value ) throws IOException {
+  public FastJsonWriter value( Number value ) {
     if (value == null) {
       return nullValue();
     }
@@ -278,7 +282,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
   }
 
   @Override
-  public FastJsonWriter rawValue( Object value ) throws IOException {
+  public FastJsonWriter rawValue( Object value ) {
     if (value == null) {
       return nullValue();
     }
@@ -289,26 +293,27 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
   }
 
   @Override
-  public void flush() throws IOException {
+  public void flush() {
     if (stackSize == 0) {
       throw new IllegalStateException("JsonWriter is closed.");
     }
   }
 
   @Override
-  public void close() throws IOException {
+  public void close() {
     int size = stackSize;
     if (size > 1 || size == 1 && stack.get(size - 1) != JsonScope.NONEMPTY_DOCUMENT) {
-      throw new IOException("Incomplete document");
+      logger.log(Level.SEVERE, "Incomplete document");
+      throw new JsonSerializationException("Incomplete document");
     }
     stackSize = 0;
   }
 
-  private void string(String value) throws IOException {
+  private void string(String value) {
     out.append(JsonUtils.escapeValue(value));
   }
 
-  private void newline() throws IOException {
+  private void newline() {
     if (indent == null) {
       return;
     }
@@ -323,7 +328,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
    * Inserts any necessary separators and whitespace before a name. Also
    * adjusts the stack to expect the name's value.
    */
-  private void beforeName() throws IOException {
+  private void beforeName() {
     int context = peek();
     if (context == JsonScope.NONEMPTY_OBJECT) { // first in object
       out.append(',');
@@ -343,7 +348,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
    *     permitted as top-level elements.
    */
   @SuppressWarnings("fallthrough")
-  private void beforeValue(boolean root) throws IOException {
+  private void beforeValue(boolean root) {
     switch (peek()) {
     case JsonScope.NONEMPTY_DOCUMENT:
       if (!lenient) {

@@ -17,7 +17,6 @@
 package com.github.nmorel.gwtjackson.client.mapper;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 
 import com.github.nmorel.gwtjackson.client.AbstractObjectReader;
 import com.github.nmorel.gwtjackson.client.AbstractObjectWriter;
@@ -47,7 +46,7 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
                 return new JsonDeserializer<String[]>() {
                     @Override
                     protected String[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx,
-                                                      JsonDeserializerParameters params ) throws IOException {
+                                                      JsonDeserializerParameters params ) {
                         throw new UnsupportedOperationException();
                     }
                 };
@@ -61,27 +60,6 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
         }
     }
 
-    public void testDeserializeIOException() {
-        ObjectReader<String[]> reader = new AbstractObjectReader<String[]>( null ) {
-            @Override
-            protected JsonDeserializer<String[]> newDeserializer() {
-                return new JsonDeserializer<String[]>() {
-                    @Override
-                    protected String[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx,
-                                                      JsonDeserializerParameters params ) throws IOException {
-                        throw new IOException();
-                    }
-                };
-            }
-        };
-        try {
-            reader.read( "[\"fail\"]" );
-            fail();
-        } catch ( JsonDeserializationException e ) {
-            assertTrue( e.getCause() instanceof IOException );
-        }
-    }
-
     public void testDeserializeDecodingException() {
         final JsonDeserializationException jsonDeserializationException = new JsonDeserializationException();
         ObjectReader<String[]> reader = new AbstractObjectReader<String[]>( null ) {
@@ -90,7 +68,7 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
                 return new JsonDeserializer<String[]>() {
                     @Override
                     protected String[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx,
-                                                      JsonDeserializerParameters params ) throws IOException {
+                                                      JsonDeserializerParameters params ) {
                         throw jsonDeserializationException;
                     }
                 };
@@ -111,7 +89,7 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
                 return new JsonSerializer<String>() {
                     @Override
                     protected void doSerialize( JsonWriter writer, @Nonnull String value, JsonSerializationContext ctx,
-                                                JsonSerializerParameters params ) throws IOException {
+                                                JsonSerializerParameters params ) {
                         throw new NullPointerException();
                     }
                 };
@@ -125,27 +103,6 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
         }
     }
 
-    public void testSerializeIOException() {
-        ObjectWriter<String> writer = new AbstractObjectWriter<String>( null ) {
-            @Override
-            protected JsonSerializer<String> newSerializer() {
-                return new JsonSerializer<String>() {
-                    @Override
-                    protected void doSerialize( JsonWriter writer, @Nonnull String value, JsonSerializationContext ctx,
-                                                JsonSerializerParameters params ) throws IOException {
-                        throw new IOException();
-                    }
-                };
-            }
-        };
-        try {
-            writer.write( "fail" );
-            fail();
-        } catch ( JsonSerializationException e ) {
-            assertTrue( e.getCause() instanceof IOException );
-        }
-    }
-
     public void testSerializeEncodingException() {
         final JsonSerializationException jsonSerializationException = new JsonSerializationException();
         ObjectWriter<String> writer = new AbstractObjectWriter<String>( null ) {
@@ -154,7 +111,7 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
                 return new JsonSerializer<String>() {
                     @Override
                     protected void doSerialize( JsonWriter writer, @Nonnull String value, JsonSerializationContext ctx,
-                                                JsonSerializerParameters params ) throws IOException {
+                                                JsonSerializerParameters params ) {
                         throw jsonSerializationException;
                     }
                 };

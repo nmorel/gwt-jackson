@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.options;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -68,7 +67,7 @@ public class SingleArrayOptionGwtTest extends GwtJacksonTestCase {
 
     static class StringListBean {
 
-        @SuppressWarnings("unused")
+        @SuppressWarnings( "unused" )
         public Collection<String> values;
 
         public StringListBean( Collection<String> v ) { values = v; }
@@ -84,7 +83,7 @@ public class SingleArrayOptionGwtTest extends GwtJacksonTestCase {
         return new JsonSerializationContext.Builder().writeSingleElemArraysUnwrapped( true ).build();
     }
 
-    public void testSerialize() throws IOException {
+    public void testSerialize() {
         JsonSerializationContext context = createSerializationContext();
 
         // Lists:

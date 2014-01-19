@@ -17,7 +17,6 @@
 package com.github.nmorel.gwtjackson.guava.client.ser;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
@@ -58,7 +57,7 @@ public final class OptionalJsonSerializer<T> extends JsonSerializer<Optional<T>>
 
     @Override
     protected void doSerialize( JsonWriter writer, @Nonnull Optional<T> value, JsonSerializationContext ctx,
-                                JsonSerializerParameters params ) throws IOException {
+                                JsonSerializerParameters params ) {
         if ( value.isPresent() ) {
             serializer.serialize( writer, value.get(), ctx, params );
         } else if ( writer.getSerializeNulls() ) {

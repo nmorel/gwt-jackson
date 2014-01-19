@@ -16,8 +16,6 @@
 
 package com.github.nmorel.gwtjackson.guava.client.deser;
 
-import java.io.IOException;
-
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
@@ -51,11 +49,8 @@ public abstract class BaseImmutableCollectionJsonDeserializer<C extends Immutabl
      * @param reader {@link JsonReader} used to read the JSON input
      * @param ctx Context for the full deserialization process
      * @param params Parameters for this deserialization
-     *
-     * @throws IOException
      */
-    protected void buildCollection( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-            IOException {
+    protected void buildCollection( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         if ( JsonToken.BEGIN_ARRAY == reader.peek() ) {
 
             reader.beginArray();

@@ -16,8 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client;
 
-import java.io.IOException;
-
 import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
@@ -54,19 +52,10 @@ public abstract class JsonDeserializer<T> {
      */
     public T deserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
             JsonDeserializationException {
-        try {
-            if ( JsonToken.NULL.equals( reader.peek() ) ) {
-                return deserializeNullValue( reader, ctx, params );
-            }
-            return doDeserialize( reader, ctx, params );
-        } catch ( IOException e ) {
-            throw ctx.traceError( e, reader );
-        } catch ( JsonDeserializationException e ) {
-            // already logged, we just throw it
-            throw e;
-        } catch ( Exception e ) {
-            throw ctx.traceError( e, reader );
+        if ( JsonToken.NULL.equals( reader.peek() ) ) {
+            return deserializeNullValue( reader, ctx, params );
         }
+        return doDeserialize( reader, ctx, params );
     }
 
     /**
@@ -77,10 +66,8 @@ public abstract class JsonDeserializer<T> {
      * @param params Parameters for this deserialization
      *
      * @return the deserialized object
-     * @throws IOException if an error occurs reading the input
      */
-    protected T deserializeNullValue( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-            IOException {
+    protected T deserializeNullValue( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         reader.skipValue();
         return null;
     }
@@ -93,10 +80,8 @@ public abstract class JsonDeserializer<T> {
      * @param params Parameters for this deserialization
      *
      * @return the deserialized object
-     * @throws IOException if an error occurs reading the input
      */
-    protected abstract T doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-            IOException;
+    protected abstract T doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params );
 
     /**
      * Set the back reference.

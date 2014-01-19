@@ -17,7 +17,6 @@
 package com.github.nmorel.gwtjackson.client.ser;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
@@ -43,8 +42,7 @@ public class VoidJsonSerializer extends JsonSerializer<Void> {
     private VoidJsonSerializer() { }
 
     @Override
-    public void doSerialize( JsonWriter writer, @Nonnull Void value, JsonSerializationContext ctx,
-                             JsonSerializerParameters params ) throws IOException {
+    public void doSerialize( JsonWriter writer, @Nonnull Void value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         // we should never be here, the null value is already handled and it's the only possible value for Void
         writer.nullValue();
     }

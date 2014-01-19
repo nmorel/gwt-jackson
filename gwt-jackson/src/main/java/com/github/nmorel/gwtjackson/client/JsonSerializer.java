@@ -17,7 +17,6 @@
 package com.github.nmorel.gwtjackson.client;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 
 import com.github.nmorel.gwtjackson.client.exception.JsonSerializationException;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
@@ -54,20 +53,11 @@ public abstract class JsonSerializer<T> {
      */
     public void serialize( JsonWriter writer, T value, JsonSerializationContext ctx, JsonSerializerParameters params ) throws
             JsonSerializationException {
-        try {
-            if ( null == value ) {
-                serializeNullValue( writer, ctx, params );
-                return;
-            }
-            doSerialize( writer, value, ctx, params );
-        } catch ( IOException e ) {
-            throw ctx.traceError( value, e, writer );
-        } catch ( JsonSerializationException e ) {
-            // already logged, we just throw it
-            throw e;
-        } catch ( Exception e ) {
-            throw ctx.traceError( value, e, writer );
+        if ( null == value ) {
+            serializeNullValue( writer, ctx, params );
+            return;
         }
+        doSerialize( writer, value, ctx, params );
     }
 
     /**
@@ -76,11 +66,8 @@ public abstract class JsonSerializer<T> {
      * @param writer {@link JsonWriter} used to write the serialized JSON
      * @param ctx Context for the full serialization process
      * @param params Parameters for this serialization
-     *
-     * @throws IOException if an error occurs while writing the output
      */
-    protected void serializeNullValue( JsonWriter writer, JsonSerializationContext ctx, JsonSerializerParameters params ) throws
-            IOException {
+    protected void serializeNullValue( JsonWriter writer, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         writer.nullValue();
     }
 
@@ -91,9 +78,7 @@ public abstract class JsonSerializer<T> {
      * @param value Object to serialize
      * @param ctx Context for the full serialization process
      * @param params Parameters for this serialization
-     *
-     * @throws IOException if an error occurs while writing the output
      */
     protected abstract void doSerialize( JsonWriter writer, @Nonnull T value, JsonSerializationContext ctx,
-                                         JsonSerializerParameters params ) throws IOException;
+                                         JsonSerializerParameters params );
 }

@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.deser.array;
 
-import java.io.IOException;
 import java.util.List;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
@@ -44,8 +43,7 @@ public class PrimitiveLongArrayJsonDeserializer extends AbstractArrayJsonDeseria
     private PrimitiveLongArrayJsonDeserializer() { }
 
     @Override
-    public long[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-            IOException {
+    public long[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         List<Long> list = deserializeIntoList( reader, ctx, LongJsonDeserializer.getInstance(), params );
 
         long[] result = new long[list.size()];
@@ -60,8 +58,7 @@ public class PrimitiveLongArrayJsonDeserializer extends AbstractArrayJsonDeseria
     }
 
     @Override
-    protected long[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx,
-                                               JsonDeserializerParameters params ) throws IOException {
+    protected long[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         return new long[]{LongJsonDeserializer.getInstance().deserialize( reader, ctx, params )};
     }
 }

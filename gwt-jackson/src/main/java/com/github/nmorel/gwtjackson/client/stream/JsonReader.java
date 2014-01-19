@@ -16,8 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.stream;
 
-import java.io.IOException;
-
 public interface JsonReader
 {
 
@@ -56,44 +54,41 @@ public interface JsonReader
      * Consumes the next token from the JSON stream and asserts that it is the
      * beginning of a new array.
      */
-    void beginArray() throws IOException;
+    void beginArray();
 
     /**
      * Consumes the next token from the JSON stream and asserts that it is the
      * end of the current array.
      */
-    void endArray() throws IOException;
+    void endArray();
 
     /**
      * Consumes the next token from the JSON stream and asserts that it is the
      * beginning of a new object.
      */
-    void beginObject() throws IOException;
+    void beginObject();
 
     /**
      * Consumes the next token from the JSON stream and asserts that it is the
      * end of the current object.
      */
-    void endObject() throws IOException;
+    void endObject();
 
     /**
      * Returns true if the current array or object has another element.
      */
-    boolean hasNext() throws IOException;
+    boolean hasNext();
 
     /**
      * Returns the type of the next token without consuming it.
      */
-    JsonToken peek() throws IOException;
+    JsonToken peek();
 
     /**
      * Returns the next token, a {@link JsonToken#NAME property name}, and
      * consumes it.
-     *
-     * @throws IOException if the next token in the stream is not a property
-     *     name.
      */
-    String nextName() throws IOException;
+    String nextName();
 
     /**
      * Returns the {@link JsonToken#STRING string} value of the next token,
@@ -103,7 +98,7 @@ public interface JsonReader
      * @throws IllegalStateException if the next token is not a string or if
      *     this reader is closed.
      */
-    String nextString() throws IOException;
+    String nextString();
 
     /**
      * Returns the {@link JsonToken#BOOLEAN boolean} value of the next token,
@@ -112,7 +107,7 @@ public interface JsonReader
      * @throws IllegalStateException if the next token is not a boolean or if
      *     this reader is closed.
      */
-    boolean nextBoolean() throws IOException;
+    boolean nextBoolean();
 
     /**
      * Consumes the next token from the JSON stream and asserts that it is a
@@ -121,7 +116,7 @@ public interface JsonReader
      * @throws IllegalStateException if the next token is not null or if this
      *     reader is closed.
      */
-    void nextNull() throws IOException;
+    void nextNull();
 
     /**
      * Returns the {@link JsonToken#NUMBER double} value of the next token,
@@ -132,7 +127,7 @@ public interface JsonReader
      * @throws NumberFormatException if the next literal value cannot be parsed
      *     as a double, or is non-finite.
      */
-    double nextDouble() throws IOException;
+    double nextDouble();
 
     /**
      * Returns the {@link JsonToken#NUMBER long} value of the next token,
@@ -144,7 +139,7 @@ public interface JsonReader
      * @throws NumberFormatException if the next literal value cannot be parsed
      *     as a number, or exactly represented as a long.
      */
-    long nextLong() throws IOException;
+    long nextLong();
 
     /**
      * Returns the {@link JsonToken#NUMBER int} value of the next token,
@@ -156,25 +151,25 @@ public interface JsonReader
      * @throws NumberFormatException if the next literal value cannot be parsed
      *     as a number, or exactly represented as an int.
      */
-    int nextInt() throws IOException;
+    int nextInt();
 
     /**
      * Closes this JSON reader and the underlying {@link java.io.Reader}.
      */
-    void close() throws IOException;
+    void close();
 
     /**
      * Skips the next value recursively. If it is an object or array, all nested
      * elements are skipped. This method is intended for use when the JSON token
      * stream contains unrecognized or unhandled values.
      */
-    void skipValue() throws IOException;
+    void skipValue();
 
     /**
      * Reads the next value recursively and returns it as a String. If it is an object or array, all nested
      * elements are read.
      */
-    String nextValue() throws IOException;
+    String nextValue();
 
     int getLineNumber();
 

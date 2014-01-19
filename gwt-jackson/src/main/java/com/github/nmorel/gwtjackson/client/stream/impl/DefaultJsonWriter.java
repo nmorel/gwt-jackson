@@ -17,8 +17,10 @@
 
 package com.github.nmorel.gwtjackson.client.stream.impl;
 
-import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import com.github.nmorel.gwtjackson.client.exception.JsonSerializationException;
 import com.google.gwt.core.client.JsArrayInteger;
 
 /**
@@ -67,14 +69,14 @@ import com.google.gwt.core.client.JsArrayInteger;
  *   }
  * ]}</pre>
  * This code encodes the above structure: <pre>   {@code
- *   public void writeJsonStream(OutputStream out, List<Message> messages) throws IOException {
+ *   public void writeJsonStream(OutputStream out, List<Message> messages) {
  *     JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, "UTF-8"));
  *     writer.setIndentSpaces(4);
  *     writeMessagesArray(writer, messages);
  *     writer.close();
  *   }
  *
- *   public void writeMessagesArray(JsonWriter writer, List<Message> messages) throws IOException {
+ *   public void writeMessagesArray(JsonWriter writer, List<Message> messages) {
  *     writer.beginArray();
  *     for (Message message : messages) {
  *       writeMessage(writer, message);
@@ -82,7 +84,7 @@ import com.google.gwt.core.client.JsArrayInteger;
  *     writer.endArray();
  *   }
  *
- *   public void writeMessage(JsonWriter writer, Message message) throws IOException {
+ *   public void writeMessage(JsonWriter writer, Message message) {
  *     writer.beginObject();
  *     writer.name("id").value(message.getId());
  *     writer.name("text").value(message.getText());
@@ -97,14 +99,14 @@ import com.google.gwt.core.client.JsArrayInteger;
  *     writer.endObject();
  *   }
  *
- *   public void writeUser(JsonWriter writer, User user) throws IOException {
+ *   public void writeUser(JsonWriter writer, User user) {
  *     writer.beginObject();
  *     writer.name("name").value(user.getName());
  *     writer.name("followers_count").value(user.getFollowersCount());
  *     writer.endObject();
  *   }
  *
- *   public void writeDoublesArray(JsonWriter writer, List<Double> doubles) throws IOException {
+ *   public void writeDoublesArray(JsonWriter writer, List<Double> doubles) {
  *     writer.beginArray();
  *     for (Double value : doubles) {
  *       writer.value(value);
@@ -120,6 +122,8 @@ import com.google.gwt.core.client.JsArrayInteger;
  * @since 1.6
  */
 public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.stream.JsonWriter {
+
+  private static final Logger logger = Logger.getLogger( "JsonWriter" );
 
   /*
    * From RFC 4627, "All Unicode characters may be placed within the
@@ -259,24 +263,24 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
-  public DefaultJsonWriter beginArray() throws IOException {
+  public DefaultJsonWriter beginArray() {
     writeDeferredName();
     return open( JsonScope.EMPTY_ARRAY, "[");
   }
 
   @Override
-  public DefaultJsonWriter endArray() throws IOException {
+  public DefaultJsonWriter endArray() {
     return close( JsonScope.EMPTY_ARRAY, JsonScope.NONEMPTY_ARRAY, "]");
   }
 
   @Override
-  public DefaultJsonWriter beginObject() throws IOException {
+  public DefaultJsonWriter beginObject() {
     writeDeferredName();
     return open( JsonScope.EMPTY_OBJECT, "{");
   }
 
   @Override
-  public DefaultJsonWriter endObject() throws IOException {
+  public DefaultJsonWriter endObject() {
     return close( JsonScope.EMPTY_OBJECT, JsonScope.NONEMPTY_OBJECT, "}");
   }
 
@@ -284,7 +288,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
    * Enters a new scope by appending any necessary whitespace and the given
    * bracket.
    */
-  private DefaultJsonWriter open(int empty, String openBracket) throws IOException {
+  private DefaultJsonWriter open(int empty, String openBracket) {
     beforeValue(true);
     push(empty);
     out.append(openBracket);
@@ -296,7 +300,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
    * given bracket.
    */
   private DefaultJsonWriter close(int empty, int nonempty, String closeBracket)
-      throws IOException {
+      {
     int context = peek();
     if (context != nonempty && context != empty) {
       throw new IllegalStateException("Nesting problem.");
@@ -335,7 +339,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
-  public DefaultJsonWriter name( String name ) throws IOException {
+  public DefaultJsonWriter name( String name ) {
     if (name == null) {
       throw new NullPointerException("name == null");
     }
@@ -349,7 +353,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
     return this;
   }
 
-  private void writeDeferredName() throws IOException {
+  private void writeDeferredName() {
     if (deferredName != null) {
       beforeName();
       string(deferredName);
@@ -358,7 +362,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
-  public DefaultJsonWriter value( String value ) throws IOException {
+  public DefaultJsonWriter value( String value ) {
     if (value == null) {
       return nullValue();
     }
@@ -369,7 +373,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
-  public DefaultJsonWriter nullValue() throws IOException {
+  public DefaultJsonWriter nullValue() {
     if (deferredName != null) {
       if (serializeNulls) {
         writeDeferredName();
@@ -392,7 +396,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
-  public DefaultJsonWriter value( boolean value ) throws IOException {
+  public DefaultJsonWriter value( boolean value ) {
     writeDeferredName();
     beforeValue(false);
     out.append(value ? "true" : "false");
@@ -400,7 +404,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
-  public DefaultJsonWriter value( double value ) throws IOException {
+  public DefaultJsonWriter value( double value ) {
     if (Double.isNaN(value) || Double.isInfinite(value)) {
       throw new IllegalArgumentException("Numeric values must be finite, but was " + value);
     }
@@ -411,7 +415,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
-  public DefaultJsonWriter value( long value ) throws IOException {
+  public DefaultJsonWriter value( long value ) {
     writeDeferredName();
     beforeValue(false);
     out.append(Long.toString(value));
@@ -419,7 +423,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
-  public DefaultJsonWriter value( Number value ) throws IOException {
+  public DefaultJsonWriter value( Number value ) {
     if (value == null) {
       return nullValue();
     }
@@ -436,7 +440,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
-  public DefaultJsonWriter rawValue( Object value ) throws IOException {
+  public DefaultJsonWriter rawValue( Object value ) {
     if (value == null) {
       return nullValue();
     }
@@ -447,22 +451,23 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
-  public void flush() throws IOException {
+  public void flush() {
     if (stackSize == 0) {
       throw new IllegalStateException("JsonWriter is closed.");
     }
   }
 
   @Override
-  public void close() throws IOException {
+  public void close() {
     int size = stackSize;
     if (size > 1 || size == 1 && stack.get(size - 1) != JsonScope.NONEMPTY_DOCUMENT) {
-      throw new IOException("Incomplete document");
+      logger.log(Level.SEVERE, "Incomplete document");
+      throw new JsonSerializationException("Incomplete document");
     }
     stackSize = 0;
   }
 
-  private void string(String value) throws IOException {
+  private void string(String value) {
     String[] replacements = htmlSafe ? HTML_SAFE_REPLACEMENT_CHARS : REPLACEMENT_CHARS;
     out.append("\"");
     int last = 0;
@@ -494,7 +499,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
     out.append("\"");
   }
 
-  private void newline() throws IOException {
+  private void newline() {
     if (indent == null) {
       return;
     }
@@ -509,7 +514,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
    * Inserts any necessary separators and whitespace before a name. Also
    * adjusts the stack to expect the name's value.
    */
-  private void beforeName() throws IOException {
+  private void beforeName() {
     int context = peek();
     if (context == JsonScope.NONEMPTY_OBJECT) { // first in object
       out.append(',');
@@ -529,7 +534,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
    *     permitted as top-level elements.
    */
   @SuppressWarnings("fallthrough")
-  private void beforeValue(boolean root) throws IOException {
+  private void beforeValue(boolean root) {
     switch (peek()) {
     case JsonScope.NONEMPTY_DOCUMENT:
       if (!lenient) {

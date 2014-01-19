@@ -16,8 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.deser;
 
-import java.io.IOException;
-
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
@@ -43,8 +41,7 @@ public class BooleanJsonDeserializer extends JsonDeserializer<Boolean> {
     private BooleanJsonDeserializer() { }
 
     @Override
-    public Boolean doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-            IOException {
+    public Boolean doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         JsonToken token = reader.peek();
         if ( JsonToken.BOOLEAN.equals( token ) ) {
             return reader.nextBoolean();

@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.deser;
 
-import java.io.IOException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -148,7 +147,7 @@ public abstract class BaseDateJsonDeserializer<D extends Date> extends JsonDeser
     private static final DateTimeFormat SQL_DATE_FORMAT = DateTimeFormat.getFormat( "yyyy-MM-dd Z" );
 
     @Override
-    public D doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws IOException {
+    public D doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         if ( params.getShape().isNumeric() || JsonToken.NUMBER.equals( reader.peek() ) ) {
             return deserializeNumber( reader.nextLong(), params );
         } else {

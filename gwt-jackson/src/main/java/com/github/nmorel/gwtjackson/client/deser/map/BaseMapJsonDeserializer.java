@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.deser.map;
 
-import java.io.IOException;
 import java.util.Map;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
@@ -63,7 +62,7 @@ public abstract class BaseMapJsonDeserializer<M extends Map<K, V>, K, V> extends
     }
 
     @Override
-    public M doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws IOException {
+    public M doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         M result = newMap();
 
         reader.beginObject();

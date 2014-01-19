@@ -16,8 +16,6 @@
 
 package com.github.nmorel.gwtjackson.guava.client.deser;
 
-import java.io.IOException;
-
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
@@ -53,8 +51,7 @@ public final class ImmutableListJsonDeserializer<T> extends BaseImmutableCollect
     }
 
     @Override
-    protected ImmutableList<T> doDeserialize( JsonReader reader, JsonDeserializationContext ctx,
-                                              JsonDeserializerParameters params ) throws IOException {
+    protected ImmutableList<T> doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         try {
             currentBuilder = ImmutableList.builder();
             buildCollection( reader, ctx, params );

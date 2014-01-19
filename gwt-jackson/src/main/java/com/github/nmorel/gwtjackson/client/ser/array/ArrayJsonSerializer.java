@@ -17,7 +17,6 @@
 package com.github.nmorel.gwtjackson.client.ser.array;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
@@ -56,8 +55,7 @@ public class ArrayJsonSerializer<T> extends JsonSerializer<T[]> {
     }
 
     @Override
-    public void doSerialize( JsonWriter writer, @Nonnull T[] values, JsonSerializationContext ctx,
-                             JsonSerializerParameters params ) throws IOException {
+    public void doSerialize( JsonWriter writer, @Nonnull T[] values, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         if ( !ctx.isWriteEmptyJsonArrays() && values.length == 0 ) {
             writer.cancelName();
             return;

@@ -1,9 +1,8 @@
 package com.github.nmorel.gwtjackson.client.stream.impl;
 
-import java.io.IOException;
-
-import com.github.nmorel.gwtjackson.client.stream.*;
+import com.github.nmorel.gwtjackson.client.stream.AbstractJsonReaderTest;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
+import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 
 /**
  * @author Nicolas Morel
@@ -15,7 +14,7 @@ public class DefaultJsonReaderTest extends AbstractJsonReaderTest {
         return new DefaultJsonReader( new StringReader( input ) );
     }
 
-    public void testStrictVeryLongNumber() throws IOException {
+    public void testStrictVeryLongNumber() {
         JsonReader reader = newJsonReader( "[0." + repeat( '9', 8192 ) + "]" );
         reader.beginArray();
         try {
@@ -25,7 +24,7 @@ public class DefaultJsonReaderTest extends AbstractJsonReaderTest {
         }
     }
 
-    public void testLenientVeryLongNumber() throws IOException {
+    public void testLenientVeryLongNumber() {
         JsonReader reader = newJsonReader( "[0." + repeat( '9', 8192 ) + "]" );
         reader.setLenient( true );
         reader.beginArray();

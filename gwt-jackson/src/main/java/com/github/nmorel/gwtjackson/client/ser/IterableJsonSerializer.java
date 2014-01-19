@@ -17,7 +17,6 @@
 package com.github.nmorel.gwtjackson.client.ser;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 import java.util.Iterator;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
@@ -57,8 +56,7 @@ public class IterableJsonSerializer<I extends Iterable<T>, T> extends JsonSerial
     }
 
     @Override
-    public void doSerialize( JsonWriter writer, @Nonnull I values, JsonSerializationContext ctx, JsonSerializerParameters params ) throws
-            IOException {
+    public void doSerialize( JsonWriter writer, @Nonnull I values, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         Iterator<T> iterator = values.iterator();
 
         if ( !iterator.hasNext() ) {

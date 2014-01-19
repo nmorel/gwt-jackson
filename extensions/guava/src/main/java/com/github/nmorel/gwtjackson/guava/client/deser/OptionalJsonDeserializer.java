@@ -16,8 +16,6 @@
 
 package com.github.nmorel.gwtjackson.guava.client.deser;
 
-import java.io.IOException;
-
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
@@ -56,15 +54,13 @@ public final class OptionalJsonDeserializer<T> extends JsonDeserializer<Optional
     }
 
     @Override
-    protected Optional<T> deserializeNullValue( JsonReader reader, JsonDeserializationContext ctx,
-                                                JsonDeserializerParameters params ) throws IOException {
+    protected Optional<T> deserializeNullValue( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         reader.skipValue();
         return Optional.absent();
     }
 
     @Override
-    public Optional<T> doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
-            IOException {
+    public Optional<T> doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         return Optional.of( deserializer.deserialize( reader, ctx, params ) );
     }
 
