@@ -31,6 +31,10 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
 
     private final String rootName;
 
+    private JsonDeserializer<T> deserializer;
+
+    private JsonSerializer<T> serializer;
+
     protected AbstractObjectMapper( String rootName ) {
         this.rootName = rootName;
     }
@@ -60,13 +64,13 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
                     throw ctx.traceError( "Unwrap root value is enabled but the name '" + name + "' don't match the expected rootName " +
                             "'" + rootName + "'", reader );
                 }
-                T result = newDeserializer().deserialize( reader, ctx );
+                T result = getDeserializer().deserialize( reader, ctx );
                 reader.endObject();
                 return result;
 
             } else {
 
-                return newDeserializer().deserialize( reader, ctx );
+                return getDeserializer().deserialize( reader, ctx );
 
             }
 
@@ -76,6 +80,13 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
         } catch ( Exception e ) {
             throw ctx.traceError( e, reader );
         }
+    }
+
+    protected JsonDeserializer<T> getDeserializer() {
+        if ( null == deserializer ) {
+            deserializer = newDeserializer();
+        }
+        return deserializer;
     }
 
     /**
@@ -97,10 +108,10 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
             if ( ctx.isWrapRootValue() ) {
                 writer.beginObject();
                 writer.name( rootName );
-                newSerializer().serialize( writer, value, ctx );
+                getSerializer().serialize( writer, value, ctx );
                 writer.endObject();
             } else {
-                newSerializer().serialize( writer, value, ctx );
+                getSerializer().serialize( writer, value, ctx );
             }
             return writer.getOutput();
         } catch ( JsonSerializationException e ) {
@@ -109,6 +120,13 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
         } catch ( Exception e ) {
             throw ctx.traceError( value, e, writer );
         }
+    }
+
+    protected JsonSerializer<T> getSerializer() {
+        if ( null == serializer ) {
+            serializer = newSerializer();
+        }
+        return serializer;
     }
 
     /**
