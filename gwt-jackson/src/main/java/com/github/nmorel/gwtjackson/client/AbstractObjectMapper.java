@@ -77,7 +77,7 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
         } catch ( JsonDeserializationException e ) {
             // already logged, we just throw it
             throw e;
-        } catch ( Exception e ) {
+        } catch ( RuntimeException e ) {
             throw ctx.traceError( e, reader );
         }
     }
@@ -117,7 +117,7 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
         } catch ( JsonSerializationException e ) {
             // already logged, we just throw it
             throw e;
-        } catch ( Exception e ) {
+        } catch ( RuntimeException e ) {
             throw ctx.traceError( value, e, writer );
         }
     }

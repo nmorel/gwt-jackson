@@ -40,6 +40,7 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 public class CommonJsonMapperTest extends GwtJacksonTestCase {
 
     public void testDeserializeUnexpectedException() {
+        final UnsupportedOperationException exception = new UnsupportedOperationException();
         ObjectReader<String[]> reader = new AbstractObjectReader<String[]>( null ) {
             @Override
             protected JsonDeserializer<String[]> newDeserializer() {
@@ -47,7 +48,7 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
                     @Override
                     protected String[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx,
                                                       JsonDeserializerParameters params ) {
-                        throw new UnsupportedOperationException();
+                        throw exception;
                     }
                 };
             }
@@ -56,7 +57,29 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
             reader.read( "[\"fail\"]" );
             fail();
         } catch ( JsonDeserializationException e ) {
-            assertTrue( e.getCause() instanceof UnsupportedOperationException );
+            assertSame( exception, e.getCause() );
+        }
+    }
+
+    public void testDeserializeUnexpectedExceptionUnwrapped() {
+        final UnsupportedOperationException exception = new UnsupportedOperationException();
+        ObjectReader<String[]> reader = new AbstractObjectReader<String[]>( null ) {
+            @Override
+            protected JsonDeserializer<String[]> newDeserializer() {
+                return new JsonDeserializer<String[]>() {
+                    @Override
+                    protected String[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx,
+                                                      JsonDeserializerParameters params ) {
+                        throw exception;
+                    }
+                };
+            }
+        };
+        try {
+            reader.read( "[\"fail\"]", new JsonDeserializationContext.Builder().wrapExceptions( false ).build() );
+            fail();
+        } catch ( UnsupportedOperationException e ) {
+            assertSame( exception, e );
         }
     }
 
@@ -83,6 +106,7 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
     }
 
     public void testSerializeUnexpectedException() {
+        final NullPointerException exception = new NullPointerException();
         ObjectWriter<String> writer = new AbstractObjectWriter<String>( null ) {
             @Override
             protected JsonSerializer<String> newSerializer() {
@@ -90,7 +114,7 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
                     @Override
                     protected void doSerialize( JsonWriter writer, @Nonnull String value, JsonSerializationContext ctx,
                                                 JsonSerializerParameters params ) {
-                        throw new NullPointerException();
+                        throw exception;
                     }
                 };
             }
@@ -99,7 +123,29 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
             writer.write( "fail" );
             fail();
         } catch ( JsonSerializationException e ) {
-            assertTrue( e.getCause() instanceof NullPointerException );
+            assertSame( exception, e.getCause() );
+        }
+    }
+
+    public void testSerializeUnexpectedExceptionUnwrapped() {
+        final NullPointerException exception = new NullPointerException();
+        ObjectWriter<String> writer = new AbstractObjectWriter<String>( null ) {
+            @Override
+            protected JsonSerializer<String> newSerializer() {
+                return new JsonSerializer<String>() {
+                    @Override
+                    protected void doSerialize( JsonWriter writer, @Nonnull String value, JsonSerializationContext ctx,
+                                                JsonSerializerParameters params ) {
+                        throw exception;
+                    }
+                };
+            }
+        };
+        try {
+            writer.write( "fail", new JsonSerializationContext.Builder().wrapExceptions( false ).build() );
+            fail();
+        } catch ( NullPointerException e ) {
+            assertSame( exception, e );
         }
     }
 

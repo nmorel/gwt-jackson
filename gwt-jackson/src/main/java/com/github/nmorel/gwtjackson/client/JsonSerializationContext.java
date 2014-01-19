@@ -29,7 +29,6 @@ import com.github.nmorel.gwtjackson.client.exception.JsonSerializationException;
 import com.github.nmorel.gwtjackson.client.ser.bean.AbstractBeanJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.ObjectIdSerializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
-import com.github.nmorel.gwtjackson.client.stream.impl.DefaultJsonWriter;
 import com.github.nmorel.gwtjackson.client.stream.impl.FastJsonWriter;
 
 /**
@@ -62,6 +61,8 @@ public class JsonSerializationContext extends JsonMappingContext {
         private boolean orderMapEntriesByKeys = false;
 
         private boolean writeSingleElemArraysUnwrapped = false;
+
+        private boolean wrapExceptions = true;
 
         /**
          * Determines whether Object Identity is compared using
@@ -212,10 +213,29 @@ public class JsonSerializationContext extends JsonMappingContext {
             return this;
         }
 
+        /**
+         * Feature that determines whether gwt-jackson code should catch
+         * and wrap {@link RuntimeException}s (but never {@link Error}s!)
+         * to add additional information about
+         * location (within input) of problem or not. If enabled,
+         * exceptions will be caught and re-thrown; this can be
+         * convenient both in that all exceptions will be checked and
+         * declared, and so there is more contextual information.
+         * However, sometimes calling application may just want "raw"
+         * unchecked exceptions passed as is.
+         * <br>
+         * <br>
+         * Feature is enabled by default.
+         */
+        public Builder wrapExceptions( boolean wrapExceptions ) {
+            this.wrapExceptions = wrapExceptions;
+            return this;
+        }
+
         public JsonSerializationContext build() {
             return new JsonSerializationContext( useEqualityForObjectId, serializeNulls, writeDatesAsTimestamps,
                     writeDateKeysAsTimestamps, indent, wrapRootValue, writeCharArraysAsJsonArrays, writeNullMapValues,
-                    writeEmptyJsonArrays, orderMapEntriesByKeys, writeSingleElemArraysUnwrapped );
+                    writeEmptyJsonArrays, orderMapEntriesByKeys, writeSingleElemArraysUnwrapped, wrapExceptions );
         }
     }
 
@@ -250,10 +270,12 @@ public class JsonSerializationContext extends JsonMappingContext {
 
     private final boolean writeSingleElemArraysUnwrapped;
 
+    private final boolean wrapExceptions;
+
     private JsonSerializationContext( boolean useEqualityForObjectId, boolean serializeNulls, boolean writeDatesAsTimestamps,
                                       boolean writeDateKeysAsTimestamps, boolean indent, boolean wrapRootValue,
                                       boolean writeCharArraysAsJsonArrays, boolean writeNullMapValues, boolean writeEmptyJsonArrays,
-                                      boolean orderMapEntriesByKeys, boolean writeSingleElemArraysUnwrapped ) {
+                                      boolean orderMapEntriesByKeys, boolean writeSingleElemArraysUnwrapped, boolean wrapExceptions ) {
         this.useEqualityForObjectId = useEqualityForObjectId;
         this.serializeNulls = serializeNulls;
         this.writeDatesAsTimestamps = writeDatesAsTimestamps;
@@ -265,6 +287,7 @@ public class JsonSerializationContext extends JsonMappingContext {
         this.writeEmptyJsonArrays = writeEmptyJsonArrays;
         this.orderMapEntriesByKeys = orderMapEntriesByKeys;
         this.writeSingleElemArraysUnwrapped = writeSingleElemArraysUnwrapped;
+        this.wrapExceptions = wrapExceptions;
     }
 
     @Override
@@ -372,11 +395,15 @@ public class JsonSerializationContext extends JsonMappingContext {
      * @param value current value
      * @param cause cause of the error
      *
-     * @return a {@link JsonSerializationException} with the given cause
+     * @return a {@link JsonSerializationException} if we wrap the exceptions, the cause otherwise
      */
-    public JsonSerializationException traceError( Object value, Exception cause ) {
+    public RuntimeException traceError( Object value, RuntimeException cause ) {
         getLogger().log( Level.SEVERE, "Error during serialization", cause );
-        return new JsonSerializationException( cause );
+        if ( wrapExceptions ) {
+            return new JsonSerializationException( cause );
+        } else {
+            return cause;
+        }
     }
 
     /**
@@ -386,10 +413,10 @@ public class JsonSerializationContext extends JsonMappingContext {
      * @param cause cause of the error
      * @param writer current writer
      *
-     * @return a {@link JsonSerializationException} with the given cause
+     * @return a {@link JsonSerializationException} if we wrap the exceptions, the cause otherwise
      */
-    public JsonSerializationException traceError( Object value, Exception cause, JsonWriter writer ) {
-        JsonSerializationException exception = traceError( value, cause );
+    public RuntimeException traceError( Object value, RuntimeException cause, JsonWriter writer ) {
+        RuntimeException exception = traceError( value, cause );
         traceWriterInfo( value, writer );
         return exception;
     }

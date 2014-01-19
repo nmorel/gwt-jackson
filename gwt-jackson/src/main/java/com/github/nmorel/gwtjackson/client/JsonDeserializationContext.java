@@ -41,6 +41,8 @@ public class JsonDeserializationContext extends JsonMappingContext {
 
         private boolean acceptSingleValueAsArray = false;
 
+        private boolean wrapExceptions = true;
+
         /**
          * Determines whether encountering of unknown
          * properties (ones that do not map to a property, and there is
@@ -91,8 +93,27 @@ public class JsonDeserializationContext extends JsonMappingContext {
             return this;
         }
 
+        /**
+         * Feature that determines whether gwt-jackson code should catch
+         * and wrap {@link RuntimeException}s (but never {@link Error}s!)
+         * to add additional information about
+         * location (within input) of problem or not. If enabled,
+         * exceptions will be caught and re-thrown; this can be
+         * convenient both in that all exceptions will be checked and
+         * declared, and so there is more contextual information.
+         * However, sometimes calling application may just want "raw"
+         * unchecked exceptions passed as is.
+         * <br>
+         * <br>
+         * Feature is enabled by default.
+         */
+        public Builder wrapExceptions( boolean wrapExceptions ) {
+            this.wrapExceptions = wrapExceptions;
+            return this;
+        }
+
         public JsonDeserializationContext build() {
-            return new JsonDeserializationContext( failOnUnknownProperties, unwrapRootValue, acceptSingleValueAsArray );
+            return new JsonDeserializationContext( failOnUnknownProperties, unwrapRootValue, acceptSingleValueAsArray, wrapExceptions );
         }
     }
 
@@ -109,10 +130,14 @@ public class JsonDeserializationContext extends JsonMappingContext {
 
     private final boolean acceptSingleValueAsArray;
 
-    private JsonDeserializationContext( boolean failOnUnknownProperties, boolean unwrapRootValue, boolean acceptSingleValueAsArray ) {
+    private final boolean wrapExceptions;
+
+    private JsonDeserializationContext( boolean failOnUnknownProperties, boolean unwrapRootValue, boolean acceptSingleValueAsArray,
+                                        boolean wrapExceptions ) {
         this.failOnUnknownProperties = failOnUnknownProperties;
         this.unwrapRootValue = unwrapRootValue;
         this.acceptSingleValueAsArray = acceptSingleValueAsArray;
+        this.wrapExceptions = wrapExceptions;
     }
 
     @Override
@@ -177,10 +202,15 @@ public class JsonDeserializationContext extends JsonMappingContext {
      *
      * @param cause cause of the error
      *
-     * @return a {@link JsonDeserializationException} with the given cause
+     * @return a {@link JsonDeserializationException} if we wrap the exceptions, the cause otherwise
      */
-    public JsonDeserializationException traceError( Exception cause ) {
-        return traceError( cause, null );
+    public RuntimeException traceError( RuntimeException cause ) {
+        getLogger().log( Level.SEVERE, "Error during deserialization", cause );
+        if ( wrapExceptions ) {
+            return new JsonDeserializationException( cause );
+        } else {
+            return cause;
+        }
     }
 
     /**
@@ -189,12 +219,12 @@ public class JsonDeserializationContext extends JsonMappingContext {
      * @param cause cause of the error
      * @param reader current reader
      *
-     * @return a {@link JsonDeserializationException} with the given cause
+     * @return a {@link JsonDeserializationException} if we wrap the exceptions, the cause otherwise
      */
-    public JsonDeserializationException traceError( Exception cause, JsonReader reader ) {
-        getLogger().log( Level.SEVERE, "Error during deserialization", cause );
+    public RuntimeException traceError( RuntimeException cause, JsonReader reader ) {
+        RuntimeException exception = traceError( cause );
         traceReaderInfo( reader );
-        return new JsonDeserializationException( cause );
+        return exception;
     }
 
     /**
