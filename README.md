@@ -62,7 +62,7 @@ Maven
 <dependency>
   <groupId>com.github.nmorel.gwtjackson</groupId>
   <artifactId>gwt-jackson</artifactId>
-  <version>0.3.0</version>
+  <version>0.4.0</version>
   <scope>provided</scope>
 </dependency>
 ```
@@ -82,4 +82,4 @@ You can also get maven snapshots using the following repository :
 Copyright and license
 -------------
 
-Copyright 2013 Nicolas Morel under the [Apache 2.0 license](LICENSE).
+Copyright 2014 Nicolas Morel under the [Apache 2.0 license](LICENSE).
