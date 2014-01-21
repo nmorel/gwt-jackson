@@ -666,9 +666,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
     private void generateInitMapSubtypeClassToDeserializerMethod( SourceWriter source,
                                                                   BeanInfo beanInfo ) throws UnableToCompleteException {
 
-        String mapTypes = String.format( "<%s<? extends %s>, %s<? extends %s>>", Class.class.getCanonicalName(), beanInfo.getType()
-                .getParameterizedQualifiedSourceName(), SubtypeDeserializer.class.getName(), beanInfo.getType()
-                .getParameterizedQualifiedSourceName() );
+        String mapTypes = String.format( "<%s, %s>", Class.class.getCanonicalName(), SubtypeDeserializer.class.getName() );
         String resultType = String.format( "%s%s", Map.class.getCanonicalName(), mapTypes );
 
         source.println( "@Override" );

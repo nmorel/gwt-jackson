@@ -37,7 +37,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
 
     private final Map<String, BeanPropertySerializer<T, ?>> serializers;// = new LinkedHashMap<String, BeanPropertySerializer<T, ?>>();
 
-    private final Map<Class<? extends T>, SubtypeSerializer<? extends T>> subtypeClassToSerializer;
+    private final Map<Class, SubtypeSerializer> subtypeClassToSerializer;
 
     private final IdentitySerializationInfo<T> defaultIdentityInfo;
 
@@ -75,7 +75,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
     /**
      * Initialize the {@link Map} containing the {@link SubtypeSerializer}. Returns an empty map if the bean has no subtypes.
      */
-    protected Map<Class<? extends T>, SubtypeSerializer<? extends T>> initMapSubtypeClassToSerializer() {
+    protected Map<Class, SubtypeSerializer> initMapSubtypeClassToSerializer() {
         return Collections.emptyMap();
     }
 

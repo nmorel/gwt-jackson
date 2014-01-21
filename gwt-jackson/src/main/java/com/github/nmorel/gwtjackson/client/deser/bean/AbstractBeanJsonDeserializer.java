@@ -52,7 +52,7 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
 
     private final TypeDeserializationInfo<T> defaultTypeInfo;
 
-    private final Map<Class<? extends T>, SubtypeDeserializer<? extends T>> subtypeClassToDeserializer;
+    private final Map<Class, SubtypeDeserializer> subtypeClassToDeserializer;
 
     protected AbstractBeanJsonDeserializer() {
         this.instanceBuilder = initInstanceBuilder();
@@ -119,7 +119,7 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
     /**
      * Initialize the {@link Map} containing the {@link SubtypeDeserializer}. Returns an empty map if the bean has no subtypes.
      */
-    protected Map<Class<? extends T>, SubtypeDeserializer<? extends T>> initMapSubtypeClassToDeserializer() {
+    protected Map<Class, SubtypeDeserializer> initMapSubtypeClassToDeserializer() {
         return Collections.emptyMap();
     }
 

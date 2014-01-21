@@ -42,6 +42,7 @@ import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JArrayType;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JEnumType;
+import com.google.gwt.core.ext.typeinfo.JGenericType;
 import com.google.gwt.core.ext.typeinfo.JParameterizedType;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.core.ext.typeinfo.JTypeParameter;
@@ -169,11 +170,13 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         if ( null != classType ) {
             // it's a bean
             JClassType baseClassType = classType;
-            JParameterizedType parameterizedType = type.isParameterized();
+            JParameterizedType parameterizedType = classType.isParameterized();
             if ( null != parameterizedType ) {
                 // it's a bean with generics, we create a serializer based on generic type
                 baseClassType = typeOracle.findGenericType( parameterizedType );
             }
+            JGenericType genericType = baseClassType.isGenericType();
+
             BeanJsonSerializerCreator beanJsonSerializerCreator = new BeanJsonSerializerCreator( logger
                     .branch( Type.DEBUG, "Creating serializer for " + baseClassType
                             .getQualifiedSourceName() ), context, configuration, typeOracle );
@@ -181,15 +184,21 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
             StringBuilder joinedTypeParameters = new StringBuilder();
             StringBuilder joinedTypeParameterSerializers = new StringBuilder();
-            if ( null != parameterizedType ) {
-                JSerializerType[] parametersSerializer = new JSerializerType[parameterizedType.getTypeArgs().length];
+            if ( null != genericType ) {
+                JSerializerType[] parametersSerializer = new JSerializerType[genericType.getTypeParameters().length];
                 joinedTypeParameters.append( '<' );
-                for ( int i = 0; i < parameterizedType.getTypeArgs().length; i++ ) {
+                for ( int i = 0; i < genericType.getTypeParameters().length; i++ ) {
                     if ( i > 0 ) {
                         joinedTypeParameters.append( ", " );
                         joinedTypeParameterSerializers.append( ", " );
                     }
-                    JClassType argType = parameterizedType.getTypeArgs()[i];
+
+                    JClassType argType;
+                    if ( null != parameterizedType ) {
+                        argType = parameterizedType.getTypeArgs()[i];
+                    } else {
+                        argType = genericType.getTypeParameters()[i];
+                    }
                     joinedTypeParameters.append( argType.getParameterizedQualifiedSourceName() );
 
                     JSerializerType parameterSerializerType = getJsonSerializerFromType( argType );
@@ -303,7 +312,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                     .getParameterizedQualifiedSourceName() + ">(){\n" +
                     "  @Override\n" +
                     "  public " + arrayType.getParameterizedQualifiedSourceName() + " create( int length ) {\n" +
-                    "    return new " + arrayType.getComponentType().getParameterizedQualifiedSourceName() + "[length];\n" +
+                    "    return new " + arrayType.getComponentType().getQualifiedSourceName() + "[length];\n" +
                     "  }\n" +
                     "}";
 
@@ -317,11 +326,13 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         if ( null != classType ) {
             // it's a bean
             JClassType baseClassType = classType;
-            JParameterizedType parameterizedType = type.isParameterized();
+            JParameterizedType parameterizedType = classType.isParameterized();
             if ( null != parameterizedType ) {
                 // it's a bean with generics, we create a deserializer based on generic type
                 baseClassType = typeOracle.findGenericType( parameterizedType );
             }
+            JGenericType genericType = baseClassType.isGenericType();
+
             BeanJsonDeserializerCreator beanJsonDeserializerCreator = new BeanJsonDeserializerCreator( logger
                     .branch( Type.DEBUG, "Creating deserializer for " + baseClassType
                             .getQualifiedSourceName() ), context, configuration, typeOracle );
@@ -329,15 +340,22 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
             StringBuilder joinedTypeParameters = new StringBuilder();
             StringBuilder joinedTypeParameterDeserializers = new StringBuilder();
-            if ( null != parameterizedType ) {
-                JDeserializerType[] parametersDeserializer = new JDeserializerType[parameterizedType.getTypeArgs().length];
+            if ( null != genericType ) {
+
+                JDeserializerType[] parametersDeserializer = new JDeserializerType[genericType.getTypeParameters().length];
                 joinedTypeParameters.append( '<' );
-                for ( int i = 0; i < parameterizedType.getTypeArgs().length; i++ ) {
+                for ( int i = 0; i < genericType.getTypeParameters().length; i++ ) {
                     if ( i > 0 ) {
                         joinedTypeParameters.append( ", " );
                         joinedTypeParameterDeserializers.append( ", " );
                     }
-                    JClassType argType = parameterizedType.getTypeArgs()[i];
+
+                    JClassType argType;
+                    if ( null != parameterizedType ) {
+                        argType = parameterizedType.getTypeArgs()[i];
+                    } else {
+                        argType = genericType.getTypeParameters()[i];
+                    }
                     joinedTypeParameters.append( argType.getParameterizedQualifiedSourceName() );
 
                     JDeserializerType parameterDeserializerType = getJsonDeserializerFromType( argType );

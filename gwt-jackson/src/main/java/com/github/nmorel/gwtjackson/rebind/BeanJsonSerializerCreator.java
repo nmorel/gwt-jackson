@@ -256,9 +256,7 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
 
     private void generateInitMapSubtypeClassToSerializerMethod( SourceWriter source, BeanInfo beanInfo ) throws UnableToCompleteException {
 
-        String mapTypes = String.format( "<%s<? extends %s>, %s<? extends %s>>", Class.class.getCanonicalName(), beanInfo.getType()
-                .getParameterizedQualifiedSourceName(), SubtypeSerializer.class.getName(), beanInfo.getType()
-                .getParameterizedQualifiedSourceName() );
+        String mapTypes = String.format( "<%s, %s>", Class.class.getCanonicalName(), SubtypeSerializer.class.getName() );
         String resultType = String.format( "%s%s", Map.class.getCanonicalName(), mapTypes );
 
         source.println( "@Override" );
@@ -277,8 +275,7 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
             source.indent();
 
             source.println( "@Override" );
-            source.println( "protected %s<%s> newSerializer() {", ABSTRACT_BEAN_JSON_SERIALIZER_CLASS,
-                    getQualifiedClassName( subtype ) );
+            source.println( "protected %s<%s> newSerializer() {", ABSTRACT_BEAN_JSON_SERIALIZER_CLASS, getQualifiedClassName( subtype ) );
             source.indent();
             source.println( "return %s;", getJsonSerializerFromType( subtype ).getInstance() );
             source.outdent();
