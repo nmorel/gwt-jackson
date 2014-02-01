@@ -21,8 +21,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.nmorel.gwtjackson.rebind.BeanInfo;
+import com.github.nmorel.gwtjackson.rebind.RebindConfiguration;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JField;
@@ -31,6 +31,7 @@ import com.google.gwt.core.ext.typeinfo.JParameter;
 import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.thirdparty.guava.common.base.Function;
+import com.google.gwt.thirdparty.guava.common.base.Optional;
 import com.google.gwt.thirdparty.guava.common.collect.ImmutableMap;
 import com.google.gwt.thirdparty.guava.common.collect.Maps;
 
@@ -39,10 +40,10 @@ import com.google.gwt.thirdparty.guava.common.collect.Maps;
  */
 public final class PropertyParser {
 
-    public static ImmutableMap<String, PropertyAccessors> findPropertyAccessors( TreeLogger logger, BeanInfo beanInfo ) {
+    public static ImmutableMap<String, PropertyAccessors> findPropertyAccessors( final RebindConfiguration configuration,
+                                                                                 TreeLogger logger, BeanInfo beanInfo ) {
         Map<String, PropertyAccessorsBuilder> fieldsAndMethodsMap = new LinkedHashMap<String, PropertyAccessorsBuilder>();
-        parseFields( logger, beanInfo.getType(), fieldsAndMethodsMap );
-        parseMethods( logger, beanInfo.getType(), fieldsAndMethodsMap );
+        parse( configuration, logger, beanInfo.getType(), fieldsAndMethodsMap, false );
 
         Map<String, PropertyAccessorsBuilder> propertyAccessors = new LinkedHashMap<String, PropertyAccessorsBuilder>();
         for ( PropertyAccessorsBuilder fieldAccessors : fieldsAndMethodsMap.values() ) {
@@ -71,8 +72,32 @@ public final class PropertyParser {
         } ) );
     }
 
-    private static void parseFields( TreeLogger logger, JClassType type, Map<String, PropertyAccessorsBuilder> propertiesMap ) {
-        if ( null == type || type.getQualifiedSourceName().equals( "java.lang.Object" ) ) {
+    private static void parse( RebindConfiguration configuration, TreeLogger logger, JClassType type, Map<String,
+            PropertyAccessorsBuilder> propertiesMap, boolean mixin ) {
+        if ( null == type ) {
+            return;
+        }
+
+        if ( !mixin ) {
+            Optional<JClassType> mixinAnnotation = configuration.getMixInAnnotations( type );
+            if ( mixinAnnotation.isPresent() ) {
+                parse( configuration, logger, mixinAnnotation.get(), propertiesMap, true );
+            }
+        }
+
+        parseFields( logger, type, propertiesMap, mixin );
+        parseMethods( logger, type, propertiesMap, mixin );
+
+        for ( JClassType interf : type.getImplementedInterfaces() ) {
+            parse( configuration, logger, interf, propertiesMap, mixin );
+        }
+
+        parse( configuration, logger, type.getSuperclass(), propertiesMap, mixin );
+    }
+
+    private static void parseFields( TreeLogger logger, JClassType type, Map<String, PropertyAccessorsBuilder> propertiesMap,
+                                     boolean mixin ) {
+        if ( type.getQualifiedSourceName().equals( "java.lang.Object" ) ) {
             return;
         }
 
@@ -92,19 +117,16 @@ public final class PropertyParser {
                 logger.log( TreeLogger.Type.WARN, "A field with the same name as " + field
                         .getName() + " has already been found on child class" );
             } else {
-                property.setField( field );
+                property.addField( field, mixin );
             }
         }
-        parseFields( logger, type.getSuperclass(), propertiesMap );
     }
 
-    private static void parseMethods( TreeLogger logger, JClassType type, Map<String, PropertyAccessorsBuilder> propertiesMap ) {
-        if ( null == type || type.getQualifiedSourceName().equals( "java.lang.Object" ) ) {
-            return;
-        }
-
+    private static void parseMethods( TreeLogger logger, JClassType type, Map<String, PropertyAccessorsBuilder> propertiesMap,
+                                      boolean mixin ) {
         for ( JMethod method : type.getMethods() ) {
-            if ( null != method.isConstructor() || method.isStatic() ) {
+            if ( null != method.isConstructor() || method.isStatic() || (type.getQualifiedSourceName()
+                    .equals( "java.lang.Object" ) && method.getName().equals( "getClass" )) ) {
                 continue;
             }
 
@@ -112,43 +134,27 @@ public final class PropertyParser {
             if ( null != returnType.isPrimitive() && JPrimitiveType.VOID.equals( returnType.isPrimitive() ) ) {
                 // might be a setter
                 if ( method.getParameters().length == 1 ) {
-                    String methodName = method.getName();
-                    if ( (methodName.startsWith( "set" ) && methodName.length() > 3) || method.isAnnotationPresent( JsonProperty.class ) ) {
-                        // it's a setter method
-                        String fieldName = extractFieldNameFromGetterSetterMethodName( methodName );
-                        PropertyAccessorsBuilder property = propertiesMap.get( fieldName );
-                        if ( null == property ) {
-                            property = new PropertyAccessorsBuilder( fieldName );
-                            propertiesMap.put( fieldName, property );
-                        }
-                        property.addSetter( method );
+                    String fieldName = extractFieldNameFromGetterSetterMethodName( method.getName() );
+                    PropertyAccessorsBuilder property = propertiesMap.get( fieldName );
+                    if ( null == property ) {
+                        property = new PropertyAccessorsBuilder( fieldName );
+                        propertiesMap.put( fieldName, property );
                     }
+                    property.addSetter( method, mixin );
                 }
             } else {
                 // might be a getter
                 if ( method.getParameters().length == 0 ) {
-                    String methodName = method.getName();
-                    if ( (methodName.startsWith( "get" ) && methodName.length() > 3) || (methodName.startsWith( "is" ) && methodName
-                            .length() > 2 && null != returnType.isPrimitive() && JPrimitiveType.BOOLEAN.equals( returnType
-                            .isPrimitive() )) || method.isAnnotationPresent( JsonProperty.class ) ) {
-                        // it's a getter method
-                        String fieldName = extractFieldNameFromGetterSetterMethodName( methodName );
-                        PropertyAccessorsBuilder property = propertiesMap.get( fieldName );
-                        if ( null == property ) {
-                            property = new PropertyAccessorsBuilder( fieldName );
-                            propertiesMap.put( fieldName, property );
-                        }
-                        property.addGetter( method );
+                    String fieldName = extractFieldNameFromGetterSetterMethodName( method.getName() );
+                    PropertyAccessorsBuilder property = propertiesMap.get( fieldName );
+                    if ( null == property ) {
+                        property = new PropertyAccessorsBuilder( fieldName );
+                        propertiesMap.put( fieldName, property );
                     }
+                    property.addGetter( method, mixin );
                 }
             }
         }
-
-        for ( JClassType interf : type.getImplementedInterfaces() ) {
-            parseMethods( logger, interf, propertiesMap );
-        }
-
-        parseMethods( logger, type.getSuperclass(), propertiesMap );
     }
 
     private static String extractFieldNameFromGetterSetterMethodName( String methodName ) {

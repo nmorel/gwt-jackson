@@ -62,14 +62,38 @@ public abstract class FieldAccessor {
 
     protected final Optional<JMethod> method;
 
-    protected FieldAccessor( String propertyName, JField field, JMethod method ) {
+    private final boolean useMethod;
+
+    protected FieldAccessor( String propertyName, boolean fieldAutoDetect, Optional<JField> field, boolean methodAutoDetect,
+                             Optional<JMethod> method ) {
         Preconditions.checkNotNull( propertyName );
-        Preconditions.checkArgument( null != field || null != method, "At least one of the field or method must be given" );
+        Preconditions.checkArgument( field.isPresent() || method.isPresent(), "At least one of the field or method must be given" );
 
         this.propertyName = propertyName;
-        this.field = Optional.fromNullable( field );
-        this.method = Optional.fromNullable( method );
+        this.field = field;
+        this.method = method;
+
+        // We first test if we can use the setter
+        if ( method.isPresent() && (methodAutoDetect || !fieldAutoDetect || !field.isPresent()) ) {
+            useMethod = true;
+        }
+        // else use the field
+        else {
+            useMethod = false;
+        }
     }
 
-    protected abstract Accessor getAccessor( String beanName, boolean samePackage );
+    public Accessor getAccessor( final String beanName, final boolean samePackage ) {
+        final boolean useJsni;
+        if ( useMethod ) {
+            useJsni = (samePackage && method.get().isPrivate()) || (!samePackage && !method.get().isPublic());
+        }
+        // else use the field
+        else {
+            useJsni = ((samePackage && field.get().isPrivate()) || (samePackage && !field.get().isPublic()));
+        }
+        return getAccessor( beanName, useMethod, useJsni );
+    }
+
+    protected abstract Accessor getAccessor( final String beanName, final boolean useMethod, final boolean useJsni );
 }

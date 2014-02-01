@@ -31,6 +31,9 @@
 
   <set-property name="user.agent" value="gecko1_8" />
 
+  <extend-configuration-property name="gwtjackson.configuration.extension"
+                                 value="com.github.nmorel.gwtjackson.client.mixins.MixInConfiguration" />
+
   <source path="client" />
   <source path="shared" />
 </module>

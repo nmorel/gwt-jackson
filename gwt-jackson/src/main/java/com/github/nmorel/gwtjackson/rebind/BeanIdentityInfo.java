@@ -32,7 +32,6 @@ import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JType;
 
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.extractBeanType;
-import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findAnnotationOnAnyAccessor;
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounteredAnnotationsOnAllHierarchy;
 
 /**
@@ -40,28 +39,29 @@ import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounte
  */
 public class BeanIdentityInfo {
 
-    public static BeanIdentityInfo process( TreeLogger logger, JacksonTypeOracle typeOracle,
+    public static BeanIdentityInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, RebindConfiguration configuration,
                                             JClassType type ) throws UnableToCompleteException {
-        return process( logger, typeOracle, type, null, false );
+        return process( logger, typeOracle, configuration, type, null, false );
     }
 
-    public static BeanIdentityInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, JType type,
-                                            PropertyAccessors propertyAccessors ) throws UnableToCompleteException {
+    public static BeanIdentityInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, RebindConfiguration configuration,
+                                            JType type, PropertyAccessors propertyAccessors ) throws UnableToCompleteException {
         JClassType classType = extractBeanType( logger, typeOracle, type );
         if ( null == classType ) {
             return null;
         } else {
-            return process( logger, typeOracle, classType, propertyAccessors, true );
+            return process( logger, typeOracle, configuration, classType, propertyAccessors, true );
         }
     }
 
-    private static BeanIdentityInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, JClassType type,
-                                             PropertyAccessors propertyAccessors, boolean property ) throws UnableToCompleteException {
+    private static BeanIdentityInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, RebindConfiguration configuration,
+                                             JClassType type, PropertyAccessors propertyAccessors,
+                                             boolean property ) throws UnableToCompleteException {
         JsonIdentityInfo jsonIdentityInfo = null;
         JsonIdentityReference jsonIdentityReference = null;
         if ( property ) {
-            jsonIdentityInfo = findAnnotationOnAnyAccessor( propertyAccessors, JsonIdentityInfo.class );
-            jsonIdentityReference = findAnnotationOnAnyAccessor( propertyAccessors, JsonIdentityReference.class );
+            jsonIdentityInfo = propertyAccessors.getAnnotation( JsonIdentityInfo.class );
+            jsonIdentityReference = propertyAccessors.getAnnotation( JsonIdentityReference.class );
             if ( null == jsonIdentityInfo && null == jsonIdentityReference ) {
                 // no override on field
                 return null;
@@ -69,12 +69,12 @@ public class BeanIdentityInfo {
         }
 
         if ( null == jsonIdentityInfo ) {
-            jsonIdentityInfo = findFirstEncounteredAnnotationsOnAllHierarchy( type, JsonIdentityInfo.class );
+            jsonIdentityInfo = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, type, JsonIdentityInfo.class );
         }
 
         if ( null != jsonIdentityInfo && ObjectIdGenerators.None.class != jsonIdentityInfo.generator() ) {
             if ( null == jsonIdentityReference ) {
-                jsonIdentityReference = findFirstEncounteredAnnotationsOnAllHierarchy( type, JsonIdentityReference.class );
+                jsonIdentityReference = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, type, JsonIdentityReference.class );
             }
             return new BeanIdentityInfo( jsonIdentityInfo.property(), null != jsonIdentityReference && jsonIdentityReference
                     .alwaysAsId(), jsonIdentityInfo.generator(), jsonIdentityInfo.scope(), typeOracle );

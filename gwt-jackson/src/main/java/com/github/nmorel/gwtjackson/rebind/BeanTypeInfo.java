@@ -33,7 +33,6 @@ import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JType;
 
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.extractBeanType;
-import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findAnnotationOnAnyAccessor;
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounteredAnnotationsOnAllHierarchy;
 
 /**
@@ -41,28 +40,29 @@ import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounte
  */
 public class BeanTypeInfo {
 
-    public static BeanTypeInfo process( TreeLogger logger, JacksonTypeOracle typeOracle,
+    public static BeanTypeInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, RebindConfiguration configuration,
                                         JClassType type ) throws UnableToCompleteException {
-        return process( logger, typeOracle, type, null, false );
+        return process( logger, typeOracle, configuration, type, null, false );
     }
 
-    public static BeanTypeInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, JType type,
+    public static BeanTypeInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, RebindConfiguration configuration, JType type,
                                         PropertyAccessors propertyAccessors ) throws UnableToCompleteException {
         JClassType classType = extractBeanType( logger, typeOracle, type );
         if ( null == classType ) {
             return null;
         } else {
-            return process( logger, typeOracle, classType, propertyAccessors, true );
+            return process( logger, typeOracle, configuration, classType, propertyAccessors, true );
         }
     }
 
-    private static BeanTypeInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, JClassType type, PropertyAccessors propertyAccessors,
+    private static BeanTypeInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, RebindConfiguration configuration,
+                                         JClassType type, PropertyAccessors propertyAccessors,
                                          boolean property ) throws UnableToCompleteException {
         JsonTypeInfo jsonTypeInfo = null;
         JsonSubTypes propertySubTypes = null;
         if ( property ) {
-            jsonTypeInfo = findAnnotationOnAnyAccessor( propertyAccessors, JsonTypeInfo.class );
-            propertySubTypes = findAnnotationOnAnyAccessor( propertyAccessors, JsonSubTypes.class );
+            jsonTypeInfo = propertyAccessors.getAnnotation( JsonTypeInfo.class );
+            propertySubTypes = propertyAccessors.getAnnotation( JsonSubTypes.class );
             if ( null == jsonTypeInfo && null == propertySubTypes ) {
                 // no override on field
                 return null;
@@ -70,7 +70,7 @@ public class BeanTypeInfo {
         }
 
         if ( null == jsonTypeInfo ) {
-            jsonTypeInfo = findFirstEncounteredAnnotationsOnAllHierarchy( type, JsonTypeInfo.class );
+            jsonTypeInfo = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, type, JsonTypeInfo.class );
             if ( null == jsonTypeInfo ) {
                 return null;
             }
@@ -82,14 +82,16 @@ public class BeanTypeInfo {
         result.propertyName = jsonTypeInfo.property().isEmpty() ? jsonTypeInfo.use().getDefaultPropertyName() : jsonTypeInfo.property();
 
         Map<JClassType, String> classToMetadata = new HashMap<JClassType, String>();
-        JsonSubTypes typeSubTypes = findFirstEncounteredAnnotationsOnAllHierarchy( type, JsonSubTypes.class );
+        JsonSubTypes typeSubTypes = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, type, JsonSubTypes.class );
         List<JClassType> allSubtypes = Arrays.asList( type.getSubtypes() );
-        classToMetadata.put( type, extractTypeMetadata( logger, type, type, jsonTypeInfo, propertySubTypes, typeSubTypes, allSubtypes ) );
+        classToMetadata
+                .put( type, extractTypeMetadata( logger, configuration, type, type, jsonTypeInfo, propertySubTypes, typeSubTypes,
+                        allSubtypes ) );
 
         for ( JClassType subtype : type.getSubtypes() ) {
             classToMetadata
-                    .put( subtype, extractTypeMetadata( logger, type, subtype, jsonTypeInfo, propertySubTypes, typeSubTypes,
-                            allSubtypes ) );
+                    .put( subtype, extractTypeMetadata( logger, configuration, type, subtype, jsonTypeInfo, propertySubTypes,
+                            typeSubTypes, allSubtypes ) );
         }
 
         result.mapTypeToMetadata = classToMetadata;
@@ -97,9 +99,9 @@ public class BeanTypeInfo {
         return result;
     }
 
-    private static String extractTypeMetadata( TreeLogger logger, JClassType baseType, JClassType subtype, JsonTypeInfo typeInfo,
-                                               JsonSubTypes propertySubTypes, JsonSubTypes baseSubTypes,
-                                               List<JClassType> allSubtypes ) throws UnableToCompleteException {
+    private static String extractTypeMetadata( TreeLogger logger, RebindConfiguration configuration, JClassType baseType,
+                                               JClassType subtype, JsonTypeInfo typeInfo, JsonSubTypes propertySubTypes,
+                                               JsonSubTypes baseSubTypes, List<JClassType> allSubtypes ) throws UnableToCompleteException {
         switch ( typeInfo.use() ) {
             case NAME:
                 // we first look the name on JsonSubTypes annotations. Top ones override the bottom ones.
@@ -109,7 +111,7 @@ public class BeanTypeInfo {
                 }
 
                 // we look if the name is defined on the type with JsonTypeName
-                JsonTypeName typeName = findFirstEncounteredAnnotationsOnAllHierarchy( subtype, JsonTypeName.class );
+                JsonTypeName typeName = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, subtype, JsonTypeName.class );
                 if ( null != typeName && null != typeName.value() && !typeName.value().isEmpty() ) {
                     return typeName.value();
                 }

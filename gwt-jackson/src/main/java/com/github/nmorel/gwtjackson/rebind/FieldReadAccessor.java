@@ -21,6 +21,7 @@ import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JField;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JType;
+import com.google.gwt.thirdparty.guava.common.base.Optional;
 import com.google.gwt.user.rebind.SourceWriter;
 
 /**
@@ -28,26 +29,25 @@ import com.google.gwt.user.rebind.SourceWriter;
  */
 public class FieldReadAccessor extends FieldAccessor {
 
-    protected FieldReadAccessor( String propertyName, JField field, JMethod method ) {
-        super( propertyName, field, method );
+    protected FieldReadAccessor( String propertyName, boolean fieldAutoDetect, Optional<JField> field, boolean getterAutoDetect,
+                                 Optional<JMethod> getter ) {
+        super( propertyName, fieldAutoDetect, field, getterAutoDetect, getter );
     }
 
     @Override
-    protected Accessor getAccessor( String beanName, boolean samePackage ) {
-        // We first test if we can use the getter
-        if ( method.isPresent() && ((samePackage && !method.get().isPrivate()) || (!samePackage && method.get().isPublic())) ) {
-            return new Accessor( beanName + "." + method.get().getName() + "()" );
-        }
-
-        // Then the field
-        if ( field.isPresent() && ((samePackage && !field.get().isPrivate()) || (samePackage && field.get().isPublic())) ) {
-            return new Accessor( beanName + "." + field.get().getName() );
+    protected Accessor getAccessor( final String beanName, final boolean useMethod, final boolean useJsni ) {
+        if ( !useJsni ) {
+            if ( useMethod ) {
+                return new Accessor( beanName + "." + method.get().getName() + "()" );
+            } else {
+                return new Accessor( beanName + "." + field.get().getName() );
+            }
         }
 
         // field/getter has not been detected or is private or is in a different package. We use JSNI to access getter/field.
         final JType fieldType;
         final JClassType enclosingType;
-        if ( method.isPresent() ) {
+        if ( useMethod ) {
             fieldType = method.get().getReturnType();
             enclosingType = method.get().getEnclosingType();
         } else {
@@ -64,7 +64,7 @@ public class FieldReadAccessor extends FieldAccessor {
                 source.println( "private native %s %s(%s bean) /*-{", fieldType
                         .getParameterizedQualifiedSourceName(), methodName, enclosingType.getParameterizedQualifiedSourceName() );
                 source.indent();
-                if ( method.isPresent() ) {
+                if ( useMethod ) {
                     source.println( "return bean.@%s::%s()();", enclosingType.getQualifiedSourceName(), method.get().getName() );
                 } else {
                     source.println( "return bean.@%s::%s;", enclosingType.getQualifiedSourceName(), field.get().getName() );

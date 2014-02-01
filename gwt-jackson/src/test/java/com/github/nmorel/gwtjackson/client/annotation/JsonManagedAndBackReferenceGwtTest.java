@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.nmorel.gwtjackson.client.annotations;
+package com.github.nmorel.gwtjackson.client.annotation;
 
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;

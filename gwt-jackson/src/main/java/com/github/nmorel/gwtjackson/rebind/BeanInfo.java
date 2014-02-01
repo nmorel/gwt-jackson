@@ -28,6 +28,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -41,23 +42,26 @@ import com.google.gwt.core.ext.typeinfo.JParameter;
 import com.google.gwt.thirdparty.guava.common.base.Optional;
 
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounteredAnnotationsOnAllHierarchy;
+import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.getAnnotation;
+import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.isAnnotationPresent;
 
 /**
  * @author Nicolas Morel
  */
 public final class BeanInfo {
 
-    public static BeanInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, BeanJsonMapperInfo mapperInfo ) throws
-            UnableToCompleteException {
+    public static BeanInfo process( TreeLogger logger, JacksonTypeOracle typeOracle, RebindConfiguration configuration,
+                                    BeanJsonMapperInfo mapperInfo ) throws UnableToCompleteException {
         BeanInfo result = new BeanInfo();
         result.type = mapperInfo.getType();
 
         result.parameterizedTypes = null == mapperInfo.getType().isGenericType() ? new JClassType[0] : mapperInfo.getType().isGenericType()
                 .getTypeParameters();
 
-        determineInstanceCreator( logger, result );
+        determineInstanceCreator( configuration, logger, result );
 
-        JsonAutoDetect jsonAutoDetect = findFirstEncounteredAnnotationsOnAllHierarchy( mapperInfo.getType(), JsonAutoDetect.class );
+        JsonAutoDetect jsonAutoDetect = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, mapperInfo
+                .getType(), JsonAutoDetect.class );
         if ( null != jsonAutoDetect ) {
             result.creatorVisibility = jsonAutoDetect.creatorVisibility();
             result.fieldVisibility = jsonAutoDetect.fieldVisibility();
@@ -66,7 +70,7 @@ public final class BeanInfo {
             result.setterVisibility = jsonAutoDetect.setterVisibility();
         }
 
-        JsonIgnoreProperties jsonIgnoreProperties = findFirstEncounteredAnnotationsOnAllHierarchy( mapperInfo
+        JsonIgnoreProperties jsonIgnoreProperties = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, mapperInfo
                 .getType(), JsonIgnoreProperties.class );
         if ( null != jsonIgnoreProperties ) {
             for ( String ignoreProperty : jsonIgnoreProperties.value() ) {
@@ -75,7 +79,7 @@ public final class BeanInfo {
             result.ignoreUnknown = jsonIgnoreProperties.ignoreUnknown();
         }
 
-        JsonPropertyOrder jsonPropertyOrder = findFirstEncounteredAnnotationsOnAllHierarchy( mapperInfo
+        JsonPropertyOrder jsonPropertyOrder = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, mapperInfo
                 .getType(), JsonPropertyOrder.class );
         result.propertyOrderAlphabetic = null != jsonPropertyOrder && jsonPropertyOrder.alphabetic();
         if ( null != jsonPropertyOrder && jsonPropertyOrder.value().length > 0 ) {
@@ -89,8 +93,8 @@ public final class BeanInfo {
             result.propertyOrderList = Collections.emptyList();
         }
 
-        result.identityInfo = Optional.fromNullable( BeanIdentityInfo.process( logger, typeOracle, mapperInfo.getType() ) );
-        result.typeInfo = Optional.fromNullable( BeanTypeInfo.process( logger, typeOracle, mapperInfo.getType() ) );
+        result.identityInfo = Optional.fromNullable( BeanIdentityInfo.process( logger, typeOracle, configuration, mapperInfo.getType() ) );
+        result.typeInfo = Optional.fromNullable( BeanTypeInfo.process( logger, typeOracle, configuration, mapperInfo.getType() ) );
 
         return result;
     }
@@ -102,14 +106,20 @@ public final class BeanInfo {
      * @param logger logger
      * @param info current bean info
      */
-    private static void determineInstanceCreator( TreeLogger logger, BeanInfo info ) {
+    private static void determineInstanceCreator( RebindConfiguration configuration, TreeLogger logger, BeanInfo info ) {
         if ( null != info.getType().isInterface() || info.getType().isAbstract() ) {
             return;
         }
 
+        Optional<JClassType> mixinClass = configuration.getMixInAnnotations( info.getType() );
+
         // we search for @JsonCreator annotation
         JConstructor creatorDefaultConstructor = null;
         JConstructor creatorConstructor = null;
+
+        // we keep the list containing the mixin creator and the real creator
+        List<? extends JAbstractMethod> creators = Collections.emptyList();
+
         for ( JConstructor constructor : info.getType().getConstructors() ) {
             if ( constructor.getParameters().length == 0 ) {
                 creatorDefaultConstructor = constructor;
@@ -121,17 +131,27 @@ public final class BeanInfo {
             //   * all its parameters are annotated with JsonProperty
             //   * or it has only one parameter
             // - or all its parameters are annotated with JsonProperty
-            boolean isAllParametersAnnotatedWithJsonProperty = isAllParametersAnnotatedWith( constructor, JsonProperty.class );
-            if ( (constructor.isAnnotationPresent( JsonCreator.class ) && ((isAllParametersAnnotatedWithJsonProperty) || (constructor
-                    .getParameters().length == 1))) || isAllParametersAnnotatedWithJsonProperty ) {
-                if ( null != creatorConstructor ) {
-                    // Jackson fails with an ArrayIndexOutOfBoundsException when it's the case, let's be more flexible
-                    logger.log( TreeLogger.Type.WARN, "More than one constructor annotated with @JsonCreator, " +
-                            "we use " + creatorConstructor );
-                    break;
-                } else {
-                    creatorConstructor = constructor;
+
+            List<JConstructor> constructors = new ArrayList<JConstructor>();
+            if ( mixinClass.isPresent() && null == mixinClass.get().isInterface() ) {
+                JConstructor mixinConstructor = mixinClass.get().findConstructor( constructor.getParameterTypes() );
+                if ( null != mixinConstructor ) {
+                    constructors.add( mixinConstructor );
                 }
+            }
+            constructors.add( constructor );
+
+            JsonIgnore jsonIgnore = getAnnotation( JsonIgnore.class, constructors );
+            if ( null != jsonIgnore && jsonIgnore.value() ) {
+                continue;
+            }
+
+            boolean isAllParametersAnnotatedWithJsonProperty = isAllParametersAnnotatedWith( constructors.get( 0 ), JsonProperty.class );
+            if ( (isAnnotationPresent( JsonCreator.class, constructors ) && ((isAllParametersAnnotatedWithJsonProperty) || (constructor
+                    .getParameters().length == 1))) || isAllParametersAnnotatedWithJsonProperty ) {
+                creatorConstructor = constructor;
+                creators = constructors;
+                break;
             }
         }
 
@@ -139,16 +159,27 @@ public final class BeanInfo {
         if ( null == creatorConstructor ) {
             // searching for factory method
             for ( JMethod method : info.getType().getMethods() ) {
-                if ( method.isStatic() && method.isAnnotationPresent( JsonCreator.class ) && (method
-                        .getParameters().length == 1 || isAllParametersAnnotatedWith( method, JsonProperty.class )) ) {
-                    if ( null != creatorFactory ) {
+                if ( method.isStatic() ) {
 
-                        // Jackson fails with an ArrayIndexOutOfBoundsException when it's the case, let's be more flexible
-                        logger.log( TreeLogger.Type.WARN, "More than one factory method annotated with @JsonCreator, " +
-                                "we use " + creatorFactory );
-                        break;
-                    } else {
+                    List<JMethod> methods = new ArrayList<JMethod>();
+                    if ( mixinClass.isPresent() && null == mixinClass.get().isInterface() ) {
+                        JMethod mixinMethod = mixinClass.get().findMethod( method.getName(), method.getParameterTypes() );
+                        if ( null != mixinMethod && mixinMethod.isStatic() ) {
+                            methods.add( mixinMethod );
+                        }
+                    }
+                    methods.add( method );
+
+                    JsonIgnore jsonIgnore = getAnnotation( JsonIgnore.class, methods );
+                    if ( null != jsonIgnore && jsonIgnore.value() ) {
+                        continue;
+                    }
+
+                    if ( isAnnotationPresent( JsonCreator.class, methods ) && (method
+                            .getParameters().length == 1 || isAllParametersAnnotatedWith( methods.get( 0 ), JsonProperty.class )) ) {
                         creatorFactory = method;
+                        creators = methods;
+                        break;
                     }
                 }
             }
@@ -163,16 +194,16 @@ public final class BeanInfo {
             info.creatorMethod = Optional.<JAbstractMethod>of( creatorDefaultConstructor );
         }
 
-        if ( info.creatorMethod.isPresent() ) {
-            if ( !info.isCreatorDefaultConstructor() ) {
-                if ( info.creatorMethod.get().getParameters().length == 1 && !isAllParametersAnnotatedWith( info.creatorMethod
-                        .get(), JsonProperty.class ) ) {
-                    // delegation constructor
-                    info.creatorDelegation = true;
-                } else {
-                    for ( JParameter parameter : info.creatorMethod.get().getParameters() ) {
-                        info.creatorParameters.put( parameter.getAnnotation( JsonProperty.class ).value(), parameter );
-                    }
+        if ( info.creatorMethod.isPresent() && !info.isCreatorDefaultConstructor() ) {
+            if ( info.creatorMethod.get().getParameters().length == 1 && !isAllParametersAnnotatedWith( creators
+                    .get( 0 ), JsonProperty.class ) ) {
+                // delegation constructor
+                info.creatorDelegation = true;
+            } else {
+                // we want the property name define in the mixin and the parameter defined in the real creator method
+                for ( int i = 0; i < info.getCreatorMethod().get().getParameters().length; i++ ) {
+                    info.creatorParameters.put( creators.get( 0 ).getParameters()[i].getAnnotation( JsonProperty.class ).value(), creators
+                            .get( creators.size() - 1 ).getParameters()[i] );
                 }
             }
         }

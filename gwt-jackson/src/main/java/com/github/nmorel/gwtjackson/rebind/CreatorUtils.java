@@ -18,17 +18,18 @@ package com.github.nmorel.gwtjackson.rebind;
 
 import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
+import java.util.List;
 
-import com.github.nmorel.gwtjackson.rebind.property.PropertyAccessors;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.TreeLogger.Type;
 import com.google.gwt.core.ext.UnableToCompleteException;
+import com.google.gwt.core.ext.typeinfo.HasAnnotations;
 import com.google.gwt.core.ext.typeinfo.JArrayType;
 import com.google.gwt.core.ext.typeinfo.JClassType;
-import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.thirdparty.guava.common.base.Function;
+import com.google.gwt.thirdparty.guava.common.base.Optional;
 
 /**
  * @author Nicolas Morel
@@ -54,14 +55,19 @@ public final class CreatorUtils {
      *
      * @return the annotation if found, null otherwise
      */
-    public static <T extends Annotation> T findFirstEncounteredAnnotationsOnAllHierarchy( JClassType type, Class<T> annotation ) {
+    public static <T extends Annotation> T findFirstEncounteredAnnotationsOnAllHierarchy( RebindConfiguration configuration,
+                                                                                          JClassType type, Class<T> annotation ) {
         JClassType currentType = type;
-        while ( null != currentType && !currentType.getQualifiedSourceName().equals( "java.lang.Object" ) ) {
+        while ( null != currentType ) {
+            Optional<JClassType> mixin = configuration.getMixInAnnotations( currentType );
+            if ( mixin.isPresent() && mixin.get().isAnnotationPresent( annotation ) ) {
+                return mixin.get().getAnnotation( annotation );
+            }
             if ( currentType.isAnnotationPresent( annotation ) ) {
                 return currentType.getAnnotation( annotation );
             }
             for ( JClassType interf : currentType.getImplementedInterfaces() ) {
-                T annot = findFirstEncounteredAnnotationsOnAllHierarchy( interf, annotation );
+                T annot = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, interf, annotation );
                 if ( null != annot ) {
                     return annot;
                 }
@@ -71,41 +77,22 @@ public final class CreatorUtils {
         return null;
     }
 
-    public static <T extends Annotation> T findAnnotationOnAnyAccessor( PropertyAccessors propertyAccessors, Class<T> annotation ) {
-        return findAnnotationOnAnyAccessor( propertyAccessors, annotation, false );
+    public static <T extends Annotation> boolean isAnnotationPresent( Class<T> annotation,
+                                                                      List<? extends HasAnnotations> hasAnnotationsList ) {
+        for ( HasAnnotations accessor : hasAnnotationsList ) {
+            if ( accessor.isAnnotationPresent( annotation ) ) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    public static <T extends Annotation> T findAnnotationOnAnyAccessor( PropertyAccessors propertyAccessors, Class<T> annotation,
-                                                                        boolean ignoreParameter ) {
-        // TODO with this current setup, an annotation present on a getter method in superclass will be returned instead of the same
-        // annotation present on field in the child class. Test the behaviour in jackson.
-
-        if ( !ignoreParameter && propertyAccessors.getParameter().isPresent() && propertyAccessors.getParameter().get()
-                .isAnnotationPresent( annotation ) ) {
-            return propertyAccessors.getParameter().get().getAnnotation( annotation );
-        }
-        if ( propertyAccessors.getGetter().isPresent() && propertyAccessors.getGetter().get().isAnnotationPresent( annotation ) ) {
-            return propertyAccessors.getGetter().get().getAnnotation( annotation );
-        }
-        if ( propertyAccessors.getSetter().isPresent() && propertyAccessors.getSetter().get().isAnnotationPresent( annotation ) ) {
-            return propertyAccessors.getSetter().get().getAnnotation( annotation );
-        }
-        if ( propertyAccessors.getField().isPresent() && propertyAccessors.getField().get().isAnnotationPresent( annotation ) ) {
-            return propertyAccessors.getField().get().getAnnotation( annotation );
-        }
-
-        for ( JMethod method : propertyAccessors.getGetters() ) {
-            if ( method.isAnnotationPresent( annotation ) ) {
-                return method.getAnnotation( annotation );
+    public static <T extends Annotation> T getAnnotation( Class<T> annotation, List<? extends HasAnnotations> hasAnnotationsList ) {
+        for ( HasAnnotations accessor : hasAnnotationsList ) {
+            if ( accessor.isAnnotationPresent( annotation ) ) {
+                return accessor.getAnnotation( annotation );
             }
         }
-
-        for ( JMethod method : propertyAccessors.getSetters() ) {
-            if ( method.isAnnotationPresent( annotation ) ) {
-                return method.getAnnotation( annotation );
-            }
-        }
-
         return null;
     }
 

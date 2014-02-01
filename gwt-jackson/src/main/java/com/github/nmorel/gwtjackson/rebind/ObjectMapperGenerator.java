@@ -20,6 +20,7 @@ import com.google.gwt.core.ext.Generator;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
+import com.google.gwt.core.ext.typeinfo.JClassType;
 
 /**
  * @author Nicolas Morel
@@ -29,8 +30,9 @@ public class ObjectMapperGenerator extends Generator {
     @Override
     public String generate( TreeLogger logger, GeneratorContext context, String typeName ) throws UnableToCompleteException {
         JacksonTypeOracle typeOracle = new JacksonTypeOracle( logger, context.getTypeOracle() );
-        RebindConfiguration configuration = new RebindConfiguration( logger, context, typeOracle );
+        JClassType rootMapperClass = typeOracle.getType( typeName );
+        RebindConfiguration configuration = new RebindConfiguration( logger, context, typeOracle, rootMapperClass );
         ObjectMapperCreator creator = new ObjectMapperCreator( logger, context, configuration, typeOracle );
-        return creator.create( typeName );
+        return creator.create( rootMapperClass );
     }
 }

@@ -92,6 +92,8 @@ public abstract class AbstractConfiguration {
 
     private final Map<Class, Class> mapTypeToKeyDeserializer = new HashMap<Class, Class>();
 
+    private final Map<Class, Class> mapMixInAnnotations = new HashMap<Class, Class>();
+
     protected AbstractConfiguration() {
         configure();
     }
@@ -126,6 +128,21 @@ public abstract class AbstractConfiguration {
         return new KeyTypeConfiguration<T>( type );
     }
 
+    /**
+     * Method to use for adding mix-in annotations to use for augmenting
+     * specified class or interface. All annotations from
+     * <code>mixinSource</code> are taken to override annotations
+     * that <code>target</code> (or its supertypes) has.
+     *
+     * @param target Class (or interface) whose annotations to effectively override
+     * @param mixinSource Class (or interface) whose annotations are to
+     * be "added" to target's annotations, overriding as necessary
+     */
+    protected AbstractConfiguration addMixInAnnotations( Class<?> target, Class<?> mixinSource ) {
+        mapMixInAnnotations.put( target, mixinSource );
+        return this;
+    }
+
     protected abstract void configure();
 
     public Map<Class, Class> getMapTypeToSerializer() {
@@ -142,5 +159,9 @@ public abstract class AbstractConfiguration {
 
     public Map<Class, Class> getMapTypeToKeyDeserializer() {
         return mapTypeToKeyDeserializer;
+    }
+
+    public Map<Class, Class> getMapMixInAnnotations() {
+        return mapMixInAnnotations;
     }
 }

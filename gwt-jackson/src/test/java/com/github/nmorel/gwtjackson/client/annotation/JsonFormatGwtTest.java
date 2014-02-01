@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.nmorel.gwtjackson.client.annotations;
+package com.github.nmorel.gwtjackson.client.annotation;
 
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
@@ -38,6 +38,7 @@ public class JsonFormatGwtTest extends GwtJacksonTestCase {
     public void testFormatDate() {
         tester.testFormatDate( createMapper( JsonFormatDateMapper.INSTANCE, newDefaultDeserializationContext(),
                 new JsonSerializationContext.Builder()
-                .writeDatesAsTimestamps( false ).build() ) );
+                        .writeDatesAsTimestamps( false ).build()
+        ) );
     }
 }

@@ -16,6 +16,7 @@
 
 package com.github.nmorel.gwtjackson.rebind.property;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -68,5 +69,17 @@ public interface PropertyAccessors {
      * @return the constructor parameter corresponding to the property
      */
     Optional<JParameter> getParameter();
+
+    <T extends Annotation> boolean isAnnotationPresentOnField( Class<T> annotation );
+
+    <T extends Annotation> boolean isAnnotationPresentOnGetter( Class<T> annotation );
+
+    <T extends Annotation> boolean isAnnotationPresentOnSetter( Class<T> annotation );
+
+    <T extends Annotation> boolean isAnnotationPresent( Class<T> annotation );
+
+    <T extends Annotation> T getAnnotation( Class<T> annotation );
+
+    <T extends Annotation> T getAnnotation( Class<T> annotation, boolean ignoreParameter );
 
 }

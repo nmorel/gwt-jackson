@@ -16,12 +16,18 @@
 
 package com.github.nmorel.gwtjackson.rebind;
 
+import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.github.nmorel.gwtjackson.client.AbstractConfiguration;
+import com.github.nmorel.gwtjackson.client.annotation.JsonMixIns;
+import com.github.nmorel.gwtjackson.client.annotation.JsonMixIns.JsonMixIn;
 import com.google.gwt.core.ext.BadPropertyValueException;
 import com.google.gwt.core.ext.ConfigurationProperty;
 import com.google.gwt.core.ext.GeneratorContext;
@@ -38,6 +44,7 @@ import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.core.ext.typeinfo.TypeOracleException;
 import com.google.gwt.thirdparty.guava.common.base.Optional;
 import com.google.gwt.thirdparty.guava.common.collect.ImmutableList;
+import com.google.gwt.util.tools.shared.Md5Utils;
 
 /**
  * Wrap the default configuration + user configuration. It reads the configuration from {@link DefaultConfiguration} and any {@link
@@ -140,11 +147,24 @@ public final class RebindConfiguration {
 
     private final Map<String, MapperInstance> keyDeserializers = new HashMap<String, MapperInstance>();
 
-    public RebindConfiguration( TreeLogger logger, GeneratorContext context, JacksonTypeOracle typeOracle ) throws
-            UnableToCompleteException {
+    private final Map<String, JClassType> mixInAnnotations = new HashMap<String, JClassType>();
+
+    private final JClassType rootMapperClass;
+
+    private final String rootMapperHash;
+
+    // If the user adds an annotation on mapper, we have to make distinct serializer/deserializer for the impacted types.
+    // For now, it means any types and associated subtypes targeted by a mix-in annotation
+    private final Set<JClassType> specificTypes = new HashSet<JClassType>();
+
+    public RebindConfiguration( TreeLogger logger, GeneratorContext context, JacksonTypeOracle typeOracle, JClassType rootMapperClass )
+            throws UnableToCompleteException {
         this.logger = logger;
         this.context = context;
         this.typeOracle = typeOracle;
+        this.rootMapperClass = rootMapperClass;
+        this.rootMapperHash = new BigInteger( 1, Md5Utils.getMd5Digest( rootMapperClass.getQualifiedSourceName().getBytes() ) )
+                .toString( 16 );
 
         List<AbstractConfiguration> configurations = getAllConfigurations();
 
@@ -152,6 +172,7 @@ public final class RebindConfiguration {
             for ( MapperType mapperType : MapperType.values() ) {
                 addMappers( configuration, mapperType );
             }
+            addMixInAnnotations( configuration.getMapMixInAnnotations(), rootMapperClass.getAnnotation( JsonMixIns.class ) );
         }
     }
 
@@ -239,7 +260,7 @@ public final class RebindConfiguration {
             try {
                 return context.getTypeOracle().parse( clazz.getCanonicalName() );
             } catch ( TypeOracleException e ) {
-                logger.log( TreeLogger.WARN, "Cannot find the array denoted by the class " + clazz );
+                logger.log( TreeLogger.WARN, "Cannot find the array denoted by the class " + clazz.getCanonicalName() );
                 return null;
             }
 
@@ -256,7 +277,7 @@ public final class RebindConfiguration {
     private JClassType findClassType( Class<?> clazz ) {
         JClassType mapperType = context.getTypeOracle().findType( clazz.getCanonicalName() );
         if ( null == mapperType ) {
-            logger.log( Type.WARN, "Cannot find the type denoted by the class " + clazz );
+            logger.log( Type.WARN, "Cannot find the type denoted by the class " + clazz.getCanonicalName() );
             return null;
         }
         return mapperType;
@@ -379,6 +400,43 @@ public final class RebindConfiguration {
     }
 
     /**
+     * Adds to {@link #mixInAnnotations} the configured mix-in annotations passed in parameters
+     *
+     * @param mapMixInAnnotations mix-ins annotations to add
+     * @param mapperMixIns Annotation defined on mapper
+     */
+    private void addMixInAnnotations( Map<Class, Class> mapMixInAnnotations, JsonMixIns mapperMixIns ) {
+        if ( null != mapperMixIns ) {
+            for ( JsonMixIn jsonMixIn : mapperMixIns.value() ) {
+                JClassType targetType = findClassType( jsonMixIn.target() );
+                if ( null == targetType ) {
+                    continue;
+                }
+                specificTypes.add( targetType );
+                specificTypes.addAll( Arrays.asList( targetType.getSubtypes() ) );
+
+                mapMixInAnnotations.put( jsonMixIn.target(), jsonMixIn.mixIn() );
+            }
+        }
+
+        if ( !mapMixInAnnotations.isEmpty() ) {
+            for ( Entry<Class, Class> entry : mapMixInAnnotations.entrySet() ) {
+                JClassType targetType = findClassType( entry.getKey() );
+                if ( null == targetType ) {
+                    continue;
+                }
+
+                JClassType mixInType = findClassType( entry.getValue() );
+                if ( null == mixInType ) {
+                    continue;
+                }
+
+                mixInAnnotations.put( targetType.getQualifiedSourceName(), mixInType );
+            }
+        }
+    }
+
+    /**
      * Return a {@link MapperInstance} instantiating the serializer for the given type
      */
     public Optional<MapperInstance> getSerializer( JType type ) {
@@ -406,4 +464,30 @@ public final class RebindConfiguration {
         return Optional.fromNullable( keyDeserializers.get( type.getQualifiedSourceName() ) );
     }
 
+    /**
+     * Return the mixin type for the given type
+     */
+    public Optional<JClassType> getMixInAnnotations( JType type ) {
+        return Optional.fromNullable( mixInAnnotations.get( type.getQualifiedSourceName() ) );
+    }
+
+    /**
+     * @return the root mapper class that is currently generated
+     */
+    public JClassType getRootMapperClass() {
+        return rootMapperClass;
+    }
+
+    public String getRootMapperHash() {
+        return rootMapperHash;
+    }
+
+    /**
+     * @param beanType type
+     *
+     * @return true if beanType is specific to the mapper
+     */
+    public boolean isSpecificToMapper( JClassType beanType ) {
+        return specificTypes.contains( beanType );
+    }
 }

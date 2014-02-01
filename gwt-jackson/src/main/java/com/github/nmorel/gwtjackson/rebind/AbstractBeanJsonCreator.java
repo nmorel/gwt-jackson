@@ -122,6 +122,13 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
                 enclosingType = enclosingType.getEnclosingType();
             }
 
+            // if the type is specific to the mapper, we concatenate the name and hash of the mapper to it
+            if ( configuration.isSpecificToMapper( beanType ) ) {
+                JClassType rootMapperClass = configuration.getRootMapperClass();
+                builder.insert( 0, '_' ).insert( 0, configuration.getRootMapperHash() ).insert( 0, '_' ).insert( 0, rootMapperClass
+                        .getSimpleSourceName() );
+            }
+
             String simpleSerializerClassName = builder.toString() + "BeanJsonSerializerImpl";
             String qualifiedSerializerClassName = packageName + "." + simpleSerializerClassName;
             String simpleDeserializerClassName = builder.toString() + "BeanJsonDeserializerImpl";
@@ -139,7 +146,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
 
         if ( null == mapperInfo.getBeanInfo() ) {
             // retrieve the informations on the beans and its properties
-            BeanInfo info = BeanInfo.process( logger, typeOracle, mapperInfo );
+            BeanInfo info = BeanInfo.process( logger, typeOracle, configuration, mapperInfo );
             mapperInfo.setBeanInfo( info );
 
             Map<String, PropertyInfo> properties = findAllProperties( info );
@@ -202,12 +209,12 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
             return result;
         }
 
-        ImmutableMap<String, PropertyAccessors> fieldsMap = PropertyParser.findPropertyAccessors( logger, info );
+        ImmutableMap<String, PropertyAccessors> fieldsMap = PropertyParser.findPropertyAccessors( configuration, logger, info );
 
         // Processing all the properties accessible via field, getter or setter
         Map<String, PropertyInfo> propertiesMap = new LinkedHashMap<String, PropertyInfo>();
         for ( PropertyAccessors field : fieldsMap.values() ) {
-            PropertyInfo property = PropertyInfo.process( logger, typeOracle, field, mapperInfo );
+            PropertyInfo property = PropertyInfo.process( logger, typeOracle, configuration, field, mapperInfo );
             if ( !property.isVisible() ) {
                 logger.log( TreeLogger.Type.DEBUG, "Field " + field.getPropertyName() + " of type " + info.getType() + " is not visible" );
             } else {

@@ -36,15 +36,15 @@ import com.github.nmorel.gwtjackson.client.advanced.jsontype.PolymorphismIdNameA
 import com.github.nmorel.gwtjackson.client.advanced.jsontype.PolymorphismNoTypeInfoGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.jsontype.TypeNamesGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.jsontype.VisibleTypeIdGwtTest;
-import com.github.nmorel.gwtjackson.client.annotations.JsonAutoDetectGwtTest;
-import com.github.nmorel.gwtjackson.client.annotations.JsonCreatorGwtTest;
-import com.github.nmorel.gwtjackson.client.annotations.JsonFormatGwtTest;
-import com.github.nmorel.gwtjackson.client.annotations.JsonIgnoreGwtTest;
-import com.github.nmorel.gwtjackson.client.annotations.JsonIgnoreTypeGwtTest;
-import com.github.nmorel.gwtjackson.client.annotations.JsonManagedAndBackReferenceGwtTest;
-import com.github.nmorel.gwtjackson.client.annotations.JsonPropertyOrderGwtTest;
-import com.github.nmorel.gwtjackson.client.annotations.JsonRawValueGwtTest;
-import com.github.nmorel.gwtjackson.client.annotations.JsonRootNameGwtTest;
+import com.github.nmorel.gwtjackson.client.annotation.JsonAutoDetectGwtTest;
+import com.github.nmorel.gwtjackson.client.annotation.JsonCreatorGwtTest;
+import com.github.nmorel.gwtjackson.client.annotation.JsonFormatGwtTest;
+import com.github.nmorel.gwtjackson.client.annotation.JsonIgnoreGwtTest;
+import com.github.nmorel.gwtjackson.client.annotation.JsonIgnoreTypeGwtTest;
+import com.github.nmorel.gwtjackson.client.annotation.JsonManagedAndBackReferenceGwtTest;
+import com.github.nmorel.gwtjackson.client.annotation.JsonPropertyOrderGwtTest;
+import com.github.nmorel.gwtjackson.client.annotation.JsonRawValueGwtTest;
+import com.github.nmorel.gwtjackson.client.annotation.JsonRootNameGwtTest;
 import com.github.nmorel.gwtjackson.client.deser.BooleanJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.CharacterJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.EnumJsonDeserializerTest;
@@ -91,6 +91,11 @@ import com.github.nmorel.gwtjackson.client.mapper.CommonJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.IgnoreStaticGwtTest;
 import com.github.nmorel.gwtjackson.client.mapper.SimpleBeanObjectReaderTest;
 import com.github.nmorel.gwtjackson.client.mapper.SimpleBeanObjectWriterTest;
+import com.github.nmorel.gwtjackson.client.mixins.MixinDeserForClassGwtTest;
+import com.github.nmorel.gwtjackson.client.mixins.MixinDeserForCreatorsGwtTest;
+import com.github.nmorel.gwtjackson.client.mixins.MixinInheritanceGwtTest;
+import com.github.nmorel.gwtjackson.client.mixins.MixinSerForFieldsGwtTest;
+import com.github.nmorel.gwtjackson.client.mixins.MixinSerForMethodsGwtTest;
 import com.github.nmorel.gwtjackson.client.options.CharArrayOptionGwtTest;
 import com.github.nmorel.gwtjackson.client.options.DateOptionsGwtTest;
 import com.github.nmorel.gwtjackson.client.options.IndentGwtTest;
@@ -299,6 +304,13 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( WriteNullMapValuesOptionGwtTest.class );
         suite.addTestSuite( WriteEmptyJsonArraysOptionGwtTest.class );
         suite.addTestSuite( SingleArrayOptionGwtTest.class );
+
+        // Mix-in
+        suite.addTestSuite( MixinDeserForClassGwtTest.class );
+        suite.addTestSuite( MixinDeserForCreatorsGwtTest.class );
+        suite.addTestSuite( MixinInheritanceGwtTest.class );
+        suite.addTestSuite( MixinSerForFieldsGwtTest.class );
+        suite.addTestSuite( MixinSerForMethodsGwtTest.class );
 
         return suite;
     }

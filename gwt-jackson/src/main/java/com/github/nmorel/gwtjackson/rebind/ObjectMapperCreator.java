@@ -54,14 +54,12 @@ public class ObjectMapperCreator extends AbstractCreator {
     /**
      * Creates the implementation of the interface denoted by typeName and extending {@link ObjectMapper}
      *
-     * @param interfaceName name of the interface
+     * @param interfaceClass the interface to generate an implementation
      *
      * @return the fully qualified name of the created class
      * @throws UnableToCompleteException
      */
-    public String create( String interfaceName ) throws UnableToCompleteException {
-        JClassType interfaceClass = typeOracle.getType( interfaceName );
-
+    public String create( JClassType interfaceClass ) throws UnableToCompleteException {
         // we concatenate the name of all the enclosing class
         StringBuilder builder = new StringBuilder( interfaceClass.getSimpleSourceName() + "Impl" );
         JClassType enclosingType = interfaceClass.getEnclosingType();
@@ -96,7 +94,7 @@ public class ObjectMapperCreator extends AbstractCreator {
             abstractClass = ABSTRACT_OBJECT_WRITER_CLASS;
         }
         SourceWriter source = getSourceWriter( printWriter, packageName, mapperClassSimpleName, abstractClass + "<" +
-                mappedTypeClass.getParameterizedQualifiedSourceName() + ">", interfaceName );
+                mappedTypeClass.getParameterizedQualifiedSourceName() + ">", interfaceClass.getQualifiedSourceName() );
 
         writeClassBody( source, mapperClassSimpleName, mappedTypeClass, reader, writer );
 
@@ -154,7 +152,7 @@ public class ObjectMapperCreator extends AbstractCreator {
                                  boolean writer ) throws UnableToCompleteException {
         source.println();
 
-        JsonRootName jsonRootName = findFirstEncounteredAnnotationsOnAllHierarchy( mappedTypeClass, JsonRootName.class );
+        JsonRootName jsonRootName = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, mappedTypeClass, JsonRootName.class );
         String rootName;
         if ( null == jsonRootName || jsonRootName.value().isEmpty() ) {
             rootName = mappedTypeClass.getSimpleSourceName();
