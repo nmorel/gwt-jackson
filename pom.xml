@@ -84,11 +84,12 @@
     <maven-resources-plugin.version>2.6</maven-resources-plugin.version>
     <maven-surefire-plugin.version>2.16</maven-surefire-plugin.version>
     <maven-deploy-plugin.version>2.8.1</maven-deploy-plugin.version>
+    <maven-jar-plugin.version>2.4</maven-jar-plugin.version>
     <gwt-maven-plugin.version>2.5.1</gwt-maven-plugin.version>
 
     <!-- Dependencies version -->
     <gwt.version>2.5.1</gwt.version>
-    <jackson.version>2.3.0</jackson.version>
+    <jackson.version>2.3.2</jackson.version>
     <junit.version>4.11</junit.version>
   </properties>
 
@@ -162,6 +163,11 @@
         <plugin>
           <artifactId>maven-deploy-plugin</artifactId>
           <version>${maven-deploy-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>${maven-jar-plugin.version}</version>
         </plugin>
 
         <plugin>

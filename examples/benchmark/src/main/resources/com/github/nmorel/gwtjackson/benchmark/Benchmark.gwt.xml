@@ -18,7 +18,7 @@
 <module rename-to='benchmark'>
 
   <inherits name="com.google.gwt.user.User" />
-  <inherits name="org.gwtbootstrap3.GwtBootstrap3CDN"/>
+  <inherits name="org.gwtbootstrap3.GwtBootstrap3" />
 
   <inherits name="com.github.nmorel.gwtjackson.GwtJackson" />
   <inherits name="org.fusesource.restygwt.RestyGWT" />
