@@ -80,12 +80,6 @@
           <option name="WRAP_LONG_LINES" value="true" />
           <option name="SPACE_WITHIN_ANNOTATION_PARENTHESES" value="true" />
           <arrangement>
-            <groups>
-              <group>
-                <type>GETTERS_AND_SETTERS</type>
-                <order>KEEP</order>
-              </group>
-            </groups>
             <rules>
               <rule>
                 <match>

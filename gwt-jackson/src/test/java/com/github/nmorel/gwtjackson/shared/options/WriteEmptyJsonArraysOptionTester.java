@@ -35,6 +35,10 @@ public final class WriteEmptyJsonArraysOptionTester extends AbstractTester {
     public static class EmptyArrayBean {
 
         public String[] empty = new String[0];
+
+        public String[][] empty2d = new String[0][0];
+
+        public String[][] nonEmpty2d = new String[1][0];
     }
 
     public static final WriteEmptyJsonArraysOptionTester INSTANCE = new WriteEmptyJsonArraysOptionTester();
@@ -47,7 +51,7 @@ public final class WriteEmptyJsonArraysOptionTester extends AbstractTester {
     }
 
     public void testWriteEmptyArray( ObjectWriterTester<EmptyArrayBean> writer ) {
-        assertEquals( "{\"empty\":[]}", writer.write( new EmptyArrayBean() ) );
+        assertEquals( "{\"empty\":[],\"empty2d\":[],\"nonEmpty2d\":[[]]}", writer.write( new EmptyArrayBean() ) );
     }
 
     public void testWriteNonEmptyList( ObjectWriterTester<EmptyListBean> writer ) {
@@ -55,7 +59,7 @@ public final class WriteEmptyJsonArraysOptionTester extends AbstractTester {
     }
 
     public void testWriteNonEmptyArray( ObjectWriterTester<EmptyArrayBean> writer ) {
-        assertEquals( "{}", writer.write( new EmptyArrayBean() ) );
+        assertEquals( "{\"nonEmpty2d\":[[]]}", writer.write( new EmptyArrayBean() ) );
     }
 
 }

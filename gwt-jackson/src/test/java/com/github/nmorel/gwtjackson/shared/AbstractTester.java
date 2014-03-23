@@ -17,6 +17,7 @@
 package com.github.nmorel.gwtjackson.shared;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -130,5 +131,248 @@ public abstract class AbstractTester extends Assert {
 
     public static Date getUTCDate( int year, int month, int day, int hour, int minute, int second, int milli ) {
         return new Date( getUTCTime( year, month, day, hour, minute, second, milli ) );
+    }
+
+    public boolean isArray2dEquals( Object[][] a1, Object[][] a2 ) {
+        if ( a1 == a2 ) {
+            return true;
+        }
+        if ( a1 == null || a2 == null ) {
+            return false;
+        }
+        int length = a1.length;
+        if ( a2.length != length ) {
+            return false;
+        }
+
+        for ( int i = 0; i < length; i++ ) {
+            Object[] e1 = a1[i];
+            Object[] e2 = a2[i];
+
+            if ( !Arrays.deepEquals( e1, e2 ) ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isArray2dEquals( boolean[][] a1, boolean[][] a2 ) {
+        if ( a1 == a2 ) {
+            return true;
+        }
+        if ( a1 == null || a2 == null ) {
+            return false;
+        }
+        int length = a1.length;
+        if ( a2.length != length ) {
+            return false;
+        }
+
+        for ( int i = 0; i < length; i++ ) {
+            boolean[] e1 = a1[i];
+            boolean[] e2 = a2[i];
+
+            if ( !Arrays.equals( e1, e2 ) ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isArray2dEquals( byte[][] a1, byte[][] a2 ) {
+        if ( a1 == a2 ) {
+            return true;
+        }
+        if ( a1 == null || a2 == null ) {
+            return false;
+        }
+        int length = a1.length;
+        if ( a2.length != length ) {
+            return false;
+        }
+
+        for ( int i = 0; i < length; i++ ) {
+            byte[] e1 = a1[i];
+            byte[] e2 = a2[i];
+
+            if ( !Arrays.equals( e1, e2 ) ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isArray2dEquals( char[][] a1, char[][] a2 ) {
+        if ( a1 == a2 ) {
+            return true;
+        }
+        if ( a1 == null || a2 == null ) {
+            return false;
+        }
+        int length = a1.length;
+        if ( a2.length != length ) {
+            return false;
+        }
+
+        for ( int i = 0; i < length; i++ ) {
+            char[] e1 = a1[i];
+            char[] e2 = a2[i];
+
+            if ( !Arrays.equals( e1, e2 ) ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isArray2dEquals( double[][] a1, double[][] a2 ) {
+        if ( a1 == a2 ) {
+            return true;
+        }
+        if ( a1 == null || a2 == null ) {
+            return false;
+        }
+        int length = a1.length;
+        if ( a2.length != length ) {
+            return false;
+        }
+
+        for ( int i = 0; i < length; i++ ) {
+            double[] e1 = a1[i];
+            double[] e2 = a2[i];
+
+            if ( !Arrays.equals( e1, e2 ) ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isArray2dEquals( float[][] a1, float[][] a2 ) {
+        if ( a1 == a2 ) {
+            return true;
+        }
+        if ( a1 == null || a2 == null ) {
+            return false;
+        }
+        int length = a1.length;
+        if ( a2.length != length ) {
+            return false;
+        }
+
+        for ( int i = 0; i < length; i++ ) {
+            float[] e1 = a1[i];
+            float[] e2 = a2[i];
+
+            if ( !Arrays.equals( e1, e2 ) ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isArray2dEquals( int[][] a1, int[][] a2 ) {
+        if ( a1 == a2 ) {
+            return true;
+        }
+        if ( a1 == null || a2 == null ) {
+            return false;
+        }
+        int length = a1.length;
+        if ( a2.length != length ) {
+            return false;
+        }
+
+        for ( int i = 0; i < length; i++ ) {
+            int[] e1 = a1[i];
+            int[] e2 = a2[i];
+
+            if ( !Arrays.equals( e1, e2 ) ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isArray2dEquals( long[][] a1, long[][] a2 ) {
+        if ( a1 == a2 ) {
+            return true;
+        }
+        if ( a1 == null || a2 == null ) {
+            return false;
+        }
+        int length = a1.length;
+        if ( a2.length != length ) {
+            return false;
+        }
+
+        for ( int i = 0; i < length; i++ ) {
+            long[] e1 = a1[i];
+            long[] e2 = a2[i];
+
+            if ( !Arrays.equals( e1, e2 ) ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isArray2dEquals( short[][] a1, short[][] a2 ) {
+        if ( a1 == a2 ) {
+            return true;
+        }
+        if ( a1 == null || a2 == null ) {
+            return false;
+        }
+        int length = a1.length;
+        if ( a2.length != length ) {
+            return false;
+        }
+
+        for ( int i = 0; i < length; i++ ) {
+            short[] e1 = a1[i];
+            short[] e2 = a2[i];
+
+            if ( !Arrays.equals( e1, e2 ) ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public <T> T[][] newArray2d( T[]... arrays ) {
+        return arrays;
+    }
+
+    public boolean[][] newArray2d( boolean[]... arrays ) {
+        return arrays;
+    }
+
+    public byte[][] newArray2d( byte[]... arrays ) {
+        return arrays;
+    }
+
+    public char[][] newArray2d( char[]... arrays ) {
+        return arrays;
+    }
+
+    public double[][] newArray2d( double[]... arrays ) {
+        return arrays;
+    }
+
+    public float[][] newArray2d( float[]... arrays ) {
+        return arrays;
+    }
+
+    public int[][] newArray2d( int[]... arrays ) {
+        return arrays;
+    }
+
+    public long[][] newArray2d( long[]... arrays ) {
+        return arrays;
+    }
+
+    public short[][] newArray2d( short[]... arrays ) {
+        return arrays;
     }
 }

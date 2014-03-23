@@ -75,6 +75,15 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
                 "\"integerPrimitiveArray\":[4,5,6,null,7,8]," +
                 "\"longPrimitiveArray\":[9223372036854775807,null,-9223372036854775808]," +
                 "\"shortPrimitiveArray\":[9,null,7,8,15]," +
+                "\"stringArray2d\":[[\"Jean\",\"Dujardin\"],[\"Omar\",\"Sy\"],[\"toto\",null]]," +
+                "\"booleanPrimitiveArray2d\":[[true,false],[false,false]]," +
+                "\"bytePrimitiveArray2d\":[\"SGVsbG8=\",\"V29ybGQ=\"]," +
+                "\"characterPrimitiveArray2d\":[\"ço\",\"ab\"]," +
+                "\"doublePrimitiveArray2d\":[[45.789,5.1024]]," +
+                "\"floatPrimitiveArray2d\":[[]]," +
+                "\"integerPrimitiveArray2d\":[[1,2,3],[4,5,6],[7,8,9]]," +
+                "\"longPrimitiveArray2d\":[[9223372036854775807],[-9223372036854775808]]," +
+                "\"shortPrimitiveArray2d\":[[9,7,8,15]]," +
                 "\"voidProperty\":null" +
                 "}";
 
@@ -101,10 +110,14 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
         assertEquals( AnEnum.B, bean.getEnumProperty() );
         assertEquals( '\u00e7', bean.getCharPrimitive() );
         assertEquals( new Character( '\u00e8' ), bean.getCharBoxed() );
+
+        // Date
         assertEquals( new Date( 1345304756543l ), bean.getDate() );
         assertEquals( getUTCTime( 2012, 8, 18, 0, 0, 0, 0 ), bean.getSqlDate().getTime() );
         assertEquals( new Time( 15, 45, 56 ), bean.getSqlTime() );
         assertEquals( new java.sql.Timestamp( 1345304756546l ), bean.getSqlTimestamp() );
+
+        // Arrays
         assertTrue( Arrays.deepEquals( new String[]{"Hello", null, "World", "!"}, bean.getStringArray() ) );
         assertTrue( Arrays.equals( new boolean[]{true, false, false, true, false}, bean.getBooleanPrimitiveArray() ) );
         assertTrue( Arrays.equals( "Hello".getBytes(), bean.getBytePrimitiveArray() ) );
@@ -114,6 +127,24 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
         assertTrue( Arrays.equals( new int[]{4, 5, 6, 0, 7, 8}, bean.getIntegerPrimitiveArray() ) );
         assertTrue( Arrays.equals( new long[]{Long.MAX_VALUE, 0l, Long.MIN_VALUE}, bean.getLongPrimitiveArray() ) );
         assertTrue( Arrays.equals( new short[]{9, 0, 7, 8, 15}, bean.getShortPrimitiveArray() ) );
+
+        // 2D Arrays
+        assertTrue( isArray2dEquals( newArray2d( new String[]{"Jean", "Dujardin"}, new String[]{"Omar", "Sy"}, new String[]{"toto",
+                null} ), bean
+                .getStringArray2d() ) );
+        assertTrue( isArray2dEquals( newArray2d( new boolean[]{true, false}, new boolean[]{false, false} ), bean
+                .getBooleanPrimitiveArray2d() ) );
+        assertTrue( isArray2dEquals( newArray2d( "Hello".getBytes(), "World".getBytes() ), bean.getBytePrimitiveArray2d() ) );
+        assertTrue( isArray2dEquals( newArray2d( new char[]{'\u00e7', 'o'}, new char[]{'a', 'b'} ), bean.getCharacterPrimitiveArray2d() ) );
+        assertTrue( isArray2dEquals( newArray2d( new double[]{45.789, 5.1024} ), bean.getDoublePrimitiveArray2d() ) );
+        assertTrue( isArray2dEquals( newArray2d( new float[]{} ), bean.getFloatPrimitiveArray2d() ) );
+        assertTrue( isArray2dEquals( newArray2d( new int[]{1, 2, 3}, new int[]{4, 5, 6}, new int[]{7, 8, 9} ), bean
+                .getIntegerPrimitiveArray2d() ) );
+        assertTrue( isArray2dEquals( newArray2d( new long[]{Long.MAX_VALUE}, new long[]{Long.MIN_VALUE} ), bean
+                .getLongPrimitiveArray2d() ) );
+        assertTrue( isArray2dEquals( newArray2d( new short[]{9, 7, 8, 15} ), bean.getShortPrimitiveArray2d() ) );
+
+        // Void
         assertNull( bean.getVoidProperty() );
     }
 
@@ -139,10 +170,14 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
         bean.setEnumProperty( AnEnum.A );
         bean.setCharPrimitive( '\u00e7' );
         bean.setCharBoxed( '\u00e8' );
+
+        // Date
         bean.setDate( getUTCDate( 2012, 8, 18, 15, 45, 56, 543 ) );
         bean.setSqlDate( new java.sql.Date( getUTCTime( 2012, 8, 18, 15, 45, 56, 544 ) ) );
         bean.setSqlTime( new java.sql.Time( getUTCTime( 2012, 8, 18, 15, 45, 56, 545 ) ) );
         bean.setSqlTimestamp( new java.sql.Timestamp( getUTCTime( 2012, 8, 18, 15, 45, 56, 546 ) ) );
+
+        // Arrays
         bean.setStringArray( new String[]{"Hello", "World", "!"} );
         bean.setBooleanPrimitiveArray( new boolean[]{true, false, true, false} );
         bean.setBytePrimitiveArray( "Hello".getBytes() );
@@ -152,6 +187,19 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
         bean.setIntegerPrimitiveArray( new int[]{4, 5, 6, 7, 8} );
         bean.setLongPrimitiveArray( new long[]{Long.MAX_VALUE, Long.MIN_VALUE} );
         bean.setShortPrimitiveArray( new short[]{9, 7, 8, 15} );
+
+        // 2D Arrays
+        bean.setStringArray2d( newArray2d( new String[]{"Jean", "Dujardin"}, new String[]{"Omar", "Sy"}, new String[]{"toto", null} ) );
+        bean.setBooleanPrimitiveArray2d( newArray2d( new boolean[]{true, false}, new boolean[]{false, false} ) );
+        bean.setBytePrimitiveArray2d( newArray2d( "Hello".getBytes(), "World".getBytes() ) );
+        bean.setCharacterPrimitiveArray2d( newArray2d( new char[]{'\u00e7', 'o'}, new char[]{'a', 'b'} ) );
+        bean.setDoublePrimitiveArray2d( newArray2d( new double[]{45.789, 5.1024} ) );
+        bean.setFloatPrimitiveArray2d( newArray2d( new float[]{} ) );
+        bean.setIntegerPrimitiveArray2d( newArray2d( new int[]{1, 2, 3}, new int[]{4, 5, 6}, new int[]{7, 8, 9} ) );
+        bean.setLongPrimitiveArray2d( newArray2d( new long[]{Long.MAX_VALUE}, new long[]{Long.MIN_VALUE} ) );
+        bean.setShortPrimitiveArray2d( newArray2d( new short[]{9, 7, 8, 15} ) );
+
+        // Void
         bean.setVoidProperty( null );
 
         String expected = "{" +
@@ -188,6 +236,15 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
                 "\"integerPrimitiveArray\":[4,5,6,7,8]," +
                 "\"longPrimitiveArray\":[9223372036854775807,-9223372036854775808]," +
                 "\"shortPrimitiveArray\":[9,7,8,15]," +
+                "\"stringArray2d\":[[\"Jean\",\"Dujardin\"],[\"Omar\",\"Sy\"],[\"toto\",null]]," +
+                "\"booleanPrimitiveArray2d\":[[true,false],[false,false]]," +
+                "\"bytePrimitiveArray2d\":[\"SGVsbG8=\",\"V29ybGQ=\"]," +
+                "\"characterPrimitiveArray2d\":[\"ço\",\"ab\"]," +
+                "\"doublePrimitiveArray2d\":[[45.789,5.1024]]," +
+                "\"floatPrimitiveArray2d\":[[]]," +
+                "\"integerPrimitiveArray2d\":[[1,2,3],[4,5,6],[7,8,9]]," +
+                "\"longPrimitiveArray2d\":[[9223372036854775807],[-9223372036854775808]]," +
+                "\"shortPrimitiveArray2d\":[[9,7,8,15]]," +
                 "\"voidProperty\":null" +
                 "}";
 

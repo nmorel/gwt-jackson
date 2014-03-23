@@ -76,6 +76,14 @@ import com.github.nmorel.gwtjackson.client.deser.array.PrimitiveFloatArrayJsonDe
 import com.github.nmorel.gwtjackson.client.deser.array.PrimitiveIntegerArrayJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.array.PrimitiveLongArrayJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.array.PrimitiveShortArrayJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.array.dd.PrimitiveBooleanArray2dJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.array.dd.PrimitiveByteArray2dJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.array.dd.PrimitiveCharacterArray2dJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.array.dd.PrimitiveDoubleArray2dJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.array.dd.PrimitiveFloatArray2dJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.array.dd.PrimitiveIntegerArray2dJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.array.dd.PrimitiveLongArray2dJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.array.dd.PrimitiveShortArray2dJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.collection.AbstractCollectionJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.collection.AbstractListJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.collection.AbstractQueueJsonDeserializer;
@@ -146,6 +154,14 @@ import com.github.nmorel.gwtjackson.client.ser.array.PrimitiveFloatArrayJsonSeri
 import com.github.nmorel.gwtjackson.client.ser.array.PrimitiveIntegerArrayJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.array.PrimitiveLongArrayJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.array.PrimitiveShortArrayJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.array.dd.PrimitiveBooleanArray2dJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.array.dd.PrimitiveByteArray2dJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.array.dd.PrimitiveCharacterArray2dJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.array.dd.PrimitiveDoubleArray2dJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.array.dd.PrimitiveFloatArray2dJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.array.dd.PrimitiveIntegerArray2dJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.array.dd.PrimitiveLongArray2dJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.array.dd.PrimitiveShortArray2dJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.MapJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.key.BaseDateKeySerializer.DateKeySerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.key.BaseDateKeySerializer.SqlDateKeySerializer;
@@ -241,7 +257,7 @@ public final class DefaultConfiguration extends AbstractConfiguration {
         type( SortedMap.class ).serializer( MapJsonSerializer.class ).deserializer( SortedMapJsonDeserializer.class );
         type( TreeMap.class ).serializer( MapJsonSerializer.class ).deserializer( TreeMapJsonDeserializer.class );
 
-        // Array mappers
+        // Primitive array mappers
         type( boolean[].class ).serializer( PrimitiveBooleanArrayJsonSerializer.class )
                 .deserializer( PrimitiveBooleanArrayJsonDeserializer.class );
         type( byte[].class ).serializer( PrimitiveByteArrayJsonSerializer.class ).deserializer( PrimitiveByteArrayJsonDeserializer.class );
@@ -256,6 +272,24 @@ public final class DefaultConfiguration extends AbstractConfiguration {
         type( long[].class ).serializer( PrimitiveLongArrayJsonSerializer.class ).deserializer( PrimitiveLongArrayJsonDeserializer.class );
         type( short[].class ).serializer( PrimitiveShortArrayJsonSerializer.class )
                 .deserializer( PrimitiveShortArrayJsonDeserializer.class );
+
+        // Primitive 2D Array mappers
+        type( boolean[][].class ).serializer( PrimitiveBooleanArray2dJsonSerializer.class )
+                .deserializer( PrimitiveBooleanArray2dJsonDeserializer.class );
+        type( byte[][].class ).serializer( PrimitiveByteArray2dJsonSerializer.class )
+                .deserializer( PrimitiveByteArray2dJsonDeserializer.class );
+        type( char[][].class ).serializer( PrimitiveCharacterArray2dJsonSerializer.class )
+                .deserializer( PrimitiveCharacterArray2dJsonDeserializer.class );
+        type( double[][].class ).serializer( PrimitiveDoubleArray2dJsonSerializer.class )
+                .deserializer( PrimitiveDoubleArray2dJsonDeserializer.class );
+        type( float[][].class ).serializer( PrimitiveFloatArray2dJsonSerializer.class )
+                .deserializer( PrimitiveFloatArray2dJsonDeserializer.class );
+        type( int[][].class ).serializer( PrimitiveIntegerArray2dJsonSerializer.class )
+                .deserializer( PrimitiveIntegerArray2dJsonDeserializer.class );
+        type( long[][].class ).serializer( PrimitiveLongArray2dJsonSerializer.class )
+                .deserializer( PrimitiveLongArray2dJsonDeserializer.class );
+        type( short[][].class ).serializer( PrimitiveShortArray2dJsonSerializer.class )
+                .deserializer( PrimitiveShortArray2dJsonDeserializer.class );
 
         // Map's key mappers
         key( BigDecimal.class ).serializer( BigDecimalKeySerializer.class ).deserializer( BigDecimalKeyDeserializer.class );

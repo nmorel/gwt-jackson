@@ -17,6 +17,7 @@
 package com.github.nmorel.gwtjackson.client.deser.array;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
@@ -66,11 +67,27 @@ public abstract class AbstractArrayJsonDeserializer<T> extends JsonDeserializer<
      */
     protected <C> List<C> deserializeIntoList( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializer<C> deserializer,
                                                JsonDeserializerParameters params ) {
-        List<C> list = new ArrayList<C>();
+        List<C> list;
+
         reader.beginArray();
-        while ( JsonToken.END_ARRAY != reader.peek() ) {
-            list.add( deserializer.deserialize( reader, ctx, params ) );
+        JsonToken token = reader.peek();
+
+        if ( JsonToken.END_ARRAY == token ) {
+
+            // empty array, no need to create a list
+            list = Collections.emptyList();
+
+        } else {
+
+            list = new ArrayList<C>();
+
+            while ( JsonToken.END_ARRAY != token ) {
+                list.add( deserializer.deserialize( reader, ctx, params ) );
+                token = reader.peek();
+            }
+
         }
+
         reader.endArray();
         return list;
     }

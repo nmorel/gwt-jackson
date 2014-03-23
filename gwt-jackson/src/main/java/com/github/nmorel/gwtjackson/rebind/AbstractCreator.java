@@ -23,11 +23,14 @@ import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.deser.EnumJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.array.ArrayJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.array.ArrayJsonDeserializer.ArrayCreator;
+import com.github.nmorel.gwtjackson.client.deser.array.dd.Array2dJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.array.dd.Array2dJsonDeserializer.Array2dCreator;
 import com.github.nmorel.gwtjackson.client.deser.bean.AbstractBeanJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.map.key.EnumKeyDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer;
 import com.github.nmorel.gwtjackson.client.ser.EnumJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.array.ArrayJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.array.dd.Array2dJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.AbstractBeanJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.key.EnumKeySerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.key.KeySerializer;
@@ -160,10 +163,22 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
         JArrayType arrayType = type.isArray();
         if ( null != arrayType ) {
-            JSerializerType parameterSerializerType = getJsonSerializerFromType( arrayType.getComponentType() );
+            String arraySerializer;
+            if ( arrayType.getRank() == 1 ) {
+                // one dimension array
+                arraySerializer = ArrayJsonSerializer.class.getCanonicalName();
+            } else if ( arrayType.getRank() == 2 ) {
+                // two dimension array
+                arraySerializer = Array2dJsonSerializer.class.getCanonicalName();
+            } else {
+                // more dimensions are not supported
+                logger.log( Type.ERROR, "Arrays with 3 or more dimensions are not supported" );
+                throw new UnableToCompleteException();
+            }
+            JSerializerType parameterSerializerType = getJsonSerializerFromType( arrayType.getLeafType() );
             builder.parameters( new JSerializerType[]{parameterSerializerType} );
-            return builder.instance( String.format( "%s.newInstance(%s)", ArrayJsonSerializer.class
-                    .getCanonicalName(), parameterSerializerType.getInstance() ) ).build();
+            return builder.instance( String.format( "%s.newInstance(%s)", arraySerializer, parameterSerializerType.getInstance() ) )
+                    .build();
         }
 
         JClassType classType = type.isClassOrInterface();
@@ -308,18 +323,42 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         JArrayType arrayType = type.isArray();
         if ( null != arrayType ) {
             String method = "%s.newInstance(%s, %s)";
-            String arrayCreator = "new " + ArrayCreator.class.getCanonicalName() + "<" + arrayType.getComponentType()
-                    .getParameterizedQualifiedSourceName() + ">(){\n" +
-                    "  @Override\n" +
-                    "  public " + arrayType.getParameterizedQualifiedSourceName() + " create( int length ) {\n" +
-                    "    return new " + arrayType.getComponentType().getQualifiedSourceName() + "[length];\n" +
-                    "  }\n" +
-                    "}";
+            String arrayCreator;
+            String arrayDeserializer;
+            JType leafType = arrayType.getLeafType();
 
-            JDeserializerType parameterDeserializerType = getJsonDeserializerFromType( arrayType.getComponentType() );
+            if ( arrayType.getRank() == 1 ) {
+                // one dimension array
+                arrayCreator = "new " + ArrayCreator.class.getCanonicalName() + "<" + leafType
+                        .getParameterizedQualifiedSourceName() + ">(){\n" +
+                        "  @Override\n" +
+                        "  public " + arrayType.getParameterizedQualifiedSourceName() + " create( int length ) {\n" +
+                        "    return new " + leafType.getQualifiedSourceName() + "[length];\n" +
+                        "  }\n" +
+                        "}";
+                arrayDeserializer = ArrayJsonDeserializer.class.getCanonicalName();
+
+            } else if ( arrayType.getRank() == 2 ) {
+                // 2 dimensions array
+                arrayCreator = "new " + Array2dCreator.class.getCanonicalName() + "<" + leafType
+                        .getParameterizedQualifiedSourceName() + ">(){\n" +
+                        "  @Override\n" +
+                        "  public " + arrayType.getParameterizedQualifiedSourceName() + " create( int first, int second ) {\n" +
+                        "    return new " + leafType.getQualifiedSourceName() + "[first][second];\n" +
+                        "  }\n" +
+                        "}";
+                arrayDeserializer = Array2dJsonDeserializer.class.getCanonicalName();
+
+            } else {
+                // more dimensions are not supported
+                logger.log( Type.ERROR, "Arrays with 3 or more dimensions are not supported" );
+                throw new UnableToCompleteException();
+            }
+
+            JDeserializerType parameterDeserializerType = getJsonDeserializerFromType( leafType );
             builder.parameters( new JDeserializerType[]{parameterDeserializerType} );
-            return builder.instance( String.format( method, ArrayJsonDeserializer.class.getCanonicalName(), parameterDeserializerType
-                    .getInstance(), arrayCreator ) ).build();
+            return builder.instance( String.format( method, arrayDeserializer, parameterDeserializerType.getInstance(), arrayCreator ) )
+                    .build();
         }
 
         JClassType classType = type.isClassOrInterface();

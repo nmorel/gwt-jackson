@@ -90,6 +90,24 @@ public class SimpleBean {
 
     private short[] shortPrimitiveArray;
 
+    private String[][] stringArray2d;
+
+    private boolean[][] booleanPrimitiveArray2d;
+
+    private byte[][] bytePrimitiveArray2d;
+
+    private char[][] characterPrimitiveArray2d;
+
+    private double[][] doublePrimitiveArray2d;
+
+    private float[][] floatPrimitiveArray2d;
+
+    private int[][] integerPrimitiveArray2d;
+
+    private long[][] longPrimitiveArray2d;
+
+    private short[][] shortPrimitiveArray2d;
+
     private Void voidProperty;
 
     public String getString() {
@@ -354,6 +372,78 @@ public class SimpleBean {
 
     public void setShortPrimitiveArray( short[] shortPrimitiveArray ) {
         this.shortPrimitiveArray = shortPrimitiveArray;
+    }
+
+    public String[][] getStringArray2d() {
+        return stringArray2d;
+    }
+
+    public void setStringArray2d( String[][] stringArray2d ) {
+        this.stringArray2d = stringArray2d;
+    }
+
+    public boolean[][] getBooleanPrimitiveArray2d() {
+        return booleanPrimitiveArray2d;
+    }
+
+    public void setBooleanPrimitiveArray2d( boolean[][] booleanPrimitiveArray2d ) {
+        this.booleanPrimitiveArray2d = booleanPrimitiveArray2d;
+    }
+
+    public byte[][] getBytePrimitiveArray2d() {
+        return bytePrimitiveArray2d;
+    }
+
+    public void setBytePrimitiveArray2d( byte[][] bytePrimitiveArray2d ) {
+        this.bytePrimitiveArray2d = bytePrimitiveArray2d;
+    }
+
+    public char[][] getCharacterPrimitiveArray2d() {
+        return characterPrimitiveArray2d;
+    }
+
+    public void setCharacterPrimitiveArray2d( char[][] characterPrimitiveArray2d ) {
+        this.characterPrimitiveArray2d = characterPrimitiveArray2d;
+    }
+
+    public double[][] getDoublePrimitiveArray2d() {
+        return doublePrimitiveArray2d;
+    }
+
+    public void setDoublePrimitiveArray2d( double[][] doublePrimitiveArray2d ) {
+        this.doublePrimitiveArray2d = doublePrimitiveArray2d;
+    }
+
+    public float[][] getFloatPrimitiveArray2d() {
+        return floatPrimitiveArray2d;
+    }
+
+    public void setFloatPrimitiveArray2d( float[][] floatPrimitiveArray2d ) {
+        this.floatPrimitiveArray2d = floatPrimitiveArray2d;
+    }
+
+    public int[][] getIntegerPrimitiveArray2d() {
+        return integerPrimitiveArray2d;
+    }
+
+    public void setIntegerPrimitiveArray2d( int[][] integerPrimitiveArray2d ) {
+        this.integerPrimitiveArray2d = integerPrimitiveArray2d;
+    }
+
+    public long[][] getLongPrimitiveArray2d() {
+        return longPrimitiveArray2d;
+    }
+
+    public void setLongPrimitiveArray2d( long[][] longPrimitiveArray2d ) {
+        this.longPrimitiveArray2d = longPrimitiveArray2d;
+    }
+
+    public short[][] getShortPrimitiveArray2d() {
+        return shortPrimitiveArray2d;
+    }
+
+    public void setShortPrimitiveArray2d( short[][] shortPrimitiveArray2d ) {
+        this.shortPrimitiveArray2d = shortPrimitiveArray2d;
     }
 
     public Void getVoidProperty() {
