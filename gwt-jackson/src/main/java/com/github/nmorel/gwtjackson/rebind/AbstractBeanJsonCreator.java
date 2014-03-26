@@ -150,7 +150,8 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
 
         SourceWriter source = getSourceWriter( printWriter, packageName, getSimpleClassName() + getGenericClassBoundedParameters(),
                 getSuperclass() + "<" +
-                parameterizedTypes + ">" );
+                        parameterizedTypes + ">"
+        );
 
         writeClassBody( source, mapperInfo.getBeanInfo(), mapperInfo.getProperties() );
 
@@ -284,7 +285,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
             source.indent();
 
             source.println( "@Override" );
-            source.println( "protected %s<%s> newSerializer() {", JSON_SERIALIZER_CLASS, qualifiedType );
+            source.println( "protected %s<?> newSerializer() {", JSON_SERIALIZER_CLASS );
             source.indent();
             source.println( "return %s;", getJsonSerializerFromType( identityInfo.getType() ).getInstance() );
             source.outdent();
@@ -337,7 +338,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
             source.indent();
 
             source.println( "@Override" );
-            source.println( "protected %s<%s> newDeserializer() {", JSON_DESERIALIZER_CLASS, qualifiedType );
+            source.println( "protected %s<?> newDeserializer() {", JSON_DESERIALIZER_CLASS );
             source.indent();
             source.println( "return %s;", getJsonDeserializerFromType( identityInfo.getType() ).getInstance() );
             source.outdent();

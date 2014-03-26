@@ -29,10 +29,10 @@ public abstract class HasDeserializer<V, S extends JsonDeserializer<V>> {
 
     public S getDeserializer() {
         if ( null == deserializer ) {
-            deserializer = newDeserializer();
+            deserializer = (S) newDeserializer();
         }
         return deserializer;
     }
 
-    protected abstract S newDeserializer();
+    protected abstract JsonDeserializer<?> newDeserializer();
 }

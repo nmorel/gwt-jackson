@@ -118,6 +118,10 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      */
     protected JSerializerType getJsonSerializerFromType( JType type ) throws UnableToCompleteException {
         JSerializerType.Builder builder = new JSerializerType.Builder().type( type );
+        if ( null != type.isWildcard() ) {
+            // we use the base type to find the serializer to use
+            type = type.isWildcard().getBaseType();
+        }
 
         JTypeParameter typeParameter = type.isTypeParameter();
         if ( null != typeParameter ) {
@@ -276,6 +280,10 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      */
     protected JDeserializerType getJsonDeserializerFromType( JType type ) throws UnableToCompleteException {
         JDeserializerType.Builder builder = new JDeserializerType.Builder().type( type );
+        if ( null != type.isWildcard() ) {
+            // we use the base type to find the deserializer to use
+            type = type.isWildcard().getBaseType();
+        }
 
         JTypeParameter typeParameter = type.isTypeParameter();
         if ( null != typeParameter ) {

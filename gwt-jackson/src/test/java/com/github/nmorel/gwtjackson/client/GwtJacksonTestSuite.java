@@ -20,6 +20,7 @@ import com.github.nmorel.gwtjackson.client.advanced.GenericsAndInheritanceGwtTes
 import com.github.nmorel.gwtjackson.client.advanced.GenericsGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.InheritanceGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.PrivateAccessGwtTest;
+import com.github.nmorel.gwtjackson.client.advanced.WildcardGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.identity.ObjectIdDeserializationGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.identity.ObjectIdGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.identity.ObjectIdSerializationGwtTest;
@@ -135,7 +136,6 @@ import com.github.nmorel.gwtjackson.client.ser.number.FloatJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.number.IntegerJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.number.LongJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.number.ShortJsonSerializerTest;
-import com.github.nmorel.gwtjackson.client.stream.AbstractJsonWriterTest;
 import com.github.nmorel.gwtjackson.client.stream.impl.DefaultJsonReaderTest;
 import com.github.nmorel.gwtjackson.client.stream.impl.DefaultJsonWriterTest;
 import com.github.nmorel.gwtjackson.client.stream.impl.FastJsonWriterTest;
@@ -270,6 +270,7 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( InheritanceGwtTest.class );
         suite.addTestSuite( GenericsGwtTest.class );
         suite.addTestSuite( GenericsAndInheritanceGwtTest.class );
+        suite.addTestSuite( WildcardGwtTest.class );
 
         // Polymorphism
         suite.addTestSuite( PolymorphismNoTypeInfoGwtTest.class );
