@@ -188,8 +188,8 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
 
     private Map<String, PropertyInfo> findAllProperties( BeanInfo info ) throws UnableToCompleteException {
         Map<String, PropertyInfo> result = new LinkedHashMap<String, PropertyInfo>();
-        if ( null != info.getType().isInterface() ) {
-            // no properties on interface
+        if ( null != info.getType().isInterface() || info.getType().isAbstract() ) {
+            // no properties on interface and abstract class
             return result;
         }
 

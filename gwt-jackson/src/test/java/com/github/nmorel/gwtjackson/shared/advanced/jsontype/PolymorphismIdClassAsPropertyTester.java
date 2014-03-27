@@ -35,7 +35,10 @@ public final class PolymorphismIdClassAsPropertyTester extends AbstractTester {
     @JsonPropertyOrder( alphabetic = true )
     public static abstract class Person {
 
-        public String name;
+        public abstract String getName();
+
+        public abstract void setName(String name);
+
     }
 
     @JsonTypeInfo( use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "class" )
@@ -43,7 +46,20 @@ public final class PolymorphismIdClassAsPropertyTester extends AbstractTester {
 
         public int id;
 
+        protected String name;
+
         public String title;
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public void setName( String name ) {
+            this.name= name;
+        }
+
     }
 
     public static class Manager extends Employee {
@@ -53,10 +69,22 @@ public final class PolymorphismIdClassAsPropertyTester extends AbstractTester {
 
     public static class Customer extends Person {
 
+        public String name;
+
         public int satisfaction;
 
         @JsonIgnore
         public Integer ignored;
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public void setName( String name ) {
+            this.name= name;
+        }
     }
 
     public static final PolymorphismIdClassAsPropertyTester INSTANCE = new PolymorphismIdClassAsPropertyTester();
