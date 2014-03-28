@@ -19,6 +19,7 @@ package com.github.nmorel.gwtjackson.shared.advanced.jsontype;
 import java.util.Arrays;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -85,6 +86,17 @@ public final class PolymorphismIdClassAsPropertyTester extends AbstractTester {
         public void setName( String name ) {
             this.name= name;
         }
+    }
+
+    // Just a class to test that we do not try to generate a serializer/deserializer for it because it's abstract
+    public static abstract class Ignored extends Person {
+
+        // should fail if we try to generate a deserializer
+        @JsonCreator
+        public Ignored( String test ) {
+
+        }
+
     }
 
     public static final PolymorphismIdClassAsPropertyTester INSTANCE = new PolymorphismIdClassAsPropertyTester();

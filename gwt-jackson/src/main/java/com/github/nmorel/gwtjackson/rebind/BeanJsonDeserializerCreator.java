@@ -124,8 +124,17 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         }
 
         if ( beanInfo.getType().getSubtypes().length > 0 ) {
-            generateInitMapSubtypeClassToDeserializerMethod( source, beanInfo );
-            source.println();
+            List<JClassType> subtypes = new ArrayList<JClassType>();
+            for ( JClassType subtype : beanInfo.getType().getSubtypes() ) {
+                if ( null == subtype.isInterface() && !subtype.isAbstract() ) {
+                    subtypes.add( subtype );
+                }
+            }
+
+            if ( !subtypes.isEmpty() ) {
+                generateInitMapSubtypeClassToDeserializerMethod( source, subtypes );
+                source.println();
+            }
         }
 
         if ( beanInfo.isIgnoreUnknown() ) {
@@ -663,8 +672,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         source.println( "}" );
     }
 
-    private void generateInitMapSubtypeClassToDeserializerMethod( SourceWriter source,
-                                                                  BeanInfo beanInfo ) throws UnableToCompleteException {
+    private void generateInitMapSubtypeClassToDeserializerMethod( SourceWriter source, List<JClassType> subtypes ) throws
+            UnableToCompleteException {
 
         String mapTypes = String.format( "<%s, %s>", Class.class.getCanonicalName(), SubtypeDeserializer.class.getName() );
         String resultType = String.format( "%s%s", Map.class.getCanonicalName(), mapTypes );
@@ -674,9 +683,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
         source.indent();
 
-        JClassType[] subtypes = beanInfo.getType().getSubtypes();
-
-        source.println( "%s map = new %s%s(%s);", resultType, IdentityHashMap.class.getCanonicalName(), mapTypes, subtypes.length );
+        source.println( "%s map = new %s%s(%s);", resultType, IdentityHashMap.class.getCanonicalName(), mapTypes, subtypes.size() );
         source.println();
 
         for ( JClassType subtype : subtypes ) {

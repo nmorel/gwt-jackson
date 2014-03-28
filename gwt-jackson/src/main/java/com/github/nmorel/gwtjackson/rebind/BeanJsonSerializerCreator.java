@@ -17,9 +17,11 @@
 package com.github.nmorel.gwtjackson.rebind;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -95,8 +97,17 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
         }
 
         if ( beanInfo.getType().getSubtypes().length > 0 ) {
-            generateInitMapSubtypeClassToSerializerMethod( source, beanInfo );
-            source.println();
+            List<JClassType> subtypes = new ArrayList<JClassType>();
+            for ( JClassType subtype : beanInfo.getType().getSubtypes() ) {
+                if ( null == subtype.isInterface() && !subtype.isAbstract() ) {
+                    subtypes.add( subtype );
+                }
+            }
+
+            if ( !subtypes.isEmpty() ) {
+                generateInitMapSubtypeClassToSerializerMethod( source, subtypes );
+                source.println();
+            }
         }
 
         generateClassGetterMethod( source, beanInfo );
@@ -254,7 +265,8 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
         source.println( "}" );
     }
 
-    private void generateInitMapSubtypeClassToSerializerMethod( SourceWriter source, BeanInfo beanInfo ) throws UnableToCompleteException {
+    private void generateInitMapSubtypeClassToSerializerMethod( SourceWriter source, List<JClassType> subtypes ) throws
+            UnableToCompleteException {
 
         String mapTypes = String.format( "<%s, %s>", Class.class.getCanonicalName(), SubtypeSerializer.class.getName() );
         String resultType = String.format( "%s%s", Map.class.getCanonicalName(), mapTypes );
@@ -264,9 +276,7 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
 
         source.indent();
 
-        JClassType[] subtypes = beanInfo.getType().getSubtypes();
-
-        source.println( "%s map = new %s%s(%s);", resultType, IdentityHashMap.class.getCanonicalName(), mapTypes, subtypes.length );
+        source.println( "%s map = new %s%s(%s);", resultType, IdentityHashMap.class.getCanonicalName(), mapTypes, subtypes.size() );
         source.println();
 
         for ( JClassType subtype : subtypes ) {
