@@ -62,7 +62,7 @@ Maven
 <dependency>
   <groupId>com.github.nmorel.gwtjackson</groupId>
   <artifactId>gwt-jackson</artifactId>
-  <version>0.4.0</version>
+  <version>0.5.0</version>
   <scope>provided</scope>
 </dependency>
 ```
