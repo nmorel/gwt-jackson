@@ -27,10 +27,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.github.nmorel.gwtjackson.client.deser.EnumJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.bean.HasDeserializerAndParameters;
 import com.github.nmorel.gwtjackson.client.deser.bean.IdentityDeserializationInfo;
 import com.github.nmorel.gwtjackson.client.deser.bean.SimpleStringMap;
 import com.github.nmorel.gwtjackson.client.deser.bean.SubtypeDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.bean.SubtypeDeserializer.BeanSubtypeDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.bean.SubtypeDeserializer.EnumSubtypeDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 import com.github.nmorel.gwtjackson.rebind.FieldAccessor.Accessor;
@@ -687,12 +690,23 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         source.println();
 
         for ( JClassType subtype : subtypes ) {
-            source.println( "map.put( %s.class, new %s<%s>() {", subtype.getQualifiedSourceName(), SubtypeDeserializer.class
-                    .getName(), getQualifiedClassName( subtype ) );
+            String subtypeClass;
+            String deserializerClass;
+            if ( null == subtype.isEnum() ) {
+                subtypeClass = BeanSubtypeDeserializer.class.getCanonicalName();
+                deserializerClass = String.format( "%s<?>", ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS );
+            } else {
+                // enum can be a subtype for interface. In this case, we handle them differently
+                subtypeClass = EnumSubtypeDeserializer.class.getCanonicalName();
+                deserializerClass = String.format( "%s<%s>", EnumJsonDeserializer.class.getName(), getQualifiedClassName( subtype ) );
+            }
+
+            source.println( "map.put( %s.class, new %s<%s>() {", subtype
+                    .getQualifiedSourceName(), subtypeClass, getQualifiedClassName( subtype ) );
             source.indent();
 
             source.println( "@Override" );
-            source.println( "protected %s<?> newDeserializer() {", ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS );
+            source.println( "protected %s newDeserializer() {", deserializerClass );
             source.indent();
             source.println( "return %s;", getJsonDeserializerFromType( subtype ).getInstance() );
             source.outdent();

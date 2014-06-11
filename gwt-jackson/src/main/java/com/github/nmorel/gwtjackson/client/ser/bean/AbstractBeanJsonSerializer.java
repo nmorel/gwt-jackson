@@ -33,9 +33,9 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  *
  * @author Nicolas Morel
  */
-public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
+public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> implements InternalSerializer<T> {
 
-    private final Map<String, BeanPropertySerializer<T, ?>> serializers;// = new LinkedHashMap<String, BeanPropertySerializer<T, ?>>();
+    private final Map<String, BeanPropertySerializer<T, ?>> serializers;
 
     private final Map<Class, SubtypeSerializer> subtypeClassToSerializer;
 
@@ -83,6 +83,24 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
 
     @Override
     public void doSerialize( JsonWriter writer, @Nonnull T value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
+        getSerializer( writer, value, ctx )
+                .serializeInternally( writer, value, ctx, params, defaultIdentityInfo, defaultTypeInfo, serializers );
+    }
+
+    private InternalSerializer<T> getSerializer( JsonWriter writer, T value, JsonSerializationContext ctx ) {
+        if ( value.getClass() == getSerializedType() ) {
+            return this;
+        }
+        SubtypeSerializer subtypeSerializer = subtypeClassToSerializer.get( value.getClass() );
+        if ( null == subtypeSerializer ) {
+            throw ctx.traceError( value, "Cannot find serializer for class " + value.getClass(), writer );
+        }
+        return subtypeSerializer;
+    }
+
+    public void serializeInternally( JsonWriter writer, T value, JsonSerializationContext ctx, JsonSerializerParameters params,
+                                     IdentitySerializationInfo<T> defaultIdentityInfo, TypeSerializationInfo<T> defaultTypeInfo,
+                                     Map<String, BeanPropertySerializer<T, ?>> serializers ) {
 
         // Processing the parameters. We fallback to default if parameter is not present.
         final IdentitySerializationInfo identityInfo = null == params.getIdentityInfo() ? defaultIdentityInfo : params.getIdentityInfo();
@@ -128,7 +146,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
                         writer.name( identityInfo.getPropertyName() );
                         idWriter.serializeId( writer, ctx );
                     }
-                    getSerializer( writer, value, ctx ).serializeObject( writer, value, ctx, identityInfo, typeInfo, ignoredProperties );
+                    serializeObject( writer, value, ctx, identityInfo, ignoredProperties );
                     writer.endObject();
                     break;
 
@@ -142,7 +160,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
                         writer.name( identityInfo.getPropertyName() );
                         idWriter.serializeId( writer, ctx );
                     }
-                    getSerializer( writer, value, ctx ).serializeObject( writer, value, ctx, identityInfo, typeInfo, ignoredProperties );
+                    serializeObject( writer, value, ctx, identityInfo, ignoredProperties );
                     writer.endObject();
                     writer.endObject();
                     break;
@@ -157,7 +175,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
                         writer.name( identityInfo.getPropertyName() );
                         idWriter.serializeId( writer, ctx );
                     }
-                    getSerializer( writer, value, ctx ).serializeObject( writer, value, ctx, identityInfo, typeInfo, ignoredProperties );
+                    serializeObject( writer, value, ctx, identityInfo, ignoredProperties );
                     writer.endObject();
                     writer.endArray();
                     break;
@@ -171,20 +189,9 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
                 writer.name( identityInfo.getPropertyName() );
                 idWriter.serializeId( writer, ctx );
             }
-            getSerializer( writer, value, ctx ).serializeObject( writer, value, ctx, identityInfo, typeInfo, ignoredProperties );
+            serializeObject( writer, value, ctx, identityInfo, ignoredProperties );
             writer.endObject();
         }
-    }
-
-    private AbstractBeanJsonSerializer<T> getSerializer( JsonWriter writer, T value, JsonSerializationContext ctx ) {
-        if ( value.getClass() == getSerializedType() ) {
-            return this;
-        }
-        SubtypeSerializer subtypeSerializer = subtypeClassToSerializer.get( value.getClass() );
-        if ( null == subtypeSerializer ) {
-            throw ctx.traceError( value, "Cannot find serializer for class " + value.getClass(), writer );
-        }
-        return (AbstractBeanJsonSerializer<T>) subtypeSerializer.getSerializer();
     }
 
     /**
@@ -194,8 +201,8 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> {
      * @param value bean to serialize
      * @param ctx context of the serialization process
      */
-    public final void serializeObject( JsonWriter writer, T value, JsonSerializationContext ctx, IdentitySerializationInfo identityInfo,
-                                       TypeSerializationInfo typeInfo, Set<String> ignoredProperties ) {
+    private void serializeObject( JsonWriter writer, T value, JsonSerializationContext ctx, IdentitySerializationInfo identityInfo,
+                                  Set<String> ignoredProperties ) {
         for ( Map.Entry<String, BeanPropertySerializer<T, ?>> entry : serializers.entrySet() ) {
             if ( (null == identityInfo || !identityInfo.isProperty() || !identityInfo.getPropertyName().equals( entry
                     .getKey() )) && !ignoredProperties.contains( entry.getKey() ) ) {

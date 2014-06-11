@@ -25,9 +25,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.github.nmorel.gwtjackson.client.ser.EnumJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.RawValueJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.IdentitySerializationInfo;
 import com.github.nmorel.gwtjackson.client.ser.bean.SubtypeSerializer;
+import com.github.nmorel.gwtjackson.client.ser.bean.SubtypeSerializer.BeanSubtypeSerializer;
+import com.github.nmorel.gwtjackson.client.ser.bean.SubtypeSerializer.EnumSubtypeSerializer;
 import com.github.nmorel.gwtjackson.rebind.FieldAccessor.Accessor;
 import com.github.nmorel.gwtjackson.rebind.type.JSerializerType;
 import com.google.gwt.core.ext.GeneratorContext;
@@ -280,12 +283,23 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
         source.println();
 
         for ( JClassType subtype : subtypes ) {
-            source.println( "map.put( %s.class, new %s<%s>() {", subtype.getQualifiedSourceName(), SubtypeSerializer.class
-                    .getName(), getQualifiedClassName( subtype ) );
+            String subtypeClass;
+            String serializerClass;
+            if ( null == subtype.isEnum() ) {
+                subtypeClass = BeanSubtypeSerializer.class.getCanonicalName();
+                serializerClass = String.format( "%s<?>", ABSTRACT_BEAN_JSON_SERIALIZER_CLASS );
+            } else {
+                // enum can be a subtype for interface. In this case, we handle them differently
+                subtypeClass = EnumSubtypeSerializer.class.getCanonicalName();
+                serializerClass = String.format( "%s<%s>", EnumJsonSerializer.class.getName(), getQualifiedClassName( subtype ) );
+            }
+
+            source.println( "map.put( %s.class, new %s<%s>() {", subtype
+                    .getQualifiedSourceName(), subtypeClass, getQualifiedClassName( subtype ) );
             source.indent();
 
             source.println( "@Override" );
-            source.println( "protected %s<?> newSerializer() {", ABSTRACT_BEAN_JSON_SERIALIZER_CLASS );
+            source.println( "protected %s newSerializer() {", serializerClass );
             source.indent();
             source.println( "return %s;", getJsonSerializerFromType( subtype ).getInstance() );
             source.outdent();
