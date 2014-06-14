@@ -42,10 +42,10 @@
 
     <!-- Plugins version -->
     <jetty.version>9.1.3.v20140225</jetty.version>
-    <gwt-maven-plugin.version>2.6.0</gwt-maven-plugin.version>
+    <gwt-maven-plugin.version>2.6.1</gwt-maven-plugin.version>
 
     <!-- Dependencies version -->
-    <gwt.version>2.6.0</gwt.version>
+    <gwt.version>2.6.1</gwt.version>
   </properties>
 
   <dependencies>
