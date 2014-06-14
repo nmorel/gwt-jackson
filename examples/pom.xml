@@ -33,6 +33,7 @@
     <module>hello</module>
     <module>profiling</module>
     <module>benchmark</module>
+    <module>gwtp</module>
   </modules>
 
   <properties>
