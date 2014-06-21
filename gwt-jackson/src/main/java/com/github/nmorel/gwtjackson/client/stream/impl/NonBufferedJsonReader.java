@@ -1384,10 +1384,20 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
   @Override
   public String nextValue()
   {
+    int p = peeked;
+    if (p == PEEKED_NONE) {
+      p = doPeek();
+    }
+
+    if(p == PEEKED_NULL) {
+      peeked = PEEKED_NONE;
+      return "null";
+    }
+
     StringBuilder builder = new StringBuilder();
     int count = 0;
     do {
-      int p = peeked;
+      p = peeked;
       if (p == PEEKED_NONE) {
         p = doPeek();
       }

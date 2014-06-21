@@ -1634,6 +1634,14 @@ public abstract class AbstractJsonReaderTest extends GwtJacksonTestCase {
         }
     }
 
+    public void testNextValueNull() {
+        JsonReader reader = newJsonReader( "{\"value\":null}" );
+        reader.beginObject();
+        assertEquals( "value", reader.nextName() );
+        assertEquals( "null", reader.nextValue() );
+        reader.endObject();
+    }
+
     private void assertDocument( String document, Object... expectations ) {
         JsonReader reader = newJsonReader( document );
         reader.setLenient( true );

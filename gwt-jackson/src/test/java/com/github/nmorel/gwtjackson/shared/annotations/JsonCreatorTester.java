@@ -341,6 +341,17 @@ public final class JsonCreatorTester extends AbstractTester {
         assertEquals( 15, result.intProperty );
         assertEquals( "IAmAString", result.stringProperty );
         assertTrue( result.booleanProperty );
+
+        // test with booleanProperty at 1st position and null
+        input = "{\"booleanProperty\":null," +
+                "\"intProperty\":16," +
+                "\"stringProperty\":\"IAmANewString\"}";
+
+        result = reader.read( input );
+
+        assertEquals( 16, result.intProperty );
+        assertEquals( "IAmANewString", result.stringProperty );
+        assertNull( result.booleanProperty );
     }
 
     public void testSerializeBeanWithFactoryMethod( ObjectWriterTester<BeanWithFactoryMethod> writer ) {
