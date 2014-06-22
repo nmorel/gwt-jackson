@@ -106,7 +106,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
      * @return the fully qualified name of the created class
      * @throws com.google.gwt.core.ext.UnableToCompleteException
      */
-    public BeanJsonMapperInfo create( JClassType beanType ) throws UnableToCompleteException {
+    public String create( JClassType beanType ) throws UnableToCompleteException {
 
         mapperInfo = typeOracle.getBeanJsonMapperInfo( beanType );
 
@@ -129,7 +129,15 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
 
             mapperInfo = new BeanJsonMapperInfo( beanType, qualifiedSerializerClassName, simpleSerializerClassName,
                     qualifiedDeserializerClassName, simpleDeserializerClassName );
+        }
 
+        PrintWriter printWriter = getPrintWriter( packageName, getSimpleClassName() );
+        // the class already exists, no need to continue
+        if ( printWriter == null ) {
+            return getQualifiedClassName();
+        }
+
+        if ( null == mapperInfo.getBeanInfo() ) {
             // retrieve the informations on the beans and its properties
             BeanInfo info = BeanInfo.process( logger, typeOracle, mapperInfo );
             mapperInfo.setBeanInfo( info );
@@ -140,25 +148,18 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
             typeOracle.addBeanJsonMapperInfo( beanType, mapperInfo );
         }
 
-        PrintWriter printWriter = getPrintWriter( packageName, getSimpleClassName() );
-        // the class already exists, no need to continue
-        if ( printWriter == null ) {
-            return mapperInfo;
-        }
-
         String parameterizedTypes = beanType.getParameterizedQualifiedSourceName();
 
         SourceWriter source = getSourceWriter( printWriter, packageName, getSimpleClassName() + getGenericClassBoundedParameters(),
                 getSuperclass() + "<" +
-                        parameterizedTypes + ">"
-        );
+                        parameterizedTypes + ">" );
 
         writeClassBody( source, mapperInfo.getBeanInfo(), mapperInfo.getProperties() );
 
         source.println();
         source.commit( logger );
 
-        return mapperInfo;
+        return getQualifiedClassName();
     }
 
     protected abstract boolean isSerializer();
@@ -168,6 +169,14 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
             return mapperInfo.getSimpleSerializerClassName();
         } else {
             return mapperInfo.getSimpleDeserializerClassName();
+        }
+    }
+
+    protected String getQualifiedClassName() {
+        if ( isSerializer() ) {
+            return mapperInfo.getQualifiedSerializerClassName();
+        } else {
+            return mapperInfo.getQualifiedDeserializerClassName();
         }
     }
 

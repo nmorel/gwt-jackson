@@ -199,7 +199,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             BeanJsonSerializerCreator beanJsonSerializerCreator = new BeanJsonSerializerCreator( logger
                     .branch( Type.DEBUG, "Creating serializer for " + baseClassType
                             .getQualifiedSourceName() ), context, configuration, typeOracle );
-            BeanJsonMapperInfo info = beanJsonSerializerCreator.create( baseClassType );
+            String qualifiedClassName = beanJsonSerializerCreator.create( baseClassType );
 
             StringBuilder joinedTypeParameters = new StringBuilder();
             StringBuilder joinedTypeParameterSerializers = new StringBuilder();
@@ -229,7 +229,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             }
 
             builder.beanMapper( true );
-            builder.instance( String.format( "new %s%s(%s)", info.getQualifiedSerializerClassName(), joinedTypeParameters
+            builder.instance( String.format( "new %s%s(%s)", qualifiedClassName, joinedTypeParameters
                     .toString(), joinedTypeParameterSerializers ) );
             return builder.build();
         }
@@ -383,7 +383,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             BeanJsonDeserializerCreator beanJsonDeserializerCreator = new BeanJsonDeserializerCreator( logger
                     .branch( Type.DEBUG, "Creating deserializer for " + baseClassType
                             .getQualifiedSourceName() ), context, configuration, typeOracle );
-            BeanJsonMapperInfo info = beanJsonDeserializerCreator.create( baseClassType );
+            String qualifiedClassName = beanJsonDeserializerCreator.create( baseClassType );
 
             StringBuilder joinedTypeParameters = new StringBuilder();
             StringBuilder joinedTypeParameterDeserializers = new StringBuilder();
@@ -414,8 +414,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             }
 
             builder.beanMapper( true );
-            builder.instance( String.format( "new %s%s(%s)", info
-                    .getQualifiedDeserializerClassName(), joinedTypeParameters, joinedTypeParameterDeserializers ) );
+            builder.instance( String.format( "new %s%s(%s)", qualifiedClassName, joinedTypeParameters, joinedTypeParameterDeserializers ) );
             return builder.build();
         }
 
