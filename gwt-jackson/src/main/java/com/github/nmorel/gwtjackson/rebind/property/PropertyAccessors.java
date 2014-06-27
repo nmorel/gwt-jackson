@@ -17,7 +17,6 @@
 package com.github.nmorel.gwtjackson.rebind.property;
 
 import java.lang.annotation.Annotation;
-import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gwt.core.ext.typeinfo.JField;
@@ -56,30 +55,48 @@ public interface PropertyAccessors {
     Optional<JMethod> getSetter();
 
     /**
-     * @return additionnal getters found on superclass
-     */
-    List<JMethod> getGetters();
-
-    /**
-     * @return additionnal setters found on superclass
-     */
-    List<JMethod> getSetters();
-
-    /**
      * @return the constructor parameter corresponding to the property
      */
     Optional<JParameter> getParameter();
 
+    /**
+     * @param annotation annotation to find
+     * @param <T> Type of the annotation
+     *
+     * @return true if the annotation is present on any field
+     */
     <T extends Annotation> boolean isAnnotationPresentOnField( Class<T> annotation );
 
+    /**
+     * @param annotation annotation to find
+     * @param <T> Type of the annotation
+     *
+     * @return true if the annotation is present on any getter
+     */
     <T extends Annotation> boolean isAnnotationPresentOnGetter( Class<T> annotation );
 
+    /**
+     * @param annotation annotation to find
+     * @param <T> Type of the annotation
+     *
+     * @return true if the annotation is present on any setter/parameter
+     */
     <T extends Annotation> boolean isAnnotationPresentOnSetter( Class<T> annotation );
 
+    /**
+     * @param annotation annotation to find
+     * @param <T> Type of the annotation
+     *
+     * @return true if the annotation is present on any accessor
+     */
     <T extends Annotation> boolean isAnnotationPresent( Class<T> annotation );
 
-    <T extends Annotation> T getAnnotation( Class<T> annotation );
-
-    <T extends Annotation> T getAnnotation( Class<T> annotation, boolean ignoreParameter );
+    /**
+     * @param annotation annotation to find
+     * @param <T> Type of the annotation
+     *
+     * @return the first occurence of the annotation between all the accessors if any
+     */
+    <T extends Annotation> Optional<T> getAnnotation( Class<T> annotation );
 
 }

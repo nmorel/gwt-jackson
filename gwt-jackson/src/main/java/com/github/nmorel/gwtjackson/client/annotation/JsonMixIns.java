@@ -22,6 +22,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import com.fasterxml.jackson.annotation.JacksonAnnotation;
+import com.github.nmorel.gwtjackson.client.AbstractConfiguration;
+import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;
 import com.github.nmorel.gwtjackson.client.ObjectReader;
 import com.github.nmorel.gwtjackson.client.ObjectWriter;
@@ -29,6 +32,8 @@ import com.github.nmorel.gwtjackson.client.ObjectWriter;
 /**
  * Annotation used to define mix-in annotations specific to the annotated {@link ObjectMapper},
  * {@link ObjectReader} or {@link ObjectWriter}.
+ * <p>This will generate a {@link JsonSerializer} and {@link JsonDeserializer} specific to the
+ * annotated mapper. If you can, prefer the definition of your mix-in annotation in an {@link AbstractConfiguration}.</p>
  *
  * @author Nicolas Morel.
  */

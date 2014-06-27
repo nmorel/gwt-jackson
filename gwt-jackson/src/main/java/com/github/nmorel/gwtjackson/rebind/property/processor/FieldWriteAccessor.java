@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package com.github.nmorel.gwtjackson.rebind;
+package com.github.nmorel.gwtjackson.rebind.property.processor;
 
-import com.github.nmorel.gwtjackson.rebind.PropertyInfo.AdditionalMethod;
+import com.github.nmorel.gwtjackson.rebind.property.AdditionalMethod;
+import com.github.nmorel.gwtjackson.rebind.property.FieldAccessor;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JField;
 import com.google.gwt.core.ext.typeinfo.JMethod;
@@ -27,10 +28,10 @@ import com.google.gwt.user.rebind.SourceWriter;
 /**
  * @author Nicolas Morel
  */
-public class FieldWriteAccessor extends FieldAccessor {
+final class FieldWriteAccessor extends FieldAccessor {
 
-    public FieldWriteAccessor( String propertyName, boolean fieldAutoDetect, Optional<JField> field, boolean setterAutoDetect,
-                               Optional<JMethod> setter ) {
+    FieldWriteAccessor( String propertyName, boolean fieldAutoDetect, Optional<JField> field, boolean setterAutoDetect,
+                        Optional<JMethod> setter ) {
         super( propertyName, fieldAutoDetect, field, setterAutoDetect, setter );
     }
 

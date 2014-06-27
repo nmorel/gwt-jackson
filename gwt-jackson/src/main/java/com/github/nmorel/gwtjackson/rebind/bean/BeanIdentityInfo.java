@@ -14,22 +14,26 @@
  * limitations under the License.
  */
 
-package com.github.nmorel.gwtjackson.client.mixins;
+package com.github.nmorel.gwtjackson.rebind.bean;
 
-import com.github.nmorel.gwtjackson.client.AbstractConfiguration;
-import com.github.nmorel.gwtjackson.shared.mixins.MixinSerForMethodsTester.EmptyBean;
-import com.github.nmorel.gwtjackson.shared.mixins.MixinSerForMethodsTester.MixInForSimple;
+import com.fasterxml.jackson.annotation.ObjectIdGenerator;
+import com.google.gwt.core.ext.typeinfo.JType;
+import com.google.gwt.thirdparty.guava.common.base.Optional;
 
 /**
- * Configuration class to define all the MixIn annotations used in tests
- *
  * @author Nicolas Morel.
  */
-public class MixInConfiguration extends AbstractConfiguration {
+public interface BeanIdentityInfo {
 
-    @Override
-    protected void configure() {
-        addMixInAnnotations( EmptyBean.class, MixInForSimple.class );
-    }
+    boolean isIdABeanProperty();
+
+    String getPropertyName();
+
+    boolean isAlwaysAsId();
+
+    Class<? extends ObjectIdGenerator<?>> getGenerator();
+
+    Class<?> getScope();
+
+    Optional<JType> getType();
 }
-

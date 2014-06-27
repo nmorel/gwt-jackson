@@ -25,6 +25,8 @@ import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JParameterizedType;
+import com.google.gwt.thirdparty.guava.common.base.Optional;
+import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.google.gwt.user.rebind.SourceWriter;
 
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounteredAnnotationsOnAllHierarchy;
@@ -152,12 +154,13 @@ public class ObjectMapperCreator extends AbstractCreator {
                                  boolean writer ) throws UnableToCompleteException {
         source.println();
 
-        JsonRootName jsonRootName = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, mappedTypeClass, JsonRootName.class );
+        Optional<JsonRootName> jsonRootName = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, mappedTypeClass,
+                JsonRootName.class );
         String rootName;
-        if ( null == jsonRootName || jsonRootName.value().isEmpty() ) {
+        if ( !jsonRootName.isPresent() || Strings.isNullOrEmpty( jsonRootName.get().value() ) ) {
             rootName = mappedTypeClass.getSimpleSourceName();
         } else {
-            rootName = jsonRootName.value();
+            rootName = jsonRootName.get().value();
         }
 
         source.println( "public %s() {", mapperClassSimpleName );

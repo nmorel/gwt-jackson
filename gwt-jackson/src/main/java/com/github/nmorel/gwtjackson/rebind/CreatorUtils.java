@@ -20,11 +20,7 @@ import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
-import com.google.gwt.core.ext.TreeLogger;
-import com.google.gwt.core.ext.TreeLogger.Type;
-import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.HasAnnotations;
-import com.google.gwt.core.ext.typeinfo.JArrayType;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
 import com.google.gwt.core.ext.typeinfo.JType;
@@ -55,26 +51,26 @@ public final class CreatorUtils {
      *
      * @return the annotation if found, null otherwise
      */
-    public static <T extends Annotation> T findFirstEncounteredAnnotationsOnAllHierarchy( RebindConfiguration configuration,
-                                                                                          JClassType type, Class<T> annotation ) {
+    public static <T extends Annotation> Optional<T> findFirstEncounteredAnnotationsOnAllHierarchy( RebindConfiguration configuration,
+                                                                                                    JClassType type, Class<T> annotation ) {
         JClassType currentType = type;
         while ( null != currentType ) {
             Optional<JClassType> mixin = configuration.getMixInAnnotations( currentType );
             if ( mixin.isPresent() && mixin.get().isAnnotationPresent( annotation ) ) {
-                return mixin.get().getAnnotation( annotation );
+                return Optional.of( mixin.get().getAnnotation( annotation ) );
             }
             if ( currentType.isAnnotationPresent( annotation ) ) {
-                return currentType.getAnnotation( annotation );
+                return Optional.of( currentType.getAnnotation( annotation ) );
             }
             for ( JClassType interf : currentType.getImplementedInterfaces() ) {
-                T annot = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, interf, annotation );
-                if ( null != annot ) {
+                Optional<T> annot = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, interf, annotation );
+                if ( annot.isPresent() ) {
                     return annot;
                 }
             }
             currentType = currentType.getSuperclass();
         }
-        return null;
+        return Optional.absent();
     }
 
     public static <T extends Annotation> boolean isAnnotationPresent( Class<T> annotation,
@@ -87,48 +83,14 @@ public final class CreatorUtils {
         return false;
     }
 
-    public static <T extends Annotation> T getAnnotation( Class<T> annotation, List<? extends HasAnnotations> hasAnnotationsList ) {
+    public static <T extends Annotation> Optional<T> getAnnotation( Class<T> annotation,
+                                                                    List<? extends HasAnnotations> hasAnnotationsList ) {
         for ( HasAnnotations accessor : hasAnnotationsList ) {
             if ( accessor.isAnnotationPresent( annotation ) ) {
-                return accessor.getAnnotation( annotation );
+                return Optional.of( accessor.getAnnotation( annotation ) );
             }
         }
-        return null;
-    }
-
-    /**
-     * Extract the bean type from the type given in parameter. For {@link java.util.Collection}, it gives the bounded type. For {@link
-     * java.util.Map}, it gives the second bounded type. Otherwise, it gives the type given in parameter.
-     *
-     * @param type type to extract the bean type
-     *
-     * @return the extracted type
-     */
-    public static JClassType extractBeanType( TreeLogger logger, JacksonTypeOracle typeOracle,
-                                              JType type ) throws UnableToCompleteException {
-        JArrayType arrayType = type.isArray();
-        if ( null != arrayType ) {
-            return extractBeanType( logger, typeOracle, arrayType.getComponentType() );
-        }
-
-        JClassType classType = type.isClassOrInterface();
-        if ( null == classType ) {
-            return null;
-        } else if ( typeOracle.isIterable( classType ) ) {
-            if ( null == classType.isParameterized() || classType.isParameterized().getTypeArgs().length != 1 ) {
-                logger.log( Type.ERROR, "Wrong number of argument for a java.lang.Iterable implementation" );
-                throw new UnableToCompleteException();
-            }
-            return extractBeanType( logger, typeOracle, classType.isParameterized().getTypeArgs()[0] );
-        } else if ( typeOracle.isMap( classType ) ) {
-            if ( null == classType.isParameterized() || classType.isParameterized().getTypeArgs().length != 2 ) {
-                logger.log( Type.ERROR, "Wrong number of argument for a java.util.Map implementation" );
-                throw new UnableToCompleteException();
-            }
-            return extractBeanType( logger, typeOracle, classType.isParameterized().getTypeArgs()[1] );
-        } else {
-            return classType;
-        }
+        return Optional.absent();
     }
 
     /**

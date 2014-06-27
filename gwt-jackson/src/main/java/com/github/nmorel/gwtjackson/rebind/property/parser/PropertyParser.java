@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package com.github.nmorel.gwtjackson.rebind.property;
+package com.github.nmorel.gwtjackson.rebind.property.parser;
 
 import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.github.nmorel.gwtjackson.rebind.BeanInfo;
 import com.github.nmorel.gwtjackson.rebind.RebindConfiguration;
+import com.github.nmorel.gwtjackson.rebind.bean.BeanInfo;
+import com.github.nmorel.gwtjackson.rebind.property.PropertyAccessors;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JField;
@@ -36,6 +37,8 @@ import com.google.gwt.thirdparty.guava.common.collect.ImmutableMap;
 import com.google.gwt.thirdparty.guava.common.collect.Maps;
 
 /**
+ * Utility class used to parse a bean looking for all its properties
+ *
  * @author Nicolas Morel.
  */
 public final class PropertyParser {
@@ -47,8 +50,7 @@ public final class PropertyParser {
 
         Map<String, PropertyAccessorsBuilder> propertyAccessors = new LinkedHashMap<String, PropertyAccessorsBuilder>();
         for ( PropertyAccessorsBuilder fieldAccessors : fieldsAndMethodsMap.values() ) {
-            fieldAccessors.prebuild();
-            propertyAccessors.put( fieldAccessors.getPropertyName(), fieldAccessors );
+            propertyAccessors.put( fieldAccessors.computePropertyName(), fieldAccessors );
         }
 
         if ( !beanInfo.getCreatorParameters().isEmpty() ) {
@@ -57,9 +59,11 @@ public final class PropertyParser {
                 PropertyAccessorsBuilder fieldAccessors = propertyAccessors.get( entry.getKey() );
                 if ( null == fieldAccessors ) {
                     fieldAccessors = new PropertyAccessorsBuilder( entry.getKey() );
-                    propertyAccessors.put( entry.getKey(), fieldAccessors );
+                    fieldAccessors.setParameter( entry.getValue() );
+                    propertyAccessors.put( fieldAccessors.computePropertyName(), fieldAccessors );
+                } else {
+                    fieldAccessors.setParameter( entry.getValue() );
                 }
-                fieldAccessors.setParameter( entry.getValue() );
             }
         }
 
@@ -112,7 +116,7 @@ public final class PropertyParser {
                 property = new PropertyAccessorsBuilder( fieldName );
                 propertiesMap.put( fieldName, property );
             }
-            if ( property.getField().isPresent() ) {
+            if ( property.getField().isPresent() && !mixin ) {
                 // we found an other field with the same name on a superclass. we ignore it
                 logger.log( TreeLogger.Type.WARN, "A field with the same name as " + field
                         .getName() + " has already been found on child class" );

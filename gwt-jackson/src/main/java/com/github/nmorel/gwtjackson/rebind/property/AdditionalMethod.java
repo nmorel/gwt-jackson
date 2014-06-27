@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.nmorel.gwtjackson.client.mixins;
+package com.github.nmorel.gwtjackson.rebind.property;
 
-import com.github.nmorel.gwtjackson.client.AbstractConfiguration;
-import com.github.nmorel.gwtjackson.shared.mixins.MixinSerForMethodsTester.EmptyBean;
-import com.github.nmorel.gwtjackson.shared.mixins.MixinSerForMethodsTester.MixInForSimple;
+import com.google.gwt.user.rebind.SourceWriter;
 
 /**
- * Configuration class to define all the MixIn annotations used in tests
- *
  * @author Nicolas Morel.
  */
-public class MixInConfiguration extends AbstractConfiguration {
+public interface AdditionalMethod {
 
-    @Override
-    protected void configure() {
-        addMixInAnnotations( EmptyBean.class, MixInForSimple.class );
-    }
+    void write( SourceWriter source );
+
 }
-

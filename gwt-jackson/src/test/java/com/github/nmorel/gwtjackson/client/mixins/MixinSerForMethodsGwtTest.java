@@ -23,10 +23,8 @@ import com.github.nmorel.gwtjackson.client.annotation.JsonMixIns.JsonMixIn;
 import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
 import com.github.nmorel.gwtjackson.shared.mixins.MixinSerForMethodsTester;
 import com.github.nmorel.gwtjackson.shared.mixins.MixinSerForMethodsTester.BaseClass;
-import com.github.nmorel.gwtjackson.shared.mixins.MixinSerForMethodsTester.EmptyBean;
 import com.github.nmorel.gwtjackson.shared.mixins.MixinSerForMethodsTester.LeafClass;
 import com.github.nmorel.gwtjackson.shared.mixins.MixinSerForMethodsTester.MixIn;
-import com.github.nmorel.gwtjackson.shared.mixins.MixinSerForMethodsTester.MixInForSimple;
 import com.github.nmorel.gwtjackson.shared.mixins.MixinSerForMethodsTester.ObjectMixIn;
 import com.github.nmorel.gwtjackson.shared.mixins.MixinSerForMethodsTester.SimpleBean;
 import com.google.gwt.core.client.GWT;
@@ -40,7 +38,7 @@ public class MixinSerForMethodsGwtTest extends GwtJacksonTestCase {
 
     ///////
 
-    @JsonMixIns( {@JsonMixIn( target = BaseClass.class, mixIn = MixIn.class )} )
+    @JsonMixIns({@JsonMixIn(target = BaseClass.class, mixIn = MixIn.class)})
     public interface BaseClassMixinWriter extends ObjectWriter<BaseClass>, ObjectWriterTester<BaseClass> {
 
         static BaseClassMixinWriter INSTANCE = GWT.create( BaseClassMixinWriter.class );
@@ -52,7 +50,7 @@ public class MixinSerForMethodsGwtTest extends GwtJacksonTestCase {
 
     ///////
 
-    @JsonMixIns( {@JsonMixIn( target = BaseClass.class, mixIn = MixIn.class )} )
+    @JsonMixIns({@JsonMixIn(target = BaseClass.class, mixIn = MixIn.class)})
     public interface LeafClassMixinWriter extends ObjectWriter<LeafClass>, ObjectWriterTester<LeafClass> {
 
         static LeafClassMixinWriter INSTANCE = GWT.create( LeafClassMixinWriter.class );
@@ -64,7 +62,7 @@ public class MixinSerForMethodsGwtTest extends GwtJacksonTestCase {
 
     ///////
 
-    @JsonMixIns( {@JsonMixIn( target = EmptyBean.class, mixIn = MixInForSimple.class )} )
+    // MixIn added via MixInConfiguration
     public interface SimpleBeanMixinWriter extends ObjectWriter<SimpleBean>, ObjectWriterTester<SimpleBean> {
 
         static SimpleBeanMixinWriter INSTANCE = GWT.create( SimpleBeanMixinWriter.class );
@@ -76,7 +74,7 @@ public class MixinSerForMethodsGwtTest extends GwtJacksonTestCase {
 
     ///////
 
-    @JsonMixIns( {@JsonMixIn( target = Object.class, mixIn = ObjectMixIn.class )} )
+    @JsonMixIns({@JsonMixIn(target = Object.class, mixIn = ObjectMixIn.class)})
     public interface ObjectMixinWriter extends ObjectWriter<BaseClass>, ObjectWriterTester<BaseClass> {
 
         static ObjectMixinWriter INSTANCE = GWT.create( ObjectMixinWriter.class );

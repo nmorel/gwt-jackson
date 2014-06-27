@@ -31,7 +31,9 @@ import com.github.nmorel.gwtjackson.client.ser.bean.IdentitySerializationInfo;
 import com.github.nmorel.gwtjackson.client.ser.bean.SubtypeSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.SubtypeSerializer.BeanSubtypeSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.SubtypeSerializer.EnumSubtypeSerializer;
-import com.github.nmorel.gwtjackson.rebind.FieldAccessor.Accessor;
+import com.github.nmorel.gwtjackson.rebind.bean.BeanInfo;
+import com.github.nmorel.gwtjackson.rebind.property.FieldAccessor.Accessor;
+import com.github.nmorel.gwtjackson.rebind.property.PropertyInfo;
 import com.github.nmorel.gwtjackson.rebind.type.JSerializerType;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
@@ -39,6 +41,7 @@ import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.thirdparty.guava.common.base.Predicate;
 import com.google.gwt.thirdparty.guava.common.collect.Collections2;
+import com.google.gwt.thirdparty.guava.common.collect.ImmutableMap;
 import com.google.gwt.user.rebind.SourceWriter;
 
 /**
@@ -61,7 +64,7 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
     }
 
     @Override
-    protected void writeClassBody( SourceWriter source, BeanInfo beanInfo, Map<String,
+    protected void writeClassBody( SourceWriter source, BeanInfo beanInfo, ImmutableMap<String,
             PropertyInfo> properties ) throws UnableToCompleteException {
         source.println();
 

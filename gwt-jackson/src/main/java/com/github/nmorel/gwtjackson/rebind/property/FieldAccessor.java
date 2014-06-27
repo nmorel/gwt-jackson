@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.github.nmorel.gwtjackson.rebind;
+package com.github.nmorel.gwtjackson.rebind.property;
 
-import com.github.nmorel.gwtjackson.rebind.PropertyInfo.AdditionalMethod;
 import com.google.gwt.core.ext.typeinfo.JField;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.thirdparty.guava.common.base.Optional;

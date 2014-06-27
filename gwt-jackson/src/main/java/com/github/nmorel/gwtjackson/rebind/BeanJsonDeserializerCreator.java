@@ -36,7 +36,9 @@ import com.github.nmorel.gwtjackson.client.deser.bean.SubtypeDeserializer.BeanSu
 import com.github.nmorel.gwtjackson.client.deser.bean.SubtypeDeserializer.EnumSubtypeDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
-import com.github.nmorel.gwtjackson.rebind.FieldAccessor.Accessor;
+import com.github.nmorel.gwtjackson.rebind.bean.BeanInfo;
+import com.github.nmorel.gwtjackson.rebind.property.FieldAccessor.Accessor;
+import com.github.nmorel.gwtjackson.rebind.property.PropertyInfo;
 import com.github.nmorel.gwtjackson.rebind.type.JDeserializerType;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
@@ -49,6 +51,7 @@ import com.google.gwt.core.ext.typeinfo.JParameter;
 import com.google.gwt.thirdparty.guava.common.base.Function;
 import com.google.gwt.thirdparty.guava.common.base.Joiner;
 import com.google.gwt.thirdparty.guava.common.collect.Collections2;
+import com.google.gwt.thirdparty.guava.common.collect.ImmutableMap;
 import com.google.gwt.user.rebind.SourceWriter;
 
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.QUOTED_FUNCTION;
@@ -93,7 +96,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
     }
 
     @Override
-    protected void writeClassBody( SourceWriter source, BeanInfo beanInfo, Map<String,
+    protected void writeClassBody( SourceWriter source, BeanInfo beanInfo, ImmutableMap<String,
             PropertyInfo> properties ) throws UnableToCompleteException {
         source.println();
 
@@ -167,7 +170,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         source.println( "}" );
     }
 
-    private void generateInitInstanceBuilderMethod( SourceWriter source, BeanInfo beanInfo, Map<String,
+    private void generateInitInstanceBuilderMethod( SourceWriter source, BeanInfo beanInfo, ImmutableMap<String,
             PropertyInfo> properties ) throws UnableToCompleteException {
         source.println( "@Override" );
         source.println( "protected %s<%s> initInstanceBuilder() {", INSTANCE_BUILDER_CLASS, beanInfo.getType()
@@ -180,7 +183,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         source.println( "}" );
     }
 
-    private void generateInstanceBuilderClass( SourceWriter source, BeanInfo beanInfo, Map<String,
+    private void generateInstanceBuilderClass( SourceWriter source, BeanInfo beanInfo, ImmutableMap<String,
             PropertyInfo> properties ) throws UnableToCompleteException {
 
         source.println( "new %s<%s>() {", INSTANCE_BUILDER_CLASS, beanInfo.getType().getParameterizedQualifiedSourceName() );
@@ -247,7 +250,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
      * @param info info on bean
      * @param properties list of properties
      */
-    private void generateInstanceBuilderForConstructorOrFactoryMethod( SourceWriter source, BeanInfo info, Map<String,
+    private void generateInstanceBuilderForConstructorOrFactoryMethod( SourceWriter source, BeanInfo info, ImmutableMap<String,
             PropertyInfo> properties ) throws UnableToCompleteException {
 
         List<String> requiredProperties = new ArrayList<String>();
@@ -355,14 +358,14 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
      * @param info info on bean
      * @param properties list of properties
      */
-    private void generateInstanceBuilderForConstructorOrFactoryMethodDelegation( SourceWriter source, BeanInfo info, Map<String,
+    private void generateInstanceBuilderForConstructorOrFactoryMethodDelegation( SourceWriter source, BeanInfo info, ImmutableMap<String,
             PropertyInfo> properties ) throws UnableToCompleteException {
         // FIXME @JsonCreator with delegation
         logger.log( TreeLogger.Type.ERROR, "The delegation is not supported yet" );
         throw new UnableToCompleteException();
     }
 
-    private void generateInstanceBuilderCreateMethod( SourceWriter source, BeanInfo info, Map<String, PropertyInfo> properties ) {
+    private void generateInstanceBuilderCreateMethod( SourceWriter source, BeanInfo info, ImmutableMap<String, PropertyInfo> properties ) {
         JAbstractMethod method = info.getCreatorMethod().get();
 
         StringBuilder parametersBuilder = new StringBuilder();
