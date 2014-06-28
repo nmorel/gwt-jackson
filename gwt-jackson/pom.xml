@@ -121,7 +121,7 @@
                 <include>**/shared/ObjectMapperTester*</include>
                 <include>**/shared/ObjectReaderTester*</include>
                 <include>**/shared/ObjectWriterTester*</include>
-                <include>**/GwtJacksonTest.gwt.xml</include>
+                <include>**/GwtJacksonSharedTest.gwt.xml</include>
               </includes>
             </configuration>
           </execution>

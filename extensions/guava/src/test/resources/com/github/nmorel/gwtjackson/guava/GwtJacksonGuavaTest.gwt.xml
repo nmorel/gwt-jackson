@@ -16,7 +16,7 @@
   -->
 
 <module>
-  <inherits name="com.github.nmorel.gwtjackson.GwtJacksonTest" />
+  <inherits name="com.github.nmorel.gwtjackson.GwtJacksonSharedTest" />
   <inherits name="com.github.nmorel.gwtjackson.guava.GwtJacksonGuava" />
 
   <source path="client" />
