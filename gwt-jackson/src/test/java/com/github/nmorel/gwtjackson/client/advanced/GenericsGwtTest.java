@@ -16,6 +16,8 @@
 
 package com.github.nmorel.gwtjackson.client.advanced;
 
+import java.util.List;
+
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;
 import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
@@ -52,6 +54,12 @@ public class GenericsGwtTest extends GwtJacksonTestCase {
         static GenericTypeIntegerGenericStringMapper INSTANCE = GWT.create( GenericTypeIntegerGenericStringMapper.class );
     }
 
+    public interface GenericTypeListLongLongMapper extends ObjectMapper<GenericTwoType<List<Long>, Long>>,
+            ObjectMapperTester<GenericTwoType<List<Long>, Long>> {
+
+        static GenericTypeListLongLongMapper INSTANCE = GWT.create( GenericTypeListLongLongMapper.class );
+    }
+
     private GenericsTester tester = GenericsTester.INSTANCE;
 
     public void testSerializeString() {
@@ -84,5 +92,9 @@ public class GenericsGwtTest extends GwtJacksonTestCase {
 
     public void testDeserializeIntegerGenericString() {
         tester.testDeserializeIntegerGenericString( GenericTypeIntegerGenericStringMapper.INSTANCE );
+    }
+
+    public void testListLongLong() {
+        tester.testListLongLong( GenericTypeListLongLongMapper.INSTANCE );
     }
 }

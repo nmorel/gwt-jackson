@@ -201,14 +201,11 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                             .getQualifiedSourceName() ), context, configuration, typeOracle );
             String qualifiedClassName = beanJsonSerializerCreator.create( baseClassType );
 
-            StringBuilder joinedTypeParameters = new StringBuilder();
             StringBuilder joinedTypeParameterSerializers = new StringBuilder();
             if ( null != genericType ) {
                 JSerializerType[] parametersSerializer = new JSerializerType[genericType.getTypeParameters().length];
-                joinedTypeParameters.append( '<' );
                 for ( int i = 0; i < genericType.getTypeParameters().length; i++ ) {
                     if ( i > 0 ) {
-                        joinedTypeParameters.append( ", " );
                         joinedTypeParameterSerializers.append( ", " );
                     }
 
@@ -218,19 +215,16 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                     } else {
                         argType = genericType.getTypeParameters()[i];
                     }
-                    joinedTypeParameters.append( argType.getParameterizedQualifiedSourceName() );
 
                     JSerializerType parameterSerializerType = getJsonSerializerFromType( argType );
                     parametersSerializer[i] = parameterSerializerType;
                     joinedTypeParameterSerializers.append( parameterSerializerType.getInstance() );
                 }
-                joinedTypeParameters.append( '>' );
                 builder.parameters( parametersSerializer );
             }
 
             builder.beanMapper( true );
-            builder.instance( String.format( "new %s%s(%s)", qualifiedClassName, joinedTypeParameters
-                    .toString(), joinedTypeParameterSerializers ) );
+            builder.instance( String.format( "new %s(%s)", qualifiedClassName, joinedTypeParameterSerializers ) );
             return builder.build();
         }
 
@@ -385,15 +379,12 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                             .getQualifiedSourceName() ), context, configuration, typeOracle );
             String qualifiedClassName = beanJsonDeserializerCreator.create( baseClassType );
 
-            StringBuilder joinedTypeParameters = new StringBuilder();
             StringBuilder joinedTypeParameterDeserializers = new StringBuilder();
             if ( null != genericType ) {
 
                 JDeserializerType[] parametersDeserializer = new JDeserializerType[genericType.getTypeParameters().length];
-                joinedTypeParameters.append( '<' );
                 for ( int i = 0; i < genericType.getTypeParameters().length; i++ ) {
                     if ( i > 0 ) {
-                        joinedTypeParameters.append( ", " );
                         joinedTypeParameterDeserializers.append( ", " );
                     }
 
@@ -403,18 +394,16 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                     } else {
                         argType = genericType.getTypeParameters()[i];
                     }
-                    joinedTypeParameters.append( argType.getParameterizedQualifiedSourceName() );
 
                     JDeserializerType parameterDeserializerType = getJsonDeserializerFromType( argType );
                     parametersDeserializer[i] = parameterDeserializerType;
                     joinedTypeParameterDeserializers.append( parameterDeserializerType.getInstance() );
                 }
-                joinedTypeParameters.append( '>' );
                 builder.parameters( parametersDeserializer );
             }
 
             builder.beanMapper( true );
-            builder.instance( String.format( "new %s%s(%s)", qualifiedClassName, joinedTypeParameters, joinedTypeParameterDeserializers ) );
+            builder.instance( String.format( "new %s(%s)", qualifiedClassName, joinedTypeParameterDeserializers ) );
             return builder.build();
         }
 

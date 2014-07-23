@@ -24,6 +24,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
+import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
 import com.github.nmorel.gwtjackson.shared.ObjectReaderTester;
 import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
 
@@ -232,6 +233,23 @@ public final class GenericsTester extends AbstractTester {
 
         GenericOneType<String> gen1 = iterator.next();
         assertSame( bean.secondType, gen1 );
+    }
+
+    public void testListLongLong( ObjectMapperTester<GenericTwoType<List<Long>, Long>> mapper ) {
+        GenericTwoType<List<Long>, Long> bean = new GenericTwoType<List<Long>, Long>();
+        bean.firstType = Arrays.asList( 1l, 5l );
+        bean.secondType = 3l;
+        bean.listFirstType = Arrays.asList( Arrays.asList( 3l, 666l ), Arrays.asList( 123456789l ) );
+        bean.setSecondType = new LinkedHashSet<Long>( Arrays.asList( 456l, 2345l ) );
+
+        String json = mapper.write( bean );
+        assertEquals( json, "{\"firstType\":[1,5],\"secondType\":3,\"listFirstType\":[[3,666],[123456789]],\"setSecondType\":[456,2345]}" );
+
+        GenericTwoType<List<Long>, Long> result = mapper.read( json );
+        assertEquals( result.firstType, Arrays.asList( 1l, 5l ) );
+        assertEquals( result.secondType, new Long( 3l ) );
+        assertEquals( result.listFirstType, Arrays.asList( Arrays.asList( 3l, 666l ), Arrays.asList( 123456789l ) ) );
+        assertEquals( result.setSecondType, new LinkedHashSet<Long>( Arrays.asList( 456l, 2345l ) ) );
     }
 
 }
