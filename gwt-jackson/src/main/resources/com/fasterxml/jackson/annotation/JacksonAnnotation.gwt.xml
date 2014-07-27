@@ -17,4 +17,6 @@
 
 <module>
   <source path="" />
+  <!-- ObjectIdGenerators.Base implements Serializable but is not. We blacklist Jackson classes from RPC -->
+  <extend-configuration-property name="rpc.blacklist" value="com.fasterxml.jackson.annotation.*"/>
 </module>
