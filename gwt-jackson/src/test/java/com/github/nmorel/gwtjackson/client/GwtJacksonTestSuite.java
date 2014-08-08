@@ -20,6 +20,7 @@ import com.github.nmorel.gwtjackson.client.advanced.GenericsAndInheritanceGwtTes
 import com.github.nmorel.gwtjackson.client.advanced.GenericsGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.InheritanceGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.PrivateAccessGwtTest;
+import com.github.nmorel.gwtjackson.client.advanced.ProxyAndAnonymousClassSerializationGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.WildcardGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.identity.ObjectIdDeserializationGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.identity.ObjectIdGwtTest;
@@ -272,6 +273,7 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( JsonFormatGwtTest.class );
 
         // Advanced use cases
+        suite.addTestSuite( ProxyAndAnonymousClassSerializationGwtTest.class );
         suite.addTestSuite( PrivateAccessGwtTest.class );
         suite.addTestSuite( InheritanceGwtTest.class );
         suite.addTestSuite( GenericsGwtTest.class );

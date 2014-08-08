@@ -68,10 +68,6 @@ public final class PropertyProcessor {
     public static ImmutableMap<String, PropertyInfo> findAllProperties( RebindConfiguration configuration, TreeLogger logger,
                                                                         JacksonTypeOracle typeOracle,
                                                                         BeanInfo beanInfo ) throws UnableToCompleteException {
-        if ( null != beanInfo.getType().isInterface() || beanInfo.getType().isAbstract() ) {
-            // no properties on interface and abstract class
-            return ImmutableMap.of();
-        }
 
         // we first parse the bean to retrieve all the properties
         ImmutableMap<String, PropertyAccessors> fieldsMap = PropertyParser.findPropertyAccessors( configuration, logger, beanInfo );

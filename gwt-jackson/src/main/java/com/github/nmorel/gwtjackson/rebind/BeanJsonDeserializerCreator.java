@@ -114,7 +114,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
             source.println();
         }
 
-        if ( !properties.isEmpty() ) {
+        // no need to generate properties for non instantiable class
+        if ( !properties.isEmpty() && beanInfo.getCreatorMethod().isPresent() ) {
             generateInitPropertiesMethods( source, beanInfo, properties );
             source.println();
         }

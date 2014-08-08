@@ -20,6 +20,7 @@ import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -93,7 +94,10 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
         }
         SubtypeSerializer subtypeSerializer = subtypeClassToSerializer.get( value.getClass() );
         if ( null == subtypeSerializer ) {
-            throw ctx.traceError( value, "Cannot find serializer for class " + value.getClass(), writer );
+            if (ctx.getLogger().isLoggable( Level.FINE)) {
+                ctx.getLogger().fine("Cannot find serializer for class " + value.getClass() + ". Fallback to the serializer of " + getSerializedType());
+            }
+            return this;
         }
         return subtypeSerializer;
     }
