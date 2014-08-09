@@ -28,6 +28,8 @@ import java.util.Map.Entry;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
@@ -35,6 +37,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.github.nmorel.gwtjackson.rebind.JacksonTypeOracle;
 import com.github.nmorel.gwtjackson.rebind.RebindConfiguration;
 import com.github.nmorel.gwtjackson.rebind.bean.BeanInfo;
@@ -45,6 +49,8 @@ import com.github.nmorel.gwtjackson.rebind.property.parser.PropertyParser;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.TreeLogger.Type;
 import com.google.gwt.core.ext.UnableToCompleteException;
+import com.google.gwt.core.ext.typeinfo.JArrayType;
+import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JField;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
@@ -164,8 +170,7 @@ public final class PropertyProcessor {
         }
         determineSetter( propertyAccessors, setterAutoDetected, fieldAutoDetected, builder );
 
-        builder.setIdentityInfo( BeanProcessor.processIdentity( logger, typeOracle, configuration, type, propertyAccessors ) );
-        builder.setTypeInfo( BeanProcessor.processType( logger, typeOracle, configuration, type, propertyAccessors ) );
+        processBeanAnnotation( logger, typeOracle, configuration, type, propertyAccessors, builder );
 
         builder.setFormat( propertyAccessors.getAnnotation( JsonFormat.class ) );
 
@@ -330,6 +335,81 @@ public final class PropertyProcessor {
                 .isPresent()) && (fieldAutoDetect || setterAutoDetect) ) {
             builder.setSetterAccessor( Optional.of( new FieldWriteAccessor( builder.getPropertyName(), fieldAutoDetect, propertyAccessors
                     .getField(), setterAutoDetect, propertyAccessors.getSetter() ) ) );
+        }
+    }
+
+    private static void processBeanAnnotation( TreeLogger logger, JacksonTypeOracle typeOracle, RebindConfiguration configuration,
+                                               JType type, PropertyAccessors propertyAccessors,
+                                               PropertyInfoBuilder builder ) throws UnableToCompleteException {
+
+        // identity
+        Optional<JsonIdentityInfo> jsonIdentityInfo = propertyAccessors.getAnnotation( JsonIdentityInfo.class );
+        Optional<JsonIdentityReference> jsonIdentityReference = propertyAccessors.getAnnotation( JsonIdentityReference.class );
+
+        // type info
+        Optional<JsonTypeInfo> jsonTypeInfo = propertyAccessors.getAnnotation( JsonTypeInfo.class );
+        Optional<JsonSubTypes> propertySubTypes = propertyAccessors.getAnnotation( JsonSubTypes.class );
+
+        // if no annotation is present that overrides bean processing, we just stop now
+        if ( !jsonIdentityInfo.isPresent() && !jsonIdentityReference.isPresent() && !jsonTypeInfo.isPresent() && !propertySubTypes
+                .isPresent() ) {
+            // no override on field
+            return;
+        }
+
+        // we need to find the bean to apply annotation on
+        Optional<JClassType> beanType = extractBeanType( logger, typeOracle, type, builder.getPropertyName() );
+
+        if ( beanType.isPresent() ) {
+            if ( jsonIdentityInfo.isPresent() || jsonIdentityReference.isPresent() ) {
+                builder.setIdentityInfo( BeanProcessor.processIdentity( logger, typeOracle, configuration, beanType
+                        .get(), jsonIdentityInfo, jsonIdentityReference ) );
+            }
+
+            if ( jsonTypeInfo.isPresent() || propertySubTypes.isPresent() ) {
+                builder.setTypeInfo( BeanProcessor.processType( logger, typeOracle, configuration, beanType
+                        .get(), jsonTypeInfo, propertySubTypes ) );
+            }
+        } else {
+            logger.log( Type.WARN, "Annotation present on property " + builder.getPropertyName() + " but no valid bean has been found." );
+        }
+    }
+
+    /**
+     * Extract the bean type from the type given in parameter. For {@link java.util.Collection}, it gives the bounded type. For {@link
+     * java.util.Map}, it gives the second bounded type. Otherwise, it gives the type given in parameter.
+     *
+     * @param type type to extract the bean type
+     * @param propertyName name of the property
+     *
+     * @return the extracted type
+     */
+    private static Optional<JClassType> extractBeanType( TreeLogger logger, JacksonTypeOracle typeOracle, JType type,
+                                                         String propertyName ) {
+        JArrayType arrayType = type.isArray();
+        if ( null != arrayType ) {
+            return extractBeanType( logger, typeOracle, arrayType.getComponentType(), propertyName );
+        }
+
+        JClassType classType = type.isClassOrInterface();
+        if ( null == classType ) {
+            return Optional.absent();
+        } else if ( typeOracle.isIterable( classType ) ) {
+            if ( null == classType.isParameterized() || classType.isParameterized().getTypeArgs().length != 1 ) {
+                logger.log( Type.INFO, "Expected one argument for the java.lang.Iterable '" + propertyName + "'. Applying annotations to " +
+                        "type " + classType.getParameterizedQualifiedSourceName() );
+                return Optional.of( classType );
+            }
+            return extractBeanType( logger, typeOracle, classType.isParameterized().getTypeArgs()[0], propertyName );
+        } else if ( typeOracle.isMap( classType ) ) {
+            if ( null == classType.isParameterized() || classType.isParameterized().getTypeArgs().length != 2 ) {
+                logger.log( Type.INFO, "Expected two arguments for the java.util.Map '" + propertyName + "'. Applying annotations to " +
+                        "type " + classType.getParameterizedQualifiedSourceName() );
+                return Optional.of( classType );
+            }
+            return extractBeanType( logger, typeOracle, classType.isParameterized().getTypeArgs()[1], propertyName );
+        } else {
+            return Optional.of( classType );
         }
     }
 }

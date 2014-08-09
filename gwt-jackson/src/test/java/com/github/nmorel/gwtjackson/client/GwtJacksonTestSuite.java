@@ -89,6 +89,7 @@ import com.github.nmorel.gwtjackson.client.deser.number.ShortJsonDeserializerTes
 import com.github.nmorel.gwtjackson.client.mapper.AllCollectionsObjectMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.AllMapsObjectMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.CommonJsonMapperTest;
+import com.github.nmorel.gwtjackson.client.mapper.CustomIterableGwtTest;
 import com.github.nmorel.gwtjackson.client.mapper.IgnoreStaticGwtTest;
 import com.github.nmorel.gwtjackson.client.mapper.SimpleBeanObjectReaderTest;
 import com.github.nmorel.gwtjackson.client.mapper.SimpleBeanObjectWriterTest;
@@ -260,6 +261,7 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( AllMapsObjectMapperTest.class );
         suite.addTestSuite( CommonJsonMapperTest.class );
         suite.addTestSuite( IgnoreStaticGwtTest.class );
+        suite.addTestSuite( CustomIterableGwtTest.class );
 
         // Annotations test
         suite.addTestSuite( JsonAutoDetectGwtTest.class );

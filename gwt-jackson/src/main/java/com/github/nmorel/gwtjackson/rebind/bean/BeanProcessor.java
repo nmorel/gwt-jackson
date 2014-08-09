@@ -47,12 +47,9 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.UUIDGenerator;
 import com.github.nmorel.gwtjackson.rebind.JacksonTypeOracle;
 import com.github.nmorel.gwtjackson.rebind.RebindConfiguration;
-import com.github.nmorel.gwtjackson.rebind.property.PropertyAccessors;
 import com.google.gwt.core.ext.TreeLogger;
-import com.google.gwt.core.ext.TreeLogger.Type;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JAbstractMethod;
-import com.google.gwt.core.ext.typeinfo.JArrayType;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JConstructor;
 import com.google.gwt.core.ext.typeinfo.JMethod;
@@ -111,8 +108,8 @@ public final class BeanProcessor {
             }
         }
 
-        builder.setIdentityInfo( processIdentity( logger, typeOracle, configuration, beanType, null, false ) );
-        builder.setTypeInfo( processType( logger, typeOracle, configuration, beanType, null, false ) );
+        builder.setIdentityInfo( processIdentity( logger, typeOracle, configuration, beanType ) );
+        builder.setTypeInfo( processType( logger, typeOracle, configuration, beanType ) );
 
         return builder.build();
     }
@@ -249,31 +246,18 @@ public final class BeanProcessor {
         return true;
     }
 
-    public static Optional<BeanIdentityInfo> processIdentity( TreeLogger logger, JacksonTypeOracle typeOracle,
-                                                              RebindConfiguration configuration, JType type,
-                                                              PropertyAccessors propertyAccessors ) throws UnableToCompleteException {
-        Optional<JClassType> classType = extractBeanType( logger, typeOracle, type );
-        if ( classType.isPresent() ) {
-            return processIdentity( logger, typeOracle, configuration, classType.get(), propertyAccessors, true );
-        } else {
-            return Optional.absent();
-        }
+    private static Optional<BeanIdentityInfo> processIdentity( TreeLogger logger, JacksonTypeOracle typeOracle,
+                                                               RebindConfiguration configuration,
+                                                               JClassType type ) throws UnableToCompleteException {
+        return processIdentity( logger, typeOracle, configuration, type, Optional.<JsonIdentityInfo>absent(), Optional
+                .<JsonIdentityReference>absent() );
     }
 
-    private static Optional<BeanIdentityInfo> processIdentity( TreeLogger logger, JacksonTypeOracle typeOracle,
+    public static Optional<BeanIdentityInfo> processIdentity( TreeLogger logger, JacksonTypeOracle typeOracle,
                                                                RebindConfiguration configuration, JClassType type,
-                                                               PropertyAccessors propertyAccessors,
-                                                               boolean property ) throws UnableToCompleteException {
-        Optional<JsonIdentityInfo> jsonIdentityInfo = Optional.absent();
-        Optional<JsonIdentityReference> jsonIdentityReference = Optional.absent();
-        if ( property ) {
-            jsonIdentityInfo = propertyAccessors.getAnnotation( JsonIdentityInfo.class );
-            jsonIdentityReference = propertyAccessors.getAnnotation( JsonIdentityReference.class );
-            if ( !jsonIdentityInfo.isPresent() && !jsonIdentityReference.isPresent() ) {
-                // no override on field
-                return Optional.absent();
-            }
-        }
+                                                               Optional<JsonIdentityInfo> jsonIdentityInfo,
+                                                               Optional<JsonIdentityReference> jsonIdentityReference ) throws
+            UnableToCompleteException {
 
         if ( !jsonIdentityInfo.isPresent() ) {
             jsonIdentityInfo = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, type, JsonIdentityInfo.class );
@@ -318,30 +302,16 @@ public final class BeanProcessor {
         return Optional.absent();
     }
 
-    public static Optional<BeanTypeInfo> processType( TreeLogger logger, JacksonTypeOracle typeOracle, RebindConfiguration configuration,
-                                                      JType type, PropertyAccessors propertyAccessors ) throws UnableToCompleteException {
-        Optional<JClassType> classType = extractBeanType( logger, typeOracle, type );
-        if ( classType.isPresent() ) {
-            return processType( logger, typeOracle, configuration, classType.get(), propertyAccessors, true );
-        } else {
-            return Optional.absent();
-        }
+    private static Optional<BeanTypeInfo> processType( TreeLogger logger, JacksonTypeOracle typeOracle,
+                                                       RebindConfiguration configuration,
+                                                       JClassType type ) throws UnableToCompleteException {
+        return processType( logger, typeOracle, configuration, type, Optional.<JsonTypeInfo>absent(), Optional.<JsonSubTypes>absent() );
     }
 
-    private static Optional<BeanTypeInfo> processType( TreeLogger logger, JacksonTypeOracle typeOracle,
+    public static Optional<BeanTypeInfo> processType( TreeLogger logger, JacksonTypeOracle typeOracle,
                                                        RebindConfiguration configuration, JClassType type,
-                                                       PropertyAccessors propertyAccessors,
-                                                       boolean property ) throws UnableToCompleteException {
-        Optional<JsonTypeInfo> jsonTypeInfo = Optional.absent();
-        Optional<JsonSubTypes> propertySubTypes = Optional.absent();
-        if ( property ) {
-            jsonTypeInfo = propertyAccessors.getAnnotation( JsonTypeInfo.class );
-            propertySubTypes = propertyAccessors.getAnnotation( JsonSubTypes.class );
-            if ( !jsonTypeInfo.isPresent() && !propertySubTypes.isPresent() ) {
-                // no override on field
-                return Optional.absent();
-            }
-        }
+                                                       Optional<JsonTypeInfo> jsonTypeInfo, Optional<JsonSubTypes> propertySubTypes )
+            throws UnableToCompleteException {
 
         if ( !jsonTypeInfo.isPresent() ) {
             jsonTypeInfo = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, type, JsonTypeInfo.class );
@@ -453,41 +423,6 @@ public final class BeanProcessor {
             }
         }
         return null;
-    }
-
-    /**
-     * Extract the bean type from the type given in parameter. For {@link java.util.Collection}, it gives the bounded type. For {@link
-     * java.util.Map}, it gives the second bounded type. Otherwise, it gives the type given in parameter.
-     *
-     * @param type type to extract the bean type
-     *
-     * @return the extracted type
-     */
-    private static Optional<JClassType> extractBeanType( TreeLogger logger, JacksonTypeOracle typeOracle,
-                                                         JType type ) throws UnableToCompleteException {
-        JArrayType arrayType = type.isArray();
-        if ( null != arrayType ) {
-            return extractBeanType( logger, typeOracle, arrayType.getComponentType() );
-        }
-
-        JClassType classType = type.isClassOrInterface();
-        if ( null == classType ) {
-            return Optional.absent();
-        } else if ( typeOracle.isIterable( classType ) ) {
-            if ( null == classType.isParameterized() || classType.isParameterized().getTypeArgs().length != 1 ) {
-                logger.log( Type.ERROR, "Wrong number of argument for a java.lang.Iterable implementation" );
-                throw new UnableToCompleteException();
-            }
-            return extractBeanType( logger, typeOracle, classType.isParameterized().getTypeArgs()[0] );
-        } else if ( typeOracle.isMap( classType ) ) {
-            if ( null == classType.isParameterized() || classType.isParameterized().getTypeArgs().length != 2 ) {
-                logger.log( Type.ERROR, "Wrong number of argument for a java.util.Map implementation" );
-                throw new UnableToCompleteException();
-            }
-            return extractBeanType( logger, typeOracle, classType.isParameterized().getTypeArgs()[1] );
-        } else {
-            return Optional.of( classType );
-        }
     }
 
 }
