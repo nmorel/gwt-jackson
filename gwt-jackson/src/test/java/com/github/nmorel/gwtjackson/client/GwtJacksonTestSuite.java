@@ -53,6 +53,8 @@ import com.github.nmorel.gwtjackson.client.deser.StringJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.UUIDJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.VoidJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.array.ArrayJsonDeserializerTest;
+import com.github.nmorel.gwtjackson.client.deser.array.ByteArray2dJsonDeserializerTest;
+import com.github.nmorel.gwtjackson.client.deser.array.ByteArrayJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.collection.CollectionJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.collection.IterableJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.collection.ListJsonDeserializerTest;
@@ -111,6 +113,8 @@ import com.github.nmorel.gwtjackson.client.ser.StringJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.UUIDJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.VoidJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.array.ArrayJsonSerializerTest;
+import com.github.nmorel.gwtjackson.client.ser.array.ByteArray2dJsonSerializerTest;
+import com.github.nmorel.gwtjackson.client.ser.array.ByteArrayJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.collection.CollectionJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.collection.IterableJsonSerializerTest;
 import com.github.nmorel.gwtjackson.client.ser.collection.ListJsonSerializerTest;
@@ -168,6 +172,8 @@ public class GwtJacksonTestSuite extends TestCase {
 
         // Default json serializers
         suite.addTestSuite( ArrayJsonSerializerTest.class );
+        suite.addTestSuite( ByteArrayJsonSerializerTest.class );
+        suite.addTestSuite( ByteArray2dJsonSerializerTest.class );
         suite.addTestSuite( BigDecimalJsonSerializerTest.class );
         suite.addTestSuite( BigIntegerJsonSerializerTest.class );
         suite.addTestSuite( BooleanJsonSerializerTest.class );
@@ -212,6 +218,8 @@ public class GwtJacksonTestSuite extends TestCase {
 
         // Default deserializers
         suite.addTestSuite( ArrayJsonDeserializerTest.class );
+        suite.addTestSuite( ByteArrayJsonDeserializerTest.class );
+        suite.addTestSuite( ByteArray2dJsonDeserializerTest.class );
         suite.addTestSuite( BigDecimalJsonDeserializerTest.class );
         suite.addTestSuite( BigIntegerJsonDeserializerTest.class );
         suite.addTestSuite( BooleanJsonDeserializerTest.class );
