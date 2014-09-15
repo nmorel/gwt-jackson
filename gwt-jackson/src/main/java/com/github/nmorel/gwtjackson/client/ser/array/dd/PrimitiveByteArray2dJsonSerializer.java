@@ -22,7 +22,7 @@ import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.JsonSerializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
-import com.github.nmorel.gwtjackson.client.utils.Base64;
+import com.github.nmorel.gwtjackson.client.utils.Base64Utils;
 
 /**
  * Default {@link JsonSerializer} implementation for 2D array of byte.
@@ -51,7 +51,7 @@ public class PrimitiveByteArray2dJsonSerializer extends JsonSerializer<byte[][]>
 
         writer.beginArray();
         for ( byte[] array : values ) {
-            writer.value( Base64.encode( new String( array ) ) );
+            writer.value( Base64Utils.toBase64( array ) );
         }
         writer.endArray();
     }

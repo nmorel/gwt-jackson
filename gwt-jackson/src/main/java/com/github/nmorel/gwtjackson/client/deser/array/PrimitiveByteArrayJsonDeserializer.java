@@ -24,7 +24,7 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
 import com.github.nmorel.gwtjackson.client.deser.BaseNumberJsonDeserializer.ByteJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
-import com.github.nmorel.gwtjackson.client.utils.Base64;
+import com.github.nmorel.gwtjackson.client.utils.Base64Utils;
 
 /**
  * Default {@link JsonDeserializer} implementation for array of byte.
@@ -62,7 +62,7 @@ public class PrimitiveByteArrayJsonDeserializer extends AbstractArrayJsonDeseria
     @Override
     protected byte[] doDeserializeNonArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         if ( JsonToken.STRING == reader.peek() ) {
-            return Base64.decode( reader.nextString() ).getBytes();
+            return Base64Utils.fromBase64( reader.nextString() );
         } else if ( ctx.isAcceptSingleValueAsArray() ) {
             return doDeserializeSingleArray( reader, ctx, params );
         } else {

@@ -25,7 +25,7 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
 import com.github.nmorel.gwtjackson.client.deser.BaseNumberJsonDeserializer.ByteJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
-import com.github.nmorel.gwtjackson.client.utils.Base64;
+import com.github.nmorel.gwtjackson.client.utils.Base64Utils;
 
 /**
  * Default {@link JsonDeserializer} implementation for 2D array of byte.
@@ -65,7 +65,7 @@ public class PrimitiveByteArray2dJsonDeserializer extends AbstractArray2dJsonDes
             List<byte[]> list = new ArrayList<byte[]>();
             int size = 0;
             while ( JsonToken.END_ARRAY != token ) {
-                byte[] decoded = Base64.decode( reader.nextString() ).getBytes();
+                byte[] decoded = Base64Utils.fromBase64( reader.nextString() );
                 size = Math.max( size, decoded.length );
                 list.add( decoded );
                 token = reader.peek();
