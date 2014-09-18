@@ -18,6 +18,7 @@ package com.github.nmorel.gwtjackson.shared.mixins;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
 import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
 
@@ -75,6 +76,7 @@ public final class MixinSerForMethodsTester extends AbstractTester {
         public String takeB() { return null; }
     }
 
+    @JsonPropertyOrder( alphabetic = true )
     public interface ObjectMixIn {
 
         // and then ditto for hashCode..

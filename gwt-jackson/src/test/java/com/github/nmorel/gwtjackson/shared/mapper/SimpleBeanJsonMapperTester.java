@@ -244,8 +244,7 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
                 "\"floatPrimitiveArray2d\":[[]]," +
                 "\"integerPrimitiveArray2d\":[[1,2,3],[4,5,6],[7,8,9]]," +
                 "\"longPrimitiveArray2d\":[[9223372036854775807],[-9223372036854775808]]," +
-                "\"shortPrimitiveArray2d\":[[9,7,8,15]]," +
-                "\"voidProperty\":null" +
+                "\"shortPrimitiveArray2d\":[[9,7,8,15]]" +
                 "}";
 
         assertEquals( expected, writer.write( bean ) );

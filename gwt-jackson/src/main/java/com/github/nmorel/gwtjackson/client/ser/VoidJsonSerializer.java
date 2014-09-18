@@ -42,8 +42,18 @@ public class VoidJsonSerializer extends JsonSerializer<Void> {
     private VoidJsonSerializer() { }
 
     @Override
+    protected void serializeNullValue( JsonWriter writer, JsonSerializationContext ctx, JsonSerializerParameters params ) {
+        if ( writer.getSerializeNulls() ) {
+            writer.setSerializeNulls( false );
+            writer.nullValue();
+            writer.setSerializeNulls( true );
+        } else {
+            writer.nullValue();
+        }
+    }
+
+    @Override
     public void doSerialize( JsonWriter writer, @Nonnull Void value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         // we should never be here, the null value is already handled and it's the only possible value for Void
-        writer.nullValue();
     }
 }
