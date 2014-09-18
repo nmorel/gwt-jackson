@@ -46,6 +46,7 @@ import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.thirdparty.guava.common.base.Strings;
+import com.google.gwt.thirdparty.guava.common.collect.ImmutableList;
 import com.google.gwt.thirdparty.guava.common.collect.ImmutableMap;
 import com.google.gwt.user.rebind.SourceWriter;
 
@@ -108,7 +109,12 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
      */
     public String create( JClassType beanType ) throws UnableToCompleteException {
 
+        boolean samePackage = true;
         String packageName = beanType.getPackage().getName();
+        if ( packageName.startsWith( "java." ) ) {
+            packageName = "gwtjackson." + packageName;
+            samePackage = false;
+        }
 
         // we concatenate the name of all the enclosing class
         StringBuilder builder = new StringBuilder( beanType.getSimpleSourceName() );
@@ -145,7 +151,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
             BeanInfo beanInfo = BeanProcessor.processBean( logger, typeOracle, configuration, beanType );
 
             ImmutableMap<String, PropertyInfo> properties = PropertyProcessor
-                    .findAllProperties( configuration, logger, typeOracle, beanInfo );
+                    .findAllProperties( configuration, logger, typeOracle, beanInfo, samePackage );
 
             mapperInfo = new BeanJsonMapperInfo( beanType, qualifiedSerializerClassName, simpleSerializerClassName,
                     qualifiedDeserializerClassName, simpleDeserializerClassName, beanInfo, properties );
@@ -370,5 +376,9 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
                 source.print( ".addIgnoredProperty(\"%s\")", ignoredProperty );
             }
         }
+    }
+
+    protected ImmutableList<JClassType> filterSubtypes( BeanInfo beanInfo ) {
+        return CreatorUtils.filterSubtypes( beanInfo.getType() );
     }
 }

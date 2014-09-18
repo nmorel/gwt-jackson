@@ -45,6 +45,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.IntSequenceGenerator;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.UUIDGenerator;
+import com.github.nmorel.gwtjackson.rebind.CreatorUtils;
 import com.github.nmorel.gwtjackson.rebind.JacksonTypeOracle;
 import com.github.nmorel.gwtjackson.rebind.RebindConfiguration;
 import com.google.gwt.core.ext.TreeLogger;
@@ -57,6 +58,7 @@ import com.google.gwt.core.ext.typeinfo.JParameter;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.thirdparty.guava.common.base.Optional;
 import com.google.gwt.thirdparty.guava.common.base.Strings;
+import com.google.gwt.thirdparty.guava.common.collect.ImmutableList;
 
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounteredAnnotationsOnAllHierarchy;
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.getAnnotation;
@@ -254,9 +256,9 @@ public final class BeanProcessor {
     }
 
     public static Optional<BeanIdentityInfo> processIdentity( TreeLogger logger, JacksonTypeOracle typeOracle,
-                                                               RebindConfiguration configuration, JClassType type,
-                                                               Optional<JsonIdentityInfo> jsonIdentityInfo,
-                                                               Optional<JsonIdentityReference> jsonIdentityReference ) throws
+                                                              RebindConfiguration configuration, JClassType type,
+                                                              Optional<JsonIdentityInfo> jsonIdentityInfo,
+                                                              Optional<JsonIdentityReference> jsonIdentityReference ) throws
             UnableToCompleteException {
 
         if ( !jsonIdentityInfo.isPresent() ) {
@@ -308,10 +310,9 @@ public final class BeanProcessor {
         return processType( logger, typeOracle, configuration, type, Optional.<JsonTypeInfo>absent(), Optional.<JsonSubTypes>absent() );
     }
 
-    public static Optional<BeanTypeInfo> processType( TreeLogger logger, JacksonTypeOracle typeOracle,
-                                                       RebindConfiguration configuration, JClassType type,
-                                                       Optional<JsonTypeInfo> jsonTypeInfo, Optional<JsonSubTypes> propertySubTypes )
-            throws UnableToCompleteException {
+    public static Optional<BeanTypeInfo> processType( TreeLogger logger, JacksonTypeOracle typeOracle, RebindConfiguration configuration,
+                                                      JClassType type, Optional<JsonTypeInfo> jsonTypeInfo,
+                                                      Optional<JsonSubTypes> propertySubTypes ) throws UnableToCompleteException {
 
         if ( !jsonTypeInfo.isPresent() ) {
             jsonTypeInfo = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, type, JsonTypeInfo.class );
@@ -327,11 +328,11 @@ public final class BeanProcessor {
 
         Map<JClassType, String> classToMetadata = new HashMap<JClassType, String>();
         Optional<JsonSubTypes> typeSubTypes = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, type, JsonSubTypes.class );
-        List<JClassType> allSubtypes = Arrays.asList( type.getSubtypes() );
+        ImmutableList<JClassType> allSubtypes = CreatorUtils.filterSubtypes( type );
         classToMetadata.put( type, extractTypeMetadata( logger, configuration, type, type, jsonTypeInfo
                 .get(), propertySubTypes, typeSubTypes, allSubtypes ) );
 
-        for ( JClassType subtype : type.getSubtypes() ) {
+        for ( JClassType subtype : allSubtypes ) {
             classToMetadata.put( subtype, extractTypeMetadata( logger, configuration, type, subtype, jsonTypeInfo
                     .get(), propertySubTypes, typeSubTypes, allSubtypes ) );
         }
@@ -341,7 +342,7 @@ public final class BeanProcessor {
 
     private static String extractTypeMetadata( TreeLogger logger, RebindConfiguration configuration, JClassType baseType,
                                                JClassType subtype, JsonTypeInfo typeInfo, Optional<JsonSubTypes> propertySubTypes,
-                                               Optional<JsonSubTypes> baseSubTypes, List<JClassType> allSubtypes ) throws
+                                               Optional<JsonSubTypes> baseSubTypes, ImmutableList<JClassType> allSubtypes ) throws
             UnableToCompleteException {
         switch ( typeInfo.use() ) {
             case NAME:
@@ -380,7 +381,7 @@ public final class BeanProcessor {
         }
     }
 
-    private static String findNameOnJsonSubTypes( JClassType baseType, JClassType subtype, List<JClassType> allSubtypes,
+    private static String findNameOnJsonSubTypes( JClassType baseType, JClassType subtype, ImmutableList<JClassType> allSubtypes,
                                                   Optional<JsonSubTypes> propertySubTypes, Optional<JsonSubTypes> baseSubTypes ) {
         JsonSubTypes.Type typeFound = findTypeOnSubTypes( subtype, propertySubTypes );
         if ( null != typeFound ) {

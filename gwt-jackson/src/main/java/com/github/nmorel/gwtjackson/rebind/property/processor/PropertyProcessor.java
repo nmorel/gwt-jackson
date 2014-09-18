@@ -72,8 +72,9 @@ public final class PropertyProcessor {
             .asList( JsonProperty.class, JsonManagedReference.class, JsonBackReference.class );
 
     public static ImmutableMap<String, PropertyInfo> findAllProperties( RebindConfiguration configuration, TreeLogger logger,
-                                                                        JacksonTypeOracle typeOracle,
-                                                                        BeanInfo beanInfo ) throws UnableToCompleteException {
+                                                                        JacksonTypeOracle typeOracle, BeanInfo beanInfo,
+                                                                        boolean mapperInSamePackageAsType ) throws
+            UnableToCompleteException {
 
         // we first parse the bean to retrieve all the properties
         ImmutableMap<String, PropertyAccessors> fieldsMap = PropertyParser.findPropertyAccessors( configuration, logger, beanInfo );
@@ -81,7 +82,8 @@ public final class PropertyProcessor {
         // Processing all the properties accessible via field, getter or setter
         Map<String, PropertyInfo> propertiesMap = new LinkedHashMap<String, PropertyInfo>();
         for ( PropertyAccessors propertyAccessors : fieldsMap.values() ) {
-            Optional<PropertyInfo> propertyInfo = processProperty( configuration, logger, typeOracle, propertyAccessors, beanInfo );
+            Optional<PropertyInfo> propertyInfo = processProperty( configuration, logger, typeOracle, propertyAccessors, beanInfo,
+                    mapperInSamePackageAsType );
             if ( propertyInfo.isPresent() ) {
                 propertiesMap.put( propertyInfo.get().getPropertyName(), propertyInfo.get() );
             } else {
@@ -131,7 +133,7 @@ public final class PropertyProcessor {
 
     private static Optional<PropertyInfo> processProperty( RebindConfiguration configuration, TreeLogger logger,
                                                            JacksonTypeOracle typeOracle, PropertyAccessors propertyAccessors,
-                                                           BeanInfo beanInfo ) throws UnableToCompleteException {
+                                                           BeanInfo beanInfo, boolean samePackage ) throws UnableToCompleteException {
 
         boolean getterAutoDetected = isGetterAutoDetected( propertyAccessors, beanInfo );
         boolean setterAutoDetected = isSetterAutoDetected( propertyAccessors, beanInfo );
@@ -163,12 +165,12 @@ public final class PropertyProcessor {
         builder.setBackReference( Optional.fromNullable( jsonBackReference.isPresent() ? jsonBackReference.get().value() : null ) );
 
         if ( !builder.getBackReference().isPresent() ) {
-            determineGetter( propertyAccessors, getterAutoDetected, fieldAutoDetected, builder );
+            determineGetter( propertyAccessors, samePackage, getterAutoDetected, fieldAutoDetected, builder );
 
             Optional<JsonRawValue> jsonRawValue = propertyAccessors.getAnnotation( JsonRawValue.class );
             builder.setRawValue( jsonRawValue.isPresent() && jsonRawValue.get().value() );
         }
-        determineSetter( propertyAccessors, setterAutoDetected, fieldAutoDetected, builder );
+        determineSetter( propertyAccessors, samePackage, setterAutoDetected, fieldAutoDetected, builder );
 
         processBeanAnnotation( logger, typeOracle, configuration, type, propertyAccessors, builder );
 
@@ -318,23 +320,26 @@ public final class PropertyProcessor {
 
     }
 
-    private static void determineGetter( final PropertyAccessors propertyAccessors, final boolean getterAutoDetect,
-                                         boolean fieldAutoDetect, final PropertyInfoBuilder builder ) {
+    private static void determineGetter( final PropertyAccessors propertyAccessors, final boolean samePackage,
+                                         final boolean getterAutoDetect, boolean fieldAutoDetect, final PropertyInfoBuilder builder ) {
         // if one of field/getter is present and the property has an annotation like JsonProperty or field/getter is auto detected
         if ( (propertyAccessors.getGetter().isPresent() || propertyAccessors.getField()
                 .isPresent()) && (fieldAutoDetect || getterAutoDetect) ) {
-            builder.setGetterAccessor( Optional.of( new FieldReadAccessor( builder.getPropertyName(), fieldAutoDetect, propertyAccessors
-                    .getField(), getterAutoDetect, propertyAccessors.getGetter() ) ) );
+            builder.setGetterAccessor( Optional.of( new FieldReadAccessor( builder
+                    .getPropertyName(), samePackage, fieldAutoDetect, propertyAccessors.getField(), getterAutoDetect, propertyAccessors
+                    .getGetter() ) ) );
         }
     }
 
-    private static void determineSetter( final PropertyAccessors propertyAccessors, final boolean setterAutoDetect,
-                                         final boolean fieldAutoDetect, final PropertyInfoBuilder builder ) {
+    private static void determineSetter( final PropertyAccessors propertyAccessors, final boolean samePackage,
+                                         final boolean setterAutoDetect, final boolean fieldAutoDetect,
+                                         final PropertyInfoBuilder builder ) {
         // if one of field/setter is present and the property has an annotation like JsonProperty or field/setter is auto detected
         if ( (propertyAccessors.getSetter().isPresent() || propertyAccessors.getField()
                 .isPresent()) && (fieldAutoDetect || setterAutoDetect) ) {
-            builder.setSetterAccessor( Optional.of( new FieldWriteAccessor( builder.getPropertyName(), fieldAutoDetect, propertyAccessors
-                    .getField(), setterAutoDetect, propertyAccessors.getSetter() ) ) );
+            builder.setSetterAccessor( Optional.of( new FieldWriteAccessor( builder
+                    .getPropertyName(), samePackage, fieldAutoDetect, propertyAccessors.getField(), setterAutoDetect, propertyAccessors
+                    .getSetter() ) ) );
         }
     }
 

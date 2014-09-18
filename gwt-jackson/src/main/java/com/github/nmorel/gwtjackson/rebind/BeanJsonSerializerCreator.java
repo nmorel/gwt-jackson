@@ -17,11 +17,9 @@
 package com.github.nmorel.gwtjackson.rebind;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -41,6 +39,7 @@ import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.thirdparty.guava.common.base.Predicate;
 import com.google.gwt.thirdparty.guava.common.collect.Collections2;
+import com.google.gwt.thirdparty.guava.common.collect.ImmutableList;
 import com.google.gwt.thirdparty.guava.common.collect.ImmutableMap;
 import com.google.gwt.user.rebind.SourceWriter;
 
@@ -102,18 +101,10 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
             source.println();
         }
 
-        if ( beanInfo.getType().getSubtypes().length > 0 ) {
-            List<JClassType> subtypes = new ArrayList<JClassType>();
-            for ( JClassType subtype : beanInfo.getType().getSubtypes() ) {
-                if ( null == subtype.isInterface() && !subtype.isAbstract() ) {
-                    subtypes.add( subtype );
-                }
-            }
-
-            if ( !subtypes.isEmpty() ) {
-                generateInitMapSubtypeClassToSerializerMethod( source, subtypes );
-                source.println();
-            }
+        ImmutableList<JClassType> subtypes = filterSubtypes( beanInfo );
+        if ( !subtypes.isEmpty() ) {
+            generateInitMapSubtypeClassToSerializerMethod( source, subtypes );
+            source.println();
         }
 
         generateClassGetterMethod( source, beanInfo );
@@ -152,7 +143,7 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
         source.println( "%s map = new %s%s(%s);", resultType, LinkedHashMap.class.getCanonicalName(), mapType, properties.size() );
         source.println();
         for ( PropertyInfo property : properties ) {
-            Accessor getterAccessor = property.getGetterAccessor().get().getAccessor( "bean", true );
+            Accessor getterAccessor = property.getGetterAccessor().get().getAccessor( "bean" );
 
             source.println( "map.put(\"%s\", new %s<%s, %s>() {", property
                     .getPropertyName(), BEAN_PROPERTY_SERIALIZER_CLASS, getQualifiedClassName( beanInfo
@@ -271,7 +262,7 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
         source.println( "}" );
     }
 
-    private void generateInitMapSubtypeClassToSerializerMethod( SourceWriter source, List<JClassType> subtypes ) throws
+    private void generateInitMapSubtypeClassToSerializerMethod( SourceWriter source, ImmutableList<JClassType> subtypes ) throws
             UnableToCompleteException {
 
         String mapTypes = String.format( "<%s, %s>", Class.class.getCanonicalName(), SubtypeSerializer.class.getName() );

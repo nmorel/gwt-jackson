@@ -94,8 +94,9 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
         }
         SubtypeSerializer subtypeSerializer = subtypeClassToSerializer.get( value.getClass() );
         if ( null == subtypeSerializer ) {
-            if (ctx.getLogger().isLoggable( Level.FINE)) {
-                ctx.getLogger().fine("Cannot find serializer for class " + value.getClass() + ". Fallback to the serializer of " + getSerializedType());
+            if ( ctx.getLogger().isLoggable( Level.FINE ) ) {
+                ctx.getLogger().fine( "Cannot find serializer for class " + value
+                        .getClass() + ". Fallback to the serializer of " + getSerializedType() );
             }
             return this;
         }
@@ -137,65 +138,65 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
         if ( null != typeInfo ) {
             String typeInformation = typeInfo.getTypeInfo( value.getClass() );
             if ( null == typeInformation ) {
-                throw ctx.traceError( value, "Cannot find type info for class " + value.getClass(), writer );
+                ctx.getLogger().log( Level.WARNING, "Cannot find type info for class " + value.getClass() );
+            } else {
+                switch ( typeInfo.getInclude() ) {
+                    case PROPERTY:
+                        // type info is included as a property of the object
+                        writer.beginObject();
+                        writer.name( typeInfo.getPropertyName() );
+                        writer.value( typeInformation );
+                        if ( null != idWriter ) {
+                            writer.name( identityInfo.getPropertyName() );
+                            idWriter.serializeId( writer, ctx );
+                        }
+                        serializeObject( writer, value, ctx, identityInfo, ignoredProperties );
+                        writer.endObject();
+                        return;
+
+                    case WRAPPER_OBJECT:
+                        // type info is included in a wrapper object that contains only one property. The name of this property is the type
+                        // info and the value the object
+                        writer.beginObject();
+                        writer.name( typeInformation );
+                        writer.beginObject();
+                        if ( null != idWriter ) {
+                            writer.name( identityInfo.getPropertyName() );
+                            idWriter.serializeId( writer, ctx );
+                        }
+                        serializeObject( writer, value, ctx, identityInfo, ignoredProperties );
+                        writer.endObject();
+                        writer.endObject();
+                        return;
+
+                    case WRAPPER_ARRAY:
+                        // type info is included in a wrapper array that contains two elements. First one is the type
+                        // info and the second one the object
+                        writer.beginArray();
+                        writer.value( typeInformation );
+                        writer.beginObject();
+                        if ( null != idWriter ) {
+                            writer.name( identityInfo.getPropertyName() );
+                            idWriter.serializeId( writer, ctx );
+                        }
+                        serializeObject( writer, value, ctx, identityInfo, ignoredProperties );
+                        writer.endObject();
+                        writer.endArray();
+                        return;
+
+                    default:
+                        ctx.getLogger().log( Level.SEVERE, "JsonTypeInfo.As." + typeInfo.getInclude() + " is not supported" );
+                }
             }
-
-            switch ( typeInfo.getInclude() ) {
-                case PROPERTY:
-                    // type info is included as a property of the object
-                    writer.beginObject();
-                    writer.name( typeInfo.getPropertyName() );
-                    writer.value( typeInformation );
-                    if ( null != idWriter ) {
-                        writer.name( identityInfo.getPropertyName() );
-                        idWriter.serializeId( writer, ctx );
-                    }
-                    serializeObject( writer, value, ctx, identityInfo, ignoredProperties );
-                    writer.endObject();
-                    break;
-
-                case WRAPPER_OBJECT:
-                    // type info is included in a wrapper object that contains only one property. The name of this property is the type
-                    // info and the value the object
-                    writer.beginObject();
-                    writer.name( typeInformation );
-                    writer.beginObject();
-                    if ( null != idWriter ) {
-                        writer.name( identityInfo.getPropertyName() );
-                        idWriter.serializeId( writer, ctx );
-                    }
-                    serializeObject( writer, value, ctx, identityInfo, ignoredProperties );
-                    writer.endObject();
-                    writer.endObject();
-                    break;
-
-                case WRAPPER_ARRAY:
-                    // type info is included in a wrapper array that contains two elements. First one is the type
-                    // info and the second one the object
-                    writer.beginArray();
-                    writer.value( typeInformation );
-                    writer.beginObject();
-                    if ( null != idWriter ) {
-                        writer.name( identityInfo.getPropertyName() );
-                        idWriter.serializeId( writer, ctx );
-                    }
-                    serializeObject( writer, value, ctx, identityInfo, ignoredProperties );
-                    writer.endObject();
-                    writer.endArray();
-                    break;
-
-                default:
-                    throw ctx.traceError( value, "JsonTypeInfo.As." + typeInfo.getInclude() + " is not supported", writer );
-            }
-        } else {
-            writer.beginObject();
-            if ( null != idWriter ) {
-                writer.name( identityInfo.getPropertyName() );
-                idWriter.serializeId( writer, ctx );
-            }
-            serializeObject( writer, value, ctx, identityInfo, ignoredProperties );
-            writer.endObject();
         }
+
+        writer.beginObject();
+        if ( null != idWriter ) {
+            writer.name( identityInfo.getPropertyName() );
+            idWriter.serializeId( writer, ctx );
+        }
+        serializeObject( writer, value, ctx, identityInfo, ignoredProperties );
+        writer.endObject();
     }
 
     /**

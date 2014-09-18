@@ -30,9 +30,9 @@ import com.google.gwt.user.rebind.SourceWriter;
  */
 final class FieldWriteAccessor extends FieldAccessor {
 
-    FieldWriteAccessor( String propertyName, boolean fieldAutoDetect, Optional<JField> field, boolean setterAutoDetect,
-                        Optional<JMethod> setter ) {
-        super( propertyName, fieldAutoDetect, field, setterAutoDetect, setter );
+    FieldWriteAccessor( String propertyName, boolean samePackage, boolean fieldAutoDetect, Optional<JField> field,
+                        boolean setterAutoDetect, Optional<JMethod> setter ) {
+        super( propertyName, samePackage, fieldAutoDetect, field, setterAutoDetect, setter );
     }
 
     @Override

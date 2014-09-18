@@ -26,6 +26,7 @@ import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.thirdparty.guava.common.base.Function;
 import com.google.gwt.thirdparty.guava.common.base.Optional;
+import com.google.gwt.thirdparty.guava.common.collect.ImmutableList;
 
 /**
  * @author Nicolas Morel
@@ -112,6 +113,18 @@ public final class CreatorUtils {
             return primitiveType.getUninitializedFieldExpression();
         }
         return "null";
+    }
+
+    public static ImmutableList<JClassType> filterSubtypes( JClassType type ) {
+        ImmutableList.Builder<JClassType> builder = ImmutableList.builder();
+        if ( type.getSubtypes().length > 0 ) {
+            for ( JClassType subtype : type.getSubtypes() ) {
+                if ( null == subtype.isInterface() && !subtype.isAbstract() && subtype.isPublic() ) {
+                    builder.add( subtype );
+                }
+            }
+        }
+        return builder.build();
     }
 
     private CreatorUtils() {

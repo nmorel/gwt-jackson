@@ -51,6 +51,7 @@ import com.google.gwt.core.ext.typeinfo.JParameter;
 import com.google.gwt.thirdparty.guava.common.base.Function;
 import com.google.gwt.thirdparty.guava.common.base.Joiner;
 import com.google.gwt.thirdparty.guava.common.collect.Collections2;
+import com.google.gwt.thirdparty.guava.common.collect.ImmutableList;
 import com.google.gwt.thirdparty.guava.common.collect.ImmutableMap;
 import com.google.gwt.user.rebind.SourceWriter;
 
@@ -130,18 +131,10 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
             source.println();
         }
 
-        if ( beanInfo.getType().getSubtypes().length > 0 ) {
-            List<JClassType> subtypes = new ArrayList<JClassType>();
-            for ( JClassType subtype : beanInfo.getType().getSubtypes() ) {
-                if ( null == subtype.isInterface() && !subtype.isAbstract() ) {
-                    subtypes.add( subtype );
-                }
-            }
-
-            if ( !subtypes.isEmpty() ) {
-                generateInitMapSubtypeClassToDeserializerMethod( source, subtypes );
-                source.println();
-            }
+        ImmutableList<JClassType> subtypes = filterSubtypes( beanInfo );
+        if ( !subtypes.isEmpty() ) {
+            generateInitMapSubtypeClassToDeserializerMethod( source, subtypes );
+            source.println();
         }
 
         if ( beanInfo.isIgnoreUnknown() ) {
@@ -483,7 +476,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         source.println();
 
         for ( PropertyInfo property : properties ) {
-            Accessor accessor = property.getSetterAccessor().get().getAccessor( "bean", true );
+            Accessor accessor = property.getSetterAccessor().get().getAccessor( "bean" );
 
             source.println( "map.put(\"%s\", new %s<%s, %s>() {", property.getPropertyName(), BEAN_PROPERTY_DESERIALIZER_CLASS, beanInfo
                     .getType().getParameterizedQualifiedSourceName(), getQualifiedClassName( property.getType() ) );
@@ -594,7 +587,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         source.println( "%s map = %s.createObject().cast();", resultType, SimpleStringMap.class.getCanonicalName() );
         for ( PropertyInfo property : properties ) {
 
-            Accessor accessor = property.getSetterAccessor().get().getAccessor( "bean", true );
+            Accessor accessor = property.getSetterAccessor().get().getAccessor( "bean" );
 
             // this is a back reference, we add the special back reference property that will be called by the parent
             source.println( "map.put(\"%s\", new %s<%s, %s>() {", property.getBackReference()
@@ -679,7 +672,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         source.println( "}" );
     }
 
-    private void generateInitMapSubtypeClassToDeserializerMethod( SourceWriter source, List<JClassType> subtypes ) throws
+    private void generateInitMapSubtypeClassToDeserializerMethod( SourceWriter source, ImmutableList<JClassType> subtypes ) throws
             UnableToCompleteException {
 
         String mapTypes = String.format( "<%s, %s>", Class.class.getCanonicalName(), SubtypeDeserializer.class.getName() );
