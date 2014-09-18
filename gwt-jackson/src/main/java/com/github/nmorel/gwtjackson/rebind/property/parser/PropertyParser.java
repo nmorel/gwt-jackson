@@ -162,13 +162,19 @@ public final class PropertyParser {
     }
 
     private static String extractFieldNameFromGetterSetterMethodName( String methodName ) {
-        if ( methodName.startsWith( "is" ) ) {
-            return methodName.substring( 2, 3 ).toLowerCase() + methodName.substring( 3 );
-        } else if ( methodName.startsWith( "get" ) || methodName.startsWith( "set" ) ) {
-            return methodName.substring( 3, 4 ).toLowerCase() + methodName.substring( 4 );
+        String fieldName;
+        if ( methodName.startsWith( "is" ) && methodName.length() > 2 ) {
+            fieldName = methodName.substring( 2 );
+        } else if ( (methodName.startsWith( "get" ) || methodName.startsWith( "set" )) && methodName.length() > 3 ) {
+            fieldName = methodName.substring( 3 );
         } else {
-            return methodName;
+            fieldName = methodName;
         }
+
+        int index = 0;
+        while ( Character.isUpperCase( fieldName.charAt( index++ ) ) && index < fieldName.length() ) {
+        }
+        return fieldName.substring( 0, index ).toLowerCase() + fieldName.substring( index );
     }
 
 }
