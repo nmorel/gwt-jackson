@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
@@ -36,9 +37,12 @@ import com.github.nmorel.gwtjackson.rebind.bean.BeanIdentityInfo;
 import com.github.nmorel.gwtjackson.rebind.bean.BeanInfo;
 import com.github.nmorel.gwtjackson.rebind.bean.BeanProcessor;
 import com.github.nmorel.gwtjackson.rebind.bean.BeanTypeInfo;
+import com.github.nmorel.gwtjackson.rebind.exception.UnsupportedTypeException;
 import com.github.nmorel.gwtjackson.rebind.property.PropertyInfo;
 import com.github.nmorel.gwtjackson.rebind.property.processor.PropertyProcessor;
+import com.github.nmorel.gwtjackson.rebind.type.JDeserializerType;
 import com.github.nmorel.gwtjackson.rebind.type.JMapperType;
+import com.github.nmorel.gwtjackson.rebind.type.JSerializerType;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.TreeLogger.Type;
@@ -107,7 +111,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
      * @return the fully qualified name of the created class
      * @throws com.google.gwt.core.ext.UnableToCompleteException
      */
-    public String create( JClassType beanType ) throws UnableToCompleteException {
+    public String create( JClassType beanType ) throws UnableToCompleteException, UnsupportedTypeException {
 
         boolean samePackage = true;
         String packageName = beanType.getPackage().getName();
@@ -196,7 +200,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
     }
 
     protected abstract void writeClassBody( SourceWriter source, BeanInfo info, ImmutableMap<String,
-            PropertyInfo> properties ) throws UnableToCompleteException;
+            PropertyInfo> properties ) throws UnableToCompleteException, UnsupportedTypeException;
 
     protected TypeParameters generateTypeParameterMapperFields( SourceWriter source, BeanInfo beanInfo, String mapperClass,
                                                                 String mapperNameFormat ) throws UnableToCompleteException {
@@ -233,8 +237,17 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
         }
     }
 
-    protected void generateIdentifierSerializationInfo( SourceWriter source, JClassType type, BeanIdentityInfo identityInfo ) throws
-            UnableToCompleteException {
+    protected Optional<JSerializerType> getIdentitySerializerType( BeanIdentityInfo identityInfo ) throws UnableToCompleteException,
+            UnsupportedTypeException {
+        if ( identityInfo.isIdABeanProperty() ) {
+            return Optional.empty();
+        } else {
+            return Optional.of( getJsonSerializerFromType( identityInfo.getType().get() ) );
+        }
+    }
+
+    protected void generateIdentifierSerializationInfo( SourceWriter source, JClassType type, BeanIdentityInfo identityInfo,
+                                                        Optional<JSerializerType> serializerType ) throws UnableToCompleteException {
 
         if ( identityInfo.isIdABeanProperty() ) {
             source.print( "new %s<%s>(%s, \"%s\")", PropertyIdentitySerializationInfo.class.getName(), type
@@ -250,7 +263,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
             source.println( "@Override" );
             source.println( "protected %s<?> newSerializer() {", JSON_SERIALIZER_CLASS );
             source.indent();
-            source.println( "return %s;", getJsonSerializerFromType( identityInfo.getType().get() ).getInstance() );
+            source.println( "return %s;", serializerType.get().getInstance() );
             source.outdent();
             source.println( "}" );
             source.println();
@@ -281,8 +294,17 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
         }
     }
 
-    protected void generateIdentifierDeserializationInfo( SourceWriter source, JClassType type, BeanIdentityInfo identityInfo ) throws
-            UnableToCompleteException {
+    protected Optional<JDeserializerType> getIdentityDeserializerType( BeanIdentityInfo identityInfo ) throws UnableToCompleteException,
+            UnsupportedTypeException {
+        if ( identityInfo.isIdABeanProperty() ) {
+            return Optional.empty();
+        } else {
+            return Optional.of( getJsonDeserializerFromType( identityInfo.getType().get() ) );
+        }
+    }
+
+    protected void generateIdentifierDeserializationInfo( SourceWriter source, JClassType type, BeanIdentityInfo identityInfo,
+                                                          Optional<JDeserializerType> deserializerType ) throws UnableToCompleteException {
         if ( identityInfo.isIdABeanProperty() ) {
 
             source.print( "new %s<%s>(\"%s\", %s.class, %s.class)", PropertyIdentityDeserializationInfo.class.getName(), type
@@ -303,7 +325,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
             source.println( "@Override" );
             source.println( "protected %s<?> newDeserializer() {", JSON_DESERIALIZER_CLASS );
             source.indent();
-            source.println( "return %s;", getJsonDeserializerFromType( identityInfo.getType().get() ).getInstance() );
+            source.println( "return %s;", deserializerType.get().getInstance() );
             source.outdent();
             source.println( "}" );
 

@@ -20,8 +20,10 @@ import java.io.PrintWriter;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;
+import com.github.nmorel.gwtjackson.rebind.exception.UnsupportedTypeException;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
+import com.google.gwt.core.ext.TreeLogger.Type;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JParameterizedType;
@@ -171,28 +173,33 @@ public class ObjectMapperCreator extends AbstractCreator {
 
         source.println();
 
-        if ( reader ) {
-            source.println( "@Override" );
-            source.println( "protected %s<%s> newDeserializer() {", JSON_DESERIALIZER_CLASS, mappedTypeClass
-                    .getParameterizedQualifiedSourceName() );
-            source.indent();
-            source.println( "return %s;", getJsonDeserializerFromType( mappedTypeClass ).getInstance() );
-            source.outdent();
-            source.println( "}" );
+        try {
+            if ( reader ) {
+                source.println( "@Override" );
+                source.println( "protected %s<%s> newDeserializer() {", JSON_DESERIALIZER_CLASS, mappedTypeClass
+                        .getParameterizedQualifiedSourceName() );
+                source.indent();
+                source.println( "return %s;", getJsonDeserializerFromType( mappedTypeClass ).getInstance() );
+                source.outdent();
+                source.println( "}" );
 
-            source.println();
-        }
+                source.println();
+            }
 
-        if ( writer ) {
-            source.println( "@Override" );
-            source.println( "protected %s<%s> newSerializer() {", JSON_SERIALIZER_CLASS, mappedTypeClass
-                    .getParameterizedQualifiedSourceName() );
-            source.indent();
-            source.println( "return %s;", getJsonSerializerFromType( mappedTypeClass ).getInstance() );
-            source.outdent();
-            source.println( "}" );
+            if ( writer ) {
+                source.println( "@Override" );
+                source.println( "protected %s<%s> newSerializer() {", JSON_SERIALIZER_CLASS, mappedTypeClass
+                        .getParameterizedQualifiedSourceName() );
+                source.indent();
+                source.println( "return %s;", getJsonSerializerFromType( mappedTypeClass ).getInstance() );
+                source.outdent();
+                source.println( "}" );
 
-            source.println();
+                source.println();
+            }
+        } catch ( UnsupportedTypeException e ) {
+            logger.log( Type.ERROR, "Cannot generate mapper due to previous errors : " + e.getMessage() );
+            throw new UnableToCompleteException();
         }
 
         source.commit( logger );

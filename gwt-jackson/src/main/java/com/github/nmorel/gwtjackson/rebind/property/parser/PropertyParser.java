@@ -25,6 +25,7 @@ import com.github.nmorel.gwtjackson.rebind.RebindConfiguration;
 import com.github.nmorel.gwtjackson.rebind.bean.BeanInfo;
 import com.github.nmorel.gwtjackson.rebind.property.PropertyAccessors;
 import com.google.gwt.core.ext.TreeLogger;
+import com.google.gwt.core.ext.TreeLogger.Type;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JField;
 import com.google.gwt.core.ext.typeinfo.JMethod;
@@ -118,8 +119,8 @@ public final class PropertyParser {
             }
             if ( property.getField().isPresent() && !mixin ) {
                 // we found an other field with the same name on a superclass. we ignore it
-                logger.log( TreeLogger.Type.WARN, "A field with the same name as " + field
-                        .getName() + " has already been found on child class" );
+                logger.log( Type.INFO, "A field with the same name as '" + field
+                        .getName() + "' has already been found on child class" );
             } else {
                 property.addField( field, mixin );
             }

@@ -22,9 +22,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import com.github.nmorel.gwtjackson.client.deser.EnumJsonDeserializer;
@@ -37,11 +39,13 @@ import com.github.nmorel.gwtjackson.client.deser.bean.SubtypeDeserializer.EnumSu
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 import com.github.nmorel.gwtjackson.rebind.bean.BeanInfo;
+import com.github.nmorel.gwtjackson.rebind.exception.UnsupportedTypeException;
 import com.github.nmorel.gwtjackson.rebind.property.FieldAccessor.Accessor;
 import com.github.nmorel.gwtjackson.rebind.property.PropertyInfo;
 import com.github.nmorel.gwtjackson.rebind.type.JDeserializerType;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
+import com.google.gwt.core.ext.TreeLogger.Type;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JAbstractMethod;
 import com.google.gwt.core.ext.typeinfo.JClassType;
@@ -98,7 +102,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
     @Override
     protected void writeClassBody( SourceWriter source, BeanInfo beanInfo, ImmutableMap<String,
-            PropertyInfo> properties ) throws UnableToCompleteException {
+            PropertyInfo> properties ) throws UnableToCompleteException, UnsupportedTypeException {
         source.println();
 
         TypeParameters typeParameters = generateTypeParameterMapperFields( source, beanInfo, JSON_DESERIALIZER_CLASS,
@@ -122,8 +126,13 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         }
 
         if ( beanInfo.getIdentityInfo().isPresent() ) {
-            generateInitIdentityInfoMethod( source, beanInfo );
-            source.println();
+            try {
+                Optional<JDeserializerType> deserializerType = getIdentityDeserializerType( beanInfo.getIdentityInfo().get() );
+                generateInitIdentityInfoMethod( source, beanInfo, deserializerType );
+                source.println();
+            } catch ( UnsupportedTypeException e ) {
+                logger.log( Type.WARN, "Identity type is not supported. We ignore it." );
+            }
         }
 
         if ( beanInfo.getTypeInfo().isPresent() ) {
@@ -165,7 +174,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
     }
 
     private void generateInitInstanceBuilderMethod( SourceWriter source, BeanInfo beanInfo, ImmutableMap<String,
-            PropertyInfo> properties ) throws UnableToCompleteException {
+            PropertyInfo> properties ) throws UnableToCompleteException, UnsupportedTypeException {
         source.println( "@Override" );
         source.println( "protected %s<%s> initInstanceBuilder() {", INSTANCE_BUILDER_CLASS, beanInfo.getType()
                 .getParameterizedQualifiedSourceName() );
@@ -178,7 +187,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
     }
 
     private void generateInstanceBuilderClass( SourceWriter source, BeanInfo beanInfo, ImmutableMap<String,
-            PropertyInfo> properties ) throws UnableToCompleteException {
+            PropertyInfo> properties ) throws UnableToCompleteException, UnsupportedTypeException {
 
         source.println( "new %s<%s>() {", INSTANCE_BUILDER_CLASS, beanInfo.getType().getParameterizedQualifiedSourceName() );
         source.indent();
@@ -193,7 +202,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
                         .format( INSTANCE_BUILDER_DESERIALIZER_FORMAT, entry.getKey() ), deserializerClass );
 
                 source.indent();
-                generateCommonPropertyDeserializerBody( source, beanInfo, properties.get( entry.getKey() ) );
+                generateCommonPropertyDeserializerBody( source, properties.get( entry.getKey() ) );
                 source.outdent();
                 source.println( "};" );
             }
@@ -414,7 +423,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
         List<PropertyInfo> ignoredProperties = new ArrayList<PropertyInfo>();
         List<PropertyInfo> requiredProperties = new ArrayList<PropertyInfo>();
-        List<PropertyInfo> deserializerProperties = new ArrayList<PropertyInfo>();
+        Map<PropertyInfo, JDeserializerType> deserializerProperties = new LinkedHashMap<PropertyInfo, JDeserializerType>();
         List<PropertyInfo> backReferenceProperties = new ArrayList<PropertyInfo>();
 
         for ( PropertyInfo property : properties.values() ) {
@@ -434,9 +443,15 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
             }
 
             if ( !property.getBackReference().isPresent() ) {
-                deserializerProperties.add( property );
-                if ( property.isRequired() ) {
-                    requiredProperties.add( property );
+                try {
+                    JDeserializerType deserializerType = getJsonDeserializerFromType( property.getType() );
+                    deserializerProperties.put( property, deserializerType );
+                    if ( property.isRequired() ) {
+                        requiredProperties.add( property );
+                    }
+                } catch ( UnsupportedTypeException e ) {
+                    logger.log( Type.WARN, "Property '" + property.getPropertyName() + "' is ignored" );
+                    ignoredProperties.add( property );
                 }
             } else {
                 backReferenceProperties.add( property );
@@ -463,8 +478,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         }
     }
 
-    private void generateInitDeserializersMethod( SourceWriter source, BeanInfo beanInfo, List<PropertyInfo> properties ) throws
-            UnableToCompleteException {
+    private void generateInitDeserializersMethod( SourceWriter source, BeanInfo beanInfo, Map<PropertyInfo,
+            JDeserializerType> properties ) throws UnableToCompleteException {
         String resultType = String.format( "%s<%s<%s, ?>>", SimpleStringMap.class
                 .getCanonicalName(), BEAN_PROPERTY_DESERIALIZER_CLASS, beanInfo.getType().getParameterizedQualifiedSourceName() );
 
@@ -475,7 +490,9 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         source.println( "%s map = %s.createObject().cast();", resultType, SimpleStringMap.class.getCanonicalName() );
         source.println();
 
-        for ( PropertyInfo property : properties ) {
+        for ( Entry<PropertyInfo, JDeserializerType> entry : properties.entrySet() ) {
+            PropertyInfo property = entry.getKey();
+
             Accessor accessor = property.getSetterAccessor().get().getAccessor( "bean" );
 
             source.println( "map.put(\"%s\", new %s<%s, %s>() {", property.getPropertyName(), BEAN_PROPERTY_DESERIALIZER_CLASS, beanInfo
@@ -483,7 +500,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
             source.indent();
 
-            generateCommonPropertyDeserializerBody( source, beanInfo, property );
+            generateCommonPropertyDeserializerBody( source, property, entry.getValue() );
 
             source.println();
 
@@ -516,10 +533,13 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         source.println( "}" );
     }
 
-    private void generateCommonPropertyDeserializerBody( SourceWriter source, BeanInfo info,
-                                                         PropertyInfo property ) throws UnableToCompleteException {
-        JDeserializerType deserializerType = getJsonDeserializerFromType( property.getType() );
+    private void generateCommonPropertyDeserializerBody( SourceWriter source, PropertyInfo property ) throws UnableToCompleteException,
+            UnsupportedTypeException {
+        generateCommonPropertyDeserializerBody( source, property, getJsonDeserializerFromType( property.getType() ) );
+    }
 
+    private void generateCommonPropertyDeserializerBody( SourceWriter source, PropertyInfo property,
+                                                         JDeserializerType deserializerType ) throws UnableToCompleteException {
         source.println( "@Override" );
         source.println( "protected %s<?> newDeserializer() {", JSON_DESERIALIZER_CLASS );
         source.indent();
@@ -555,10 +575,16 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
             }
 
             if ( property.getIdentityInfo().isPresent() ) {
-                source.println();
-                source.print( ".setIdentityInfo(" );
-                generateIdentifierDeserializationInfo( source, annotatedType, property.getIdentityInfo().get() );
-                source.print( ")" );
+                try {
+                    Optional<JDeserializerType> identityDeserializerType = getIdentityDeserializerType( property.getIdentityInfo().get() );
+                    source.println();
+                    source.print( ".setIdentityInfo(" );
+                    generateIdentifierDeserializationInfo( source, annotatedType, property.getIdentityInfo()
+                            .get(), identityDeserializerType );
+                    source.print( ")" );
+                } catch ( UnsupportedTypeException e ) {
+                    logger.log( Type.WARN, "Identity type is not supported. We ignore it." );
+                }
             }
 
             if ( property.getTypeInfo().isPresent() ) {
@@ -648,13 +674,14 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         source.println( "}" );
     }
 
-    private void generateInitIdentityInfoMethod( SourceWriter source, BeanInfo beanInfo ) throws UnableToCompleteException {
+    private void generateInitIdentityInfoMethod( SourceWriter source, BeanInfo beanInfo, Optional<JDeserializerType> deserializerType )
+            throws UnableToCompleteException {
         source.println( "@Override" );
         source.println( "protected %s<%s> initIdentityInfo() {", IdentityDeserializationInfo.class.getCanonicalName(), beanInfo.getType()
                 .getParameterizedQualifiedSourceName() );
         source.indent();
         source.print( "return " );
-        generateIdentifierDeserializationInfo( source, beanInfo.getType(), beanInfo.getIdentityInfo().get() );
+        generateIdentifierDeserializationInfo( source, beanInfo.getType(), beanInfo.getIdentityInfo().get(), deserializerType );
         source.println( ";" );
         source.outdent();
         source.println( "}" );
@@ -687,6 +714,15 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         source.println();
 
         for ( JClassType subtype : subtypes ) {
+
+            JDeserializerType deserializerType;
+            try {
+                deserializerType = getJsonDeserializerFromType( subtype );
+            } catch ( UnsupportedTypeException e ) {
+                logger.log( Type.WARN, "Subtype '" + subtype.getQualifiedSourceName() + "' is not supported. We ignore it." );
+                continue;
+            }
+
             String subtypeClass;
             String deserializerClass;
             if ( null == subtype.isEnum() ) {
@@ -705,7 +741,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
             source.println( "@Override" );
             source.println( "protected %s newDeserializer() {", deserializerClass );
             source.indent();
-            source.println( "return %s;", getJsonDeserializerFromType( subtype ).getInstance() );
+            source.println( "return %s;", deserializerType.getInstance() );
             source.outdent();
             source.println( "}" );
 

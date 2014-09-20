@@ -17,6 +17,8 @@
 package com.github.nmorel.gwtjackson.client.mapper;
 
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
@@ -24,7 +26,6 @@ import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;
 import com.github.nmorel.gwtjackson.client.annotation.JsonMixIns;
 import com.github.nmorel.gwtjackson.client.annotation.JsonMixIns.JsonMixIn;
-import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
 import com.google.gwt.core.client.GWT;
 
 /**
@@ -47,13 +48,13 @@ public class ErrorGwtTest extends GwtJacksonTestCase {
         }
     }
 
-    @JsonMixIns( @JsonMixIn( target = Comparator.class, mixIn = MixinCom.class ) )
-    public interface ComparatorIntegerMapper extends ObjectMapper<Comparator<Integer>>, ObjectMapperTester<Comparator<Integer>> {
+    @JsonMixIns(@JsonMixIn(target = Comparator.class, mixIn = MixinCom.class))
+    public interface ComparatorIntegerMapper extends ObjectMapper<Comparator<Integer>> {
 
         static ComparatorIntegerMapper INSTANCE = GWT.create( ComparatorIntegerMapper.class );
     }
 
-    @JsonTypeInfo( use = Id.CLASS )
+    @JsonTypeInfo(use = Id.CLASS)
     public static class MixinCom {}
 
     public void testSerialization() {
@@ -65,4 +66,33 @@ public class ErrorGwtTest extends GwtJacksonTestCase {
             }
         } );
     }
+
+    // #############################################
+    // No errors if a type is not supported, we just ignore the property
+
+    public static class UnsupportedTypeBean {
+        public String aProperty;
+        public String[][][] array3d;
+        public Map<UnsupportedTypeBean, String> aMap;
+    }
+
+    public interface UnsupportedTypeBeanMapper extends ObjectMapper<UnsupportedTypeBean> {
+        static UnsupportedTypeBeanMapper INSTANCE = GWT.create( UnsupportedTypeBeanMapper.class );
+    }
+
+    public void testMapKeyError() {
+        UnsupportedTypeBean bean = new UnsupportedTypeBean();
+        bean.aProperty = "propertyString";
+        bean.array3d = new String[][][]{};
+        bean.aMap = new HashMap<UnsupportedTypeBean, String>();
+
+        String json = UnsupportedTypeBeanMapper.INSTANCE.write( bean );
+        assertEquals( "{\"aProperty\":\"propertyString\"}", json );
+
+        bean = UnsupportedTypeBeanMapper.INSTANCE.read("{\"aProperty\":\"propertyString\",\"array3d\":\"error\",\"aMap\":\"error\"}");
+        assertEquals( "propertyString", bean.aProperty );
+        assertNull( bean.array3d );
+        assertNull( bean.aMap );
+    }
+
 }

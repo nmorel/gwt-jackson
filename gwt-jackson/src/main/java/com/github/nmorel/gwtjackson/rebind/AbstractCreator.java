@@ -36,6 +36,7 @@ import com.github.nmorel.gwtjackson.client.ser.map.key.EnumKeySerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.key.KeySerializer;
 import com.github.nmorel.gwtjackson.rebind.RebindConfiguration.MapperInstance;
 import com.github.nmorel.gwtjackson.rebind.RebindConfiguration.MapperType;
+import com.github.nmorel.gwtjackson.rebind.exception.UnsupportedTypeException;
 import com.github.nmorel.gwtjackson.rebind.type.JDeserializerType;
 import com.github.nmorel.gwtjackson.rebind.type.JSerializerType;
 import com.google.gwt.core.ext.GeneratorContext;
@@ -116,7 +117,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      * <li>new org.PersonBeanJsonSerializer()</li>
      * </ul>
      */
-    protected JSerializerType getJsonSerializerFromType( JType type ) throws UnableToCompleteException {
+    protected JSerializerType getJsonSerializerFromType( JType type ) throws UnableToCompleteException, UnsupportedTypeException {
         JSerializerType.Builder builder = new JSerializerType.Builder().type( type );
         if ( null != type.isWildcard() ) {
             // we use the base type to find the serializer to use
@@ -155,8 +156,9 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         }
 
         if ( typeOracle.isObject( type ) ) {
-            logger.log( Type.ERROR, "java.lang.Object is not a supported type" );
-            throw new UnableToCompleteException();
+            String message = "java.lang.Object is not a supported type";
+            logger.log( TreeLogger.Type.WARN, message );
+            throw new UnsupportedTypeException( message );
         }
 
         JEnumType enumType = type.isEnum();
@@ -176,8 +178,9 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                 arraySerializer = Array2dJsonSerializer.class.getCanonicalName();
             } else {
                 // more dimensions are not supported
-                logger.log( Type.ERROR, "Arrays with 3 or more dimensions are not supported" );
-                throw new UnableToCompleteException();
+                String message = "Arrays with 3 or more dimensions are not supported";
+                logger.log( TreeLogger.Type.WARN, message );
+                throw new UnsupportedTypeException( message );
             }
             JSerializerType parameterSerializerType = getJsonSerializerFromType( arrayType.getLeafType() );
             builder.parameters( new JSerializerType[]{parameterSerializerType} );
@@ -228,8 +231,9 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             return builder.build();
         }
 
-        logger.log( TreeLogger.Type.ERROR, "Type '" + type.getQualifiedSourceName() + "' is not supported" );
-        throw new UnableToCompleteException();
+        String message = "Type '" + type.getQualifiedSourceName() + "' is not supported";
+        logger.log( TreeLogger.Type.WARN, message );
+        throw new UnsupportedTypeException( message );
     }
 
     /**
@@ -239,7 +243,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      *
      * @return the code instantiating the {@link KeySerializer}.
      */
-    protected JSerializerType getKeySerializerFromType( JType type ) throws UnableToCompleteException {
+    protected JSerializerType getKeySerializerFromType( JType type ) throws UnsupportedTypeException {
         JSerializerType.Builder builder = new JSerializerType.Builder().type( type );
 
         Optional<MapperInstance> keySerializer = configuration.getKeySerializer( type );
@@ -255,8 +259,9 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             return builder.build();
         }
 
-        logger.log( TreeLogger.Type.ERROR, "Type '" + type.getQualifiedSourceName() + "' is not supported as map's key" );
-        throw new UnableToCompleteException();
+        String message = "Type '" + type.getQualifiedSourceName() + "' is not supported as map's key";
+        logger.log( TreeLogger.Type.WARN, message );
+        throw new UnsupportedTypeException( message );
     }
 
     /**
@@ -272,7 +277,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      * <li>new org .PersonBeanJsonDeserializer()</li>
      * </ul>
      */
-    protected JDeserializerType getJsonDeserializerFromType( JType type ) throws UnableToCompleteException {
+    protected JDeserializerType getJsonDeserializerFromType( JType type ) throws UnableToCompleteException, UnsupportedTypeException {
         JDeserializerType.Builder builder = new JDeserializerType.Builder().type( type );
         if ( null != type.isWildcard() ) {
             // we use the base type to find the deserializer to use
@@ -312,8 +317,9 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         }
 
         if ( typeOracle.isObject( type ) ) {
-            logger.log( Type.ERROR, "java.lang.Object is not a supported type" );
-            throw new UnableToCompleteException();
+            String message = "java.lang.Object is not a supported type";
+            logger.log( TreeLogger.Type.WARN, message );
+            throw new UnsupportedTypeException( message );
         }
 
         JEnumType enumType = type.isEnum();
@@ -353,8 +359,9 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
             } else {
                 // more dimensions are not supported
-                logger.log( Type.ERROR, "Arrays with 3 or more dimensions are not supported" );
-                throw new UnableToCompleteException();
+                String message = "Arrays with 3 or more dimensions are not supported";
+                logger.log( TreeLogger.Type.WARN, message );
+                throw new UnsupportedTypeException( message );
             }
 
             JDeserializerType parameterDeserializerType = getJsonDeserializerFromType( leafType );
@@ -407,8 +414,9 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             return builder.build();
         }
 
-        logger.log( TreeLogger.Type.ERROR, "Type '" + type.getQualifiedSourceName() + "' is not supported" );
-        throw new UnableToCompleteException();
+        String message = "Type '" + type.getQualifiedSourceName() + "' is not supported";
+        logger.log( TreeLogger.Type.WARN, message );
+        throw new UnsupportedTypeException( message );
     }
 
     /**
@@ -418,7 +426,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      *
      * @return the code instantiating the {@link KeyDeserializer}.
      */
-    protected JDeserializerType getKeyDeserializerFromType( JType type ) throws UnableToCompleteException {
+    protected JDeserializerType getKeyDeserializerFromType( JType type ) throws UnsupportedTypeException {
         JDeserializerType.Builder builder = new JDeserializerType.Builder();
         builder.type( type );
 
@@ -435,8 +443,9 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             return builder.build();
         }
 
-        logger.log( TreeLogger.Type.ERROR, "Type '" + type.getQualifiedSourceName() + "' is not supported as map's key" );
-        throw new UnableToCompleteException();
+        String message = "Type '" + type.getQualifiedSourceName() + "' is not supported as map's key";
+        logger.log( TreeLogger.Type.WARN, message );
+        throw new UnsupportedTypeException( message );
     }
 
 }
