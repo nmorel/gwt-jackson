@@ -36,8 +36,8 @@ public class EnumJsonSerializer<E extends Enum<E>> extends JsonSerializer<E> {
      * @return an instance of {@link EnumJsonSerializer}
      */
     @SuppressWarnings("unchecked")
-    public static <E extends Enum<E>> EnumJsonSerializer<E> getInstance() {
-        return (EnumJsonSerializer<E>) INSTANCE;
+    public static <S extends EnumJsonSerializer<?>> S getInstance() {
+        return (S) INSTANCE;
     }
 
     private EnumJsonSerializer() { }

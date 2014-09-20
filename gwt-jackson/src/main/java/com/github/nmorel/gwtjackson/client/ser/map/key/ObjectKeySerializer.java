@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Nicolas Morel
+ * Copyright 2014 Nicolas Morel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,29 +17,34 @@
 package com.github.nmorel.gwtjackson.client.ser.map.key;
 
 import javax.annotation.Nonnull;
+import java.util.Date;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 
 /**
- * Default {@link KeySerializer} implementation for {@link String}.
+ * Default {@link KeySerializer} implementation for {@link Object}.
  *
  * @author Nicolas Morel
  */
-public final class StringKeySerializer extends KeySerializer<String> {
+public final class ObjectKeySerializer extends KeySerializer<Object> {
 
-    private static final StringKeySerializer INSTANCE = new StringKeySerializer();
+    private static final ObjectKeySerializer INSTANCE = new ObjectKeySerializer();
 
     /**
-     * @return an instance of {@link StringKeySerializer}
+     * @return an instance of {@link ObjectKeySerializer}
      */
-    public static StringKeySerializer getInstance() {
+    public static ObjectKeySerializer getInstance() {
         return INSTANCE;
     }
 
-    private StringKeySerializer() { }
+    private ObjectKeySerializer() { }
 
     @Override
-    protected String doSerialize( @Nonnull String value, JsonSerializationContext ctx ) {
-        return value;
+    protected String doSerialize( @Nonnull Object value, JsonSerializationContext ctx ) {
+        if ( value instanceof Date ) {
+            return DateKeySerializer.getInstance().doSerialize( (Date) value, ctx );
+        } else {
+            return ToStringKeySerializer.getInstance().doSerialize( value, ctx );
+        }
     }
 }

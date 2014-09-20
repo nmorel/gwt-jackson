@@ -20,7 +20,6 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -59,10 +58,12 @@ import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.thirdparty.guava.common.base.Optional;
 import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.google.gwt.thirdparty.guava.common.collect.ImmutableList;
+import com.google.gwt.thirdparty.guava.common.collect.ImmutableMap;
 
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounteredAnnotationsOnAllHierarchy;
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.getAnnotation;
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.isAnnotationPresent;
+import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.isObjectOrSerializable;
 
 /**
  * @author Nicolas Morel.
@@ -126,7 +127,7 @@ public final class BeanProcessor {
      */
     private static void determineInstanceCreator( RebindConfiguration configuration, TreeLogger logger, JClassType beanType,
                                                   BeanInfoBuilder builder ) {
-        if ( null != beanType.isInterface() || beanType.isAbstract() ) {
+        if ( null != beanType.isInterface() || beanType.isAbstract() || isObjectOrSerializable( beanType ) ) {
             return;
         }
 
@@ -326,9 +327,24 @@ public final class BeanProcessor {
         String propertyName = jsonTypeInfo.get().property().isEmpty() ? jsonTypeInfo.get().use().getDefaultPropertyName() : jsonTypeInfo
                 .get().property();
 
-        Map<JClassType, String> classToMetadata = new HashMap<JClassType, String>();
         Optional<JsonSubTypes> typeSubTypes = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, type, JsonSubTypes.class );
-        ImmutableList<JClassType> allSubtypes = CreatorUtils.filterSubtypes( type );
+
+        // TODO we could do better, we actually extract metadata twice for a lot of classes
+        ImmutableMap<JClassType, String> classToSerializationMetadata = extractMetadata( logger, configuration, type, jsonTypeInfo, propertySubTypes, typeSubTypes, CreatorUtils.filterSubtypesForSerialization( logger, configuration, type ) );
+        ImmutableMap<JClassType, String> classToDeserializationMetadata = extractMetadata( logger, configuration, type, jsonTypeInfo, propertySubTypes, typeSubTypes, CreatorUtils.filterSubtypesForDeserialization( logger, configuration, type ) );
+
+        return Optional.<BeanTypeInfo>of( new ImmutableBeanTypeInfo( use, include, propertyName, classToSerializationMetadata, classToDeserializationMetadata ) );
+    }
+
+    private static ImmutableMap<JClassType, String> extractMetadata( TreeLogger logger, RebindConfiguration configuration,
+                                                                     JClassType type, Optional<JsonTypeInfo> jsonTypeInfo,
+                                                                     Optional<JsonSubTypes> propertySubTypes,
+                                                                     Optional<JsonSubTypes> typeSubTypes,
+                                                                     ImmutableList<JClassType> allSubtypes ) throws
+            UnableToCompleteException {
+
+        ImmutableMap.Builder<JClassType, String> classToMetadata = ImmutableMap.builder();
+
         classToMetadata.put( type, extractTypeMetadata( logger, configuration, type, type, jsonTypeInfo
                 .get(), propertySubTypes, typeSubTypes, allSubtypes ) );
 
@@ -336,8 +352,7 @@ public final class BeanProcessor {
             classToMetadata.put( subtype, extractTypeMetadata( logger, configuration, type, subtype, jsonTypeInfo
                     .get(), propertySubTypes, typeSubTypes, allSubtypes ) );
         }
-
-        return Optional.<BeanTypeInfo>of( new ImmutableBeanTypeInfo( use, include, propertyName, classToMetadata ) );
+        return classToMetadata.build();
     }
 
     private static String extractTypeMetadata( TreeLogger logger, RebindConfiguration configuration, JClassType baseType,

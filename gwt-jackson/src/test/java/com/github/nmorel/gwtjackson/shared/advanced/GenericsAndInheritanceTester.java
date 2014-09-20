@@ -53,9 +53,11 @@ public class GenericsAndInheritanceTester extends AbstractTester {
         }
     }
 
-    public static class GetResult<T> extends Result<T> {
+    public static class GetResult<V extends Number, K> extends Result<K> {
 
         private String aString;
+
+        private V aNumber;
 
         public String getaString() {
             return aString;
@@ -63,6 +65,14 @@ public class GenericsAndInheritanceTester extends AbstractTester {
 
         public void setaString( String aString ) {
             this.aString = aString;
+        }
+
+        public V getaNumber() {
+            return aNumber;
+        }
+
+        public void setaNumber( V aNumber ) {
+            this.aNumber = aNumber;
         }
     }
 
@@ -84,7 +94,8 @@ public class GenericsAndInheritanceTester extends AbstractTester {
                 "    \"class\":\"com.github.nmorel.gwtjackson.shared.advanced.GenericsAndInheritanceTester$GetResult\",\n" +
                 "    \"exceptionMessage\":\"anException\",\n" +
                 "    \"payload\":45,\n" +
-                "    \"aString\":\"aSuperString\"\n" +
+                "    \"aString\":\"aSuperString\",\n" +
+                "    \"aNumber\":28.8\n" +
                 "  },\n" +
                 "  {\n" +
                 "    \"class\":\"com.github.nmorel.gwtjackson.shared.advanced.GenericsAndInheritanceTester$IntegerResult\",\n" +
@@ -101,7 +112,8 @@ public class GenericsAndInheritanceTester extends AbstractTester {
         assertEquals( GetResult.class, result[1].getClass() );
         assertEquals( "anException", result[1].getExceptionMessage() );
         assertEquals( 45, result[1].getPayload().intValue() );
-        assertEquals( "aSuperString", ((GetResult<Integer>) result[1]).getaString() );
+        assertEquals( "aSuperString", ((GetResult<Double, Integer>) result[1]).getaString() );
+        assertEquals( 28.8, ((GetResult<Double, Integer>) result[1]).getaNumber() );
 
         assertEquals( IntegerResult.class, result[2].getClass() );
         assertNull( result[2].getExceptionMessage() );
@@ -115,6 +127,7 @@ public class GenericsAndInheritanceTester extends AbstractTester {
                 "}," +
                 "{" +
                 "\"class\":\"com.github.nmorel.gwtjackson.shared.advanced.GenericsAndInheritanceTester$GetResult\"," +
+                "\"aNumber\":28.8," +
                 "\"aString\":\"aSuperString\"," +
                 "\"exceptionMessage\":\"anException\"," +
                 "\"payload\":45" +

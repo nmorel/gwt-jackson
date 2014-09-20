@@ -224,13 +224,17 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
                 default:
                     throw ctx.traceError( "JsonTypeInfo.As." + typeInfo.getInclude() + " is not supported", reader );
             }
-        } else if ( null != instanceBuilder ) {
+        } else if ( canDeserialize() ) {
             result = deserializeWrapped( reader, ctx, params, identityInfo, null, null );
         } else {
             throw ctx.traceError( "Cannot instantiate the type " + getDeserializedType().getName(), reader );
         }
 
         return result;
+    }
+
+    protected boolean canDeserialize() {
+        return null != instanceBuilder;
     }
 
     @Override
@@ -251,7 +255,8 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
      * @param bufferedProperties Buffered properties in case the type info property was not in 1st position
      */
     @Override
-    public final T deserializeInline( final JsonReader reader, final JsonDeserializationContext ctx, JsonDeserializerParameters params, IdentityDeserializationInfo identityInfo, TypeDeserializationInfo typeInfo, String type,
+    public final T deserializeInline( final JsonReader reader, final JsonDeserializationContext ctx, JsonDeserializerParameters params,
+                                      IdentityDeserializationInfo identityInfo, TypeDeserializationInfo typeInfo, String type,
                                       Map<String, String> bufferedProperties ) {
         final boolean ignoreUnknown = params.isIgnoreUnknown() || isDefaultIgnoreUnknown();
         final Set<String> ignoredProperties;

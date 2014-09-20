@@ -24,7 +24,7 @@ import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
  */
 public abstract class AbstractKeySerializerTest<T> extends GwtJacksonTestCase {
 
-    protected abstract KeySerializer<T> createSerializer();
+    protected abstract KeySerializer createSerializer();
 
     public void testSerializeNullValue() {
         assertSerialization( null, null );

@@ -51,6 +51,7 @@ import com.google.gwt.core.ext.typeinfo.JParameterizedType;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.core.ext.typeinfo.JTypeParameter;
 import com.google.gwt.thirdparty.guava.common.base.Optional;
+import com.google.gwt.thirdparty.guava.common.collect.ImmutableList;
 import com.google.gwt.user.rebind.AbstractSourceCreator;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
@@ -104,6 +105,8 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         return composer.createSourceWriter( context, printWriter );
     }
 
+    protected abstract Optional<BeanJsonMapperInfo> getMapperInfo();
+
     /**
      * Build the string that instantiate a {@link JsonSerializer} for the given type. If the type is a bean,
      * the implementation of {@link AbstractBeanJsonSerializer} will
@@ -118,35 +121,68 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      * </ul>
      */
     protected JSerializerType getJsonSerializerFromType( JType type ) throws UnableToCompleteException, UnsupportedTypeException {
+        return getJsonSerializerFromType( type, false );
+    }
+
+    /**
+     * Build the string that instantiate a {@link JsonSerializer} for the given type. If the type is a bean,
+     * the implementation of {@link AbstractBeanJsonSerializer} will
+     * be created.
+     *
+     * @param type type
+     * @param subtype true if the serializer is for a subtype
+     *
+     * @return the code instantiating the {@link JsonSerializer}. Examples:
+     * <ul>
+     * <li>ctx.getIntegerSerializer()</li>
+     * <li>new org.PersonBeanJsonSerializer()</li>
+     * </ul>
+     */
+    protected JSerializerType getJsonSerializerFromType( JType type, boolean subtype ) throws UnableToCompleteException,
+            UnsupportedTypeException {
         JSerializerType.Builder builder = new JSerializerType.Builder().type( type );
         if ( null != type.isWildcard() ) {
             // we use the base type to find the serializer to use
             type = type.isWildcard().getBaseType();
         }
 
+        if ( null != type.isRawType() ) {
+            type = type.isRawType().getBaseType();
+        }
+
         JTypeParameter typeParameter = type.isTypeParameter();
         if ( null != typeParameter ) {
-            return builder.instance( String.format( TYPE_PARAMETER_SERIALIZER_FIELD_NAME, typeParameter.getOrdinal() ) ).build();
+            if ( !subtype || typeParameter.getDeclaringClass() == getMapperInfo().get().getType() ) {
+                return builder.instance( String.format( TYPE_PARAMETER_SERIALIZER_FIELD_NAME, typeParameter.getOrdinal() ) ).build();
+            } else {
+                type = typeParameter.getBaseType();
+            }
         }
 
         Optional<MapperInstance> configuredSerializer = configuration.getSerializer( type );
         if ( configuredSerializer.isPresent() ) {
-            if ( null != type.isParameterized() ) {
+            if ( null != type.isParameterized() || null != type.isGenericType() ) {
+                JClassType[] typeArgs;
+                if ( null != type.isGenericType() ) {
+                    typeArgs = type.isGenericType().asParameterizedByWildcards().getTypeArgs();
+                } else {
+                    typeArgs = type.isParameterized().getTypeArgs();
+                }
 
-                JSerializerType[] parametersSerializer = new JSerializerType[type.isParameterized().getTypeArgs().length];
-                String[] params = new String[type.isParameterized().getTypeArgs().length];
+                ImmutableList.Builder<JSerializerType> parametersSerializerBuilder = ImmutableList.builder();
+                String[] params = new String[typeArgs.length];
 
                 for ( int i = 0; i < params.length; i++ ) {
                     JSerializerType parameterSerializerType;
                     if ( MapperType.KEY_SERIALIZER == configuredSerializer.get().getParameters()[i] ) {
-                        parameterSerializerType = getKeySerializerFromType( type.isParameterized().getTypeArgs()[i] );
+                        parameterSerializerType = getKeySerializerFromType( typeArgs[i] );
                     } else {
-                        parameterSerializerType = getJsonSerializerFromType( type.isParameterized().getTypeArgs()[i] );
+                        parameterSerializerType = getJsonSerializerFromType( typeArgs[i], subtype );
                     }
-                    parametersSerializer[i] = parameterSerializerType;
+                    parametersSerializerBuilder.add( parameterSerializerType );
                     params[i] = parameterSerializerType.getInstance();
                 }
-                builder.parameters( parametersSerializer );
+                builder.parameters( parametersSerializerBuilder.build() );
                 builder.instance( String.format( configuredSerializer.get().getInstanceCreation(), params ) );
 
             } else {
@@ -155,16 +191,14 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             return builder.build();
         }
 
-        if ( typeOracle.isObject( type ) ) {
-            String message = "java.lang.Object is not a supported type";
-            logger.log( TreeLogger.Type.WARN, message );
-            throw new UnsupportedTypeException( message );
-        }
-
         JEnumType enumType = type.isEnum();
         if ( null != enumType ) {
-            return builder.instance( String.format( "%s.<%s>getInstance()", EnumJsonSerializer.class.getCanonicalName(), enumType
-                    .getQualifiedSourceName() ) ).build();
+            return builder.instance( String.format( "%s.<%s<%s>>getInstance()", EnumJsonSerializer.class
+                    .getCanonicalName(), EnumJsonSerializer.class.getCanonicalName(), enumType.getQualifiedSourceName() ) ).build();
+        }
+
+        if ( Enum.class.getName().equals( type.getQualifiedSourceName() ) ) {
+            return builder.instance( String.format( "%s.getInstance()", EnumJsonSerializer.class.getCanonicalName() ) ).build();
         }
 
         JArrayType arrayType = type.isArray();
@@ -182,10 +216,16 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                 logger.log( TreeLogger.Type.WARN, message );
                 throw new UnsupportedTypeException( message );
             }
-            JSerializerType parameterSerializerType = getJsonSerializerFromType( arrayType.getLeafType() );
-            builder.parameters( new JSerializerType[]{parameterSerializerType} );
+            JSerializerType parameterSerializerType = getJsonSerializerFromType( arrayType.getLeafType(), subtype );
+            builder.parameters( ImmutableList.of( parameterSerializerType ) );
             return builder.instance( String.format( "%s.newInstance(%s)", arraySerializer, parameterSerializerType.getInstance() ) )
                     .build();
+        }
+
+        if ( null != type.isAnnotation() ) {
+            String message = "Annotations are not supported";
+            logger.log( TreeLogger.Type.WARN, message );
+            throw new UnsupportedTypeException( message );
         }
 
         JClassType classType = type.isClassOrInterface();
@@ -195,35 +235,31 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             JParameterizedType parameterizedType = classType.isParameterized();
             if ( null != parameterizedType ) {
                 // it's a bean with generics, we create a serializer based on generic type
-                baseClassType = typeOracle.findGenericType( parameterizedType );
+                baseClassType = parameterizedType.getBaseType();
             }
-            JGenericType genericType = baseClassType.isGenericType();
 
             BeanJsonSerializerCreator beanJsonSerializerCreator = new BeanJsonSerializerCreator( logger
                     .branch( Type.DEBUG, "Creating serializer for " + baseClassType
                             .getQualifiedSourceName() ), context, configuration, typeOracle );
             String qualifiedClassName = beanJsonSerializerCreator.create( baseClassType );
 
+            ImmutableList<? extends JType> typeParameters = getTypeParameters( classType, subtype );
             StringBuilder joinedTypeParameterSerializers = new StringBuilder();
-            if ( null != genericType ) {
-                JSerializerType[] parametersSerializer = new JSerializerType[genericType.getTypeParameters().length];
-                for ( int i = 0; i < genericType.getTypeParameters().length; i++ ) {
-                    if ( i > 0 ) {
+            if ( !typeParameters.isEmpty() ) {
+                ImmutableList.Builder<JSerializerType> parametersSerializerBuilder = ImmutableList.builder();
+                boolean first = true;
+                for ( JType argType : typeParameters ) {
+                    if ( first ) {
+                        first = false;
+                    } else {
                         joinedTypeParameterSerializers.append( ", " );
                     }
 
-                    JClassType argType;
-                    if ( null != parameterizedType ) {
-                        argType = parameterizedType.getTypeArgs()[i];
-                    } else {
-                        argType = genericType.getTypeParameters()[i];
-                    }
-
-                    JSerializerType parameterSerializerType = getJsonSerializerFromType( argType );
-                    parametersSerializer[i] = parameterSerializerType;
+                    JSerializerType parameterSerializerType = getJsonSerializerFromType( argType, subtype );
+                    parametersSerializerBuilder.add( parameterSerializerType );
                     joinedTypeParameterSerializers.append( parameterSerializerType.getInstance() );
                 }
-                builder.parameters( parametersSerializer );
+                builder.parameters( parametersSerializerBuilder.build() );
             }
 
             builder.beanMapper( true );
@@ -245,6 +281,10 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      */
     protected JSerializerType getKeySerializerFromType( JType type ) throws UnsupportedTypeException {
         JSerializerType.Builder builder = new JSerializerType.Builder().type( type );
+        if ( null != type.isWildcard() ) {
+            // we use the base type to find the serializer to use
+            type = type.isWildcard().getBaseType();
+        }
 
         Optional<MapperInstance> keySerializer = configuration.getKeySerializer( type );
         if ( keySerializer.isPresent() ) {
@@ -254,9 +294,13 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
         JEnumType enumType = type.isEnum();
         if ( null != enumType ) {
-            builder.instance( String.format( "%s.<%s>getInstance()", EnumKeySerializer.class.getCanonicalName(), enumType
-                    .getQualifiedSourceName() ) );
+            builder.instance( String.format( "%s.<%s<%s>>getInstance()", EnumKeySerializer.class.getCanonicalName(), EnumKeySerializer.class
+                    .getCanonicalName(), enumType.getQualifiedSourceName() ) );
             return builder.build();
+        }
+
+        if ( Enum.class.getName().equals( type.getQualifiedSourceName() ) ) {
+            return builder.instance( String.format( "%s.getInstance()", EnumKeySerializer.class.getCanonicalName() ) ).build();
         }
 
         String message = "Type '" + type.getQualifiedSourceName() + "' is not supported as map's key";
@@ -278,36 +322,69 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      * </ul>
      */
     protected JDeserializerType getJsonDeserializerFromType( JType type ) throws UnableToCompleteException, UnsupportedTypeException {
+        return getJsonDeserializerFromType( type, false );
+    }
+
+    /**
+     * Build the string that instantiate a {@link JsonDeserializer} for the given type. If the type is a bean,
+     * the implementation of {@link AbstractBeanJsonDeserializer} will
+     * be created.
+     *
+     * @param type type
+     * @param subtype true if the deserializer is for a subtype
+     *
+     * @return the code instantiating the deserializer. Examples:
+     * <ul>
+     * <li>ctx.getIntegerDeserializer()</li>
+     * <li>new org .PersonBeanJsonDeserializer()</li>
+     * </ul>
+     */
+    protected JDeserializerType getJsonDeserializerFromType( JType type, boolean subtype ) throws UnableToCompleteException,
+            UnsupportedTypeException {
         JDeserializerType.Builder builder = new JDeserializerType.Builder().type( type );
         if ( null != type.isWildcard() ) {
             // we use the base type to find the deserializer to use
             type = type.isWildcard().getBaseType();
         }
 
+        if ( null != type.isRawType() ) {
+            type = type.isRawType().getBaseType();
+        }
+
         JTypeParameter typeParameter = type.isTypeParameter();
         if ( null != typeParameter ) {
-            return builder.instance( String.format( TYPE_PARAMETER_DESERIALIZER_FIELD_NAME, typeParameter.getOrdinal() ) ).build();
+            if ( !subtype || typeParameter.getDeclaringClass() == getMapperInfo().get().getType() ) {
+                return builder.instance( String.format( TYPE_PARAMETER_DESERIALIZER_FIELD_NAME, typeParameter.getOrdinal() ) ).build();
+            } else {
+                type = typeParameter.getBaseType();
+            }
         }
 
         Optional<MapperInstance> configuredDeserializer = configuration.getDeserializer( type );
         if ( configuredDeserializer.isPresent() ) {
-            if ( null != type.isParameterized() ) {
+            if ( null != type.isParameterized() || null != type.isGenericType() ) {
+                JClassType[] typeArgs;
+                if ( null != type.isGenericType() ) {
+                    typeArgs = type.isGenericType().asParameterizedByWildcards().getTypeArgs();
+                } else {
+                    typeArgs = type.isParameterized().getTypeArgs();
+                }
 
-                JDeserializerType[] parametersDeserializer = new JDeserializerType[type.isParameterized().getTypeArgs().length];
-                String[] params = new String[type.isParameterized().getTypeArgs().length];
+                ImmutableList.Builder<JDeserializerType> parametersDeserializerBuilder = ImmutableList.builder();
+                String[] params = new String[typeArgs.length];
 
                 for ( int i = 0; i < params.length; i++ ) {
                     JDeserializerType parameterDeserializerType;
                     if ( MapperType.KEY_DESERIALIZER == configuredDeserializer.get().getParameters()[i] ) {
-                        parameterDeserializerType = getKeyDeserializerFromType( type.isParameterized().getTypeArgs()[i] );
+                        parameterDeserializerType = getKeyDeserializerFromType( typeArgs[i] );
                     } else {
-                        parameterDeserializerType = getJsonDeserializerFromType( type.isParameterized().getTypeArgs()[i] );
+                        parameterDeserializerType = getJsonDeserializerFromType( typeArgs[i], subtype );
                     }
 
-                    parametersDeserializer[i] = parameterDeserializerType;
+                    parametersDeserializerBuilder.add( parameterDeserializerType );
                     params[i] = parameterDeserializerType.getInstance();
                 }
-                builder.parameters( parametersDeserializer );
+                builder.parameters( parametersDeserializerBuilder.build() );
                 builder.instance( String.format( configuredDeserializer.get().getInstanceCreation(), params ) );
 
             } else {
@@ -316,16 +393,16 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             return builder.build();
         }
 
-        if ( typeOracle.isObject( type ) ) {
-            String message = "java.lang.Object is not a supported type";
-            logger.log( TreeLogger.Type.WARN, message );
-            throw new UnsupportedTypeException( message );
-        }
-
         JEnumType enumType = type.isEnum();
         if ( null != enumType ) {
             return builder.instance( EnumJsonDeserializer.class.getCanonicalName() + ".newInstance(" + enumType
                     .getQualifiedSourceName() + ".class)" ).build();
+        }
+
+        if ( Enum.class.getName().equals( type.getQualifiedSourceName() ) ) {
+            String message = "Type java.lang.Enum is not supported by deserialization";
+            logger.log( TreeLogger.Type.WARN, message );
+            throw new UnsupportedTypeException( message );
         }
 
         JArrayType arrayType = type.isArray();
@@ -364,10 +441,16 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                 throw new UnsupportedTypeException( message );
             }
 
-            JDeserializerType parameterDeserializerType = getJsonDeserializerFromType( leafType );
-            builder.parameters( new JDeserializerType[]{parameterDeserializerType} );
+            JDeserializerType parameterDeserializerType = getJsonDeserializerFromType( leafType, subtype );
+            builder.parameters( ImmutableList.of( parameterDeserializerType ) );
             return builder.instance( String.format( method, arrayDeserializer, parameterDeserializerType.getInstance(), arrayCreator ) )
                     .build();
+        }
+
+        if ( null != type.isAnnotation() ) {
+            String message = "Annotations are not supported";
+            logger.log( TreeLogger.Type.WARN, message );
+            throw new UnsupportedTypeException( message );
         }
 
         JClassType classType = type.isClassOrInterface();
@@ -377,36 +460,31 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             JParameterizedType parameterizedType = classType.isParameterized();
             if ( null != parameterizedType ) {
                 // it's a bean with generics, we create a deserializer based on generic type
-                baseClassType = typeOracle.findGenericType( parameterizedType );
+                baseClassType = parameterizedType.getBaseType();
             }
-            JGenericType genericType = baseClassType.isGenericType();
 
             BeanJsonDeserializerCreator beanJsonDeserializerCreator = new BeanJsonDeserializerCreator( logger
                     .branch( Type.DEBUG, "Creating deserializer for " + baseClassType
                             .getQualifiedSourceName() ), context, configuration, typeOracle );
             String qualifiedClassName = beanJsonDeserializerCreator.create( baseClassType );
 
+            ImmutableList<? extends JType> typeParameters = getTypeParameters( classType, subtype );
             StringBuilder joinedTypeParameterDeserializers = new StringBuilder();
-            if ( null != genericType ) {
-
-                JDeserializerType[] parametersDeserializer = new JDeserializerType[genericType.getTypeParameters().length];
-                for ( int i = 0; i < genericType.getTypeParameters().length; i++ ) {
-                    if ( i > 0 ) {
+            if ( !typeParameters.isEmpty() ) {
+                ImmutableList.Builder<JDeserializerType> parametersDeserializerBuilder = ImmutableList.builder();
+                boolean first = true;
+                for ( JType argType : typeParameters ) {
+                    if ( first ) {
+                        first = false;
+                    } else {
                         joinedTypeParameterDeserializers.append( ", " );
                     }
 
-                    JClassType argType;
-                    if ( null != parameterizedType ) {
-                        argType = parameterizedType.getTypeArgs()[i];
-                    } else {
-                        argType = genericType.getTypeParameters()[i];
-                    }
-
-                    JDeserializerType parameterDeserializerType = getJsonDeserializerFromType( argType );
-                    parametersDeserializer[i] = parameterDeserializerType;
+                    JDeserializerType parameterDeserializerType = getJsonDeserializerFromType( argType, subtype );
+                    parametersDeserializerBuilder.add( parameterDeserializerType );
                     joinedTypeParameterDeserializers.append( parameterDeserializerType.getInstance() );
                 }
-                builder.parameters( parametersDeserializer );
+                builder.parameters( parametersDeserializerBuilder.build() );
             }
 
             builder.beanMapper( true );
@@ -427,8 +505,11 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      * @return the code instantiating the {@link KeyDeserializer}.
      */
     protected JDeserializerType getKeyDeserializerFromType( JType type ) throws UnsupportedTypeException {
-        JDeserializerType.Builder builder = new JDeserializerType.Builder();
-        builder.type( type );
+        JDeserializerType.Builder builder = new JDeserializerType.Builder().type( type );
+        if ( null != type.isWildcard() ) {
+            // we use the base type to find the serializer to use
+            type = type.isWildcard().getBaseType();
+        }
 
         Optional<MapperInstance> keyDeserializer = configuration.getKeyDeserializer( type );
         if ( keyDeserializer.isPresent() ) {
@@ -446,6 +527,61 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         String message = "Type '" + type.getQualifiedSourceName() + "' is not supported as map's key";
         logger.log( TreeLogger.Type.WARN, message );
         throw new UnsupportedTypeException( message );
+    }
+
+    private ImmutableList<? extends JType> getTypeParameters( JClassType classType, boolean subtype ) {
+        JParameterizedType parameterizedType = classType.isParameterized();
+        if ( null != parameterizedType ) {
+            return ImmutableList.copyOf( parameterizedType.getTypeArgs() );
+        }
+
+        JGenericType genericType = classType.isGenericType();
+        if ( null != genericType ) {
+            if ( subtype ) {
+                // if it's a subtype we look for parent in hierarchy equals to mapped class
+                JClassType mappedClassType = getMapperInfo().get().getType();
+                JClassType parentClassType = null;
+                for ( JClassType parent : genericType.getFlattenedSupertypeHierarchy() ) {
+                    if ( parent.getQualifiedSourceName().equals( mappedClassType.getQualifiedSourceName() ) ) {
+                        parentClassType = parent;
+                        break;
+                    }
+                }
+
+                ImmutableList.Builder<JType> builder = ImmutableList.builder();
+                for ( JTypeParameter typeParameter : genericType.getTypeParameters() ) {
+                    JType arg = null;
+                    if ( null != parentClassType && null != parentClassType.isParameterized() ) {
+                        int i = 0;
+                        for ( JClassType parentTypeParameter : parentClassType.isParameterized().getTypeArgs() ) {
+                            if ( null != parentTypeParameter.isTypeParameter() && parentTypeParameter.isTypeParameter().getName()
+                                    .equals( typeParameter.getName() ) ) {
+                                if ( null != mappedClassType.isGenericType() ) {
+                                    arg = mappedClassType.isGenericType().getTypeParameters()[i];
+                                } else {
+                                    arg = mappedClassType.isParameterized().getTypeArgs()[i];
+                                }
+                                break;
+                            }
+                            i++;
+                        }
+                    }
+                    if ( null == arg ) {
+                        arg = typeParameter.getBaseType();
+                    }
+                    builder.add( arg );
+                }
+                return builder.build();
+            } else {
+                ImmutableList.Builder<JType> builder = ImmutableList.builder();
+                for ( JTypeParameter typeParameter : genericType.getTypeParameters() ) {
+                    builder.add( typeParameter.getBaseType() );
+                }
+                return builder.build();
+            }
+        }
+
+        return ImmutableList.of();
     }
 
 }

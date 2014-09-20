@@ -24,8 +24,8 @@ import java.util.UUID;
 public class UUIDKeySerializerTest extends AbstractKeySerializerTest<UUID> {
 
     @Override
-    protected UUIDKeySerializer createSerializer() {
-        return UUIDKeySerializer.getInstance();
+    protected ToStringKeySerializer createSerializer() {
+        return ToStringKeySerializer.getInstance();
     }
 
     public void testSerializeValue() {

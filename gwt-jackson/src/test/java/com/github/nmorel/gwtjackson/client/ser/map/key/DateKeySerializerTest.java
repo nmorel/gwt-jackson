@@ -18,7 +18,6 @@ package com.github.nmorel.gwtjackson.client.ser.map.key;
 
 import java.util.Date;
 
-import com.github.nmorel.gwtjackson.client.ser.map.key.BaseDateKeySerializer.DateKeySerializer;
 import com.github.nmorel.gwtjackson.client.utils.DateFormat;
 
 /**

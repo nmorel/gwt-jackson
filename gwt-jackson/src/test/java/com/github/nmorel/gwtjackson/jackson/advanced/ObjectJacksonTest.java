@@ -16,21 +16,23 @@
 
 package com.github.nmorel.gwtjackson.jackson.advanced;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.nmorel.gwtjackson.jackson.AbstractJacksonTest;
-import com.github.nmorel.gwtjackson.shared.advanced.GenericsAndInheritanceTester;
-import com.github.nmorel.gwtjackson.shared.advanced.GenericsAndInheritanceTester.Result;
-import org.junit.Ignore;
+import com.github.nmorel.gwtjackson.shared.advanced.ObjectTester;
+import com.github.nmorel.gwtjackson.shared.advanced.ObjectTester.ObjectWrapper;
 import org.junit.Test;
 
 /**
- * @author Nicolas Morel
+ * @author Nicolas Morel.
  */
-public class GenericsAndInheritanceJacksonTest extends AbstractJacksonTest {
+public class ObjectJacksonTest extends AbstractJacksonTest {
 
     @Test
-    @Ignore
-    public void test() {
-        GenericsAndInheritanceTester.INSTANCE.test( createMapper( new TypeReference<Result<Integer>[]>() {} ) );
+    public void testSerializeObject() {
+        ObjectTester.INSTANCE.testSerializeObject( createWriter( ObjectWrapper.class ) );
+    }
+
+    @Test
+    public void testDeserializeObject() {
+        ObjectTester.INSTANCE.testDeserializeObject( createReader( ObjectWrapper.class ) );
     }
 }

@@ -20,6 +20,6 @@
   <inherits name='com.google.web.bindery.requestfactory.RequestFactory' />
 
   <extend-configuration-property name="gwtjackson.configuration.extension"
-                                 value="com.github.nmorel.gwtjackson.client.mixins.MixInConfiguration" />
+                                 value="com.github.nmorel.gwtjackson.client.TestConfiguration" />
 
 </module>

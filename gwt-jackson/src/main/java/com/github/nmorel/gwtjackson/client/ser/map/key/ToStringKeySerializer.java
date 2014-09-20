@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Nicolas Morel
+ * Copyright 2014 Nicolas Morel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,25 +21,25 @@ import javax.annotation.Nonnull;
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 
 /**
- * Default {@link KeySerializer} implementation for {@link Character}.
+ * {@link KeySerializer} implementation that uses {@link Object#toString()} method.
  *
  * @author Nicolas Morel
  */
-public final class CharacterKeySerializer extends KeySerializer<Character> {
+public final class ToStringKeySerializer extends KeySerializer<Object> {
 
-    private static final CharacterKeySerializer INSTANCE = new CharacterKeySerializer();
+    private static final ToStringKeySerializer INSTANCE = new ToStringKeySerializer();
 
     /**
-     * @return an instance of {@link CharacterKeySerializer}
+     * @return an instance of {@link ToStringKeySerializer}
      */
-    public static CharacterKeySerializer getInstance() {
+    public static ToStringKeySerializer getInstance() {
         return INSTANCE;
     }
 
-    private CharacterKeySerializer() { }
+    private ToStringKeySerializer() { }
 
     @Override
-    protected String doSerialize( @Nonnull Character value, JsonSerializationContext ctx ) {
+    protected String doSerialize( @Nonnull Object value, JsonSerializationContext ctx ) {
         return value.toString();
     }
 }

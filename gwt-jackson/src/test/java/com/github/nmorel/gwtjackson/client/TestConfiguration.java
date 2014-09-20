@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
-package com.github.nmorel.gwtjackson.client.mixins;
+package com.github.nmorel.gwtjackson.client;
 
-import com.github.nmorel.gwtjackson.client.AbstractConfiguration;
 import com.github.nmorel.gwtjackson.shared.mixins.MixinSerForMethodsTester.EmptyBean;
 import com.github.nmorel.gwtjackson.shared.mixins.MixinSerForMethodsTester.MixInForSimple;
 
 /**
- * Configuration class to define all the MixIn annotations used in tests
+ * Configuration class used by the tests
  *
  * @author Nicolas Morel.
  */
-public class MixInConfiguration extends AbstractConfiguration {
+public class TestConfiguration extends AbstractConfiguration {
 
     @Override
     protected void configure() {
+        // mixin tests
         addMixInAnnotations( EmptyBean.class, MixInForSimple.class );
+
+        // object tests
+        whitelist( "com.github.nmorel.gwtjackson.shared.advanced.ObjectTester.*" );
     }
 }
 

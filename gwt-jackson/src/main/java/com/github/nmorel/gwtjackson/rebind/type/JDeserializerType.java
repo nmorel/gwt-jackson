@@ -18,6 +18,7 @@ package com.github.nmorel.gwtjackson.rebind.type;
 
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.thirdparty.guava.common.base.Preconditions;
+import com.google.gwt.thirdparty.guava.common.collect.ImmutableList;
 
 /**
  * Contains informations about deserializer like its type or the string to instantiate it.
@@ -32,13 +33,13 @@ public class JDeserializerType extends JMapperType {
             Preconditions.checkNotNull( instance, "instance is mandatory" );
             Preconditions.checkNotNull( type, "type is mandatory" );
             if ( null == parameters ) {
-                parameters = new JDeserializerType[0];
+                parameters = ImmutableList.of();
             }
             return new JDeserializerType( beanMapper, type, instance, parameters );
         }
     }
 
-    public JDeserializerType( boolean beanMapper, JType type, String instance, JDeserializerType[] parameters ) {
+    public JDeserializerType( boolean beanMapper, JType type, String instance, ImmutableList<JDeserializerType> parameters ) {
         super( beanMapper, type, instance, parameters );
     }
 }

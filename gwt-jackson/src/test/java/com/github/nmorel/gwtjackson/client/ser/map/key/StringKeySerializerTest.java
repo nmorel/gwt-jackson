@@ -22,8 +22,8 @@ package com.github.nmorel.gwtjackson.client.ser.map.key;
 public class StringKeySerializerTest extends AbstractKeySerializerTest<String> {
 
     @Override
-    protected StringKeySerializer createSerializer() {
-        return StringKeySerializer.getInstance();
+    protected ToStringKeySerializer createSerializer() {
+        return ToStringKeySerializer.getInstance();
     }
 
     public void testSerializeValue() {

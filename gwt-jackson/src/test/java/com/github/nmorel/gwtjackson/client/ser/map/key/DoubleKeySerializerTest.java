@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.ser.map.key;
 
-import com.github.nmorel.gwtjackson.client.ser.map.key.BaseNumberKeySerializer.DoubleKeySerializer;
 import com.google.gwt.core.client.GWT;
 
 /**
@@ -25,8 +24,8 @@ import com.google.gwt.core.client.GWT;
 public class DoubleKeySerializerTest extends AbstractKeySerializerTest<Double> {
 
     @Override
-    protected DoubleKeySerializer createSerializer() {
-        return DoubleKeySerializer.getInstance();
+    protected ToStringKeySerializer createSerializer() {
+        return ToStringKeySerializer.getInstance();
     }
 
     public void testSerializeValue() {

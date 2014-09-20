@@ -32,6 +32,8 @@ public interface BeanTypeInfo {
 
     String getPropertyName();
 
-    ImmutableMap<JClassType, String> getMapTypeToMetadata();
+    ImmutableMap<JClassType, String> getMapTypeToSerializationMetadata();
+
+    ImmutableMap<JClassType, String> getMapTypeToDeserializationMetadata();
 
 }

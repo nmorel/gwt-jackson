@@ -17,6 +17,7 @@
 package com.github.nmorel.gwtjackson.rebind.type;
 
 import com.google.gwt.core.ext.typeinfo.JType;
+import com.google.gwt.thirdparty.guava.common.collect.ImmutableList;
 
 /**
  * Contains informations about serializer or deserializer like its type or the string to instantiate it.
@@ -33,7 +34,7 @@ public abstract class JMapperType {
 
         protected String instance;
 
-        protected M[] parameters;
+        protected ImmutableList<M> parameters;
 
         public B beanMapper( boolean beanMapper ) {
             this.beanMapper = beanMapper;
@@ -50,7 +51,7 @@ public abstract class JMapperType {
             return (B) this;
         }
 
-        public B parameters( M[] parameters ) {
+        public B parameters( ImmutableList<M> parameters ) {
             this.parameters = parameters;
             return (B) this;
         }
@@ -62,9 +63,9 @@ public abstract class JMapperType {
 
     protected final String instance;
 
-    protected final JMapperType[] parameters;
+    protected final ImmutableList<? extends JMapperType> parameters;
 
-    protected JMapperType( boolean beanMapper, JType type, String instance, JMapperType[] parameters ) {
+    protected JMapperType( boolean beanMapper, JType type, String instance, ImmutableList<? extends JMapperType> parameters ) {
         this.beanMapper = beanMapper;
         this.type = type;
         this.instance = instance;
@@ -83,7 +84,7 @@ public abstract class JMapperType {
         return instance;
     }
 
-    public JMapperType[] getParameters() {
+    public ImmutableList<? extends JMapperType> getParameters() {
         return parameters;
     }
 }

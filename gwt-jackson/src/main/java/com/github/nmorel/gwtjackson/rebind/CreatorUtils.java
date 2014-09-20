@@ -17,9 +17,11 @@
 package com.github.nmorel.gwtjackson.rebind;
 
 import javax.annotation.Nullable;
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
+import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.typeinfo.HasAnnotations;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
@@ -115,11 +117,59 @@ public final class CreatorUtils {
         return "null";
     }
 
-    public static ImmutableList<JClassType> filterSubtypes( JClassType type ) {
+    /**
+     * @param type the type to test
+     *
+     * @return true if the type is {@link Object}, false otherwise
+     */
+    public static boolean isObject( JType type ) {
+        return null != type.isClass() && Object.class.getName().equals( type.getQualifiedSourceName() );
+    }
+
+    /**
+     * @param type the type to test
+     *
+     * @return true if the type is {@link Serializable}, false otherwise
+     */
+    public static boolean isSerializable( JType type ) {
+        return null != type.isClass() && Serializable.class.getName().equals( type.getQualifiedSourceName() );
+    }
+
+    /**
+     * @param type the type to test
+     *
+     * @return true if the type is {@link Object} or {@link Serializable}, false otherwise
+     */
+    public static boolean isObjectOrSerializable( JType type ) {
+        return isObject( type ) || isSerializable( type );
+    }
+
+    public static ImmutableList<JClassType> filterSubtypesForSerialization( TreeLogger logger, RebindConfiguration configuration,
+                                                                            JClassType type ) {
+        boolean filterOnlySupportedType = isObjectOrSerializable( type );
+
         ImmutableList.Builder<JClassType> builder = ImmutableList.builder();
         if ( type.getSubtypes().length > 0 ) {
             for ( JClassType subtype : type.getSubtypes() ) {
-                if ( null == subtype.isInterface() && !subtype.isAbstract() && subtype.isPublic() ) {
+                if ( null == subtype.isAnnotation() && subtype.isPublic() && (!filterOnlySupportedType || configuration
+                        .isTypeSupportedForSerialization( logger, subtype )) ) {
+                    builder.add( subtype );
+                }
+            }
+        }
+        return builder.build();
+    }
+
+    public static ImmutableList<JClassType> filterSubtypesForDeserialization( TreeLogger logger, RebindConfiguration configuration,
+                                                                              JClassType type ) {
+        boolean filterOnlySupportedType = isObjectOrSerializable( type );
+
+        ImmutableList.Builder<JClassType> builder = ImmutableList.builder();
+        if ( type.getSubtypes().length > 0 ) {
+            for ( JClassType subtype : type.getSubtypes() ) {
+                if ( (null == subtype.isInterface() && !subtype.isAbstract() && (!subtype.isMemberType() || subtype
+                        .isStatic())) && null == subtype.isAnnotation() && subtype.isPublic() && (!filterOnlySupportedType || configuration
+                        .isTypeSupportedForDeserialization( logger, subtype )) ) {
                     builder.add( subtype );
                 }
             }

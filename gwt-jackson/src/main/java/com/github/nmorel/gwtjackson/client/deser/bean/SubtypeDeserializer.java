@@ -21,8 +21,15 @@ import java.util.Map;
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
+import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
+import com.github.nmorel.gwtjackson.client.JsonSerializer;
+import com.github.nmorel.gwtjackson.client.JsonSerializerParameters;
 import com.github.nmorel.gwtjackson.client.deser.EnumJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.ser.bean.BeanPropertySerializer;
+import com.github.nmorel.gwtjackson.client.ser.bean.IdentitySerializationInfo;
+import com.github.nmorel.gwtjackson.client.ser.bean.TypeSerializationInfo;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
+import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
 /**
  * Delegate the deserialization of a subtype to a corresponding {@link AbstractBeanJsonDeserializer}
@@ -64,11 +71,32 @@ public abstract class SubtypeDeserializer<T, D extends JsonDeserializer<T>> exte
         public E deserializeInline( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params,
                                     IdentityDeserializationInfo identityInfo, TypeDeserializationInfo typeInfo, String typeInformation,
                                     Map<String, String> bufferedProperties ) {
-            throw ctx.traceError( "Cannot have an object when deserializing an enum" );
+            throw ctx.traceError( "Cannot deserialize into a bean with an enum" );
         }
 
         @Override
         public E deserializeWrapped( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params,
+                                     IdentityDeserializationInfo identityInfo, TypeDeserializationInfo typeInfo, String typeInformation ) {
+            return getDeserializer().deserialize( reader, ctx, params );
+        }
+    }
+
+    /**
+     * Delegate the deserialization of a subtype to a corresponding {@link JsonDeserializer}
+     *
+     * @author Nicolas Morel.
+     */
+    public abstract static class DefaultSubtypeDeserializer<T> extends SubtypeDeserializer<T, JsonDeserializer<T>> {
+
+        @Override
+        public T deserializeInline( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params,
+                                    IdentityDeserializationInfo identityInfo, TypeDeserializationInfo typeInfo, String typeInformation,
+                                    Map<String, String> bufferedProperties ) {
+            throw ctx.traceError( "Cannot deserialize into a bean when not using an AbstractBeanJsonDeserializer" );
+        }
+
+        @Override
+        public T deserializeWrapped( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params,
                                      IdentityDeserializationInfo identityInfo, TypeDeserializationInfo typeInfo, String typeInformation ) {
             return getDeserializer().deserialize( reader, ctx, params );
         }

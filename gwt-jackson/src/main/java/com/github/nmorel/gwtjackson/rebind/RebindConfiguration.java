@@ -17,6 +17,7 @@
 package com.github.nmorel.gwtjackson.rebind;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,6 +45,9 @@ import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.core.ext.typeinfo.TypeOracleException;
 import com.google.gwt.thirdparty.guava.common.base.Optional;
 import com.google.gwt.thirdparty.guava.common.collect.ImmutableList;
+import com.google.gwt.thirdparty.guava.common.collect.ImmutableSet;
+import com.google.gwt.thirdparty.guava.common.collect.ImmutableSet.Builder;
+import com.google.gwt.util.regexfilter.RegexFilter;
 import com.google.gwt.util.tools.shared.Md5Utils;
 
 /**
@@ -131,6 +135,23 @@ public final class RebindConfiguration {
         }
     }
 
+    private static class TypeFilter extends RegexFilter {
+
+        public TypeFilter( TreeLogger logger, List<String> values ) throws UnableToCompleteException {
+            super( logger, values );
+        }
+
+        @Override
+        protected boolean acceptByDefault() {
+            return false;
+        }
+
+        @Override
+        protected boolean entriesArePositiveByDefault() {
+            return true;
+        }
+    }
+
     private static final String CONFIGURATION_EXTENSION_PROPERTY = "gwtjackson.configuration.extension";
 
     private final TreeLogger logger;
@@ -157,8 +178,14 @@ public final class RebindConfiguration {
     // For now, it means any types and associated subtypes targeted by a mix-in annotation
     private final Set<JClassType> specificTypes = new HashSet<JClassType>();
 
-    public RebindConfiguration( TreeLogger logger, GeneratorContext context, JacksonTypeOracle typeOracle, JClassType rootMapperClass )
-            throws UnableToCompleteException {
+    private final ImmutableSet<JClassType> allSupportedSerializationClass;
+
+    private final ImmutableSet<JClassType> allSupportedDeserializationClass;
+
+    private final TypeFilter additionalSupportedTypes;
+
+    public RebindConfiguration( TreeLogger logger, GeneratorContext context, JacksonTypeOracle typeOracle,
+                                JClassType rootMapperClass ) throws UnableToCompleteException {
         this.logger = logger;
         this.context = context;
         this.typeOracle = typeOracle;
@@ -168,12 +195,21 @@ public final class RebindConfiguration {
 
         List<AbstractConfiguration> configurations = getAllConfigurations();
 
+        Builder<JClassType> allSupportedSerializationClassBuilder = ImmutableSet.builder();
+        Builder<JClassType> allSupportedDeserializationClassBuilder = ImmutableSet.builder();
+        List<String> whitelist = new ArrayList<String>();
+
         for ( AbstractConfiguration configuration : configurations ) {
             for ( MapperType mapperType : MapperType.values() ) {
-                addMappers( configuration, mapperType );
+                addMappers( configuration, mapperType, allSupportedSerializationClassBuilder, allSupportedDeserializationClassBuilder );
             }
             addMixInAnnotations( configuration.getMapMixInAnnotations(), rootMapperClass.getAnnotation( JsonMixIns.class ) );
+            whitelist.addAll( configuration.getWhitelist() );
         }
+
+        this.allSupportedSerializationClass = allSupportedSerializationClassBuilder.build();
+        this.allSupportedDeserializationClass = allSupportedDeserializationClassBuilder.build();
+        this.additionalSupportedTypes = new TypeFilter( logger, whitelist );
     }
 
     /**
@@ -208,8 +244,12 @@ public final class RebindConfiguration {
      *
      * @param configuration configuration
      * @param mapperType type of the mapper
+     * @param allSupportedSerializationClassBuilder builder aggregating all the types that have a serializer
+     * @param allSupportedDeserializationClassBuilder builder aggregating all the types that have a deserializer
      */
-    private void addMappers( final AbstractConfiguration configuration, final MapperType mapperType ) {
+    private void addMappers( final AbstractConfiguration configuration, final MapperType mapperType,
+                             Builder<JClassType> allSupportedSerializationClassBuilder,
+                             Builder<JClassType> allSupportedDeserializationClassBuilder ) {
         Map<Class, Class> configuredMapper = mapperType.getMapperTypeConfiguration( configuration );
 
         for ( Entry<Class, Class> entry : configuredMapper.entrySet() ) {
@@ -236,8 +276,14 @@ public final class RebindConfiguration {
                 if ( null != mapperInstance ) {
                     if ( mapperType.isSerializer() ) {
                         serializers.put( mappedType.getQualifiedSourceName(), mapperInstance );
+                        if ( null != mappedType.isClass() ) {
+                            allSupportedSerializationClassBuilder.add( mappedType.isClass() );
+                        }
                     } else {
                         deserializers.put( mappedType.getQualifiedSourceName(), mapperInstance );
+                        if ( null != mappedType.isClass() ) {
+                            allSupportedDeserializationClassBuilder.add( mappedType.isClass() );
+                        }
                     }
                 }
             }
@@ -489,5 +535,15 @@ public final class RebindConfiguration {
      */
     public boolean isSpecificToMapper( JClassType beanType ) {
         return specificTypes.contains( beanType );
+    }
+
+    public boolean isTypeSupportedForSerialization( TreeLogger logger, JClassType classType ) {
+        return allSupportedSerializationClass.contains( classType ) || additionalSupportedTypes.isIncluded( logger, classType
+                .getQualifiedSourceName() );
+    }
+
+    public boolean isTypeSupportedForDeserialization( TreeLogger logger, JClassType classType ) {
+        return allSupportedDeserializationClass.contains( classType ) || additionalSupportedTypes.isIncluded( logger, classType
+                .getQualifiedSourceName() );
     }
 }

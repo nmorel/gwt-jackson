@@ -16,6 +16,8 @@
 
 package com.github.nmorel.gwtjackson.client.stream;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Arrays;
 
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
@@ -33,7 +35,7 @@ import static com.github.nmorel.gwtjackson.client.stream.JsonToken.NULL;
 import static com.github.nmorel.gwtjackson.client.stream.JsonToken.NUMBER;
 import static com.github.nmorel.gwtjackson.client.stream.JsonToken.STRING;
 
-@SuppressWarnings( "resource" )
+@SuppressWarnings("resource")
 public abstract class AbstractJsonReaderTest extends GwtJacksonTestCase {
 
     public abstract JsonReader newJsonReader( String input );
@@ -1640,6 +1642,49 @@ public abstract class AbstractJsonReaderTest extends GwtJacksonTestCase {
         assertEquals( "value", reader.nextName() );
         assertEquals( "null", reader.nextValue() );
         reader.endObject();
+    }
+
+    public void testNextNumber() {
+        JsonReader reader = newJsonReader( "[" +
+                "123," +
+                "12345678999," +
+                "54878.45," +
+                "\"literal\"," +
+                "\"-1545.78\"," +
+                "\"2147483647\"," +
+                "\"2147483648\"," +
+                Integer.MIN_VALUE + "," +
+                (Long.valueOf( "" + Integer.MIN_VALUE ) - 1l) + "," +
+                Integer.MAX_VALUE + "," +
+                (Long.valueOf( "" + Integer.MAX_VALUE ) + 1l) + "," +
+                Long.MIN_VALUE + ", " +
+                "\"" + new BigInteger( Long.MIN_VALUE + "" ).subtract( BigInteger.ONE ) + "\"," +
+                Long.MAX_VALUE + ", " +
+                "\"" + new BigInteger( Long.MAX_VALUE + "" ).add( BigInteger.ONE ) + "\"" +
+                "]" );
+        reader.beginArray();
+        assertEquals( new Integer( 123 ), reader.nextNumber() );
+        assertEquals( new Long( 12345678999l ), reader.nextNumber() );
+        assertEquals( new Double( 54878.45d ), reader.nextNumber() );
+        try {
+            reader.nextNumber();
+            fail();
+        } catch ( NumberFormatException e ) {
+        }
+        assertEquals( "literal", reader.nextString() );
+        assertEquals( new Double( -1545.78d ), reader.nextNumber() );
+        assertEquals( new Integer( 2147483647 ), reader.nextNumber() );
+        assertEquals( new Long( 2147483648l ), reader.nextNumber() );
+        assertEquals( Integer.MIN_VALUE, reader.nextNumber() );
+        assertEquals( Long.valueOf( "" + Integer.MIN_VALUE ) - 1l, reader.nextNumber() );
+        assertEquals( Integer.MAX_VALUE, reader.nextNumber() );
+        assertEquals( Long.valueOf( "" + Integer.MAX_VALUE ) + 1l, reader.nextNumber() );
+        assertEquals( Long.MIN_VALUE, reader.nextNumber() );
+        assertEquals( new BigInteger( Long.MIN_VALUE + "" ).subtract( BigInteger.ONE ), reader.nextNumber() );
+        assertEquals( Long.MAX_VALUE, reader.nextNumber() );
+        assertEquals( new BigInteger( Long.MAX_VALUE + "" ).add( BigInteger.ONE ), reader.nextNumber() );
+        reader.endArray();
+        assertEquals( JsonToken.END_DOCUMENT, reader.peek() );
     }
 
     private void assertDocument( String document, Object... expectations ) {

@@ -30,7 +30,7 @@ public class EnumJsonSerializerTest extends AbstractJsonSerializerTest<EnumTest>
 
     @Override
     protected JsonSerializer<EnumTest> createSerializer() {
-        return EnumJsonSerializer.getInstance();
+        return EnumJsonSerializer.<EnumJsonSerializer<EnumTest>>getInstance();
     }
 
     public void testSerializeValue() {

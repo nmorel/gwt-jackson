@@ -28,12 +28,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.EnumJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.bean.HasDeserializerAndParameters;
 import com.github.nmorel.gwtjackson.client.deser.bean.IdentityDeserializationInfo;
 import com.github.nmorel.gwtjackson.client.deser.bean.SimpleStringMap;
 import com.github.nmorel.gwtjackson.client.deser.bean.SubtypeDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.bean.SubtypeDeserializer.BeanSubtypeDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.bean.SubtypeDeserializer.DefaultSubtypeDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.bean.SubtypeDeserializer.EnumSubtypeDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
@@ -195,7 +197,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         if ( null != beanInfo.getCreatorParameters() && !beanInfo.getCreatorParameters().isEmpty() ) {
             // for each constructor parameters, we initialize its deserializer.
             for ( Entry<String, JParameter> entry : beanInfo.getCreatorParameters().entrySet() ) {
-                String qualifiedTypeName = getQualifiedClassName( entry.getValue().getType() );
+                String qualifiedTypeName = getParameterizedQualifiedClassName( entry.getValue().getType() );
                 String deserializerClass = String.format( "%s<%s, %s<%s>>", HasDeserializerAndParameters.class
                         .getCanonicalName(), qualifiedTypeName, JSON_DESERIALIZER_CLASS, qualifiedTypeName );
                 source.println( "private final %s %s = new %s() {", deserializerClass, String
@@ -362,10 +364,11 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
      * @param properties list of properties
      */
     private void generateInstanceBuilderForConstructorOrFactoryMethodDelegation( SourceWriter source, BeanInfo info, ImmutableMap<String,
-            PropertyInfo> properties ) throws UnableToCompleteException {
-        // FIXME @JsonCreator with delegation
-        logger.log( TreeLogger.Type.ERROR, "The delegation is not supported yet" );
-        throw new UnableToCompleteException();
+            PropertyInfo> properties ) throws UnsupportedTypeException {
+        // TODO @JsonCreator with delegation
+        String message = "The delegation is not supported yet";
+        logger.log( TreeLogger.Type.WARN, message );
+        throw new UnsupportedTypeException( message );
     }
 
     private void generateInstanceBuilderCreateMethod( SourceWriter source, BeanInfo info, ImmutableMap<String, PropertyInfo> properties ) {
@@ -496,7 +499,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
             Accessor accessor = property.getSetterAccessor().get().getAccessor( "bean" );
 
             source.println( "map.put(\"%s\", new %s<%s, %s>() {", property.getPropertyName(), BEAN_PROPERTY_DESERIALIZER_CLASS, beanInfo
-                    .getType().getParameterizedQualifiedSourceName(), getQualifiedClassName( property.getType() ) );
+                    .getType().getParameterizedQualifiedSourceName(), getParameterizedQualifiedClassName( property.getType() ) );
 
             source.indent();
 
@@ -506,7 +509,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
             source.println( "@Override" );
             source.println( "public void setValue(%s bean, %s value, %s ctx) {", beanInfo.getType()
-                    .getParameterizedQualifiedSourceName(), getQualifiedClassName( property
+                    .getParameterizedQualifiedSourceName(), getParameterizedQualifiedClassName( property
                     .getType() ), JSON_DESERIALIZATION_CONTEXT_CLASS );
             source.indent();
             source.println( accessor.getAccessor() + ";", "value" );
@@ -618,7 +621,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
             // this is a back reference, we add the special back reference property that will be called by the parent
             source.println( "map.put(\"%s\", new %s<%s, %s>() {", property.getBackReference()
                     .get(), BACK_REFERENCE_PROPERTY_BEAN_CLASS, beanInfo.getType()
-                    .getParameterizedQualifiedSourceName(), getQualifiedClassName( property.getType() ) );
+                    .getParameterizedQualifiedSourceName(), getParameterizedQualifiedClassName( property.getType() ) );
 
             source.indent();
             source.println( "@Override" );
@@ -717,7 +720,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
             JDeserializerType deserializerType;
             try {
-                deserializerType = getJsonDeserializerFromType( subtype );
+                deserializerType = getJsonDeserializerFromType( subtype, true );
             } catch ( UnsupportedTypeException e ) {
                 logger.log( Type.WARN, "Subtype '" + subtype.getQualifiedSourceName() + "' is not supported. We ignore it." );
                 continue;
@@ -725,17 +728,20 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
             String subtypeClass;
             String deserializerClass;
-            if ( null == subtype.isEnum() ) {
+            if ( configuration.getDeserializer( subtype ).isPresent() ) {
+                subtypeClass = DefaultSubtypeDeserializer.class.getCanonicalName();
+                deserializerClass = String.format( "%s<?>", JsonDeserializer.class.getName() );
+            } else if ( null == subtype.isEnum() ) {
                 subtypeClass = BeanSubtypeDeserializer.class.getCanonicalName();
                 deserializerClass = String.format( "%s<?>", ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS );
             } else {
                 // enum can be a subtype for interface. In this case, we handle them differently
                 subtypeClass = EnumSubtypeDeserializer.class.getCanonicalName();
-                deserializerClass = String.format( "%s<%s>", EnumJsonDeserializer.class.getName(), getQualifiedClassName( subtype ) );
+                deserializerClass = String.format( "%s<%s>", EnumJsonDeserializer.class
+                        .getName(), getParameterizedQualifiedClassName( subtype ) );
             }
 
-            source.println( "map.put( %s.class, new %s<%s>() {", subtype
-                    .getQualifiedSourceName(), subtypeClass, getQualifiedClassName( subtype ) );
+            source.println( "map.put( %s.class, new %s() {", subtype.getQualifiedSourceName(), subtypeClass );
             source.indent();
 
             source.println( "@Override" );

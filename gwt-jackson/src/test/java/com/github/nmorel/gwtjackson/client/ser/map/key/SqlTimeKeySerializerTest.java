@@ -18,7 +18,6 @@ package com.github.nmorel.gwtjackson.client.ser.map.key;
 
 import java.sql.Time;
 
-import com.github.nmorel.gwtjackson.client.ser.map.key.BaseDateKeySerializer.SqlTimeKeySerializer;
 import com.github.nmorel.gwtjackson.client.utils.DateFormat;
 
 /**
@@ -27,8 +26,8 @@ import com.github.nmorel.gwtjackson.client.utils.DateFormat;
 public class SqlTimeKeySerializerTest extends AbstractKeySerializerTest<Time> {
 
     @Override
-    protected SqlTimeKeySerializer createSerializer() {
-        return SqlTimeKeySerializer.getInstance();
+    protected DateKeySerializer createSerializer() {
+        return DateKeySerializer.getInstance();
     }
 
     public void testSerializeValue() {

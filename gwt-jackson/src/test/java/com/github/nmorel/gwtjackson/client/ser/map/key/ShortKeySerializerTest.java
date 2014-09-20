@@ -16,16 +16,14 @@
 
 package com.github.nmorel.gwtjackson.client.ser.map.key;
 
-import com.github.nmorel.gwtjackson.client.ser.map.key.BaseNumberKeySerializer.ShortKeySerializer;
-
 /**
  * @author Nicolas Morel
  */
 public class ShortKeySerializerTest extends AbstractKeySerializerTest<Short> {
 
     @Override
-    protected ShortKeySerializer createSerializer() {
-        return ShortKeySerializer.getInstance();
+    protected ToStringKeySerializer createSerializer() {
+        return ToStringKeySerializer.getInstance();
     }
 
     public void testSerializeValue() {

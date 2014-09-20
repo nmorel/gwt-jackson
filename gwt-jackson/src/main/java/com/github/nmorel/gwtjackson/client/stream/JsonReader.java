@@ -16,6 +16,8 @@
 
 package com.github.nmorel.gwtjackson.client.stream;
 
+import java.math.BigInteger;
+
 public interface JsonReader
 {
 
@@ -176,4 +178,17 @@ public interface JsonReader
     int getColumnNumber();
 
     String getInput();
+
+    /**
+     * Returns the {@link Number} value of the next token, consuming it.
+     * This method will attempt to return the best matching number.
+     * For non-decimal number, if it fits into an int, an int is returned,
+     * else a long else a {@link BigInteger}.
+     * For decimal number, a double is returned.
+     * If the next token's numeric value cannot be exactly represented by a Java {@link Number}, this method throws.
+     *
+     * @throws IllegalStateException if the next token is not a number.
+     * @throws NumberFormatException if the next value cannot be parsed as a number.
+     */
+    Number nextNumber();
 }

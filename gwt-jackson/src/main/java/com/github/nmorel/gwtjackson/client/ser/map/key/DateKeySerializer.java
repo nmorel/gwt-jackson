@@ -17,30 +17,35 @@
 package com.github.nmorel.gwtjackson.client.ser.map.key;
 
 import javax.annotation.Nonnull;
-import java.util.UUID;
+import java.util.Date;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
+import com.github.nmorel.gwtjackson.client.utils.DateFormat;
 
 /**
- * Default {@link KeySerializer} implementation for {@link UUID}.
+ * Default implementation of {@link KeySerializer} for dates.
  *
  * @author Nicolas Morel
  */
-public final class UUIDKeySerializer extends KeySerializer<UUID> {
+public class DateKeySerializer<D extends Date> extends KeySerializer<D> {
 
-    private static final UUIDKeySerializer INSTANCE = new UUIDKeySerializer();
+    private static final DateKeySerializer INSTANCE = new DateKeySerializer();
 
     /**
-     * @return an instance of {@link UUIDKeySerializer}
+     * @return an instance of {@link DateKeySerializer}
      */
-    public static UUIDKeySerializer getInstance() {
+    public static DateKeySerializer getInstance() {
         return INSTANCE;
     }
 
-    private UUIDKeySerializer() { }
+    private DateKeySerializer() { }
 
     @Override
-    protected String doSerialize( @Nonnull UUID value, JsonSerializationContext ctx ) {
-        return value.toString();
+    protected String doSerialize( @Nonnull Date value, JsonSerializationContext ctx ) {
+        if ( ctx.isWriteDateKeysAsTimestamps() ) {
+            return Long.toString( value.getTime() );
+        } else {
+            return DateFormat.format( value );
+        }
     }
 }

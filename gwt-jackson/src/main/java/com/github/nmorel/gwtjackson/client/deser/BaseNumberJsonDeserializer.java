@@ -216,4 +216,26 @@ public abstract class BaseNumberJsonDeserializer<N extends Number> extends JsonD
         }
     }
 
+    /**
+     * Default implementation of {@link BaseNumberJsonDeserializer} for {@link Number}
+     */
+    public static final class NumberJsonDeserializer extends BaseNumberJsonDeserializer<Number> {
+
+        private static final NumberJsonDeserializer INSTANCE = new NumberJsonDeserializer();
+
+        /**
+         * @return an instance of {@link NumberJsonDeserializer}
+         */
+        public static NumberJsonDeserializer getInstance() {
+            return INSTANCE;
+        }
+
+        private NumberJsonDeserializer() { }
+
+        @Override
+        public Number doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
+            return reader.nextNumber();
+        }
+    }
+
 }

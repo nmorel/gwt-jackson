@@ -18,16 +18,14 @@ package com.github.nmorel.gwtjackson.client.ser.map.key;
 
 import java.math.BigDecimal;
 
-import com.github.nmorel.gwtjackson.client.ser.map.key.BaseNumberKeySerializer.BigDecimalKeySerializer;
-
 /**
  * @author Nicolas Morel
  */
 public class BigDecimalKeySerializerTest extends AbstractKeySerializerTest<BigDecimal> {
 
     @Override
-    protected BigDecimalKeySerializer createSerializer() {
-        return BigDecimalKeySerializer.getInstance();
+    protected ToStringKeySerializer createSerializer() {
+        return ToStringKeySerializer.getInstance();
     }
 
     public void testSerializeValue() {

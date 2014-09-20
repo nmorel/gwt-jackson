@@ -33,8 +33,8 @@ public final class EnumKeySerializer<E extends Enum<E>> extends KeySerializer<E>
      * @return an instance of {@link EnumKeySerializer}
      */
     @SuppressWarnings("unchecked")
-    public static <E extends Enum<E>> EnumKeySerializer<E> getInstance() {
-        return (EnumKeySerializer<E>) INSTANCE;
+    public static <S extends EnumKeySerializer<?>> S getInstance() {
+        return (S) INSTANCE;
     }
 
     private EnumKeySerializer() { }

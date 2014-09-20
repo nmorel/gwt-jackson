@@ -88,4 +88,19 @@ public abstract class SubtypeSerializer<T, S extends JsonSerializer<T>> extends 
             }
         }
     }
+
+    /**
+     * Delegate the serialization of a subtype to a corresponding {@link JsonSerializer}
+     *
+     * @author Nicolas Morel.
+     */
+    public abstract static class DefaultSubtypeSerializer<T> extends SubtypeSerializer<T, JsonSerializer<T>> {
+
+        @Override
+        public void serializeInternally( JsonWriter writer, T value, JsonSerializationContext ctx, JsonSerializerParameters params,
+                                         IdentitySerializationInfo<T> defaultIdentityInfo, TypeSerializationInfo<T> defaultTypeInfo,
+                                         Map<String, BeanPropertySerializer<T, ?>> serializers ) {
+            getSerializer().serialize( writer, value, ctx, params );
+        }
+    }
 }

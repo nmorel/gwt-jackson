@@ -56,7 +56,7 @@ public class BeanJsonMapperInfo {
         this.beanInfo = beanInfo;
         this.properties = properties;
 
-        if ( null != type.isGenericType() ) {
+        if ( null != type.isGenericType() && type.isGenericType().getTypeParameters().length > 0 ) {
             StringBuilder genericClassParametersBuilder = new StringBuilder();
             StringBuilder genericClassBoundedParametersBuilder = new StringBuilder();
             for ( JTypeParameter parameter : type.isGenericType().getTypeParameters() ) {

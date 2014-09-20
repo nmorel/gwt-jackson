@@ -16,8 +16,6 @@
 
 package com.github.nmorel.gwtjackson.rebind.bean;
 
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.google.gwt.core.ext.typeinfo.JClassType;
@@ -34,13 +32,17 @@ final class ImmutableBeanTypeInfo implements BeanTypeInfo {
 
     private final String propertyName;
 
-    private final ImmutableMap<JClassType, String> mapTypeToMetadata;
+    private final ImmutableMap<JClassType, String> mapTypeToSerializationMetadata;
 
-    ImmutableBeanTypeInfo( Id use, As include, String propertyName, Map<JClassType, String> mapTypeToMetadata ) {
+    private final ImmutableMap<JClassType, String> mapTypeToDeserializationMetadata;
+
+    ImmutableBeanTypeInfo( Id use, As include, String propertyName, ImmutableMap<JClassType, String> mapTypeToSerializationMetadata,
+                           ImmutableMap<JClassType, String> mapTypeToDeserializationMetadata ) {
         this.use = use;
         this.include = include;
         this.propertyName = propertyName;
-        this.mapTypeToMetadata = ImmutableMap.copyOf( mapTypeToMetadata );
+        this.mapTypeToSerializationMetadata = mapTypeToSerializationMetadata;
+        this.mapTypeToDeserializationMetadata = mapTypeToDeserializationMetadata;
     }
 
     @Override
@@ -59,7 +61,12 @@ final class ImmutableBeanTypeInfo implements BeanTypeInfo {
     }
 
     @Override
-    public ImmutableMap<JClassType, String> getMapTypeToMetadata() {
-        return mapTypeToMetadata;
+    public ImmutableMap<JClassType, String> getMapTypeToSerializationMetadata() {
+        return mapTypeToSerializationMetadata;
+    }
+
+    @Override
+    public ImmutableMap<JClassType, String> getMapTypeToDeserializationMetadata() {
+        return mapTypeToDeserializationMetadata;
     }
 }

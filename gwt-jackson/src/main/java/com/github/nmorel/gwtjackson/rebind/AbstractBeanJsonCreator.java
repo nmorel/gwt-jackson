@@ -27,6 +27,8 @@ import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.ObjectIdGenerator;
 import com.github.nmorel.gwtjackson.client.deser.bean.AbstractIdentityDeserializationInfo;
+import com.github.nmorel.gwtjackson.client.deser.bean.AbstractObjectBeanJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.bean.AbstractSerializableBeanJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.bean.PropertyIdentityDeserializationInfo;
 import com.github.nmorel.gwtjackson.client.ser.bean.AbstractBeanJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.AbstractIdentitySerializationInfo;
@@ -55,6 +57,8 @@ import com.google.gwt.thirdparty.guava.common.collect.ImmutableMap;
 import com.google.gwt.user.rebind.SourceWriter;
 
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.QUOTED_FUNCTION;
+import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.isObject;
+import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.isSerializable;
 
 /**
  * @author Nicolas Morel
@@ -100,6 +104,11 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
     public AbstractBeanJsonCreator( TreeLogger logger, GeneratorContext context, RebindConfiguration configuration,
                                     JacksonTypeOracle typeOracle ) {
         super( logger, context, configuration, typeOracle );
+    }
+
+    @Override
+    protected Optional<BeanJsonMapperInfo> getMapperInfo() {
+        return Optional.of( mapperInfo );
     }
 
     /**
@@ -148,31 +157,43 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
             return qualifiedClassName;
         }
 
-        mapperInfo = typeOracle.getBeanJsonMapperInfo( beanType );
+        try {
+            mapperInfo = typeOracle.getBeanJsonMapperInfo( beanType );
 
-        if ( null == mapperInfo ) {
-            // retrieve the informations on the beans and its properties
-            BeanInfo beanInfo = BeanProcessor.processBean( logger, typeOracle, configuration, beanType );
+            if ( null == mapperInfo ) {
+                // retrieve the informations on the beans and its properties
+                BeanInfo beanInfo = BeanProcessor.processBean( logger, typeOracle, configuration, beanType );
 
-            ImmutableMap<String, PropertyInfo> properties = PropertyProcessor
-                    .findAllProperties( configuration, logger, typeOracle, beanInfo, samePackage );
+                ImmutableMap<String, PropertyInfo> properties = PropertyProcessor
+                        .findAllProperties( configuration, logger, typeOracle, beanInfo, samePackage );
 
-            mapperInfo = new BeanJsonMapperInfo( beanType, qualifiedSerializerClassName, simpleSerializerClassName,
-                    qualifiedDeserializerClassName, simpleDeserializerClassName, beanInfo, properties );
+                mapperInfo = new BeanJsonMapperInfo( beanType, qualifiedSerializerClassName, simpleSerializerClassName,
+                        qualifiedDeserializerClassName, simpleDeserializerClassName, beanInfo, properties );
 
-            typeOracle.addBeanJsonMapperInfo( beanType, mapperInfo );
+                typeOracle.addBeanJsonMapperInfo( beanType, mapperInfo );
+            }
+
+            String superclass;
+            if ( isSerializer() ) {
+                superclass = ABSTRACT_BEAN_JSON_SERIALIZER_CLASS + "<" + beanType.getParameterizedQualifiedSourceName() + ">";
+            } else if ( isObject( beanType ) ) {
+                superclass = AbstractObjectBeanJsonDeserializer.class.getCanonicalName();
+            } else if ( isSerializable( beanType ) ) {
+                superclass = AbstractSerializableBeanJsonDeserializer.class.getCanonicalName();
+            } else {
+                superclass = ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS + "<" + beanType.getParameterizedQualifiedSourceName() + ">";
+            }
+
+            SourceWriter source = getSourceWriter( printWriter, packageName, getSimpleClassName() + getGenericClassBoundedParameters(),
+                    superclass );
+
+            writeClassBody( source, mapperInfo.getBeanInfo(), mapperInfo.getProperties() );
+
+            source.println();
+            source.commit( logger );
+        } finally {
+            printWriter.close();
         }
-
-        String parameterizedTypes = beanType.getParameterizedQualifiedSourceName();
-
-        SourceWriter source = getSourceWriter( printWriter, packageName, getSimpleClassName() + getGenericClassBoundedParameters(),
-                getSuperclass() + "<" +
-                        parameterizedTypes + ">" );
-
-        writeClassBody( source, mapperInfo.getBeanInfo(), mapperInfo.getProperties() );
-
-        source.println();
-        source.commit( logger );
 
         return qualifiedClassName;
     }
@@ -189,14 +210,6 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
 
     protected String getGenericClassBoundedParameters() {
         return mapperInfo.getGenericClassBoundedParameters();
-    }
-
-    protected String getSuperclass() {
-        if ( isSerializer() ) {
-            return ABSTRACT_BEAN_JSON_SERIALIZER_CLASS;
-        } else {
-            return ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS;
-        }
     }
 
     protected abstract void writeClassBody( SourceWriter source, BeanInfo info, ImmutableMap<String,
@@ -229,9 +242,17 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
         return new TypeParameters( typeParameterMapperNames, joinedTypeParameterMappersWithType.toString() );
     }
 
-    protected String getQualifiedClassName( JType type ) {
+    protected String getParameterizedQualifiedClassName( JType type ) {
         if ( null == type.isPrimitive() ) {
             return type.getParameterizedQualifiedSourceName();
+        } else {
+            return type.isPrimitive().getQualifiedBoxedSourceName();
+        }
+    }
+
+    protected String getQualifiedClassName( JType type ) {
+        if ( null == type.isPrimitive() ) {
+            return type.getQualifiedSourceName();
         } else {
             return type.isPrimitive().getQualifiedBoxedSourceName();
         }
@@ -253,7 +274,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
             source.print( "new %s<%s>(%s, \"%s\")", PropertyIdentitySerializationInfo.class.getName(), type
                     .getParameterizedQualifiedSourceName(), identityInfo.isAlwaysAsId(), identityInfo.getPropertyName() );
         } else {
-            String qualifiedType = getQualifiedClassName( identityInfo.getType().get() );
+            String qualifiedType = getParameterizedQualifiedClassName( identityInfo.getType().get() );
             String identityPropertyClass = String.format( "%s<%s, %s>", AbstractIdentitySerializationInfo.class.getName(), type
                     .getParameterizedQualifiedSourceName(), qualifiedType );
 
@@ -313,7 +334,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
 
         } else {
 
-            String qualifiedType = getQualifiedClassName( identityInfo.getType().get() );
+            String qualifiedType = getParameterizedQualifiedClassName( identityInfo.getType().get() );
 
             String identityPropertyClass = String.format( "%s<%s, %s>", AbstractIdentityDeserializationInfo.class.getName(), type
                     .getParameterizedQualifiedSourceName(), qualifiedType );
@@ -343,7 +364,14 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
                 .getCanonicalName(), typeInfo.getInclude(), typeInfoProperty );
         source.indent();
 
-        for ( Entry<JClassType, String> entry : typeInfo.getMapTypeToMetadata().entrySet() ) {
+        ImmutableMap<JClassType, String> mapTypeToMetadata;
+        if ( serialization ) {
+            mapTypeToMetadata = typeInfo.getMapTypeToSerializationMetadata();
+        } else {
+            mapTypeToMetadata = typeInfo.getMapTypeToDeserializationMetadata();
+        }
+
+        for ( Entry<JClassType, String> entry : mapTypeToMetadata.entrySet() ) {
             source.println( ".addTypeInfo(%s.class, \"%s\")", entry.getKey().getQualifiedSourceName(), entry.getValue() );
         }
 
@@ -363,8 +391,8 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
         for ( JMapperType mapperType : mapperTypeList ) {
             if ( mapperType.isBeanMapper() ) {
                 return mapperType.getType().isClass();
-            } else if ( mapperType.getParameters().length > 0 ) {
-                subLevel.addAll( Arrays.asList( mapperType.getParameters() ) );
+            } else if ( mapperType.getParameters().size() > 0 ) {
+                subLevel.addAll( mapperType.getParameters() );
             }
         }
 
@@ -401,6 +429,10 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
     }
 
     protected ImmutableList<JClassType> filterSubtypes( BeanInfo beanInfo ) {
-        return CreatorUtils.filterSubtypes( beanInfo.getType() );
+        if ( isSerializer() ) {
+            return CreatorUtils.filterSubtypesForSerialization( logger, configuration, beanInfo.getType() );
+        } else {
+            return CreatorUtils.filterSubtypesForDeserialization( logger, configuration, beanInfo.getType() );
+        }
     }
 }

@@ -180,6 +180,23 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         private ShortJsonSerializer() { }
     }
 
+    /**
+     * Default implementation of {@link BaseNumberJsonSerializer} for {@link Number}
+     */
+    public static final class NumberJsonSerializer extends BaseNumberJsonSerializer<Number> {
+
+        private static final NumberJsonSerializer INSTANCE = new NumberJsonSerializer();
+
+        /**
+         * @return an instance of {@link NumberJsonSerializer}
+         */
+        public static NumberJsonSerializer getInstance() {
+            return INSTANCE;
+        }
+
+        private NumberJsonSerializer() { }
+    }
+
     @Override
     public void doSerialize( JsonWriter writer, @Nonnull N value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         writer.value( value );

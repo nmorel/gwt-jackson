@@ -16,16 +16,14 @@
 
 package com.github.nmorel.gwtjackson.client.ser.map.key;
 
-import com.github.nmorel.gwtjackson.client.ser.map.key.BaseNumberKeySerializer.LongKeySerializer;
-
 /**
  * @author Nicolas Morel
  */
 public class LongKeySerializerTest extends AbstractKeySerializerTest<Long> {
 
     @Override
-    protected LongKeySerializer createSerializer() {
-        return LongKeySerializer.getInstance();
+    protected ToStringKeySerializer createSerializer() {
+        return ToStringKeySerializer.getInstance();
     }
 
     public void testSerializeValue() {

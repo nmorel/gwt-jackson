@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.ser.map.key;
 
-import com.github.nmorel.gwtjackson.client.ser.map.key.BaseNumberKeySerializer.FloatKeySerializer;
 import com.google.gwt.core.client.GWT;
 
 /**
@@ -25,8 +24,8 @@ import com.google.gwt.core.client.GWT;
 public class FloatKeySerializerTest extends AbstractKeySerializerTest<Float> {
 
     @Override
-    protected FloatKeySerializer createSerializer() {
-        return FloatKeySerializer.getInstance();
+    protected ToStringKeySerializer createSerializer() {
+        return ToStringKeySerializer.getInstance();
     }
 
     public void testSerializeValue() {

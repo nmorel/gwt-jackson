@@ -16,7 +16,10 @@
 
 package com.github.nmorel.gwtjackson.client;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer;
@@ -94,6 +97,8 @@ public abstract class AbstractConfiguration {
 
     private final Map<Class, Class> mapMixInAnnotations = new HashMap<Class, Class>();
 
+    private final List<String> whitelist = new ArrayList<String>();
+
     protected AbstractConfiguration() {
         configure();
     }
@@ -143,6 +148,20 @@ public abstract class AbstractConfiguration {
         return this;
     }
 
+    /**
+     * Method to add a regex into whitelist.
+     * <p>
+     * All the types matching whitelist are added to the subtype list of {@link Object} and
+     * {@link Serializable} serializer/deserializer.
+     * </p>
+     *
+     * @param regex the regex to add
+     */
+    protected AbstractConfiguration whitelist( String regex ) {
+        whitelist.add( regex );
+        return this;
+    }
+
     protected abstract void configure();
 
     public Map<Class, Class> getMapTypeToSerializer() {
@@ -163,5 +182,9 @@ public abstract class AbstractConfiguration {
 
     public Map<Class, Class> getMapMixInAnnotations() {
         return mapMixInAnnotations;
+    }
+
+    public List<String> getWhitelist() {
+        return whitelist;
     }
 }

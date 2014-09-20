@@ -55,6 +55,11 @@ public class ObjectMapperCreator extends AbstractCreator {
         super( logger, context, configuration, typeOracle );
     }
 
+    @Override
+    protected Optional<BeanJsonMapperInfo> getMapperInfo() {
+        return Optional.absent();
+    }
+
     /**
      * Creates the implementation of the interface denoted by typeName and extending {@link ObjectMapper}
      *

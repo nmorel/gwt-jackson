@@ -16,16 +16,14 @@
 
 package com.github.nmorel.gwtjackson.client.ser.map.key;
 
-import com.github.nmorel.gwtjackson.client.ser.map.key.BaseNumberKeySerializer.IntegerKeySerializer;
-
 /**
  * @author Nicolas Morel
  */
 public class IntegerKeySerializerTest extends AbstractKeySerializerTest<Integer> {
 
     @Override
-    protected IntegerKeySerializer createSerializer() {
-        return IntegerKeySerializer.getInstance();
+    protected ToStringKeySerializer createSerializer() {
+        return ToStringKeySerializer.getInstance();
     }
 
     public void testSerializeValue() {

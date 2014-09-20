@@ -17,6 +17,7 @@
 
 package com.github.nmorel.gwtjackson.client.stream.impl;
 
+import java.math.BigInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -195,6 +196,12 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
   /** The only non-execute prefix this parser permits */
   private static final char[] NON_EXECUTE_PREFIX = ")]}'\n".toCharArray();
   private static final long MIN_INCOMPLETE_INTEGER = Long.MIN_VALUE / 10;
+
+  private final static long MIN_INT_L = (long) Integer.MIN_VALUE;
+  private final static long MAX_INT_L = (long) Integer.MAX_VALUE;
+
+  private final static BigInteger MIN_LONG_BIGINTEGER = new BigInteger("" + Long.MIN_VALUE);
+  private final static BigInteger MAX_LONG_BIGINTEGER = new BigInteger("" + Long.MAX_VALUE);
 
   private static final int PEEKED_NONE = 0;
   private static final int PEEKED_BEGIN_OBJECT = 1;
@@ -1457,6 +1464,108 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
     } while (count != 0);
 
     return builder.toString();
+  }
+
+  @Override
+  public Number nextNumber()
+  {
+    // TODO needs better handling for BigInteger and BigDecimal.
+    // Use of DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS and USE_BIG_INTEGER_FOR_INTS. See NumberDeserializer of Jackson.
+
+    int p = peeked;
+    if (p == PEEKED_NONE) {
+      p = doPeek();
+    }
+
+    Number result;
+    if (p == PEEKED_LONG) {
+      if (peekedLong < 0l) {
+        if (peekedLong >= MIN_INT_L) {
+           result = (int) peekedLong;
+        } else {
+            result = peekedLong;
+        }
+      } else {
+        if (peekedLong <= MAX_INT_L) {
+          result = (int) peekedLong;
+        } else {
+          result = peekedLong;
+        }
+      }
+      peeked = PEEKED_NONE;
+      return result;
+    }
+
+    if (p == PEEKED_NUMBER) {
+      peekedString = in.substring(pos, pos + peekedNumberLength);
+      pos += peekedNumberLength;
+      peeked = PEEKED_BUFFERED;
+      result = Double.parseDouble( peekedString );
+      peekedString = null;
+      peeked = PEEKED_NONE;
+      return result;
+    }
+
+    if (p == PEEKED_SINGLE_QUOTED || p == PEEKED_DOUBLE_QUOTED) {
+      peekedString = nextQuotedValue(p == PEEKED_SINGLE_QUOTED ? '\'' : '"');
+    } else if (p == PEEKED_UNQUOTED) {
+      peekedString = nextUnquotedValue();
+    } else if (p != PEEKED_BUFFERED) {
+      throw new IllegalStateException("Expected a double but was " + peek()
+          + " at line " + getLineNumber() + " column " + getColumnNumber());
+    }
+
+    peeked = PEEKED_BUFFERED;
+    if (peekedString.contains( "." )) {
+      // decimal
+      double resultDouble = Double.parseDouble( peekedString ); // don't catch this NumberFormatException.
+      if (!lenient && (Double.isNaN( resultDouble ) || Double.isInfinite( resultDouble ))) {
+        throw syntaxError( "JSON forbids NaN and infinities: " + resultDouble);
+      }
+      result = resultDouble;
+    } else {
+      int length = peekedString.length();
+      if (length <= 9) { // fits in int
+        result = Integer.parseInt( peekedString );
+      } else if (length <= 18) { // fits in long and potentially int
+        long longResult = Long.parseLong( peekedString );
+        if(length == 10) { // can fits in int
+          if (longResult < 0l) {
+            if (longResult >= MIN_INT_L) {
+             result = (int) longResult;
+            } else {
+             result = longResult;
+            }
+          } else {
+            if (longResult <= MAX_INT_L) {
+              result = (int) longResult;
+            } else {
+              result = longResult;
+            }
+          }
+        } else {
+          result = longResult;
+        }
+      } else {
+        BigInteger bigIntegerResult = new BigInteger( peekedString );
+        if (bigIntegerResult.signum() == -1) {
+          if (bigIntegerResult.compareTo( MIN_LONG_BIGINTEGER ) >= 0) {
+           result = bigIntegerResult.longValue();
+          } else {
+           result = bigIntegerResult;
+          }
+        } else {
+          if (bigIntegerResult.compareTo( MAX_LONG_BIGINTEGER) <= 0) {
+            result = bigIntegerResult.longValue();
+          } else {
+            result = bigIntegerResult;
+          }
+        }
+      }
+    }
+    peekedString = null;
+    peeked = PEEKED_NONE;
+    return result;
   }
 }
 //@formatter:on
