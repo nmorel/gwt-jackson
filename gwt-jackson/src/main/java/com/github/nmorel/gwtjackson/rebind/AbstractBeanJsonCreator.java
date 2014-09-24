@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
@@ -49,6 +48,7 @@ import com.google.gwt.core.ext.TreeLogger.Type;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JType;
+import com.google.gwt.thirdparty.guava.common.base.Optional;
 import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.google.gwt.thirdparty.guava.common.collect.ImmutableList;
 import com.google.gwt.thirdparty.guava.common.collect.ImmutableMap;
@@ -240,7 +240,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
     protected Optional<JSerializerType> getIdentitySerializerType( BeanIdentityInfo identityInfo ) throws UnableToCompleteException,
             UnsupportedTypeException {
         if ( identityInfo.isIdABeanProperty() ) {
-            return Optional.empty();
+            return Optional.absent();
         } else {
             return Optional.of( getJsonSerializerFromType( identityInfo.getType().get() ) );
         }
@@ -297,7 +297,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
     protected Optional<JDeserializerType> getIdentityDeserializerType( BeanIdentityInfo identityInfo ) throws UnableToCompleteException,
             UnsupportedTypeException {
         if ( identityInfo.isIdABeanProperty() ) {
-            return Optional.empty();
+            return Optional.absent();
         } else {
             return Optional.of( getJsonDeserializerFromType( identityInfo.getType().get() ) );
         }

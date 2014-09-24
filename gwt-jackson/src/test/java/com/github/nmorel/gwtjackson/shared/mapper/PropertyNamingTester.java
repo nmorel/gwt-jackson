@@ -16,6 +16,7 @@
 
 package com.github.nmorel.gwtjackson.shared.mapper;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
 import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
 import com.github.nmorel.gwtjackson.shared.ObjectReaderTester;
@@ -26,6 +27,7 @@ import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
  */
 public final class PropertyNamingTester extends AbstractTester {
 
+    @JsonPropertyOrder(alphabetic = true)
     public static class PropertyNamingBean {
         private String simpleName;
         private String HTML;
@@ -70,7 +72,7 @@ public final class PropertyNamingTester extends AbstractTester {
         bean.setHTMLParser( "htmlparser" );
 
         String json = mapper.write( bean );
-        assertEquals( "{\"simpleName\":\"simple\",\"html\":\"html\",\"htmlparser\":\"htmlparser\"}", json );
+        assertEquals( "{\"html\":\"html\",\"htmlparser\":\"htmlparser\",\"simpleName\":\"simple\"}", json );
 
         bean = mapper.read( json );
         assertEquals( "simple", bean.getSimpleName() );
