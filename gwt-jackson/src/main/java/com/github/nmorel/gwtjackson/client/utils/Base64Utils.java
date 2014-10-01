@@ -20,24 +20,28 @@ package com.github.nmorel.gwtjackson.client.utils;
  * A utility to decode and encode byte arrays as Strings, using only "safe"
  * characters.
  *
- * <p>copy of com.google.gwt.user.server.Base64Utils</p>
+ * <p>Copy of com.google.gwt.user.server.Base64Utils.<br>
+ * Modify to use MIME-Base64 encoding like the default Base64 encoding in
+ * <a href="https://github.com/FasterXML/jackson-core/blob/master/src/main/java/com/fasterxml/jackson/core/Base64Variants.java">jackson</a>.
+ * </p>
  */
 public class Base64Utils {
 
   /**
    * An array mapping size but values to the characters that will be used to
-   * represent them. Note that this is not identical to the set of characters
-   * used by MIME-Base64.
+   * represent them. Note that this is identical to the set of characters
+   * used by MIME-Base64 and not compatible to set of characters used by
+   * com.google.gwt.user.server.Base64Utils.
    */
   private static final char[] base64Chars = new char[] {
       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
       'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b',
       'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
       'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3',
-      '4', '5', '6', '7', '8', '9', '$', '_'};
+      '4', '5', '6', '7', '8', '9', '+', '/'};
 
   /**
-   * An array mapping legal base 64 characters [a-zA-Z0-9$_] to their associated
+   * An array mapping legal base 64 characters [a-zA-Z0-9+/] to their associated
    * 6-bit values. The source indices will be given by 7-bit ASCII characters,
    * thus the array size needs to be 128 (actually 123 would suffice for the
    * given set of characters in use).
