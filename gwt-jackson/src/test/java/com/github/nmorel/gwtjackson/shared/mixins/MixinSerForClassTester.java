@@ -19,6 +19,7 @@ package com.github.nmorel.gwtjackson.shared.mixins;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
 import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
@@ -30,6 +31,7 @@ public final class MixinSerForClassTester extends AbstractTester {
     /**********************************************************
      */
 
+    @JsonPropertyOrder(alphabetic = true)
     @JsonSerialize( include = JsonSerialize.Inclusion.ALWAYS )
     public static class BaseClass {
 
