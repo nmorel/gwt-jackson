@@ -89,7 +89,7 @@
 
     <!-- Dependencies version -->
     <gwt.version>2.6.1</gwt.version>
-    <jackson.version>2.4.2</jackson.version>
+    <jackson.version>2.4.3</jackson.version>
     <junit.version>4.11</junit.version>
   </properties>
 
