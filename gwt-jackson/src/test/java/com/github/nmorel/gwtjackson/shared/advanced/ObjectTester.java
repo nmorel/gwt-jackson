@@ -16,9 +16,12 @@
 
 package com.github.nmorel.gwtjackson.shared.advanced;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -57,10 +60,15 @@ public final class ObjectTester extends AbstractTester {
         public Object objectWithTypeInfo;
 
         public Map<Object, String> mapWithObjectKey;
+
+        public List objects;
+
+        @JsonTypeInfo( include = As.PROPERTY, use = Id.CLASS, property = "@type2" )
+        public List objectsWithTypeInfo;
     }
 
-    // will be ignored
-    @JsonTypeInfo( include = As.PROPERTY, use = Id.CLASS, property = "@class" )
+    // annotation will be ignored
+    @JsonTypeInfo(include = As.PROPERTY, use = Id.CLASS, property = "@class")
     public static class InnerObject {
 
         public String myString;
@@ -146,6 +154,13 @@ public final class ObjectTester extends AbstractTester {
         mapWithObjectKey.put( new Person( "Peter", "Parker" ), "Spider-Man" );
         wrapper.mapWithObjectKey = mapWithObjectKey;
 
+        List objectsWithTypeInfo = new ArrayList();
+        objectsWithTypeInfo.add( new BigDecimal( "4878451.154545" ) );
+        objectsWithTypeInfo.add( inner );
+        objectsWithTypeInfo.add( new Date( 1345304756543l ) );
+        wrapper.objects = objectsWithTypeInfo;
+        wrapper.objectsWithTypeInfo = objectsWithTypeInfo;
+
         String expected = "{" +
                 "\"array\":[\"Hello\",\"World\",\"!\"]," +
                 "\"string\":\"Dumb\"," +
@@ -165,7 +180,18 @@ public final class ObjectTester extends AbstractTester {
                 "\"Anthony Stark\":\"Iron Man\"," +
                 "\"Thor\":\"Thor\"," +
                 "\"Peter Parker\":\"Spider-Man\"" +
-                "}" +
+                "}," +
+                "\"objects\":[" +
+                "4878451.154545," +
+                "{\"myString\":\"a super string\",\"myInt\":168555}," +
+                "1345304756543" +
+                "]," +
+                "\"objectsWithTypeInfo\":[" +
+                "[\"java.math.BigDecimal\",4878451.154545]," +
+                "{\"@type2\":\"com.github.nmorel.gwtjackson.shared.advanced.ObjectTester$InnerObject\",\"myString\":\"a super string\"," +
+                "\"myInt\":168555}," +
+                "[\"java.util.Date\",1345304756543]" +
+                "]" +
                 "}";
 
         assertEquals( expected, writer.write( wrapper ) );
@@ -191,7 +217,18 @@ public final class ObjectTester extends AbstractTester {
                 "\"Anthony Stark\":\"Iron Man\"," +
                 "\"Thor\":\"Thor\"," +
                 "\"Peter Parker\":\"Spider-Man\"" +
-                "}" +
+                "}," +
+                "\"objects\":[" +
+                "4878451.154545," +
+                "{\"myString\":\"a super string\",\"myInt\":168555}," +
+                "1345304756543" +
+                "]," +
+                "\"objectsWithTypeInfo\":[" +
+                "[\"java.math.BigDecimal\",4878451.154545]," +
+                "{\"@type2\":\"com.github.nmorel.gwtjackson.shared.advanced.ObjectTester$InnerObject\",\"myString\":\"a super string\"," +
+                "\"myInt\":168555}," +
+                "[\"java.util.Date\",1345304756543]" +
+                "]" +
                 "}";
 
         ObjectWrapper bean = reader.read( input );
@@ -225,6 +262,20 @@ public final class ObjectTester extends AbstractTester {
         assertEquals( "Iron Man", mapWithObjectKey.get( "Anthony Stark" ) );
         assertEquals( "Thor", mapWithObjectKey.get( "Thor" ) );
         assertEquals( "Spider-Man", mapWithObjectKey.get( "Peter Parker" ) );
+
+        List objects = bean.objects;
+        assertEquals( 4878451.154545d, objects.get( 0 ) );
+        Map<String, Object> innerObject = (Map<String, Object>) objects.get( 1 );
+        assertEquals( "a super string", innerObject.get( "myString" ) );
+        assertEquals( 168555, innerObject.get( "myInt" ) );
+        assertEquals( 1345304756543l, objects.get( 2 ) );
+
+        List objectsWithTypeInfo = bean.objectsWithTypeInfo;
+        assertEquals( new BigDecimal( "4878451.154545" ), objectsWithTypeInfo.get( 0 ) );
+        InnerObject innerObjectWithTypeInfo = (InnerObject) objectsWithTypeInfo.get( 1 );
+        assertEquals( "a super string", innerObjectWithTypeInfo.myString );
+        assertEquals( 168555, innerObjectWithTypeInfo.myInt );
+        assertEquals( new Date( 1345304756543l ), objectsWithTypeInfo.get( 2 ) );
     }
 
 }

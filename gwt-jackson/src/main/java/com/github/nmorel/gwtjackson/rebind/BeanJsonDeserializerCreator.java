@@ -29,14 +29,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
-import com.github.nmorel.gwtjackson.client.deser.EnumJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.bean.HasDeserializerAndParameters;
 import com.github.nmorel.gwtjackson.client.deser.bean.IdentityDeserializationInfo;
 import com.github.nmorel.gwtjackson.client.deser.bean.SimpleStringMap;
 import com.github.nmorel.gwtjackson.client.deser.bean.SubtypeDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.bean.SubtypeDeserializer.BeanSubtypeDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.bean.SubtypeDeserializer.DefaultSubtypeDeserializer;
-import com.github.nmorel.gwtjackson.client.deser.bean.SubtypeDeserializer.EnumSubtypeDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 import com.github.nmorel.gwtjackson.rebind.bean.BeanInfo;
@@ -728,17 +726,12 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
             String subtypeClass;
             String deserializerClass;
-            if ( configuration.getDeserializer( subtype ).isPresent() ) {
+            if ( configuration.getDeserializer( subtype ).isPresent() || null != subtype.isEnum() ) {
                 subtypeClass = DefaultSubtypeDeserializer.class.getCanonicalName();
                 deserializerClass = String.format( "%s<?>", JsonDeserializer.class.getName() );
-            } else if ( null == subtype.isEnum() ) {
+            } else {
                 subtypeClass = BeanSubtypeDeserializer.class.getCanonicalName();
                 deserializerClass = String.format( "%s<?>", ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS );
-            } else {
-                // enum can be a subtype for interface. In this case, we handle them differently
-                subtypeClass = EnumSubtypeDeserializer.class.getCanonicalName();
-                deserializerClass = String.format( "%s<%s>", EnumJsonDeserializer.class
-                        .getName(), getParameterizedQualifiedClassName( subtype ) );
             }
 
             source.println( "map.put( %s.class, new %s() {", subtype.getQualifiedSourceName(), subtypeClass );

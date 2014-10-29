@@ -23,13 +23,11 @@ import java.util.Map.Entry;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
-import com.github.nmorel.gwtjackson.client.ser.EnumJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.RawValueJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.IdentitySerializationInfo;
 import com.github.nmorel.gwtjackson.client.ser.bean.SubtypeSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.SubtypeSerializer.BeanSubtypeSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.SubtypeSerializer.DefaultSubtypeSerializer;
-import com.github.nmorel.gwtjackson.client.ser.bean.SubtypeSerializer.EnumSubtypeSerializer;
 import com.github.nmorel.gwtjackson.rebind.bean.BeanInfo;
 import com.github.nmorel.gwtjackson.rebind.exception.UnsupportedTypeException;
 import com.github.nmorel.gwtjackson.rebind.property.FieldAccessor.Accessor;
@@ -307,22 +305,16 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
             String subtypeClass;
             String serializerClass;
             String subtypeQualifiedClassName;
-            if ( configuration.getSerializer( subtype ).isPresent() ) {
+            if ( configuration.getSerializer( subtype ).isPresent() || null != subtype.isEnum() ) {
                 subtypeClass = DefaultSubtypeSerializer.class.getCanonicalName();
                 subtypeQualifiedClassName = getQualifiedClassName( subtype );
                 serializerClass = String.format( "%s<%s>", JsonSerializer.class.getName(), subtypeQualifiedClassName );
-            } else if ( null != subtype.isEnum() ) {
-                // enum can be a subtype for interface. In this case, we handle them differently
-                subtypeClass = EnumSubtypeSerializer.class.getCanonicalName();
-                subtypeQualifiedClassName = getParameterizedQualifiedClassName( subtype );
-                serializerClass = String.format( "%s<%s>", EnumJsonSerializer.class.getName(), subtypeQualifiedClassName );
             } else {
                 subtypeClass = BeanSubtypeSerializer.class.getCanonicalName();
                 serializerClass = String.format( "%s<?>", ABSTRACT_BEAN_JSON_SERIALIZER_CLASS );
             }
 
-            source.println( "map.put( %s.class, new %s() {", subtype
-                    .getQualifiedSourceName(), subtypeClass);
+            source.println( "map.put( %s.class, new %s() {", subtype.getQualifiedSourceName(), subtypeClass );
             source.indent();
 
             source.println( "@Override" );

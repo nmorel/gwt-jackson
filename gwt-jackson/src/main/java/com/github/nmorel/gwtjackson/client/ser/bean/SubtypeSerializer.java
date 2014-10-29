@@ -21,7 +21,6 @@ import java.util.Map;
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.JsonSerializerParameters;
-import com.github.nmorel.gwtjackson.client.ser.EnumJsonSerializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
 /**
@@ -47,16 +46,16 @@ public abstract class SubtypeSerializer<T, S extends JsonSerializer<T>> extends 
     }
 
     /**
-     * Delegate the serialization of an enum subtype to a corresponding {@link EnumJsonSerializer}
+     * Delegate the serialization of a subtype to a corresponding {@link JsonSerializer}
      *
      * @author Nicolas Morel.
      */
-    public abstract static class EnumSubtypeSerializer<E extends Enum<E>> extends SubtypeSerializer<E, EnumJsonSerializer<E>> {
+    public abstract static class DefaultSubtypeSerializer<T> extends SubtypeSerializer<T, JsonSerializer<T>> {
 
         @Override
-        public void serializeInternally( JsonWriter writer, E value, JsonSerializationContext ctx, JsonSerializerParameters params,
-                                         IdentitySerializationInfo<E> defaultIdentityInfo, TypeSerializationInfo<E> defaultTypeInfo,
-                                         Map<String, BeanPropertySerializer<E, ?>> serializers ) {
+        public void serializeInternally( JsonWriter writer, T value, JsonSerializationContext ctx, JsonSerializerParameters params,
+                                         IdentitySerializationInfo<T> defaultIdentityInfo, TypeSerializationInfo<T> defaultTypeInfo,
+                                         Map<String, BeanPropertySerializer<T, ?>> serializers ) {
 
             final TypeSerializationInfo typeInfo = null == params.getTypeInfo() ? defaultTypeInfo : params.getTypeInfo();
 
@@ -86,21 +85,6 @@ public abstract class SubtypeSerializer<T, S extends JsonSerializer<T>> extends 
             } else {
                 getSerializer().serialize( writer, value, ctx, params );
             }
-        }
-    }
-
-    /**
-     * Delegate the serialization of a subtype to a corresponding {@link JsonSerializer}
-     *
-     * @author Nicolas Morel.
-     */
-    public abstract static class DefaultSubtypeSerializer<T> extends SubtypeSerializer<T, JsonSerializer<T>> {
-
-        @Override
-        public void serializeInternally( JsonWriter writer, T value, JsonSerializationContext ctx, JsonSerializerParameters params,
-                                         IdentitySerializationInfo<T> defaultIdentityInfo, TypeSerializationInfo<T> defaultTypeInfo,
-                                         Map<String, BeanPropertySerializer<T, ?>> serializers ) {
-            getSerializer().serialize( writer, value, ctx, params );
         }
     }
 }

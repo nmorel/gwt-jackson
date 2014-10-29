@@ -391,6 +391,15 @@ public final class PropertyProcessor {
      */
     private static Optional<JClassType> extractBeanType( TreeLogger logger, JacksonTypeOracle typeOracle, JType type,
                                                          String propertyName ) {
+        if ( null != type.isWildcard() ) {
+            // we use the base type to find the serializer to use
+            type = type.isWildcard().getBaseType();
+        }
+
+        if ( null != type.isRawType() ) {
+            type = type.isRawType().getBaseType();
+        }
+
         JArrayType arrayType = type.isArray();
         if ( null != arrayType ) {
             return extractBeanType( logger, typeOracle, arrayType.getComponentType(), propertyName );
@@ -400,19 +409,29 @@ public final class PropertyProcessor {
         if ( null == classType ) {
             return Optional.absent();
         } else if ( typeOracle.isIterable( classType ) ) {
-            if ( null == classType.isParameterized() || classType.isParameterized().getTypeArgs().length != 1 ) {
+            if ( (null == classType.isParameterized() || classType.isParameterized().getTypeArgs().length != 1) && (null == classType
+                    .isGenericType() || classType.isGenericType().getTypeParameters().length != 1) ) {
                 logger.log( Type.INFO, "Expected one argument for the java.lang.Iterable '" + propertyName + "'. Applying annotations to " +
                         "type " + classType.getParameterizedQualifiedSourceName() );
                 return Optional.of( classType );
             }
-            return extractBeanType( logger, typeOracle, classType.isParameterized().getTypeArgs()[0], propertyName );
+            if ( null != classType.isParameterized() ) {
+                return extractBeanType( logger, typeOracle, classType.isParameterized().getTypeArgs()[0], propertyName );
+            } else {
+                return extractBeanType( logger, typeOracle, classType.isGenericType().getTypeParameters()[0].getBaseType(), propertyName );
+            }
         } else if ( typeOracle.isMap( classType ) ) {
-            if ( null == classType.isParameterized() || classType.isParameterized().getTypeArgs().length != 2 ) {
+            if ( (null == classType.isParameterized() || classType.isParameterized().getTypeArgs().length != 2) && (null == classType
+                    .isGenericType() || classType.isGenericType().getTypeParameters().length != 2) ) {
                 logger.log( Type.INFO, "Expected two arguments for the java.util.Map '" + propertyName + "'. Applying annotations to " +
                         "type " + classType.getParameterizedQualifiedSourceName() );
                 return Optional.of( classType );
             }
-            return extractBeanType( logger, typeOracle, classType.isParameterized().getTypeArgs()[1], propertyName );
+            if ( null != classType.isParameterized() ) {
+                return extractBeanType( logger, typeOracle, classType.isParameterized().getTypeArgs()[1], propertyName );
+            } else {
+                return extractBeanType( logger, typeOracle, classType.isGenericType().getTypeParameters()[1].getBaseType(), propertyName );
+            }
         } else {
             return Optional.of( classType );
         }
