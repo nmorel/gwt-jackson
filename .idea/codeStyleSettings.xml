@@ -37,7 +37,6 @@
         <option name="JD_ALIGN_EXCEPTION_COMMENTS" value="false" />
         <option name="JD_ADD_BLANK_AFTER_PARM_COMMENTS" value="true" />
         <option name="HTML_DO_NOT_INDENT_CHILDREN_OF" value="html" />
-        <option name="HTML_DO_NOT_ALIGN_CHILDREN_OF_MIN_LINES" value="0" />
         <option name="FORMATTER_TAGS_ENABLED" value="true" />
         <XML>
           <option name="XML_TEXT_WRAP" value="0" />
@@ -80,62 +79,7 @@
           <option name="WRAP_LONG_LINES" value="true" />
           <option name="SPACE_WITHIN_ANNOTATION_PARENTHESES" value="true" />
           <arrangement>
-            <rules>
-              <rule>
-                <match>
-                  <AND>
-                    <CLASS />
-                    <STATIC />
-                  </AND>
-                </match>
-              </rule>
-              <rule>
-                <match>
-                  <INTERFACE />
-                </match>
-              </rule>
-              <rule>
-                <match>
-                  <CLASS />
-                </match>
-              </rule>
-              <rule>
-                <match>
-                  <ENUM />
-                </match>
-              </rule>
-              <rule>
-                <match>
-                  <AND>
-                    <FIELD />
-                    <STATIC />
-                  </AND>
-                </match>
-              </rule>
-              <rule>
-                <match>
-                  <AND>
-                    <METHOD />
-                    <STATIC />
-                  </AND>
-                </match>
-              </rule>
-              <rule>
-                <match>
-                  <FIELD />
-                </match>
-              </rule>
-              <rule>
-                <match>
-                  <CONSTRUCTOR />
-                </match>
-              </rule>
-              <rule>
-                <match>
-                  <METHOD />
-                </match>
-              </rule>
-            </rules>
+            <rules />
           </arrangement>
         </codeStyleSettings>
         <codeStyleSettings language="XML">
