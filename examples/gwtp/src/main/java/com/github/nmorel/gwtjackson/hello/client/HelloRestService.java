@@ -22,13 +22,12 @@ import javax.ws.rs.Path;
 import com.github.nmorel.gwtjackson.hello.shared.GreetingRequest;
 import com.github.nmorel.gwtjackson.hello.shared.GreetingResponse;
 import com.gwtplatform.dispatch.rest.shared.RestAction;
-import com.gwtplatform.dispatch.rest.shared.RestService;
 
 /**
  * @author Nicolas Morel.
  */
 @Path( "hello" )
-public interface HelloRestService extends RestService {
+public interface HelloRestService {
 
     @POST
     RestAction<GreetingResponse> greet( GreetingRequest request );
