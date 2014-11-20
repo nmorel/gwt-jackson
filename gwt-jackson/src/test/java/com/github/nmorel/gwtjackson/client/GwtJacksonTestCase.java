@@ -35,11 +35,6 @@ public abstract class GwtJacksonTestCase extends GWTTestCase {
         return "com.github.nmorel.gwtjackson.GwtJacksonTest";
     }
 
-    @Override
-    protected void gwtSetUp() throws Exception {
-        Logger.getLogger( "" );
-    }
-
     @SuppressWarnings("deprecation")
     protected long getUTCTime( int year, int month, int day, int hour, int minute, int second, int milli ) {
         return AbstractTester.getUTCTime( year, month, day, hour, minute, second, milli );
