@@ -31,8 +31,9 @@ import static com.fasterxml.jackson.annotation.JsonFormat.DEFAULT_TIMEZONE;
 /**
  * This class includes parameters defined through properties annotations like {@link JsonIgnoreProperties}. They are specific to one
  * {@link JsonDeserializer} and that's why they are not contained inside {@link JsonDeserializationContext}.
- * <p/>
+ * <p>
  * For container deserializers like {@link ListJsonDeserializer}, these parameters are passed to the value deserializer.
+ * </p>
  *
  * @author Nicolas Morel
  */

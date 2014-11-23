@@ -69,9 +69,10 @@ public class JsonSerializationContext extends JsonMappingContext {
          * true JVM-level identity of Object (false); or, <code>equals()</code> method.
          * Latter is sometimes useful when dealing with Database-bound objects with
          * ORM libraries (like Hibernate).
-         * <p/>
+         * <p>
          * Option is disabled by default; meaning that strict identity is used, not
          * <code>equals()</code>
+         * </p>
          */
         public Builder useEqualityForObjectId( boolean useEqualityForObjectId ) {
             this.useEqualityForObjectId = useEqualityForObjectId;
@@ -139,8 +140,9 @@ public class JsonSerializationContext extends JsonMappingContext {
          * when enabled, will be serialized as an explict JSON array (with
          * single-character Strings as values); when disabled, defaults to
          * serializing them as Strings (which is more compact).
-         * <p/>
+         * <p>
          * Feature is disabled by default.
+         * </p>
          */
         public Builder writeCharArraysAsJsonArrays( boolean writeCharArraysAsJsonArrays ) {
             this.writeCharArraysAsJsonArrays = writeCharArraysAsJsonArrays;
@@ -150,8 +152,9 @@ public class JsonSerializationContext extends JsonMappingContext {
         /**
          * Feature that determines whether Map entries with null values are
          * to be serialized (true) or not (false).
-         * <p/>
+         * <p>
          * Feature is enabled by default.
+         * </p>
          */
         public Builder writeNullMapValues( boolean writeNullMapValues ) {
             this.writeNullMapValues = writeNullMapValues;
@@ -163,11 +166,13 @@ public class JsonSerializationContext extends JsonMappingContext {
          * with declared value of Collection or array; i.e. things that produce JSON
          * arrays) that are empty (have no elements)
          * will be serialized as empty JSON arrays (true), or suppressed from output (false).
-         * <p/>
+         * <p>
          * Note that this does not change behavior of {@link java.util.Map}s, or
          * "Collection-like" types.
-         * <p/>
+         * </p>
+         * <p>
          * Feature is enabled by default.
+         * </p>
          */
         public Builder writeEmptyJsonArrays( boolean writeEmptyJsonArrays ) {
             this.writeEmptyJsonArrays = writeEmptyJsonArrays;
@@ -179,8 +184,9 @@ public class JsonSerializationContext extends JsonMappingContext {
          * sorted by key before serialization or not: if enabled, additional sorting
          * step is performed if necessary (not necessary for {@link java.util.SortedMap}s),
          * if disabled, no additional sorting is needed.
-         * <p/>
+         * <p>
          * Feature is disabled by default.
+         * </p>
          */
         public Builder orderMapEntriesByKeys( boolean orderMapEntriesByKeys ) {
             this.orderMapEntriesByKeys = orderMapEntriesByKeys;
@@ -193,7 +199,7 @@ public class JsonSerializationContext extends JsonMappingContext {
          * Feature determines handling of single element {@link java.util.Collection}s
          * and arrays: if enabled, {@link java.util.Collection}s and arrays that contain exactly
          * one element will be serialized as if that element itself was serialized.
-         * <p/>
+         * <p>
          * When enabled, a POJO with array that normally looks like this:
          * <pre>
          *  { "arrayProperty" : [ 1 ] }
@@ -202,10 +208,11 @@ public class JsonSerializationContext extends JsonMappingContext {
          * <pre>
          *  { "arrayProperty" : 1 }
          * </pre>
-         * <p/>
+         * </p>
+         * <p>
          * Note that this feature is counterpart to {@link JsonDeserializationContext.Builder#acceptSingleValueAsArray(boolean)}
          * (that is, usually both are enabled, or neither is).
-         * <p/>
+         * </p>
          * Feature is disabled by default, so that no special handling is done.
          */
         public Builder writeSingleElemArraysUnwrapped( boolean writeSingleElemArraysUnwrapped ) {

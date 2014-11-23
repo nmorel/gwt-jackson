@@ -52,10 +52,11 @@ public class JsonDeserializationContext extends JsonMappingContext {
          * This setting only takes effect after all other handling
          * methods for unknown properties have been tried, and
          * property remains unhandled.
-         * <p/>
+         * <p>
          * Feature is enabled by default (meaning that a
          * {@link JsonDeserializationException} will be thrown if an unknown property
          * is encountered).
+         * </p>
          */
         public Builder failOnUnknownProperties( boolean failOnUnknownProperties ) {
             this.failOnUnknownProperties = failOnUnknownProperties;
@@ -69,8 +70,9 @@ public class JsonDeserializationContext extends JsonMappingContext {
          * a single property with expected root name. If not, a
          * {@link JsonDeserializationException} is thrown; otherwise value of the wrapped property
          * will be deserialized as if it was the root value.
-         * <p/>
+         * <p>
          * Feature is disabled by default.
+         * </p>
          */
         public Builder unwrapRootValue( boolean unwrapRootValue ) {
             this.unwrapRootValue = unwrapRootValue;
@@ -85,8 +87,9 @@ public class JsonDeserializationContext extends JsonMappingContext {
          * This feature is meant to be used for compatibility/interoperability reasons,
          * to work with packages (such as XML-to-JSON converters) that leave out JSON
          * array in cases where there is just a single element in array.
-         * <p/>
+         * <p>
          * Feature is disabled by default.
+         * </p>
          */
         public Builder acceptSingleValueAsArray( boolean acceptSingleValueAsArray ) {
             this.acceptSingleValueAsArray = acceptSingleValueAsArray;

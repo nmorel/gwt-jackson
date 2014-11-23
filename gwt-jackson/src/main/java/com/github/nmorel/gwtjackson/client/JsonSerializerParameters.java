@@ -29,8 +29,9 @@ import com.github.nmorel.gwtjackson.client.ser.bean.TypeSerializationInfo;
 /**
  * This class includes parameters defined through properties annotations like {@link JsonFormat}. They are specific to one
  * {@link JsonSerializer} and that's why they are not contained inside {@link JsonSerializationContext}.
- * <p/>
+ * <p>
  * For container serializers like {@link IterableJsonSerializer}, these parameters are passed to the value serializer.
+ * </p>
  *
  * @author Nicolas Morel
  */

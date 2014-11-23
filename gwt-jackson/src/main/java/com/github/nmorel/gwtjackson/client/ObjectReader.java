@@ -33,8 +33,8 @@ import com.google.gwt.core.client.GWT;
  * PersonReader reader = GWT.create(PersonReader.class);
  * Person person = reader.read("{\"firstName\":\"Nicolas\",\"lastName\":\"Morel\"}");
  *
- * person.firstName ==> "Nicolas"
- * person.lastName  ==> "Morel"
+ * person.firstName ==&gt; "Nicolas"
+ * person.lastName  ==&gt; "Morel"
  * </pre>
  *
  * @param <T> Type of the read object

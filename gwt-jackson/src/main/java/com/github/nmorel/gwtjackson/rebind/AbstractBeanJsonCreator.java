@@ -118,7 +118,6 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
      * @param beanType type of the bean
      *
      * @return the fully qualified name of the created class
-     * @throws com.google.gwt.core.ext.UnableToCompleteException
      */
     public String create( JClassType beanType ) throws UnableToCompleteException, UnsupportedTypeException {
 
