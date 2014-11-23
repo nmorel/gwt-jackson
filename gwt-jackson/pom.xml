@@ -21,7 +21,7 @@
   <parent>
     <artifactId>gwt-jackson-parent</artifactId>
     <groupId>com.github.nmorel.gwtjackson</groupId>
-    <version>0.7.0</version>
+    <version>0.7.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>gwt-jackson</artifactId>
