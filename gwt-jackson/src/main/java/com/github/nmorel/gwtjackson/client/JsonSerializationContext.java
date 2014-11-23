@@ -199,7 +199,8 @@ public class JsonSerializationContext extends JsonMappingContext {
          * Feature determines handling of single element {@link java.util.Collection}s
          * and arrays: if enabled, {@link java.util.Collection}s and arrays that contain exactly
          * one element will be serialized as if that element itself was serialized.
-         * <p>
+         * <br>
+         * <br>
          * When enabled, a POJO with array that normally looks like this:
          * <pre>
          *  { "arrayProperty" : [ 1 ] }
@@ -208,7 +209,6 @@ public class JsonSerializationContext extends JsonMappingContext {
          * <pre>
          *  { "arrayProperty" : 1 }
          * </pre>
-         * </p>
          * <p>
          * Note that this feature is counterpart to {@link JsonDeserializationContext.Builder#acceptSingleValueAsArray(boolean)}
          * (that is, usually both are enabled, or neither is).

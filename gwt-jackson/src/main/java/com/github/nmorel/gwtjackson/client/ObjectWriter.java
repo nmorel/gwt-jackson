@@ -37,7 +37,7 @@ import com.google.gwt.core.client.GWT;
  * PersonWriter writer = GWT.create(PersonWriter.class);
  * String json = writer.write(new Person("Nicolas", "Morel"));
  *
- * json ==> {"firstName":"Nicolas","lastName":"Morel"}
+ * json ==&gt; {"firstName":"Nicolas","lastName":"Morel"}
  * </pre>
  *
  * @param <T> Type of the object to write
