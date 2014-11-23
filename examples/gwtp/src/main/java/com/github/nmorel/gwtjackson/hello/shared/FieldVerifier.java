@@ -24,11 +24,12 @@ public class FieldVerifier {
 
     /**
      * Verifies that the specified name is valid for our service.
-     * <p/>
+     * <p>
      * In this example, we only require that the name is at least four
      * characters. In your application, you can use more complex checks to ensure
      * that usernames, passwords, email addresses, URLs, and other fields have the
      * proper syntax.
+     * </p>
      *
      * @param name the name to validate
      *
