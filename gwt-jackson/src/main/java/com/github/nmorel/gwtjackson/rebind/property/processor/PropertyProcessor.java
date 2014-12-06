@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -44,6 +46,7 @@ import com.github.nmorel.gwtjackson.rebind.JacksonTypeOracle;
 import com.github.nmorel.gwtjackson.rebind.RebindConfiguration;
 import com.github.nmorel.gwtjackson.rebind.bean.BeanInfo;
 import com.github.nmorel.gwtjackson.rebind.bean.BeanProcessor;
+import com.github.nmorel.gwtjackson.rebind.property.PropertiesContainer;
 import com.github.nmorel.gwtjackson.rebind.property.PropertyAccessors;
 import com.github.nmorel.gwtjackson.rebind.property.PropertyInfo;
 import com.github.nmorel.gwtjackson.rebind.property.parser.PropertyParser;
@@ -70,22 +73,67 @@ import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounte
 public final class PropertyProcessor {
 
     private static final List<Class<? extends Annotation>> AUTO_DISCOVERY_ANNOTATIONS = Arrays
-            .asList( JsonProperty.class, JsonManagedReference.class, JsonBackReference.class, JsonValue.class );
+            .asList( JsonProperty.class, JsonManagedReference.class, JsonBackReference.class, JsonValue.class, JsonAnySetter.class,
+                    JsonAnyGetter.class );
 
-    public static ImmutableMap<String, PropertyInfo> findAllProperties( RebindConfiguration configuration, TreeLogger logger,
-                                                                        JacksonTypeOracle typeOracle, BeanInfo beanInfo, boolean
-            mapperInSamePackageAsType ) throws UnableToCompleteException {
+    public static PropertiesContainer findAllProperties( RebindConfiguration configuration, TreeLogger logger, JacksonTypeOracle
+            typeOracle, BeanInfo beanInfo, boolean mapperInSamePackageAsType ) throws UnableToCompleteException {
 
         // we first parse the bean to retrieve all the properties
         ImmutableMap<String, PropertyAccessors> fieldsMap = PropertyParser.findPropertyAccessors( configuration, logger, beanInfo );
 
+        // value, any getter and any setter properties
+        PropertyInfo valuePropertyInfo = null;
+        PropertyInfo anyGetterPropertyInfo = null;
+        PropertyInfo anySetterPropertyInfo = null;
+
         // Processing all the properties accessible via field, getter or setter
         Map<String, PropertyInfo> propertiesMap = new LinkedHashMap<String, PropertyInfo>();
         for ( PropertyAccessors propertyAccessors : fieldsMap.values() ) {
-            Optional<PropertyInfo> propertyInfo = processProperty( configuration, logger, typeOracle, propertyAccessors, beanInfo,
-                    mapperInSamePackageAsType );
-            if ( propertyInfo.isPresent() ) {
-                propertiesMap.put( propertyInfo.get().getPropertyName(), propertyInfo.get() );
+
+            Optional<PropertyInfo> propertyInfoOptional = processProperty( configuration, logger, typeOracle, propertyAccessors,
+                    beanInfo, mapperInSamePackageAsType );
+
+            if ( propertyInfoOptional.isPresent() ) {
+
+                PropertyInfo propertyInfo = propertyInfoOptional.get();
+
+                boolean put = true;
+
+                if ( propertyInfo.isValue() ) {
+                    if ( null != valuePropertyInfo ) {
+                        logger.log( TreeLogger.Type.WARN, "More than one method annotated with @JsonValue on " + beanInfo.getType()
+                                .getName() + ". Using the first one." );
+                    } else {
+                        valuePropertyInfo = propertyInfo;
+                    }
+                    put = false;
+                }
+
+                if ( propertyInfo.isAnyGetter() ) {
+                    if ( null != anyGetterPropertyInfo ) {
+                        logger.log( TreeLogger.Type.WARN, "More than one method annotated with @JsonAnyGetter on " + beanInfo.getType()
+                                .getName() + ". Using the first one." );
+                    } else {
+                        anyGetterPropertyInfo = propertyInfo;
+                    }
+                    put = false;
+                }
+
+                if ( propertyInfo.isAnySetter() ) {
+                    if ( null != anySetterPropertyInfo ) {
+                        logger.log( TreeLogger.Type.WARN, "More than one method annotated with @JsonAnySetter on " + beanInfo.getType()
+                                .getName() + ". Using the first one." );
+                    } else {
+                        anySetterPropertyInfo = propertyInfo;
+                    }
+                    put = false;
+                }
+
+                if ( put ) {
+                    propertiesMap.put( propertyInfo.getPropertyName(), propertyInfo );
+                }
+
             } else {
                 logger.log( TreeLogger.Type.DEBUG, "Field " + propertyAccessors.getPropertyName() + " of type " + beanInfo
                         .getType() + " is not visible" );
@@ -128,7 +176,8 @@ public final class PropertyProcessor {
             }
         }
 
-        return result.build();
+        return new PropertiesContainer( result.build(), Optional.fromNullable( valuePropertyInfo ), Optional
+                .fromNullable( anyGetterPropertyInfo ), Optional.fromNullable( anySetterPropertyInfo ) );
     }
 
     private static Optional<PropertyInfo> processProperty( RebindConfiguration configuration, TreeLogger logger, JacksonTypeOracle
@@ -172,8 +221,21 @@ public final class PropertyProcessor {
         determineSetter( propertyAccessors, samePackage, setterAutoDetected, fieldAutoDetected, builder );
 
         Optional<JsonValue> jsonValue = propertyAccessors.getAnnotation( JsonValue.class );
-        if ( jsonValue.isPresent() && jsonValue.get().value() && builder.getGetterAccessor().isPresent() ) {
+        if ( jsonValue.isPresent() && jsonValue.get().value() && builder.getGetterAccessor().isPresent() && builder.getGetterAccessor()
+                .get().getMethod().isPresent() ) {
             builder.setValue( true );
+        }
+
+        Optional<JsonAnyGetter> jsonAnyGetter = propertyAccessors.getAnnotation( JsonAnyGetter.class );
+        if ( jsonAnyGetter.isPresent() && builder.getGetterAccessor().isPresent() && builder.getGetterAccessor().get().getMethod()
+                .isPresent() ) {
+            builder.setAnyGetter( true );
+        }
+
+        Optional<JsonAnySetter> jsonAnySetter = propertyAccessors.getAnnotation( JsonAnySetter.class );
+        if ( jsonAnySetter.isPresent() && builder.getSetterAccessor().isPresent() && builder.getSetterAccessor().get().getMethod()
+                .isPresent() && builder.getSetterAccessor().get().getMethod().get().getParameterTypes().length == 2 ) {
+            builder.setAnySetter( true );
         }
 
         processBeanAnnotation( logger, typeOracle, configuration, type, propertyAccessors, builder );

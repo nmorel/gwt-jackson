@@ -24,10 +24,12 @@ import java.util.Map.Entry;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.RawValueJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.bean.AnyGetterPropertySerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.IdentitySerializationInfo;
 import com.github.nmorel.gwtjackson.client.ser.bean.SubtypeSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.SubtypeSerializer.BeanSubtypeSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.SubtypeSerializer.DefaultSubtypeSerializer;
+import com.github.nmorel.gwtjackson.client.ser.map.MapJsonSerializer;
 import com.github.nmorel.gwtjackson.rebind.bean.BeanInfo;
 import com.github.nmorel.gwtjackson.rebind.exception.UnsupportedTypeException;
 import com.github.nmorel.gwtjackson.rebind.property.FieldAccessor.Accessor;
@@ -94,6 +96,10 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
                     source.println();
                 }
             }
+        }
+
+        if ( beanInfo.getAnyGetterPropertyInfo().isPresent() ) {
+            generateInitAnyGetterPropertySerializerMethod( source, beanInfo, beanInfo.getAnyGetterPropertyInfo().get() );
         }
 
         if ( beanInfo.getIdentityInfo().isPresent() ) {
@@ -198,16 +204,43 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
         source.println( "}" );
     }
 
+    private void generateInitAnyGetterPropertySerializerMethod( SourceWriter source, BeanInfo beanInfo, PropertyInfo
+            anyGetterPropertyInfo ) throws UnableToCompleteException {
+        source.println( "@Override" );
+        source.println( "protected %s<%s> initAnyGetterPropertySerializer() {", AnyGetterPropertySerializer.class
+                .getCanonicalName(), beanInfo.getType().getParameterizedQualifiedSourceName() );
+        source.indent();
+
+        source.print( "return " );
+        generateSerializer( source, beanInfo, anyGetterPropertyInfo, getJsonSerializerFromProperty( anyGetterPropertyInfo ) );
+        source.println( ";" );
+
+        source.outdent();
+        source.println( "}" );
+        source.println();
+    }
+
     private void generateSerializer( SourceWriter source, BeanInfo beanInfo, PropertyInfo property, JSerializerType serializerType )
             throws UnableToCompleteException {
         Accessor getterAccessor = property.getGetterAccessor().get().getAccessor( "bean" );
 
-        source.println( "new %s<%s, %s>() {", BEAN_PROPERTY_SERIALIZER_CLASS, getParameterizedQualifiedClassName( beanInfo
-                .getType() ), getParameterizedQualifiedClassName( property.getType() ) );
+        if ( property.isAnyGetter() ) {
+            source.println( "new %s<%s>() {", AnyGetterPropertySerializer.class
+                    .getCanonicalName(), getParameterizedQualifiedClassName( beanInfo.getType() ) );
+        } else {
+            source.println( "new %s<%s, %s>() {", BEAN_PROPERTY_SERIALIZER_CLASS, getParameterizedQualifiedClassName( beanInfo
+                    .getType() ), getParameterizedQualifiedClassName( property.getType() ) );
+        }
 
         source.indent();
         source.println( "@Override" );
-        source.println( "protected %s<?> newSerializer() {", JSON_SERIALIZER_CLASS );
+        String returnType;
+        if ( property.isAnyGetter() ) {
+            returnType = MapJsonSerializer.class.getCanonicalName();
+        } else {
+            returnType = String.format( "%s<?>", JSON_SERIALIZER_CLASS );
+        }
+        source.println( "protected %s newSerializer() {", returnType );
         source.indent();
         source.println( "return %s;", serializerType.getInstance() );
         source.outdent();

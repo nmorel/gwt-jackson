@@ -42,6 +42,10 @@ final class PropertyInfoBuilder {
 
     private boolean value = false;
 
+    private boolean anyGetter = false;
+
+    private boolean anySetter = false;
+
     private Optional<String> managedReference = Optional.absent();
 
     private Optional<String> backReference = Optional.absent();
@@ -105,6 +109,22 @@ final class PropertyInfoBuilder {
 
     void setValue( boolean value ) {
         this.value = value;
+    }
+
+    boolean isAnyGetter() {
+        return anyGetter;
+    }
+
+    void setAnyGetter( boolean anyGetter ) {
+        this.anyGetter = anyGetter;
+    }
+
+    boolean isAnySetter() {
+        return anySetter;
+    }
+
+    void setAnySetter( boolean anySetter ) {
+        this.anySetter = anySetter;
     }
 
     Optional<String> getManagedReference() {
@@ -188,7 +208,7 @@ final class PropertyInfoBuilder {
     }
 
     PropertyInfo build() {
-        return new ImmutablePropertyInfo( propertyName, type, ignored, required, rawValue, value, managedReference, backReference,
+        return new ImmutablePropertyInfo( propertyName, type, ignored, required, rawValue, value, anyGetter, anySetter, managedReference, backReference,
                 getterAccessor, setterAccessor, identityInfo, typeInfo, format, include, ignoreUnknown, ignoredProperties );
     }
 }

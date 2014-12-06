@@ -47,6 +47,10 @@ public interface BeanInfo {
 
     Optional<PropertyInfo> getValuePropertyInfo();
 
+    Optional<PropertyInfo> getAnyGetterPropertyInfo();
+
+    Optional<PropertyInfo> getAnySetterPropertyInfo();
+
     ImmutableSet<String> getIgnoredFields();
 
     JsonAutoDetect.Visibility getFieldVisibility();

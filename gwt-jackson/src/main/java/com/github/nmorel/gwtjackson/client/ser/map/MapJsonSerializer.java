@@ -74,6 +74,12 @@ public class MapJsonSerializer<M extends Map<K, V>, K, V> extends JsonSerializer
     public void doSerialize( JsonWriter writer, @Nonnull M values, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         writer.beginObject();
 
+        serializeValues( writer, values, ctx, params );
+
+        writer.endObject();
+    }
+
+    public void serializeValues( JsonWriter writer, M values, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         if ( !values.isEmpty() ) {
             Map<K, V> map = values;
             if ( ctx.isOrderMapEntriesByKeys() && !(values instanceof SortedMap<?, ?>) ) {
@@ -98,6 +104,5 @@ public class MapJsonSerializer<M extends Map<K, V>, K, V> extends JsonSerializer
 
             }
         }
-        writer.endObject();
     }
 }

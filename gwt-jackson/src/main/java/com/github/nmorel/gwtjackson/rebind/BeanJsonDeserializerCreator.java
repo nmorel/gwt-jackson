@@ -29,6 +29,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.bean.AnySetterDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.bean.HasDeserializerAndParameters;
 import com.github.nmorel.gwtjackson.client.deser.bean.IdentityDeserializationInfo;
 import com.github.nmorel.gwtjackson.client.deser.bean.SimpleStringMap;
@@ -39,6 +40,7 @@ import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 import com.github.nmorel.gwtjackson.rebind.bean.BeanInfo;
 import com.github.nmorel.gwtjackson.rebind.exception.UnsupportedTypeException;
+import com.github.nmorel.gwtjackson.rebind.property.FieldAccessor;
 import com.github.nmorel.gwtjackson.rebind.property.FieldAccessor.Accessor;
 import com.github.nmorel.gwtjackson.rebind.property.PropertyInfo;
 import com.github.nmorel.gwtjackson.rebind.type.JDeserializerType;
@@ -51,6 +53,7 @@ import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JConstructor;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JParameter;
+import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.thirdparty.guava.common.base.Function;
 import com.google.gwt.thirdparty.guava.common.base.Joiner;
 import com.google.gwt.thirdparty.guava.common.base.Optional;
@@ -122,7 +125,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         }
 
         // no need to generate properties for non instantiable class
-        if ( !properties.isEmpty() && beanInfo.getCreatorMethod().isPresent() && !beanInfo.isCreatorDelegation() ) {
+        if ( (beanInfo.getCreatorMethod().isPresent() && !beanInfo.isCreatorDelegation()) && (!properties.isEmpty() || beanInfo
+                .getAnySetterPropertyInfo().isPresent()) ) {
             generateInitPropertiesMethods( source, beanInfo, properties );
             source.println();
         }
@@ -480,6 +484,39 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         if ( !requiredProperties.isEmpty() ) {
             generateInitRequiredPropertiesMethod( source, requiredProperties );
         }
+
+        if ( beanInfo.getAnySetterPropertyInfo().isPresent() ) {
+            generateInitAnySetterDeserializerMethod( source, beanInfo, beanInfo.getAnySetterPropertyInfo().get() );
+            source.println();
+        }
+    }
+
+    private void generateInitAnySetterDeserializerMethod( SourceWriter source, BeanInfo beanInfo, PropertyInfo anySetterPropertyInfo )
+            throws UnableToCompleteException {
+
+        FieldAccessor fieldAccessor = anySetterPropertyInfo.getSetterAccessor().get();
+        JType type = fieldAccessor.getMethod().get().getParameterTypes()[1];
+
+        JDeserializerType deserializerType;
+        try {
+            deserializerType = getJsonDeserializerFromType( type );
+        } catch ( UnsupportedTypeException e ) {
+            logger.log( Type.WARN, "Method '" + fieldAccessor.getMethod().get().getName() + "' annotated with @JsonAnySetter has an unsupported type" );
+            return;
+        }
+
+        source.println( "@Override" );
+        source.println( "protected %s<%s, ?> initAnySetterDeserializer() {", AnySetterDeserializer.class.getCanonicalName(), beanInfo
+                .getType().getParameterizedQualifiedSourceName() );
+        source.indent();
+
+        source.print( "return " );
+        generateDeserializer( source, beanInfo, anySetterPropertyInfo, type, deserializerType );
+        source.println( ";" );
+
+        source.outdent();
+        source.println( "}" );
+        source.println();
     }
 
     private void generateInitDeserializersMethod( SourceWriter source, BeanInfo beanInfo, Map<PropertyInfo, JDeserializerType> properties
@@ -496,45 +533,66 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
         for ( Entry<PropertyInfo, JDeserializerType> entry : properties.entrySet() ) {
             PropertyInfo property = entry.getKey();
+            JDeserializerType deserializerType = entry.getValue();
 
-            Accessor accessor = property.getSetterAccessor().get().getAccessor( "bean" );
+            source.print( "map.put(\"%s\", ", property.getPropertyName() );
 
-            source.println( "map.put(\"%s\", new %s<%s, %s>() {", property.getPropertyName(), BEAN_PROPERTY_DESERIALIZER_CLASS, beanInfo
-                    .getType().getParameterizedQualifiedSourceName(), getParameterizedQualifiedClassName( property.getType() ) );
+            generateDeserializer( source, beanInfo, property, property.getType(), deserializerType );
 
-            source.indent();
-
-            generateCommonPropertyDeserializerBody( source, property, entry.getValue() );
-
-            source.println();
-
-            source.println( "@Override" );
-            source.println( "public void setValue(%s bean, %s value, %s ctx) {", beanInfo.getType()
-                    .getParameterizedQualifiedSourceName(), getParameterizedQualifiedClassName( property
-                    .getType() ), JSON_DESERIALIZATION_CONTEXT_CLASS );
-            source.indent();
-            source.println( accessor.getAccessor() + ";", "value" );
-
-            if ( property.getManagedReference().isPresent() ) {
-                source.println( "getDeserializer().setBackReference(\"%s\", bean, value, ctx);", property.getManagedReference().get() );
-            }
-
-            source.outdent();
-            source.println( "}" );
-
-            if ( accessor.getAdditionalMethod().isPresent() ) {
-                source.println();
-                accessor.getAdditionalMethod().get().write( source );
-            }
-
-            source.outdent();
-            source.println( "});" );
+            source.println( ");" );
             source.println();
         }
 
         source.println( "return map;" );
         source.outdent();
         source.println( "}" );
+    }
+
+    private void generateDeserializer( SourceWriter source, BeanInfo beanInfo, PropertyInfo property, JType propertyType,
+                                       JDeserializerType deserializerType ) throws UnableToCompleteException {
+        Accessor accessor = property.getSetterAccessor().get().getAccessor( "bean" );
+        String superclass = BEAN_PROPERTY_DESERIALIZER_CLASS;
+        if ( property.isAnySetter() ) {
+            superclass = AnySetterDeserializer.class.getCanonicalName();
+        }
+
+        source.println( "new %s<%s, %s>() {", superclass, beanInfo.getType()
+                .getParameterizedQualifiedSourceName(), getParameterizedQualifiedClassName( propertyType ) );
+
+        source.indent();
+
+        generateCommonPropertyDeserializerBody( source, property, deserializerType );
+
+        source.println();
+
+        source.println( "@Override" );
+        source.print( "public void setValue(%s bean, ", beanInfo.getType().getParameterizedQualifiedSourceName() );
+        if ( property.isAnySetter() ) {
+            source.print( "String propertyName, " );
+        }
+        source.println( "%s value, %s ctx) {", getParameterizedQualifiedClassName( propertyType ), JSON_DESERIALIZATION_CONTEXT_CLASS );
+        source.indent();
+
+        if ( property.isAnySetter() ) {
+            source.println( accessor.getAccessor() + ";", "propertyName", "value" );
+        } else {
+            source.println( accessor.getAccessor() + ";", "value" );
+        }
+
+        if ( property.getManagedReference().isPresent() ) {
+            source.println( "getDeserializer().setBackReference(\"%s\", bean, value, ctx);", property.getManagedReference().get() );
+        }
+
+        source.outdent();
+        source.println( "}" );
+
+        if ( accessor.getAdditionalMethod().isPresent() ) {
+            source.println();
+            accessor.getAdditionalMethod().get().write( source );
+        }
+
+        source.outdent();
+        source.print( "}" );
     }
 
     private void generateCommonPropertyDeserializerBody( SourceWriter source, PropertyInfo property ) throws UnableToCompleteException,

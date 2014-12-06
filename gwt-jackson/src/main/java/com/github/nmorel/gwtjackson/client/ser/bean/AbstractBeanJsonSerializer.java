@@ -22,9 +22,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.JsonSerializerParameters;
@@ -45,11 +45,14 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
 
     private final TypeSerializationInfo<T> defaultTypeInfo;
 
+    private final AnyGetterPropertySerializer<T> anyGetterPropertySerializer;
+
     protected AbstractBeanJsonSerializer() {
         this.serializers = initSerializers();
         this.defaultIdentityInfo = initIdentityInfo();
         this.defaultTypeInfo = initTypeInfo();
         this.subtypeClassToSerializer = initMapSubtypeClassToSerializer();
+        this.anyGetterPropertySerializer = initAnyGetterPropertySerializer();
     }
 
     /**
@@ -79,6 +82,13 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
      */
     protected Map<Class, SubtypeSerializer> initMapSubtypeClassToSerializer() {
         return Collections.emptyMap();
+    }
+
+    /**
+     * Initialize the {@link AnyGetterPropertySerializer}. Returns null if there is no method annoted with {@link JsonAnyGetter} on bean.
+     */
+    protected AnyGetterPropertySerializer<T> initAnyGetterPropertySerializer() {
+        return null;
     }
 
     public abstract Class getSerializedType();
@@ -223,6 +233,10 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
                 writer.name( entry.getKey() );
                 entry.getValue().serialize( writer, value, ctx );
             }
+        }
+
+        if ( null != anyGetterPropertySerializer ) {
+            anyGetterPropertySerializer.serialize( writer, value, ctx );
         }
 
         writer.endObject();

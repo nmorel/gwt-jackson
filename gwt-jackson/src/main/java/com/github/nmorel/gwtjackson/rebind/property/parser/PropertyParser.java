@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.github.nmorel.gwtjackson.rebind.RebindConfiguration;
 import com.github.nmorel.gwtjackson.rebind.bean.BeanInfo;
 import com.github.nmorel.gwtjackson.rebind.property.PropertyAccessors;
@@ -138,7 +139,7 @@ public final class PropertyParser {
             JType returnType = method.getReturnType();
             if ( null != returnType.isPrimitive() && JPrimitiveType.VOID.equals( returnType.isPrimitive() ) ) {
                 // might be a setter
-                if ( method.getParameters().length == 1 ) {
+                if ( method.getParameters().length == 1 || (method.getParameters().length == 2 && method.isAnnotationPresent( JsonAnySetter.class )) ) {
                     String fieldName = extractFieldNameFromGetterSetterMethodName( method.getName() );
                     PropertyAccessorsBuilder property = propertiesMap.get( fieldName );
                     if ( null == property ) {

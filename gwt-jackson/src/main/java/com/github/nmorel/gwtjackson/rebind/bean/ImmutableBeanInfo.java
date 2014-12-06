@@ -53,6 +53,10 @@ final class ImmutableBeanInfo implements BeanInfo {
 
     private final Optional<PropertyInfo> valuePropertyInfo;
 
+    private final Optional<PropertyInfo> anyGetterPropertyInfo;
+
+    private final Optional<PropertyInfo> anySetterPropertyInfo;
+
     /*####  Visibility properties  ####*/
     private final ImmutableSet<String> ignoredFields;
 
@@ -78,9 +82,10 @@ final class ImmutableBeanInfo implements BeanInfo {
 
     ImmutableBeanInfo( JClassType type, List<JClassType> parameterizedTypes, Optional<JAbstractMethod> creatorMethod, Map<String,
             JParameter> creatorParameters, boolean creatorDefaultConstructor, boolean creatorDelegation, Optional<BeanTypeInfo> typeInfo,
-                       Optional<PropertyInfo> valuePropertyInfo, Set<String> ignoredFields, Visibility fieldVisibility, Visibility
-            getterVisibility, Visibility isGetterVisibility, Visibility setterVisibility, Visibility creatorVisibility, boolean
-            ignoreUnknown, List<String> propertyOrderList, boolean propertyOrderAlphabetic, Optional<BeanIdentityInfo> identityInfo ) {
+                       Optional<PropertyInfo> valuePropertyInfo, Optional<PropertyInfo> anyGetterPropertyInfo, Optional<PropertyInfo>
+            anySetterPropertyInfo, Set<String> ignoredFields, Visibility fieldVisibility, Visibility getterVisibility, Visibility
+            isGetterVisibility, Visibility setterVisibility, Visibility creatorVisibility, boolean ignoreUnknown, List<String>
+            propertyOrderList, boolean propertyOrderAlphabetic, Optional<BeanIdentityInfo> identityInfo ) {
 
         this.type = type;
         this.parameterizedTypes = ImmutableList.copyOf( parameterizedTypes );
@@ -90,6 +95,8 @@ final class ImmutableBeanInfo implements BeanInfo {
         this.creatorDelegation = creatorDelegation;
         this.typeInfo = typeInfo;
         this.valuePropertyInfo = valuePropertyInfo;
+        this.anyGetterPropertyInfo = anyGetterPropertyInfo;
+        this.anySetterPropertyInfo = anySetterPropertyInfo;
         this.ignoredFields = ImmutableSet.copyOf( ignoredFields );
 
         this.fieldVisibility = fieldVisibility;
@@ -142,6 +149,16 @@ final class ImmutableBeanInfo implements BeanInfo {
     @Override
     public Optional<PropertyInfo> getValuePropertyInfo() {
         return valuePropertyInfo;
+    }
+
+    @Override
+    public Optional<PropertyInfo> getAnyGetterPropertyInfo() {
+        return anyGetterPropertyInfo;
+    }
+
+    @Override
+    public Optional<PropertyInfo> getAnySetterPropertyInfo() {
+        return anySetterPropertyInfo;
     }
 
     @Override

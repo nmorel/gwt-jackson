@@ -30,45 +30,78 @@ import com.google.gwt.user.rebind.SourceWriter;
  */
 final class FieldWriteAccessor extends FieldAccessor {
 
-    FieldWriteAccessor( String propertyName, boolean samePackage, boolean fieldAutoDetect, Optional<JField> field,
-                        boolean setterAutoDetect, Optional<JMethod> setter ) {
+    private static interface Converter {
+
+        String convert( int index, JType type );
+
+    }
+
+    FieldWriteAccessor( String propertyName, boolean samePackage, boolean fieldAutoDetect, Optional<JField> field, boolean
+            setterAutoDetect, Optional<JMethod> setter ) {
         super( propertyName, samePackage, fieldAutoDetect, field, setterAutoDetect, setter );
     }
 
     @Override
     protected Accessor getAccessor( final String beanName, final boolean useMethod, final boolean useJsni ) {
+        final JType[] fieldsType;
+        final JClassType enclosingType;
+        if ( useMethod ) {
+            fieldsType = method.get().getParameterTypes();
+            enclosingType = method.get().getEnclosingType();
+        } else {
+            fieldsType = new JType[]{field.get().getType()};
+            enclosingType = field.get().getEnclosingType();
+        }
+
+        String params = parametersToString( fieldsType, new Converter() {
+            @Override
+            public String convert( int index, JType type ) {
+                return "%s";
+            }
+        } );
+
         if ( !useJsni ) {
             if ( useMethod ) {
-                return new Accessor( beanName + "." + method.get().getName() + "(%s)" );
+                return new Accessor( beanName + "." + method.get().getName() + "(" + params + ")" );
             } else {
-                return new Accessor( beanName + "." + field.get().getName() + " = %s" );
+                return new Accessor( beanName + "." + field.get().getName() + " = " + params );
             }
         }
 
         // field/setter has not been detected or is private or is in a different package. We use JSNI to access private setter/field.
-        final JType fieldType;
-        final JClassType enclosingType;
-        if ( useMethod ) {
-            fieldType = method.get().getParameterTypes()[0];
-            enclosingType = method.get().getEnclosingType();
-        } else {
-            fieldType = field.get().getType();
-            enclosingType = field.get().getEnclosingType();
-        }
-
         final String methodName = "set" + propertyName.substring( 0, 1 ).toUpperCase() + propertyName.substring( 1 );
-        String accessor = methodName + "(" + beanName + ", %s)";
+        String accessor = methodName + "(" + beanName + ", " + params + ")";
         AdditionalMethod additionalMethod = new AdditionalMethod() {
             @Override
             public void write( SourceWriter source ) {
-                source.println( "private native void %s(%s bean, %s value) /*-{", methodName, enclosingType
-                        .getParameterizedQualifiedSourceName(), fieldType.getParameterizedQualifiedSourceName() );
+                String paramsSignature = parametersToString( fieldsType, new Converter() {
+                    @Override
+                    public String convert( int index, JType type ) {
+                        return type.getParameterizedQualifiedSourceName() + " value" + index;
+                    }
+                } );
+
+                String jni = parametersToString( fieldsType, new Converter() {
+                    @Override
+                    public String convert( int index, JType type ) {
+                        return type.getJNISignature();
+                    }
+                } );
+
+                String values = parametersToString( fieldsType, new Converter() {
+                    @Override
+                    public String convert( int index, JType type ) {
+                        return "value" + index;
+                    }
+                } );
+
+                source.println( "private native void %s(%s bean, %s) /*-{", methodName, enclosingType
+                        .getParameterizedQualifiedSourceName(), paramsSignature );
                 source.indent();
                 if ( useMethod ) {
-                    source.println( "bean.@%s::%s(%s)(value);", enclosingType.getQualifiedSourceName(), method.get().getName(), fieldType
-                            .getJNISignature() );
+                    source.println( "bean.@%s::%s(%s)(%s);", enclosingType.getQualifiedSourceName(), method.get().getName(), jni, values );
                 } else {
-                    source.println( "bean.@%s::%s = value;", enclosingType.getQualifiedSourceName(), field.get().getName() );
+                    source.println( "bean.@%s::%s = %s;", enclosingType.getQualifiedSourceName(), field.get().getName(), values );
                 }
                 source.outdent();
                 source.println( "}-*/;" );
@@ -76,5 +109,17 @@ final class FieldWriteAccessor extends FieldAccessor {
         };
 
         return new Accessor( accessor, additionalMethod );
+    }
+
+    private String parametersToString( JType[] types, Converter converter ) {
+        StringBuilder builder = new StringBuilder();
+
+        for ( int i = 0; i < types.length; i++ ) {
+            if ( i > 0 ) {
+                builder.append( ", " );
+            }
+            builder.append( converter.convert( i, types[i] ) );
+        }
+        return builder.toString();
     }
 }

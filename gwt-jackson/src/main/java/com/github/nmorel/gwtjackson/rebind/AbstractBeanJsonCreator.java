@@ -41,6 +41,7 @@ import com.github.nmorel.gwtjackson.rebind.bean.BeanInfo;
 import com.github.nmorel.gwtjackson.rebind.bean.BeanProcessor;
 import com.github.nmorel.gwtjackson.rebind.bean.BeanTypeInfo;
 import com.github.nmorel.gwtjackson.rebind.exception.UnsupportedTypeException;
+import com.github.nmorel.gwtjackson.rebind.property.PropertiesContainer;
 import com.github.nmorel.gwtjackson.rebind.property.PropertyInfo;
 import com.github.nmorel.gwtjackson.rebind.property.processor.PropertyProcessor;
 import com.github.nmorel.gwtjackson.rebind.type.JDeserializerType;
@@ -165,13 +166,13 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
                 // retrieve the informations on the beans and its properties
                 BeanInfo beanInfo = BeanProcessor.processBean( logger, typeOracle, configuration, beanType );
 
-                ImmutableMap<String, PropertyInfo> properties = PropertyProcessor
+                PropertiesContainer properties = PropertyProcessor
                         .findAllProperties( configuration, logger, typeOracle, beanInfo, samePackage );
 
                 beanInfo = BeanProcessor.processProperties( configuration, logger, typeOracle, beanInfo, properties );
 
                 mapperInfo = new BeanJsonMapperInfo( beanType, qualifiedSerializerClassName, simpleSerializerClassName,
-                        qualifiedDeserializerClassName, simpleDeserializerClassName, beanInfo, properties );
+                        qualifiedDeserializerClassName, simpleDeserializerClassName, beanInfo, properties.getProperties() );
 
                 typeOracle.addBeanJsonMapperInfo( beanType, mapperInfo );
             }

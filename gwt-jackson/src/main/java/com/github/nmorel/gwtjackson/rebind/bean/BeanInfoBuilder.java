@@ -50,6 +50,10 @@ final class BeanInfoBuilder {
 
     private Optional<PropertyInfo> valuePropertyInfo = Optional.absent();
 
+    private Optional<PropertyInfo> anyGetterPropertyInfo = Optional.absent();
+
+    private Optional<PropertyInfo> anySetterPropertyInfo = Optional.absent();
+
     private Set<String> ignoredFields = Collections.emptySet();
 
     private JsonAutoDetect.Visibility fieldVisibility = JsonAutoDetect.Visibility.DEFAULT;
@@ -82,6 +86,8 @@ final class BeanInfoBuilder {
         this.creatorDelegation = beanInfo.isCreatorDelegation();
         this.typeInfo = beanInfo.getTypeInfo();
         this.valuePropertyInfo = beanInfo.getValuePropertyInfo();
+        this.anyGetterPropertyInfo = beanInfo.getAnyGetterPropertyInfo();
+        this.anySetterPropertyInfo = beanInfo.getAnySetterPropertyInfo();
         this.ignoredFields = beanInfo.getIgnoredFields();
 
         this.fieldVisibility = beanInfo.getFieldVisibility();
@@ -132,6 +138,14 @@ final class BeanInfoBuilder {
         this.valuePropertyInfo = valuePropertyInfo;
     }
 
+    void setAnyGetterPropertyInfo( Optional<PropertyInfo> anyGetterPropertyInfo ) {
+        this.anyGetterPropertyInfo = anyGetterPropertyInfo;
+    }
+
+    void setAnySetterPropertyInfo( Optional<PropertyInfo> anySetterPropertyInfo ) {
+        this.anySetterPropertyInfo = anySetterPropertyInfo;
+    }
+
     void setIgnoredFields( Set<String> ignoredFields ) {
         this.ignoredFields = ignoredFields;
     }
@@ -178,7 +192,8 @@ final class BeanInfoBuilder {
 
     BeanInfo build() {
         return new ImmutableBeanInfo( type, parameterizedTypes, creatorMethod, creatorParameters, creatorDefaultConstructor,
-                creatorDelegation, typeInfo, valuePropertyInfo, ignoredFields, fieldVisibility, getterVisibility, isGetterVisibility,
-                setterVisibility, creatorVisibility, ignoreUnknown, propertyOrderList, propertyOrderAlphabetic, identityInfo );
+                creatorDelegation, typeInfo, valuePropertyInfo, anyGetterPropertyInfo, anySetterPropertyInfo, ignoredFields,
+                fieldVisibility, getterVisibility, isGetterVisibility, setterVisibility, creatorVisibility, ignoreUnknown,
+                propertyOrderList, propertyOrderAlphabetic, identityInfo );
     }
 }

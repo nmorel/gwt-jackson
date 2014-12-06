@@ -40,6 +40,10 @@ public interface PropertyInfo {
 
     boolean isValue();
 
+    boolean isAnyGetter();
+
+    boolean isAnySetter();
+
     Optional<String> getManagedReference();
 
     Optional<String> getBackReference();

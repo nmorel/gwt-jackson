@@ -38,6 +38,7 @@ import com.github.nmorel.gwtjackson.client.advanced.jsontype.PolymorphismIdNameA
 import com.github.nmorel.gwtjackson.client.advanced.jsontype.PolymorphismNoTypeInfoGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.jsontype.TypeNamesGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.jsontype.VisibleTypeIdGwtTest;
+import com.github.nmorel.gwtjackson.client.annotation.JsonAnyGetterSetterGwtTest;
 import com.github.nmorel.gwtjackson.client.annotation.JsonAutoDetectGwtTest;
 import com.github.nmorel.gwtjackson.client.annotation.JsonCreatorGwtTest;
 import com.github.nmorel.gwtjackson.client.annotation.JsonFormatGwtTest;
@@ -286,6 +287,7 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( JsonRootNameGwtTest.class );
         suite.addTestSuite( JsonRawValueGwtTest.class );
         suite.addTestSuite( JsonFormatGwtTest.class );
+        suite.addTestSuite( JsonAnyGetterSetterGwtTest.class );
 
         // Advanced use cases
         suite.addTestSuite( ProxyAndAnonymousClassSerializationGwtTest.class );

@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
@@ -56,6 +57,8 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
 
     private final Map<Class, SubtypeDeserializer> subtypeClassToDeserializer;
 
+    private final AnySetterDeserializer<T, ?> anySetterDeserializer;
+
     protected AbstractBeanJsonDeserializer() {
         this.instanceBuilder = initInstanceBuilder();
         this.deserializers = initDeserializers();
@@ -65,6 +68,7 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
         this.defaultIdentityInfo = initIdentityInfo();
         this.defaultTypeInfo = initTypeInfo();
         this.subtypeClassToDeserializer = initMapSubtypeClassToDeserializer();
+        this.anySetterDeserializer = initAnySetterDeserializer();
     }
 
     /**
@@ -123,6 +127,13 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
      */
     protected Map<Class, SubtypeDeserializer> initMapSubtypeClassToDeserializer() {
         return Collections.emptyMap();
+    }
+
+    /**
+     * Initialize the {@link AnySetterDeserializer}. Returns null if there is no method annoted with {@link JsonAnySetter} on bean.
+     */
+    protected AnySetterDeserializer<T, ?> initAnySetterDeserializer() {
+        return null;
     }
 
     /**
@@ -302,10 +313,12 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
             }
 
             BeanPropertyDeserializer<T, ?> property = getPropertyDeserializer( propertyName, ctx, ignoreUnknown );
-            if ( null == property ) {
-                reader.skipValue();
-            } else {
+            if ( null != property ) {
                 property.deserialize( reader, bean, ctx );
+            } else if ( null != anySetterDeserializer ) {
+                anySetterDeserializer.deserialize( reader, bean, propertyName, ctx );
+            } else {
+                reader.skipValue();
             }
         }
 
@@ -315,8 +328,8 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
         return bean;
     }
 
-    private Map<String, String> readIdentityProperty( IdentityDeserializationInfo identityInfo, T bean, Map<String,
-            String> bufferedProperties, JsonReader reader, final JsonDeserializationContext ctx, Set<String> ignoredProperties ) {
+    private Map<String, String> readIdentityProperty( IdentityDeserializationInfo identityInfo, T bean, Map<String, String>
+            bufferedProperties, JsonReader reader, final JsonDeserializationContext ctx, Set<String> ignoredProperties ) {
         if ( null == identityInfo ) {
             return bufferedProperties;
         }
@@ -389,16 +402,18 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
                 BeanPropertyDeserializer<T, ?> property = getPropertyDeserializer( propertyName, ctx, ignoreUnknown );
                 if ( null != property ) {
                     property.deserialize( ctx.newJsonReader( bufferedProperty.getValue() ), bean, ctx );
+                } else if ( null != anySetterDeserializer ) {
+                    anySetterDeserializer.deserialize( ctx.newJsonReader( bufferedProperty.getValue() ), bean, propertyName, ctx );
                 }
             }
         }
     }
 
-    private BeanPropertyDeserializer<T, ?> getPropertyDeserializer( String propertyName, JsonDeserializationContext ctx,
-                                                                    boolean ignoreUnknown ) {
+    private BeanPropertyDeserializer<T, ?> getPropertyDeserializer( String propertyName, JsonDeserializationContext ctx, boolean
+            ignoreUnknown ) {
         BeanPropertyDeserializer<T, ?> property = deserializers.get( propertyName );
         if ( null == property ) {
-            if ( !ignoreUnknown && ctx.isFailOnUnknownProperties() ) {
+            if ( !ignoreUnknown && ctx.isFailOnUnknownProperties() && null == anySetterDeserializer ) {
                 throw ctx.traceError( "Unknown property '" + propertyName + "'" );
             }
         }
@@ -406,8 +421,8 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
     }
 
     private InternalDeserializer<T, ? extends JsonDeserializer<T>> getDeserializer( JsonReader reader, JsonDeserializationContext ctx,
-                                                                                    TypeDeserializationInfo typeInfo,
-                                                                                    String typeInformation ) {
+                                                                                    TypeDeserializationInfo typeInfo, String
+            typeInformation ) {
         Class typeClass = typeInfo.getTypeClass( typeInformation );
         if ( null == typeClass ) {
             throw ctx.traceError( "Could not find the type associated to " + typeInformation, reader );

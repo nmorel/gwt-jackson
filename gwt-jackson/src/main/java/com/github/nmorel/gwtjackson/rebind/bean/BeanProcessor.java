@@ -46,7 +46,7 @@ import com.github.nmorel.gwtjackson.rebind.BeanJsonDeserializerCreator;
 import com.github.nmorel.gwtjackson.rebind.CreatorUtils;
 import com.github.nmorel.gwtjackson.rebind.JacksonTypeOracle;
 import com.github.nmorel.gwtjackson.rebind.RebindConfiguration;
-import com.github.nmorel.gwtjackson.rebind.property.PropertyInfo;
+import com.github.nmorel.gwtjackson.rebind.property.PropertiesContainer;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JAbstractMethod;
@@ -454,28 +454,25 @@ public final class BeanProcessor {
      * @return the new informations about the bean and its properties
      */
     public static BeanInfo processProperties( RebindConfiguration configuration, TreeLogger logger, JacksonTypeOracle typeOracle,
-                                              BeanInfo beanInfo, ImmutableMap<String, PropertyInfo> properties ) {
-        PropertyInfo valueProperty = null;
-        for ( PropertyInfo propertyInfo : properties.values() ) {
-            if ( propertyInfo.isValue() ) {
-                valueProperty = propertyInfo;
-                break;
-            }
-        }
-
-        if ( null == valueProperty ) {
+                                              BeanInfo beanInfo, PropertiesContainer properties ) {
+        if ( !properties.getValuePropertyInfo().isPresent() && !properties.getAnyGetterPropertyInfo().isPresent() && !properties
+                .getAnySetterPropertyInfo().isPresent() ) {
             return beanInfo;
         }
 
         BeanInfoBuilder builder = new BeanInfoBuilder( beanInfo );
-        builder.setValuePropertyInfo( Optional.of( valueProperty ) );
+        builder.setValuePropertyInfo( properties.getValuePropertyInfo() );
 
-        if ( beanInfo.getTypeInfo().isPresent() && As.PROPERTY.equals( beanInfo.getTypeInfo().get().getInclude() ) ) {
+        if ( properties.getValuePropertyInfo().isPresent() && beanInfo.getTypeInfo().isPresent() && As.PROPERTY.equals( beanInfo
+                .getTypeInfo().get().getInclude() ) ) {
             // if the bean has type info on property with @JsonValue, we change it to WRAPPER_ARRAY because the value may not be an object
             BeanTypeInfo typeInfo = beanInfo.getTypeInfo().get();
             builder.setTypeInfo( Optional.<BeanTypeInfo>of( new ImmutableBeanTypeInfo( typeInfo.getUse(), As.WRAPPER_ARRAY, typeInfo
                     .getPropertyName(), typeInfo.getMapTypeToSerializationMetadata(), typeInfo.getMapTypeToDeserializationMetadata() ) ) );
         }
+
+        builder.setAnyGetterPropertyInfo( properties.getAnyGetterPropertyInfo() );
+        builder.setAnySetterPropertyInfo( properties.getAnySetterPropertyInfo() );
 
         return builder.build();
     }

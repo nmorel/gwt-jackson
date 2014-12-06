@@ -85,6 +85,14 @@ public abstract class FieldAccessor {
         }
     }
 
+    public Optional<JField> getField() {
+        return field;
+    }
+
+    public Optional<JMethod> getMethod() {
+        return method;
+    }
+
     public Accessor getAccessor( final String beanName ) {
         final boolean useJsni;
         if ( useMethod ) {
