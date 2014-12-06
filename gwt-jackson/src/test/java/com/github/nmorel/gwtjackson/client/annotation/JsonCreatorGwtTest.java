@@ -18,11 +18,17 @@ package com.github.nmorel.gwtjackson.client.annotation;
 
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;
+import com.github.nmorel.gwtjackson.client.ObjectReader;
 import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
+import com.github.nmorel.gwtjackson.shared.ObjectReaderTester;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester;
+import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester.BeanWithBooleanConstructorDelegation;
+import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester.BeanWithBooleanConstructorDelegationAndTypeInfo;
+import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester.BeanWithBooleanFactoryDelegation;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester.BeanWithConstructorAnnotated;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester.BeanWithDefaultConstructorPrivate;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester.BeanWithFactoryMethod;
+import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester.BeanWithObjectConstructorDelegation;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester.BeanWithPrivateFactoryMethod;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester.BeanWithPropertiesOnlyPresentOnConstructor;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester.BeanWithoutDefaultConstructorAndNoAnnotation;
@@ -144,5 +150,60 @@ public class JsonCreatorGwtTest extends GwtJacksonTestCase {
     public void testDeserializeBeanWithPropertiesOnlyPresentOnConstructor() {
         JsonCreatorTester.INSTANCE
                 .testDeserializeBeanWithPropertiesOnlyPresentOnConstructor( BeanWithPropertiesOnlyPresentOnConstructorMapper.INSTANCE );
+    }
+
+    /* ################################ */
+
+    public interface BeanWithBooleanFactoryDelegationReader extends ObjectReader<BeanWithBooleanFactoryDelegation>, ObjectReaderTester<BeanWithBooleanFactoryDelegation> {
+
+        static BeanWithBooleanFactoryDelegationReader INSTANCE = GWT
+                .create( BeanWithBooleanFactoryDelegationReader.class );
+    }
+
+    public void testDeserializeBeanWithBooleanFactoryDelegation() {
+        JsonCreatorTester.INSTANCE
+                .testDeserializeBeanWithBooleanFactoryDelegation( BeanWithBooleanFactoryDelegationReader.INSTANCE );
+    }
+
+    /* ################################ */
+
+    public interface BeanWithBooleanConstructorDelegationReader extends ObjectReader<BeanWithBooleanConstructorDelegation>,
+            ObjectReaderTester<BeanWithBooleanConstructorDelegation> {
+
+        static BeanWithBooleanConstructorDelegationReader INSTANCE = GWT
+                .create( BeanWithBooleanConstructorDelegationReader.class );
+    }
+
+    public void testDeserializeBeanWithBooleanConstructorDelegation() {
+        JsonCreatorTester.INSTANCE
+                .testDeserializeBeanWithBooleanConstructorDelegation( BeanWithBooleanConstructorDelegationReader.INSTANCE );
+    }
+
+    /* ################################ */
+
+    public interface BeanWithBooleanConstructorDelegationAndTypeInfoMapper extends ObjectMapper<BeanWithBooleanConstructorDelegationAndTypeInfo>,
+            ObjectMapperTester<BeanWithBooleanConstructorDelegationAndTypeInfo> {
+
+        static BeanWithBooleanConstructorDelegationAndTypeInfoMapper INSTANCE = GWT
+                .create( BeanWithBooleanConstructorDelegationAndTypeInfoMapper.class );
+    }
+
+    public void testBeanWithBooleanConstructorDelegationAndTypeInfo() {
+        JsonCreatorTester.INSTANCE
+                .testBeanWithBooleanConstructorDelegationAndTypeInfo( BeanWithBooleanConstructorDelegationAndTypeInfoMapper.INSTANCE );
+    }
+
+    /* ################################ */
+
+    public interface BeanWithObjectConstructorDelegationReader extends ObjectReader<BeanWithObjectConstructorDelegation>,
+            ObjectReaderTester<BeanWithObjectConstructorDelegation> {
+
+        static BeanWithObjectConstructorDelegationReader INSTANCE = GWT
+                .create( BeanWithObjectConstructorDelegationReader.class );
+    }
+
+    public void testDeserializeBeanWithObjectConstructorDelegation() {
+        JsonCreatorTester.INSTANCE
+                .testDeserializeBeanWithObjectConstructorDelegation( BeanWithObjectConstructorDelegationReader.INSTANCE );
     }
 }

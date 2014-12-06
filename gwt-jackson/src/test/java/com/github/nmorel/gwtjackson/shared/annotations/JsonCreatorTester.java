@@ -16,11 +16,18 @@
 
 package com.github.nmorel.gwtjackson.shared.annotations;
 
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
+import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
 import com.github.nmorel.gwtjackson.shared.ObjectReaderTester;
 import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
 
@@ -79,9 +86,9 @@ public final class JsonCreatorTester extends AbstractTester {
 
         private Boolean booleanProperty;
 
-        public BeanWithoutDefaultConstructorAndPropertiesAnnotation( @JsonProperty("intProperty") int intProperty,
-                                                                     @JsonProperty(value = "stringProperty",
-                required = true) String stringProperty ) {
+        public BeanWithoutDefaultConstructorAndPropertiesAnnotation( @JsonProperty( "intProperty" ) int intProperty, @JsonProperty( value
+                = "stringProperty",
+                required = true ) String stringProperty ) {
             this.intProperty = intProperty;
             this.stringProperty = stringProperty;
         }
@@ -112,7 +119,7 @@ public final class JsonCreatorTester extends AbstractTester {
         private Boolean booleanProperty;
 
         @JsonCreator
-        public BeanWithConstructorAnnotated( @JsonProperty("intProperty") int intProperty, @JsonProperty("stringProperty") String
+        public BeanWithConstructorAnnotated( @JsonProperty( "intProperty" ) int intProperty, @JsonProperty( "stringProperty" ) String
                 stringProperty ) {
             this.intProperty = intProperty;
             this.stringProperty = stringProperty;
@@ -135,12 +142,12 @@ public final class JsonCreatorTester extends AbstractTester {
         }
     }
 
-    @JsonPropertyOrder(alphabetic = true)
+    @JsonPropertyOrder( alphabetic = true )
     public static class BeanWithFactoryMethod {
 
         @JsonCreator
-        static BeanWithFactoryMethod newInstance( @JsonProperty("stringProperty") String stringProperty,
-                                                  @JsonProperty("intProperty") int intProperty ) {
+        static BeanWithFactoryMethod newInstance( @JsonProperty( "stringProperty" ) String stringProperty, @JsonProperty( "intProperty" )
+        int intProperty ) {
             return new BeanWithFactoryMethod( intProperty, stringProperty );
         }
 
@@ -172,12 +179,12 @@ public final class JsonCreatorTester extends AbstractTester {
         }
     }
 
-    @JsonPropertyOrder(value = {"booleanProperty", "intProperty", "stringProperty"})
+    @JsonPropertyOrder( value = {"booleanProperty", "intProperty", "stringProperty"} )
     public static class BeanWithPrivateFactoryMethod {
 
         @JsonCreator
-        private static BeanWithPrivateFactoryMethod newInstance( @JsonProperty("stringProperty") String stringProperty,
-                                                                 @JsonProperty("intProperty") int intProperty ) {
+        private static BeanWithPrivateFactoryMethod newInstance( @JsonProperty( "stringProperty" ) String stringProperty, @JsonProperty(
+                "intProperty" ) int intProperty ) {
             return new BeanWithPrivateFactoryMethod( intProperty, stringProperty );
         }
 
@@ -214,12 +221,82 @@ public final class JsonCreatorTester extends AbstractTester {
         private int result;
 
         @JsonCreator
-        public BeanWithPropertiesOnlyPresentOnConstructor( @JsonProperty("x") int x, @JsonProperty("y") int y ) {
+        public BeanWithPropertiesOnlyPresentOnConstructor( @JsonProperty( "x" ) int x, @JsonProperty( "y" ) int y ) {
             this.result = x * y;
         }
 
         public int getResult() {
             return result;
+        }
+    }
+
+    public static class BeanWithBooleanFactoryDelegation {
+
+        @JsonCreator
+        public static BeanWithBooleanFactoryDelegation create( Boolean value ) {
+            if ( null == value ) {
+                return null;
+            }
+            return new BeanWithBooleanFactoryDelegation( !value );
+        }
+
+        private final Boolean value;
+
+        @JsonIgnore // we force jackson to ignore this constructor or else it uses this one instead of the factory method
+        private BeanWithBooleanFactoryDelegation( Boolean v ) { value = v; }
+
+        @JsonValue
+        public Boolean getValue() {
+            return value;
+        }
+    }
+
+    public static class BeanWithBooleanConstructorDelegation {
+
+        private final Boolean value;
+
+        @JsonCreator
+        public BeanWithBooleanConstructorDelegation( Boolean v ) { value = v; }
+
+        @JsonValue
+        public Boolean getValue() {
+            return value;
+        }
+    }
+
+    @JsonTypeInfo( use = Id.CLASS )
+    public static class BeanWithBooleanConstructorDelegationAndTypeInfo {
+
+        private final Boolean value;
+
+        @JsonCreator
+        public BeanWithBooleanConstructorDelegationAndTypeInfo( Boolean v ) { value = v; }
+
+        @JsonValue
+        public Boolean getValue() {
+            return value;
+        }
+    }
+
+    public static class BeanWithObjectConstructorDelegation {
+
+        private final String a;
+
+        private Integer b;
+
+        @JsonCreator
+        public BeanWithObjectConstructorDelegation( Object obj ) {
+            Map map = (Map) obj;
+            a = (String) map.get( "propertyA" );
+            b = (Integer) map.get( "propertyB" );
+        }
+
+        public Integer getB() {
+            return b;
+        }
+
+        public void setB( Integer b ) {
+            this.b = b;
         }
     }
 
@@ -423,6 +500,38 @@ public final class JsonCreatorTester extends AbstractTester {
         BeanWithPropertiesOnlyPresentOnConstructor result = reader.read( input );
 
         assertEquals( 150, result.result );
+    }
+
+    public void testDeserializeBeanWithBooleanFactoryDelegation( ObjectReaderTester<BeanWithBooleanFactoryDelegation> reader ) {
+        BeanWithBooleanFactoryDelegation result = reader.read( "true" );
+        assertFalse( result.value );
+
+        result = reader.read( "false" );
+        assertTrue( result.value );
+    }
+
+    public void testDeserializeBeanWithBooleanConstructorDelegation( ObjectReaderTester<BeanWithBooleanConstructorDelegation> reader ) {
+        BeanWithBooleanConstructorDelegation result = reader.read( "true" );
+        assertTrue( result.value );
+
+        result = reader.read( "false" );
+        assertFalse( result.value );
+    }
+
+    public void testBeanWithBooleanConstructorDelegationAndTypeInfo( ObjectMapperTester<BeanWithBooleanConstructorDelegationAndTypeInfo>
+                                                                             mapper ) {
+        BeanWithBooleanConstructorDelegationAndTypeInfo bean = new BeanWithBooleanConstructorDelegationAndTypeInfo( true );
+        String json = mapper.write( bean );
+        assertEquals( "[\"" + BeanWithBooleanConstructorDelegationAndTypeInfo.class.getName() + "\",true]", json );
+
+        bean = mapper.read( json );
+        assertTrue( bean.value );
+    }
+
+    public void testDeserializeBeanWithObjectConstructorDelegation( ObjectReaderTester<BeanWithObjectConstructorDelegation> reader ) {
+        BeanWithObjectConstructorDelegation result = reader.read( "{\"propertyA\":\"string A\",\"propertyB\":148}" );
+        assertEquals( "string A", result.a );
+        assertEquals( 148, result.b.intValue() );
     }
 
 }

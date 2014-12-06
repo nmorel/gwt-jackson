@@ -69,7 +69,7 @@ public class JsonCreatorJacksonTest extends AbstractJacksonTest {
     }
 
     @Test
-    @Ignore("jackson doesn't support it yet")
+    @Ignore( "jackson doesn't support it yet" )
     public void testDeserializeBeanWithMissingRequiredPropertyInCreator() {
         JsonCreatorTester.INSTANCE
                 .testDeserializeBeanWithMissingRequiredPropertyInCreator( createReader( JsonCreatorTester
@@ -122,5 +122,33 @@ public class JsonCreatorJacksonTest extends AbstractJacksonTest {
         JsonCreatorTester.INSTANCE
                 .testDeserializeBeanWithPropertiesOnlyPresentOnConstructor( createReader( JsonCreatorTester
                         .BeanWithPropertiesOnlyPresentOnConstructor.class ) );
+    }
+
+    @Test
+    public void testDeserializeBeanWithBooleanFactoryDelegation() {
+        JsonCreatorTester.INSTANCE
+                .testDeserializeBeanWithBooleanFactoryDelegation( createReader( JsonCreatorTester.BeanWithBooleanFactoryDelegation.class
+                ) );
+    }
+
+    @Test
+    public void testDeserializeBeanWithBooleanConstructorDelegation() {
+        JsonCreatorTester.INSTANCE
+                .testDeserializeBeanWithBooleanConstructorDelegation( createReader( JsonCreatorTester
+                        .BeanWithBooleanConstructorDelegation.class ) );
+    }
+
+    @Test
+    public void testBeanWithBooleanConstructorDelegationAndTypeInfo() {
+        JsonCreatorTester.INSTANCE
+                .testBeanWithBooleanConstructorDelegationAndTypeInfo( createMapper( JsonCreatorTester
+                        .BeanWithBooleanConstructorDelegationAndTypeInfo.class ) );
+    }
+
+    @Test
+    public void testDeserializeBeanWithObjectConstructorDelegation() {
+        JsonCreatorTester.INSTANCE
+                .testDeserializeBeanWithObjectConstructorDelegation( createReader( JsonCreatorTester
+                        .BeanWithObjectConstructorDelegation.class ) );
     }
 }

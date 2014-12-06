@@ -44,6 +44,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.IntSequenceGenerator;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.UUIDGenerator;
+import com.github.nmorel.gwtjackson.rebind.BeanJsonDeserializerCreator;
 import com.github.nmorel.gwtjackson.rebind.CreatorUtils;
 import com.github.nmorel.gwtjackson.rebind.JacksonTypeOracle;
 import com.github.nmorel.gwtjackson.rebind.RebindConfiguration;
@@ -70,8 +71,8 @@ import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.isObjectOrSeriali
  */
 public final class BeanProcessor {
 
-    public static BeanInfo processBean( TreeLogger logger, JacksonTypeOracle typeOracle, RebindConfiguration configuration,
-                                        JClassType beanType ) throws UnableToCompleteException {
+    public static BeanInfo processBean( TreeLogger logger, JacksonTypeOracle typeOracle, RebindConfiguration configuration, JClassType
+            beanType ) throws UnableToCompleteException {
         BeanInfoBuilder builder = new BeanInfoBuilder();
         builder.setType( beanType );
 
@@ -81,8 +82,8 @@ public final class BeanProcessor {
 
         determineInstanceCreator( configuration, logger, beanType, builder );
 
-        Optional<JsonAutoDetect> jsonAutoDetect = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, beanType,
-                JsonAutoDetect.class );
+        Optional<JsonAutoDetect> jsonAutoDetect = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, beanType, JsonAutoDetect
+                .class );
         if ( jsonAutoDetect.isPresent() ) {
             builder.setCreatorVisibility( jsonAutoDetect.get().creatorVisibility() );
             builder.setFieldVisibility( jsonAutoDetect.get().fieldVisibility() );
@@ -227,14 +228,15 @@ public final class BeanProcessor {
                     .get( 0 ), JsonProperty.class ) ) {
                 // delegation constructor
                 builder.setCreatorDelegation( true );
+                builder.setCreatorParameters( ImmutableMap.of( BeanJsonDeserializerCreator.DELEGATION_PARAM_NAME, creatorMethod.get().getParameters()[0] ) );
             } else {
                 // we want the property name define in the mixin and the parameter defined in the real creator method
-                Map<String, JParameter> creatorParameters = new LinkedHashMap<String, JParameter>();
+                ImmutableMap.Builder<String, JParameter> creatorParameters = ImmutableMap.builder();
                 for ( int i = 0; i < creatorMethod.get().getParameters().length; i++ ) {
                     creatorParameters.put( creators.get( 0 ).getParameters()[i].getAnnotation( JsonProperty.class ).value(), creators
                             .get( creators.size() - 1 ).getParameters()[i] );
                 }
-                builder.setCreatorParameters( creatorParameters );
+                builder.setCreatorParameters( creatorParameters.build() );
             }
         }
     }
@@ -249,18 +251,15 @@ public final class BeanProcessor {
         return true;
     }
 
-    private static Optional<BeanIdentityInfo> processIdentity( TreeLogger logger, JacksonTypeOracle typeOracle,
-                                                               RebindConfiguration configuration,
-                                                               JClassType type ) throws UnableToCompleteException {
+    private static Optional<BeanIdentityInfo> processIdentity( TreeLogger logger, JacksonTypeOracle typeOracle, RebindConfiguration
+            configuration, JClassType type ) throws UnableToCompleteException {
         return processIdentity( logger, typeOracle, configuration, type, Optional.<JsonIdentityInfo>absent(), Optional
                 .<JsonIdentityReference>absent() );
     }
 
-    public static Optional<BeanIdentityInfo> processIdentity( TreeLogger logger, JacksonTypeOracle typeOracle,
-                                                              RebindConfiguration configuration, JClassType type,
-                                                              Optional<JsonIdentityInfo> jsonIdentityInfo,
-                                                              Optional<JsonIdentityReference> jsonIdentityReference ) throws
-            UnableToCompleteException {
+    public static Optional<BeanIdentityInfo> processIdentity( TreeLogger logger, JacksonTypeOracle typeOracle, RebindConfiguration
+            configuration, JClassType type, Optional<JsonIdentityInfo> jsonIdentityInfo, Optional<JsonIdentityReference>
+            jsonIdentityReference ) throws UnableToCompleteException {
 
         if ( !jsonIdentityInfo.isPresent() ) {
             jsonIdentityInfo = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, type, JsonIdentityInfo.class );
@@ -305,15 +304,14 @@ public final class BeanProcessor {
         return Optional.absent();
     }
 
-    private static Optional<BeanTypeInfo> processType( TreeLogger logger, JacksonTypeOracle typeOracle,
-                                                       RebindConfiguration configuration,
-                                                       JClassType type ) throws UnableToCompleteException {
+    private static Optional<BeanTypeInfo> processType( TreeLogger logger, JacksonTypeOracle typeOracle, RebindConfiguration
+            configuration, JClassType type ) throws UnableToCompleteException {
         return processType( logger, typeOracle, configuration, type, Optional.<JsonTypeInfo>absent(), Optional.<JsonSubTypes>absent() );
     }
 
     public static Optional<BeanTypeInfo> processType( TreeLogger logger, JacksonTypeOracle typeOracle, RebindConfiguration configuration,
-                                                      JClassType type, Optional<JsonTypeInfo> jsonTypeInfo,
-                                                      Optional<JsonSubTypes> propertySubTypes ) throws UnableToCompleteException {
+                                                      JClassType type, Optional<JsonTypeInfo> jsonTypeInfo, Optional<JsonSubTypes>
+            propertySubTypes ) throws UnableToCompleteException {
 
         if ( !jsonTypeInfo.isPresent() ) {
             jsonTypeInfo = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, type, JsonTypeInfo.class );
@@ -330,16 +328,20 @@ public final class BeanProcessor {
         Optional<JsonSubTypes> typeSubTypes = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, type, JsonSubTypes.class );
 
         // TODO we could do better, we actually extract metadata twice for a lot of classes
-        ImmutableMap<JClassType, String> classToSerializationMetadata = extractMetadata( logger, configuration, type, jsonTypeInfo, propertySubTypes, typeSubTypes, CreatorUtils.filterSubtypesForSerialization( logger, configuration, type ) );
-        ImmutableMap<JClassType, String> classToDeserializationMetadata = extractMetadata( logger, configuration, type, jsonTypeInfo, propertySubTypes, typeSubTypes, CreatorUtils.filterSubtypesForDeserialization( logger, configuration, type ) );
+        ImmutableMap<JClassType, String> classToSerializationMetadata = extractMetadata( logger, configuration, type, jsonTypeInfo,
+                propertySubTypes, typeSubTypes, CreatorUtils
+                .filterSubtypesForSerialization( logger, configuration, type ) );
+        ImmutableMap<JClassType, String> classToDeserializationMetadata = extractMetadata( logger, configuration, type, jsonTypeInfo,
+                propertySubTypes, typeSubTypes, CreatorUtils
+                .filterSubtypesForDeserialization( logger, configuration, type ) );
 
-        return Optional.<BeanTypeInfo>of( new ImmutableBeanTypeInfo( use, include, propertyName, classToSerializationMetadata, classToDeserializationMetadata ) );
+        return Optional
+                .<BeanTypeInfo>of( new ImmutableBeanTypeInfo( use, include, propertyName, classToSerializationMetadata,
+                        classToDeserializationMetadata ) );
     }
 
-    private static ImmutableMap<JClassType, String> extractMetadata( TreeLogger logger, RebindConfiguration configuration,
-                                                                     JClassType type, Optional<JsonTypeInfo> jsonTypeInfo,
-                                                                     Optional<JsonSubTypes> propertySubTypes,
-                                                                     Optional<JsonSubTypes> typeSubTypes,
+    private static ImmutableMap<JClassType, String> extractMetadata( TreeLogger logger, RebindConfiguration configuration, JClassType
+            type, Optional<JsonTypeInfo> jsonTypeInfo, Optional<JsonSubTypes> propertySubTypes, Optional<JsonSubTypes> typeSubTypes,
                                                                      ImmutableList<JClassType> allSubtypes ) throws
             UnableToCompleteException {
 
@@ -355,10 +357,9 @@ public final class BeanProcessor {
         return classToMetadata.build();
     }
 
-    private static String extractTypeMetadata( TreeLogger logger, RebindConfiguration configuration, JClassType baseType,
-                                               JClassType subtype, JsonTypeInfo typeInfo, Optional<JsonSubTypes> propertySubTypes,
-                                               Optional<JsonSubTypes> baseSubTypes, ImmutableList<JClassType> allSubtypes ) throws
-            UnableToCompleteException {
+    private static String extractTypeMetadata( TreeLogger logger, RebindConfiguration configuration, JClassType baseType, JClassType
+            subtype, JsonTypeInfo typeInfo, Optional<JsonSubTypes> propertySubTypes, Optional<JsonSubTypes> baseSubTypes,
+                                               ImmutableList<JClassType> allSubtypes ) throws UnableToCompleteException {
         switch ( typeInfo.use() ) {
             case NAME:
                 // we first look the name on JsonSubTypes annotations. Top ones override the bottom ones.
@@ -368,8 +369,8 @@ public final class BeanProcessor {
                 }
 
                 // we look if the name is defined on the type with JsonTypeName
-                Optional<JsonTypeName> typeName = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, subtype,
-                        JsonTypeName.class );
+                Optional<JsonTypeName> typeName = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, subtype, JsonTypeName
+                        .class );
                 if ( typeName.isPresent() && !Strings.isNullOrEmpty( typeName.get().value() ) ) {
                     return typeName.get().value();
                 }

@@ -40,7 +40,7 @@ import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T> implements InternalDeserializer<T,
         AbstractBeanJsonDeserializer<T>> {
 
-    private final InstanceBuilder<T> instanceBuilder;
+    protected final InstanceBuilder<T> instanceBuilder;
 
     private final SimpleStringMap<BeanPropertyDeserializer<T, ?>> deserializers;
 
@@ -167,7 +167,7 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
 
             As include;
             if ( JsonToken.BEGIN_ARRAY.equals( token ) ) {
-                // in case of an enum subtype, we can have a wrapper array even if the user specified As.PROPERTY
+                // we can have a wrapper array even if the user specified As.PROPERTY in some cases (enum, creator delegation)
                 include = As.WRAPPER_ARRAY;
             } else {
                 include = typeInfo.getInclude();

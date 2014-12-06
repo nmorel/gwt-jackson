@@ -81,6 +81,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         }
     };
 
+    public static final String DELEGATION_PARAM_NAME = "delegation";
+
     private static final String INSTANCE_BUILDER_DESERIALIZER_FORMAT = "deserializer_%s";
 
     private static final String BEAN_PROPERTY_DESERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.deser.bean" + "" +
@@ -90,8 +92,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
     private static final String JSON_DESERIALIZER_PARAMETERS_CLASS = "com.github.nmorel.gwtjackson.client.JsonDeserializerParameters";
 
-    public BeanJsonDeserializerCreator( TreeLogger logger, GeneratorContext context, RebindConfiguration configuration,
-                                        JacksonTypeOracle typeOracle ) {
+    public BeanJsonDeserializerCreator( TreeLogger logger, GeneratorContext context, RebindConfiguration configuration, JacksonTypeOracle
+            typeOracle ) {
         super( logger, context, configuration, typeOracle );
     }
 
@@ -101,8 +103,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
     }
 
     @Override
-    protected void writeClassBody( SourceWriter source, BeanInfo beanInfo, ImmutableMap<String,
-            PropertyInfo> properties ) throws UnableToCompleteException, UnsupportedTypeException {
+    protected void writeClassBody( SourceWriter source, BeanInfo beanInfo, ImmutableMap<String, PropertyInfo> properties ) throws
+            UnableToCompleteException, UnsupportedTypeException {
         source.println();
 
         TypeParameters typeParameters = generateTypeParameterMapperFields( source, beanInfo, JSON_DESERIALIZER_CLASS,
@@ -120,7 +122,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         }
 
         // no need to generate properties for non instantiable class
-        if ( !properties.isEmpty() && beanInfo.getCreatorMethod().isPresent() ) {
+        if ( !properties.isEmpty() && beanInfo.getCreatorMethod().isPresent() && !beanInfo.isCreatorDelegation() ) {
             generateInitPropertiesMethods( source, beanInfo, properties );
             source.println();
         }
@@ -173,8 +175,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         source.println( "}" );
     }
 
-    private void generateInitInstanceBuilderMethod( SourceWriter source, BeanInfo beanInfo, ImmutableMap<String,
-            PropertyInfo> properties ) throws UnableToCompleteException, UnsupportedTypeException {
+    private void generateInitInstanceBuilderMethod( SourceWriter source, BeanInfo beanInfo, ImmutableMap<String, PropertyInfo> properties
+    ) throws UnableToCompleteException, UnsupportedTypeException {
         source.println( "@Override" );
         source.println( "protected %s<%s> initInstanceBuilder() {", INSTANCE_BUILDER_CLASS, beanInfo.getType()
                 .getParameterizedQualifiedSourceName() );
@@ -186,8 +188,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         source.println( "}" );
     }
 
-    private void generateInstanceBuilderClass( SourceWriter source, BeanInfo beanInfo, ImmutableMap<String,
-            PropertyInfo> properties ) throws UnableToCompleteException, UnsupportedTypeException {
+    private void generateInstanceBuilderClass( SourceWriter source, BeanInfo beanInfo, ImmutableMap<String, PropertyInfo> properties )
+            throws UnableToCompleteException, UnsupportedTypeException {
 
         source.println( "new %s<%s>() {", INSTANCE_BUILDER_CLASS, beanInfo.getType().getParameterizedQualifiedSourceName() );
         source.indent();
@@ -242,7 +244,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
      */
     private void generateInstanceBuilderForDefaultConstructor( SourceWriter source, BeanInfo beanInfo ) {
         source.println( "return new %s<%s>(create(), bufferedProperties);", INSTANCE_CLASS, beanInfo.getType()
-                .getParameterizedQualifiedSourceName(), beanInfo.getType().getParameterizedQualifiedSourceName() );
+                .getParameterizedQualifiedSourceName() );
     }
 
     /**
@@ -358,15 +360,16 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
      * Generate the instance builder class body for a constructor or factory method with delegation.
      *
      * @param source writer
-     * @param info info on bean
+     * @param beanInfo info on bean
      * @param properties list of properties
      */
-    private void generateInstanceBuilderForConstructorOrFactoryMethodDelegation( SourceWriter source, BeanInfo info, ImmutableMap<String,
-            PropertyInfo> properties ) throws UnsupportedTypeException {
-        // TODO @JsonCreator with delegation
-        String message = "The delegation is not supported yet";
-        logger.log( TreeLogger.Type.WARN, message );
-        throw new UnsupportedTypeException( message );
+    private void generateInstanceBuilderForConstructorOrFactoryMethodDelegation( SourceWriter source, BeanInfo beanInfo,
+                                                                                 ImmutableMap<String, PropertyInfo> properties ) throws
+            UnsupportedTypeException {
+        String param = String.format( "%s.deserialize(reader, ctx)", String
+                .format( INSTANCE_BUILDER_DESERIALIZER_FORMAT, DELEGATION_PARAM_NAME ) );
+        source.println( "return new %s<%s>(create(%s), bufferedProperties);", INSTANCE_CLASS, beanInfo.getType()
+                .getParameterizedQualifiedSourceName(), param );
     }
 
     private void generateInstanceBuilderCreateMethod( SourceWriter source, BeanInfo info, ImmutableMap<String, PropertyInfo> properties ) {
@@ -419,8 +422,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         }
     }
 
-    private void generateInitPropertiesMethods( SourceWriter source, BeanInfo beanInfo, Map<String,
-            PropertyInfo> properties ) throws UnableToCompleteException {
+    private void generateInitPropertiesMethods( SourceWriter source, BeanInfo beanInfo, Map<String, PropertyInfo> properties ) throws
+            UnableToCompleteException {
 
         List<PropertyInfo> ignoredProperties = new ArrayList<PropertyInfo>();
         List<PropertyInfo> requiredProperties = new ArrayList<PropertyInfo>();
@@ -479,8 +482,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         }
     }
 
-    private void generateInitDeserializersMethod( SourceWriter source, BeanInfo beanInfo, Map<PropertyInfo,
-            JDeserializerType> properties ) throws UnableToCompleteException {
+    private void generateInitDeserializersMethod( SourceWriter source, BeanInfo beanInfo, Map<PropertyInfo, JDeserializerType> properties
+    ) throws UnableToCompleteException {
         String resultType = String.format( "%s<%s<%s, ?>>", SimpleStringMap.class
                 .getCanonicalName(), BEAN_PROPERTY_DESERIALIZER_CLASS, beanInfo.getType().getParameterizedQualifiedSourceName() );
 
@@ -539,8 +542,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         generateCommonPropertyDeserializerBody( source, property, getJsonDeserializerFromType( property.getType() ) );
     }
 
-    private void generateCommonPropertyDeserializerBody( SourceWriter source, PropertyInfo property,
-                                                         JDeserializerType deserializerType ) throws UnableToCompleteException {
+    private void generateCommonPropertyDeserializerBody( SourceWriter source, PropertyInfo property, JDeserializerType deserializerType )
+            throws UnableToCompleteException {
         source.println( "@Override" );
         source.println( "protected %s<?> newDeserializer() {", JSON_DESERIALIZER_CLASS );
         source.indent();
@@ -551,8 +554,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         generatePropertyDeserializerParameters( source, property, deserializerType );
     }
 
-    private void generatePropertyDeserializerParameters( SourceWriter source, PropertyInfo property,
-                                                         JDeserializerType deserializerType ) throws UnableToCompleteException {
+    private void generatePropertyDeserializerParameters( SourceWriter source, PropertyInfo property, JDeserializerType deserializerType )
+            throws UnableToCompleteException {
 
         if ( property.getFormat().isPresent() || property.getIgnoredProperties().isPresent() || property.getIgnoreUnknown().isPresent() ||
                 property.getIdentityInfo().isPresent() || property.getTypeInfo().isPresent() ) {
@@ -603,8 +606,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         }
     }
 
-    private void generateInitBackReferenceDeserializersMethod( SourceWriter source, BeanInfo beanInfo,
-                                                               List<PropertyInfo> properties ) throws UnableToCompleteException {
+    private void generateInitBackReferenceDeserializersMethod( SourceWriter source, BeanInfo beanInfo, List<PropertyInfo> properties )
+            throws UnableToCompleteException {
         String resultType = String.format( "%s<%s<%s, ?>>", SimpleStringMap.class
                 .getCanonicalName(), BACK_REFERENCE_PROPERTY_BEAN_CLASS, beanInfo.getType().getParameterizedQualifiedSourceName() );
 

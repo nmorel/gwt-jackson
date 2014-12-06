@@ -26,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.ObjectIdGenerator;
+import com.github.nmorel.gwtjackson.client.deser.bean.AbstractDelegationBeanJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.bean.AbstractIdentityDeserializationInfo;
 import com.github.nmorel.gwtjackson.client.deser.bean.AbstractObjectBeanJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.bean.AbstractSerializableBeanJsonDeserializer;
@@ -179,6 +180,8 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
                 superclass = AbstractObjectBeanJsonDeserializer.class.getCanonicalName();
             } else if ( isSerializable( beanType ) ) {
                 superclass = AbstractSerializableBeanJsonDeserializer.class.getCanonicalName();
+            } else if ( mapperInfo.getBeanInfo().isCreatorDelegation() ) {
+                superclass = AbstractDelegationBeanJsonDeserializer.class.getCanonicalName() + "<" + beanType.getParameterizedQualifiedSourceName() + ">";
             } else {
                 superclass = ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS + "<" + beanType.getParameterizedQualifiedSourceName() + ">";
             }
