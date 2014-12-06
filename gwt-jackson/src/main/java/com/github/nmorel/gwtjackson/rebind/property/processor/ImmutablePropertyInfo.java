@@ -40,6 +40,8 @@ final class ImmutablePropertyInfo implements PropertyInfo {
 
     private final boolean rawValue;
 
+    private final boolean value;
+
     private final Optional<String> managedReference;
 
     private final Optional<String> backReference;
@@ -60,16 +62,17 @@ final class ImmutablePropertyInfo implements PropertyInfo {
 
     private final Optional<String[]> ignoredProperties;
 
-    ImmutablePropertyInfo( String propertyName, JType type, boolean ignored, boolean required, boolean rawValue,
-                           Optional<String> managedReference, Optional<String> backReference,
-                           Optional<? extends FieldAccessor> getterAccessor, Optional<? extends FieldAccessor> setterAccessor,
-                           Optional<BeanIdentityInfo> identityInfo, Optional<BeanTypeInfo> typeInfo, Optional<JsonFormat> format,
-                           Optional<Include> include, Optional<Boolean> ignoreUnknown, Optional<String[]> ignoredProperties ) {
+    ImmutablePropertyInfo( String propertyName, JType type, boolean ignored, boolean required, boolean rawValue, boolean value,
+                           Optional<String> managedReference, Optional<String> backReference, Optional<? extends FieldAccessor>
+            getterAccessor, Optional<? extends FieldAccessor> setterAccessor, Optional<BeanIdentityInfo> identityInfo,
+                           Optional<BeanTypeInfo> typeInfo, Optional<JsonFormat> format, Optional<Include> include, Optional<Boolean>
+            ignoreUnknown, Optional<String[]> ignoredProperties ) {
         this.propertyName = propertyName;
         this.type = type;
         this.ignored = ignored;
         this.required = required;
         this.rawValue = rawValue;
+        this.value = value;
         this.managedReference = managedReference;
         this.backReference = backReference;
         this.getterAccessor = getterAccessor;
@@ -105,6 +108,11 @@ final class ImmutablePropertyInfo implements PropertyInfo {
     @Override
     public boolean isRawValue() {
         return rawValue;
+    }
+
+    @Override
+    public boolean isValue() {
+        return value;
     }
 
     @Override

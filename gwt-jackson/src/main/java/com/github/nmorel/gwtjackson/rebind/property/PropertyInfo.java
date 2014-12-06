@@ -38,6 +38,8 @@ public interface PropertyInfo {
 
     boolean isRawValue();
 
+    boolean isValue();
+
     Optional<String> getManagedReference();
 
     Optional<String> getBackReference();

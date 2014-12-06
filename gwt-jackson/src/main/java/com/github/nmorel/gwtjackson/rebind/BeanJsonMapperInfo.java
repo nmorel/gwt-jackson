@@ -46,8 +46,8 @@ public class BeanJsonMapperInfo {
     private final ImmutableMap<String, PropertyInfo> properties;
 
     public BeanJsonMapperInfo( JClassType type, String qualifiedSerializerClassName, String simpleSerializerClassName, String
-            qualifiedDeserializerClassName, String simpleDeserializerClassName, BeanInfo beanInfo, ImmutableMap<String,
-            PropertyInfo> properties ) {
+            qualifiedDeserializerClassName, String simpleDeserializerClassName, BeanInfo beanInfo, ImmutableMap<String, PropertyInfo>
+            properties ) {
         this.type = type;
         this.qualifiedSerializerClassName = qualifiedSerializerClassName;
         this.simpleSerializerClassName = simpleSerializerClassName;

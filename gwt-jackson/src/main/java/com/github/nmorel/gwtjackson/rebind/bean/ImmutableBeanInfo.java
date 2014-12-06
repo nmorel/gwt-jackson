@@ -22,6 +22,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.github.nmorel.gwtjackson.rebind.property.PropertyInfo;
 import com.google.gwt.core.ext.typeinfo.JAbstractMethod;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JParameter;
@@ -50,6 +51,8 @@ final class ImmutableBeanInfo implements BeanInfo {
 
     private final Optional<BeanTypeInfo> typeInfo;
 
+    private final Optional<PropertyInfo> valuePropertyInfo;
+
     /*####  Visibility properties  ####*/
     private final ImmutableSet<String> ignoredFields;
 
@@ -75,9 +78,9 @@ final class ImmutableBeanInfo implements BeanInfo {
 
     ImmutableBeanInfo( JClassType type, List<JClassType> parameterizedTypes, Optional<JAbstractMethod> creatorMethod, Map<String,
             JParameter> creatorParameters, boolean creatorDefaultConstructor, boolean creatorDelegation, Optional<BeanTypeInfo> typeInfo,
-                       Set<String> ignoredFields, Visibility fieldVisibility, Visibility getterVisibility, Visibility isGetterVisibility,
-                       Visibility setterVisibility, Visibility creatorVisibility, boolean ignoreUnknown, List<String> propertyOrderList,
-                       boolean propertyOrderAlphabetic, Optional<BeanIdentityInfo> identityInfo ) {
+                       Optional<PropertyInfo> valuePropertyInfo, Set<String> ignoredFields, Visibility fieldVisibility, Visibility
+            getterVisibility, Visibility isGetterVisibility, Visibility setterVisibility, Visibility creatorVisibility, boolean
+            ignoreUnknown, List<String> propertyOrderList, boolean propertyOrderAlphabetic, Optional<BeanIdentityInfo> identityInfo ) {
 
         this.type = type;
         this.parameterizedTypes = ImmutableList.copyOf( parameterizedTypes );
@@ -86,6 +89,7 @@ final class ImmutableBeanInfo implements BeanInfo {
         this.creatorDefaultConstructor = creatorDefaultConstructor;
         this.creatorDelegation = creatorDelegation;
         this.typeInfo = typeInfo;
+        this.valuePropertyInfo = valuePropertyInfo;
         this.ignoredFields = ImmutableSet.copyOf( ignoredFields );
 
         this.fieldVisibility = fieldVisibility;
@@ -133,6 +137,11 @@ final class ImmutableBeanInfo implements BeanInfo {
     @Override
     public Optional<BeanTypeInfo> getTypeInfo() {
         return typeInfo;
+    }
+
+    @Override
+    public Optional<PropertyInfo> getValuePropertyInfo() {
+        return valuePropertyInfo;
     }
 
     @Override

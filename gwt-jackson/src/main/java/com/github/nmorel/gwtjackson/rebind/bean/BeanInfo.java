@@ -17,6 +17,7 @@
 package com.github.nmorel.gwtjackson.rebind.bean;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.github.nmorel.gwtjackson.rebind.property.PropertyInfo;
 import com.google.gwt.core.ext.typeinfo.JAbstractMethod;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JParameter;
@@ -43,6 +44,8 @@ public interface BeanInfo {
     boolean isCreatorDelegation();
 
     Optional<BeanTypeInfo> getTypeInfo();
+
+    Optional<PropertyInfo> getValuePropertyInfo();
 
     ImmutableSet<String> getIgnoredFields();
 

@@ -16,6 +16,7 @@
 
 package com.github.nmorel.gwtjackson.shared.annotations;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -23,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException;
@@ -264,7 +266,7 @@ public final class JsonCreatorTester extends AbstractTester {
         }
     }
 
-    @JsonTypeInfo( use = Id.CLASS )
+    @JsonTypeInfo( use = Id.CLASS, include = As.PROPERTY )
     public static class BeanWithBooleanConstructorDelegationAndTypeInfo {
 
         private final Boolean value;
@@ -297,6 +299,28 @@ public final class JsonCreatorTester extends AbstractTester {
 
         public void setB( Integer b ) {
             this.b = b;
+        }
+    }
+
+    @JsonTypeInfo( use = Id.CLASS, include = As.WRAPPER_ARRAY )
+    public static class BeanWithMapConstructorDelegationAndTypeInfo {
+
+        private final String a;
+
+        private Integer b;
+
+        @JsonCreator
+        public BeanWithMapConstructorDelegationAndTypeInfo( Map map ) {
+            a = (String) map.get( "propertyA" );
+            b = (Integer) map.get( "propertyB" );
+        }
+
+        @JsonValue
+        public Map get() {
+            Map<String, Object> map = new LinkedHashMap<String, Object>();
+            map.put( "propertyA", a );
+            map.put( "propertyB", b );
+            return map;
         }
     }
 
@@ -532,6 +556,20 @@ public final class JsonCreatorTester extends AbstractTester {
         BeanWithObjectConstructorDelegation result = reader.read( "{\"propertyA\":\"string A\",\"propertyB\":148}" );
         assertEquals( "string A", result.a );
         assertEquals( 148, result.b.intValue() );
+    }
+
+    public void testBeanWithMapConstructorDelegationAndTypeInfo( ObjectMapperTester<BeanWithMapConstructorDelegationAndTypeInfo> mapper ) {
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        map.put( "propertyA", "string A" );
+        map.put( "propertyB", 148 );
+        BeanWithMapConstructorDelegationAndTypeInfo bean = new BeanWithMapConstructorDelegationAndTypeInfo( map );
+        String json = mapper.write( bean );
+        assertEquals( "[\"" + BeanWithMapConstructorDelegationAndTypeInfo.class.getName() + "\",{\"propertyA\":\"string A\"," +
+                "\"propertyB\":148}]", json );
+
+        bean = mapper.read( json );
+        assertEquals( "string A", bean.a );
+        assertEquals( 148, bean.b.intValue() );
     }
 
 }

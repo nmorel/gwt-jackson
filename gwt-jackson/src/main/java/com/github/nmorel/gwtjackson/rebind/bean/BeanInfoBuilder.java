@@ -23,6 +23,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.github.nmorel.gwtjackson.rebind.property.PropertyInfo;
 import com.google.gwt.core.ext.typeinfo.JAbstractMethod;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JParameter;
@@ -47,6 +48,8 @@ final class BeanInfoBuilder {
 
     private Optional<BeanTypeInfo> typeInfo = Optional.absent();
 
+    private Optional<PropertyInfo> valuePropertyInfo = Optional.absent();
+
     private Set<String> ignoredFields = Collections.emptySet();
 
     private JsonAutoDetect.Visibility fieldVisibility = JsonAutoDetect.Visibility.DEFAULT;
@@ -68,6 +71,29 @@ final class BeanInfoBuilder {
     private Optional<BeanIdentityInfo> identityInfo = Optional.absent();
 
     BeanInfoBuilder() {
+    }
+
+    BeanInfoBuilder( BeanInfo beanInfo ) {
+        this.type = beanInfo.getType();
+        this.parameterizedTypes = beanInfo.getParameterizedTypes();
+        this.creatorMethod = beanInfo.getCreatorMethod();
+        this.creatorParameters = beanInfo.getCreatorParameters();
+        this.creatorDefaultConstructor = beanInfo.isCreatorDefaultConstructor();
+        this.creatorDelegation = beanInfo.isCreatorDelegation();
+        this.typeInfo = beanInfo.getTypeInfo();
+        this.valuePropertyInfo = beanInfo.getValuePropertyInfo();
+        this.ignoredFields = beanInfo.getIgnoredFields();
+
+        this.fieldVisibility = beanInfo.getFieldVisibility();
+        this.getterVisibility = beanInfo.getGetterVisibility();
+        this.isGetterVisibility = beanInfo.getIsGetterVisibility();
+        this.setterVisibility = beanInfo.getSetterVisibility();
+        this.creatorVisibility = beanInfo.getCreatorVisibility();
+
+        this.ignoreUnknown = beanInfo.isIgnoreUnknown();
+        this.propertyOrderList = beanInfo.getPropertyOrderList();
+        this.propertyOrderAlphabetic = beanInfo.isPropertyOrderAlphabetic();
+        this.identityInfo = beanInfo.getIdentityInfo();
     }
 
     void setType( JClassType type ) {
@@ -100,6 +126,10 @@ final class BeanInfoBuilder {
 
     void setTypeInfo( Optional<BeanTypeInfo> typeInfo ) {
         this.typeInfo = typeInfo;
+    }
+
+    void setValuePropertyInfo( Optional<PropertyInfo> valuePropertyInfo ) {
+        this.valuePropertyInfo = valuePropertyInfo;
     }
 
     void setIgnoredFields( Set<String> ignoredFields ) {
@@ -148,7 +178,7 @@ final class BeanInfoBuilder {
 
     BeanInfo build() {
         return new ImmutableBeanInfo( type, parameterizedTypes, creatorMethod, creatorParameters, creatorDefaultConstructor,
-                creatorDelegation, typeInfo, ignoredFields, fieldVisibility, getterVisibility, isGetterVisibility, setterVisibility,
-                creatorVisibility, ignoreUnknown, propertyOrderList, propertyOrderAlphabetic, identityInfo );
+                creatorDelegation, typeInfo, valuePropertyInfo, ignoredFields, fieldVisibility, getterVisibility, isGetterVisibility,
+                setterVisibility, creatorVisibility, ignoreUnknown, propertyOrderList, propertyOrderAlphabetic, identityInfo );
     }
 }

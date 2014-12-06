@@ -39,6 +39,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.github.nmorel.gwtjackson.rebind.JacksonTypeOracle;
 import com.github.nmorel.gwtjackson.rebind.RebindConfiguration;
 import com.github.nmorel.gwtjackson.rebind.bean.BeanInfo;
@@ -69,12 +70,11 @@ import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounte
 public final class PropertyProcessor {
 
     private static final List<Class<? extends Annotation>> AUTO_DISCOVERY_ANNOTATIONS = Arrays
-            .asList( JsonProperty.class, JsonManagedReference.class, JsonBackReference.class );
+            .asList( JsonProperty.class, JsonManagedReference.class, JsonBackReference.class, JsonValue.class );
 
     public static ImmutableMap<String, PropertyInfo> findAllProperties( RebindConfiguration configuration, TreeLogger logger,
-                                                                        JacksonTypeOracle typeOracle, BeanInfo beanInfo,
-                                                                        boolean mapperInSamePackageAsType ) throws
-            UnableToCompleteException {
+                                                                        JacksonTypeOracle typeOracle, BeanInfo beanInfo, boolean
+            mapperInSamePackageAsType ) throws UnableToCompleteException {
 
         // we first parse the bean to retrieve all the properties
         ImmutableMap<String, PropertyAccessors> fieldsMap = PropertyParser.findPropertyAccessors( configuration, logger, beanInfo );
@@ -131,9 +131,8 @@ public final class PropertyProcessor {
         return result.build();
     }
 
-    private static Optional<PropertyInfo> processProperty( RebindConfiguration configuration, TreeLogger logger,
-                                                           JacksonTypeOracle typeOracle, PropertyAccessors propertyAccessors,
-                                                           BeanInfo beanInfo, boolean samePackage ) throws UnableToCompleteException {
+    private static Optional<PropertyInfo> processProperty( RebindConfiguration configuration, TreeLogger logger, JacksonTypeOracle
+            typeOracle, PropertyAccessors propertyAccessors, BeanInfo beanInfo, boolean samePackage ) throws UnableToCompleteException {
 
         boolean getterAutoDetected = isGetterAutoDetected( propertyAccessors, beanInfo );
         boolean setterAutoDetected = isSetterAutoDetected( propertyAccessors, beanInfo );
@@ -171,6 +170,11 @@ public final class PropertyProcessor {
             builder.setRawValue( jsonRawValue.isPresent() && jsonRawValue.get().value() );
         }
         determineSetter( propertyAccessors, samePackage, setterAutoDetected, fieldAutoDetected, builder );
+
+        Optional<JsonValue> jsonValue = propertyAccessors.getAnnotation( JsonValue.class );
+        if ( jsonValue.isPresent() && jsonValue.get().value() && builder.getGetterAccessor().isPresent() ) {
+            builder.setValue( true );
+        }
 
         processBeanAnnotation( logger, typeOracle, configuration, type, propertyAccessors, builder );
 
@@ -264,8 +268,8 @@ public final class PropertyProcessor {
                 .isDefaultAccess() );
     }
 
-    private static boolean isAutoDetected( JsonAutoDetect.Visibility visibility, boolean isPrivate, boolean isProtected,
-                                           boolean isPublic, boolean isDefaultAccess ) {
+    private static boolean isAutoDetected( JsonAutoDetect.Visibility visibility, boolean isPrivate, boolean isProtected, boolean
+            isPublic, boolean isDefaultAccess ) {
         switch ( visibility ) {
             case ANY:
                 return true;
@@ -320,8 +324,8 @@ public final class PropertyProcessor {
 
     }
 
-    private static void determineGetter( final PropertyAccessors propertyAccessors, final boolean samePackage,
-                                         final boolean getterAutoDetect, boolean fieldAutoDetect, final PropertyInfoBuilder builder ) {
+    private static void determineGetter( final PropertyAccessors propertyAccessors, final boolean samePackage, final boolean
+            getterAutoDetect, boolean fieldAutoDetect, final PropertyInfoBuilder builder ) {
         // if one of field/getter is present and the property has an annotation like JsonProperty or field/getter is auto detected
         if ( (propertyAccessors.getGetter().isPresent() || propertyAccessors.getField()
                 .isPresent()) && (fieldAutoDetect || getterAutoDetect) ) {
@@ -331,9 +335,8 @@ public final class PropertyProcessor {
         }
     }
 
-    private static void determineSetter( final PropertyAccessors propertyAccessors, final boolean samePackage,
-                                         final boolean setterAutoDetect, final boolean fieldAutoDetect,
-                                         final PropertyInfoBuilder builder ) {
+    private static void determineSetter( final PropertyAccessors propertyAccessors, final boolean samePackage, final boolean
+            setterAutoDetect, final boolean fieldAutoDetect, final PropertyInfoBuilder builder ) {
         // if one of field/setter is present and the property has an annotation like JsonProperty or field/setter is auto detected
         if ( (propertyAccessors.getSetter().isPresent() || propertyAccessors.getField()
                 .isPresent()) && (fieldAutoDetect || setterAutoDetect) ) {
@@ -343,9 +346,8 @@ public final class PropertyProcessor {
         }
     }
 
-    private static void processBeanAnnotation( TreeLogger logger, JacksonTypeOracle typeOracle, RebindConfiguration configuration,
-                                               JType type, PropertyAccessors propertyAccessors,
-                                               PropertyInfoBuilder builder ) throws UnableToCompleteException {
+    private static void processBeanAnnotation( TreeLogger logger, JacksonTypeOracle typeOracle, RebindConfiguration configuration, JType
+            type, PropertyAccessors propertyAccessors, PropertyInfoBuilder builder ) throws UnableToCompleteException {
 
         // identity
         Optional<JsonIdentityInfo> jsonIdentityInfo = propertyAccessors.getAnnotation( JsonIdentityInfo.class );
@@ -389,8 +391,8 @@ public final class PropertyProcessor {
      *
      * @return the extracted type
      */
-    private static Optional<JClassType> extractBeanType( TreeLogger logger, JacksonTypeOracle typeOracle, JType type,
-                                                         String propertyName ) {
+    private static Optional<JClassType> extractBeanType( TreeLogger logger, JacksonTypeOracle typeOracle, JType type, String propertyName
+    ) {
         if ( null != type.isWildcard() ) {
             // we use the base type to find the serializer to use
             type = type.isWildcard().getBaseType();

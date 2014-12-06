@@ -20,10 +20,8 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -48,6 +46,7 @@ import com.github.nmorel.gwtjackson.rebind.BeanJsonDeserializerCreator;
 import com.github.nmorel.gwtjackson.rebind.CreatorUtils;
 import com.github.nmorel.gwtjackson.rebind.JacksonTypeOracle;
 import com.github.nmorel.gwtjackson.rebind.RebindConfiguration;
+import com.github.nmorel.gwtjackson.rebind.property.PropertyInfo;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JAbstractMethod;
@@ -228,7 +227,8 @@ public final class BeanProcessor {
                     .get( 0 ), JsonProperty.class ) ) {
                 // delegation constructor
                 builder.setCreatorDelegation( true );
-                builder.setCreatorParameters( ImmutableMap.of( BeanJsonDeserializerCreator.DELEGATION_PARAM_NAME, creatorMethod.get().getParameters()[0] ) );
+                builder.setCreatorParameters( ImmutableMap.of( BeanJsonDeserializerCreator.DELEGATION_PARAM_NAME, creatorMethod.get()
+                        .getParameters()[0] ) );
             } else {
                 // we want the property name define in the mixin and the parameter defined in the real creator method
                 ImmutableMap.Builder<String, JParameter> creatorParameters = ImmutableMap.builder();
@@ -330,10 +330,10 @@ public final class BeanProcessor {
         // TODO we could do better, we actually extract metadata twice for a lot of classes
         ImmutableMap<JClassType, String> classToSerializationMetadata = extractMetadata( logger, configuration, type, jsonTypeInfo,
                 propertySubTypes, typeSubTypes, CreatorUtils
-                .filterSubtypesForSerialization( logger, configuration, type ) );
+                        .filterSubtypesForSerialization( logger, configuration, type ) );
         ImmutableMap<JClassType, String> classToDeserializationMetadata = extractMetadata( logger, configuration, type, jsonTypeInfo,
                 propertySubTypes, typeSubTypes, CreatorUtils
-                .filterSubtypesForDeserialization( logger, configuration, type ) );
+                        .filterSubtypesForDeserialization( logger, configuration, type ) );
 
         return Optional
                 .<BeanTypeInfo>of( new ImmutableBeanTypeInfo( use, include, propertyName, classToSerializationMetadata,
@@ -442,4 +442,41 @@ public final class BeanProcessor {
         return null;
     }
 
+    /**
+     * Process the properties of the bean to find additionnal informations like @JsonValue.
+     *
+     * @param configuration the configuration
+     * @param logger the logger
+     * @param typeOracle the oracle
+     * @param beanInfo the previous bean information
+     * @param properties the properties of the bean
+     *
+     * @return the new informations about the bean and its properties
+     */
+    public static BeanInfo processProperties( RebindConfiguration configuration, TreeLogger logger, JacksonTypeOracle typeOracle,
+                                              BeanInfo beanInfo, ImmutableMap<String, PropertyInfo> properties ) {
+        PropertyInfo valueProperty = null;
+        for ( PropertyInfo propertyInfo : properties.values() ) {
+            if ( propertyInfo.isValue() ) {
+                valueProperty = propertyInfo;
+                break;
+            }
+        }
+
+        if ( null == valueProperty ) {
+            return beanInfo;
+        }
+
+        BeanInfoBuilder builder = new BeanInfoBuilder( beanInfo );
+        builder.setValuePropertyInfo( Optional.of( valueProperty ) );
+
+        if ( beanInfo.getTypeInfo().isPresent() && As.PROPERTY.equals( beanInfo.getTypeInfo().get().getInclude() ) ) {
+            // if the bean has type info on property with @JsonValue, we change it to WRAPPER_ARRAY because the value may not be an object
+            BeanTypeInfo typeInfo = beanInfo.getTypeInfo().get();
+            builder.setTypeInfo( Optional.<BeanTypeInfo>of( new ImmutableBeanTypeInfo( typeInfo.getUse(), As.WRAPPER_ARRAY, typeInfo
+                    .getPropertyName(), typeInfo.getMapTypeToSerializationMetadata(), typeInfo.getMapTypeToDeserializationMetadata() ) ) );
+        }
+
+        return builder.build();
+    }
 }

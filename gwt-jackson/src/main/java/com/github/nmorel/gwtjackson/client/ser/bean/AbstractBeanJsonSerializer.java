@@ -24,6 +24,7 @@ import java.util.logging.Level;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.JsonSerializerParameters;
@@ -36,7 +37,7 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  */
 public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> implements InternalSerializer<T> {
 
-    private final Map<String, BeanPropertySerializer<T, ?>> serializers;
+    protected final Map<String, BeanPropertySerializer<T, ?>> serializers;
 
     private final Map<Class, SubtypeSerializer> subtypeClassToSerializer;
 
@@ -143,15 +144,8 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
                 switch ( typeInfo.getInclude() ) {
                     case PROPERTY:
                         // type info is included as a property of the object
-                        writer.beginObject();
-                        writer.name( typeInfo.getPropertyName() );
-                        writer.value( typeInformation );
-                        if ( null != idWriter ) {
-                            writer.name( identityInfo.getPropertyName() );
-                            idWriter.serializeId( writer, ctx );
-                        }
-                        serializeObject( writer, value, ctx, identityInfo, ignoredProperties );
-                        writer.endObject();
+                        serializeObject( writer, value, ctx, ignoredProperties, identityInfo, idWriter, typeInfo
+                                .getPropertyName(), typeInformation );
                         return;
 
                     case WRAPPER_OBJECT:
@@ -159,13 +153,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
                         // info and the value the object
                         writer.beginObject();
                         writer.name( typeInformation );
-                        writer.beginObject();
-                        if ( null != idWriter ) {
-                            writer.name( identityInfo.getPropertyName() );
-                            idWriter.serializeId( writer, ctx );
-                        }
-                        serializeObject( writer, value, ctx, identityInfo, ignoredProperties );
-                        writer.endObject();
+                        serializeObject( writer, value, ctx, ignoredProperties, identityInfo, idWriter );
                         writer.endObject();
                         return;
 
@@ -174,13 +162,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
                         // info and the second one the object
                         writer.beginArray();
                         writer.value( typeInformation );
-                        writer.beginObject();
-                        if ( null != idWriter ) {
-                            writer.name( identityInfo.getPropertyName() );
-                            idWriter.serializeId( writer, ctx );
-                        }
-                        serializeObject( writer, value, ctx, identityInfo, ignoredProperties );
-                        writer.endObject();
+                        serializeObject( writer, value, ctx, ignoredProperties, identityInfo, idWriter );
                         writer.endArray();
                         return;
 
@@ -190,24 +172,51 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
             }
         }
 
-        writer.beginObject();
-        if ( null != idWriter ) {
-            writer.name( identityInfo.getPropertyName() );
-            idWriter.serializeId( writer, ctx );
-        }
-        serializeObject( writer, value, ctx, identityInfo, ignoredProperties );
-        writer.endObject();
+        serializeObject( writer, value, ctx, ignoredProperties, identityInfo, idWriter );
     }
 
     /**
-     * Serializes all the properties of the bean. The {@link JsonWriter} must be in a json object.
+     * Serializes all the properties of the bean in a json object.
      *
      * @param writer writer
      * @param value bean to serialize
      * @param ctx context of the serialization process
+     * @param ignoredProperties ignored properties
+     * @param identityInfo identity info
+     * @param idWriter identifier writer
      */
-    private void serializeObject( JsonWriter writer, T value, JsonSerializationContext ctx, IdentitySerializationInfo identityInfo,
-                                  Set<String> ignoredProperties ) {
+    private void serializeObject( JsonWriter writer, T value, JsonSerializationContext ctx, Set<String> ignoredProperties,
+                                  IdentitySerializationInfo identityInfo, ObjectIdSerializer<?> idWriter ) {
+        serializeObject( writer, value, ctx, ignoredProperties, identityInfo, idWriter, null, null );
+    }
+
+    /**
+     * Serializes all the properties of the bean in a json object.
+     *
+     * @param writer writer
+     * @param value bean to serialize
+     * @param ctx context of the serialization process
+     * @param ignoredProperties ignored properties
+     * @param identityInfo identity info
+     * @param idWriter identifier writer
+     * @param typeName in case of type info as property, the name of the property
+     * @param typeInformation in case of type info as property, the type information
+     */
+    protected void serializeObject( JsonWriter writer, T value, JsonSerializationContext ctx, Set<String> ignoredProperties,
+                                    IdentitySerializationInfo identityInfo, ObjectIdSerializer<?> idWriter, String typeName, String
+            typeInformation ) {
+        writer.beginObject();
+
+        if ( null != typeName && null != typeInformation ) {
+            writer.name( typeName );
+            writer.value( typeInformation );
+        }
+
+        if ( null != idWriter ) {
+            writer.name( identityInfo.getPropertyName() );
+            idWriter.serializeId( writer, ctx );
+        }
+
         for ( Map.Entry<String, BeanPropertySerializer<T, ?>> entry : serializers.entrySet() ) {
             if ( (null == identityInfo || !identityInfo.isProperty() || !identityInfo.getPropertyName().equals( entry
                     .getKey() )) && !ignoredProperties.contains( entry.getKey() ) ) {
@@ -215,5 +224,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
                 entry.getValue().serialize( writer, value, ctx );
             }
         }
+
+        writer.endObject();
     }
 }

@@ -28,6 +28,7 @@ import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester.BeanWit
 import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester.BeanWithConstructorAnnotated;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester.BeanWithDefaultConstructorPrivate;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester.BeanWithFactoryMethod;
+import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester.BeanWithMapConstructorDelegationAndTypeInfo;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester.BeanWithObjectConstructorDelegation;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester.BeanWithPrivateFactoryMethod;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester.BeanWithPropertiesOnlyPresentOnConstructor;
@@ -205,5 +206,19 @@ public class JsonCreatorGwtTest extends GwtJacksonTestCase {
     public void testDeserializeBeanWithObjectConstructorDelegation() {
         JsonCreatorTester.INSTANCE
                 .testDeserializeBeanWithObjectConstructorDelegation( BeanWithObjectConstructorDelegationReader.INSTANCE );
+    }
+
+    /* ################################ */
+
+    public interface BeanWithMapConstructorDelegationAndTypeInfoMapper extends ObjectMapper<BeanWithMapConstructorDelegationAndTypeInfo>,
+            ObjectMapperTester<BeanWithMapConstructorDelegationAndTypeInfo> {
+
+        static BeanWithMapConstructorDelegationAndTypeInfoMapper INSTANCE = GWT
+                .create( BeanWithMapConstructorDelegationAndTypeInfoMapper.class );
+    }
+
+    public void testBeanWithMapConstructorDelegationAndTypeInfo() {
+        JsonCreatorTester.INSTANCE
+                .testBeanWithMapConstructorDelegationAndTypeInfo( BeanWithMapConstructorDelegationAndTypeInfoMapper.INSTANCE );
     }
 }

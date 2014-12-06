@@ -33,6 +33,7 @@ import com.github.nmorel.gwtjackson.client.deser.bean.AbstractSerializableBeanJs
 import com.github.nmorel.gwtjackson.client.deser.bean.PropertyIdentityDeserializationInfo;
 import com.github.nmorel.gwtjackson.client.ser.bean.AbstractBeanJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.AbstractIdentitySerializationInfo;
+import com.github.nmorel.gwtjackson.client.ser.bean.AbstractValueBeanJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.ObjectIdSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.PropertyIdentitySerializationInfo;
 import com.github.nmorel.gwtjackson.rebind.bean.BeanIdentityInfo;
@@ -102,8 +103,8 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
 
     protected BeanJsonMapperInfo mapperInfo;
 
-    public AbstractBeanJsonCreator( TreeLogger logger, GeneratorContext context, RebindConfiguration configuration,
-                                    JacksonTypeOracle typeOracle ) {
+    public AbstractBeanJsonCreator( TreeLogger logger, GeneratorContext context, RebindConfiguration configuration, JacksonTypeOracle
+            typeOracle ) {
         super( logger, context, configuration, typeOracle );
     }
 
@@ -167,6 +168,8 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
                 ImmutableMap<String, PropertyInfo> properties = PropertyProcessor
                         .findAllProperties( configuration, logger, typeOracle, beanInfo, samePackage );
 
+                beanInfo = BeanProcessor.processProperties( configuration, logger, typeOracle, beanInfo, properties );
+
                 mapperInfo = new BeanJsonMapperInfo( beanType, qualifiedSerializerClassName, simpleSerializerClassName,
                         qualifiedDeserializerClassName, simpleDeserializerClassName, beanInfo, properties );
 
@@ -175,15 +178,23 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
 
             String superclass;
             if ( isSerializer() ) {
-                superclass = ABSTRACT_BEAN_JSON_SERIALIZER_CLASS + "<" + beanType.getParameterizedQualifiedSourceName() + ">";
-            } else if ( isObject( beanType ) ) {
-                superclass = AbstractObjectBeanJsonDeserializer.class.getCanonicalName();
-            } else if ( isSerializable( beanType ) ) {
-                superclass = AbstractSerializableBeanJsonDeserializer.class.getCanonicalName();
-            } else if ( mapperInfo.getBeanInfo().isCreatorDelegation() ) {
-                superclass = AbstractDelegationBeanJsonDeserializer.class.getCanonicalName() + "<" + beanType.getParameterizedQualifiedSourceName() + ">";
+                if ( mapperInfo.getBeanInfo().getValuePropertyInfo().isPresent() ) {
+                    superclass = AbstractValueBeanJsonSerializer.class.getCanonicalName();
+                } else {
+                    superclass = ABSTRACT_BEAN_JSON_SERIALIZER_CLASS;
+                }
+                superclass = superclass + "<" + beanType.getParameterizedQualifiedSourceName() + ">";
             } else {
-                superclass = ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS + "<" + beanType.getParameterizedQualifiedSourceName() + ">";
+                if ( isObject( beanType ) ) {
+                    superclass = AbstractObjectBeanJsonDeserializer.class.getCanonicalName();
+                } else if ( isSerializable( beanType ) ) {
+                    superclass = AbstractSerializableBeanJsonDeserializer.class.getCanonicalName();
+                } else if ( mapperInfo.getBeanInfo().isCreatorDelegation() ) {
+                    superclass = AbstractDelegationBeanJsonDeserializer.class.getCanonicalName() + "<" + beanType
+                            .getParameterizedQualifiedSourceName() + ">";
+                } else {
+                    superclass = ABSTRACT_BEAN_JSON_DESERIALIZER_CLASS + "<" + beanType.getParameterizedQualifiedSourceName() + ">";
+                }
             }
 
             SourceWriter source = getSourceWriter( printWriter, packageName, getSimpleClassName() + getGenericClassBoundedParameters(),
@@ -214,11 +225,11 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
         return mapperInfo.getGenericClassBoundedParameters();
     }
 
-    protected abstract void writeClassBody( SourceWriter source, BeanInfo info, ImmutableMap<String,
-            PropertyInfo> properties ) throws UnableToCompleteException, UnsupportedTypeException;
+    protected abstract void writeClassBody( SourceWriter source, BeanInfo info, ImmutableMap<String, PropertyInfo> properties ) throws
+            UnableToCompleteException, UnsupportedTypeException;
 
-    protected TypeParameters generateTypeParameterMapperFields( SourceWriter source, BeanInfo beanInfo, String mapperClass,
-                                                                String mapperNameFormat ) throws UnableToCompleteException {
+    protected TypeParameters generateTypeParameterMapperFields( SourceWriter source, BeanInfo beanInfo, String mapperClass, String
+            mapperNameFormat ) throws UnableToCompleteException {
         if ( beanInfo.getParameterizedTypes().isEmpty() ) {
             return null;
         }
@@ -247,14 +258,6 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
     protected String getParameterizedQualifiedClassName( JType type ) {
         if ( null == type.isPrimitive() ) {
             return type.getParameterizedQualifiedSourceName();
-        } else {
-            return type.isPrimitive().getQualifiedBoxedSourceName();
-        }
-    }
-
-    protected String getQualifiedClassName( JType type ) {
-        if ( null == type.isPrimitive() ) {
-            return type.getQualifiedSourceName();
         } else {
             return type.isPrimitive().getQualifiedBoxedSourceName();
         }
@@ -401,8 +404,8 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
         return findFirstTypeToApplyPropertyAnnotation( subLevel );
     }
 
-    protected void generateCommonPropertyParameters( SourceWriter source, PropertyInfo property,
-                                                     JMapperType mapperType ) throws UnableToCompleteException {
+    protected void generateCommonPropertyParameters( SourceWriter source, PropertyInfo property, JMapperType mapperType ) throws
+            UnableToCompleteException {
         if ( property.getFormat().isPresent() ) {
             JsonFormat format = property.getFormat().get();
             if ( !Strings.isNullOrEmpty( format.pattern() ) ) {

@@ -148,7 +148,15 @@ public class JsonCreatorJacksonTest extends AbstractJacksonTest {
     @Test
     public void testDeserializeBeanWithObjectConstructorDelegation() {
         JsonCreatorTester.INSTANCE
-                .testDeserializeBeanWithObjectConstructorDelegation( createReader( JsonCreatorTester
-                        .BeanWithObjectConstructorDelegation.class ) );
+                .testDeserializeBeanWithObjectConstructorDelegation( createReader( JsonCreatorTester.BeanWithObjectConstructorDelegation
+                        .class ) );
+    }
+
+    @Test
+    @Ignore( "jackson put LinkedHashMap as type information ?!?" )
+    public void testBeanWithMapConstructorDelegationAndTypeInfo() {
+        JsonCreatorTester.INSTANCE
+                .testBeanWithMapConstructorDelegationAndTypeInfo( createMapper( JsonCreatorTester
+                        .BeanWithMapConstructorDelegationAndTypeInfo.class ) );
     }
 }
