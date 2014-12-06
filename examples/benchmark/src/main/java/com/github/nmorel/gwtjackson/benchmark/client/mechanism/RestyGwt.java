@@ -23,7 +23,6 @@ import com.github.nmorel.gwtjackson.client.ObjectMapper;
 import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException;
 import com.github.nmorel.gwtjackson.client.exception.JsonSerializationException;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.json.client.JSONParser;
 import org.fusesource.restygwt.client.JsonEncoderDecoder;
 
 /**
@@ -37,7 +36,7 @@ public class RestyGwt extends Mechanism {
 
         @Override
         public DataContainer read( String input ) throws JsonDeserializationException {
-            return mapper.decode( JSONParser.parseLenient( input ) );
+            return mapper.decode( input );
         }
 
         @Override
