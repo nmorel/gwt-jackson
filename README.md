@@ -53,7 +53,7 @@ public class TestEntryPoint implements EntryPoint {
 }
 ```
 
-Maven
+With Maven
 -------------
 
 ```xml
@@ -76,6 +76,17 @@ You can also get maven snapshots using the following repository :
   </snapshots>
 </repository>
 ```
+
+Without Maven
+-------------
+In addition of gwt-jackson jar you can find [here](https://github.com/nmorel/gwt-jackson/releases), you also need [jackson-annotations-2.4.3.jar](http://search.maven.org/remotecontent?filepath=com/fasterxml/jackson/core/jackson-annotations/2.4.3/jackson-annotations-2.4.3.jar) and [jackson-annotations-2.4.3-sources.jar](http://search.maven.org/remotecontent?filepath=com/fasterxml/jackson/core/jackson-annotations/2.4.3/jackson-annotations-2.4.3-sources.jar).
+
+Server communication
+-------------
+If you need to communicate with your server using REST/Json payload, you can check these framework which integrates gwt-jackson :
+- [GWTP Rest Dispatch](https://github.com/ArcBees/GWTP/wiki/Rest-Dispatch). Check the [example](https://github.com/nmorel/gwt-jackson/tree/master/examples/gwtp).
+- [Requestor](http://reinert.io/requestor/latest/)
+- [GWT RequestBuilder](http://www.gwtproject.org/javadoc/latest/com/google/gwt/http/client/RequestBuilder.html). Check the [example](https://github.com/nmorel/gwt-jackson/tree/master/hello/gwtp).
 
 Copyright and license
 -------------
