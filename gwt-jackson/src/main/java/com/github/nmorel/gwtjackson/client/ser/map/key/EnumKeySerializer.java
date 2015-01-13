@@ -32,12 +32,17 @@ public final class EnumKeySerializer<E extends Enum<E>> extends KeySerializer<E>
     /**
      * @return an instance of {@link EnumKeySerializer}
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public static <S extends EnumKeySerializer<?>> S getInstance() {
         return (S) INSTANCE;
     }
 
     private EnumKeySerializer() { }
+
+    @Override
+    public boolean mustBeEscaped( JsonSerializationContext ctx ) {
+        return false;
+    }
 
     @Override
     protected String doSerialize( @Nonnull E value, JsonSerializationContext ctx ) {

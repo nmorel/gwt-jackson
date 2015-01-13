@@ -49,6 +49,6 @@ public class PrimitiveByteArrayJsonSerializer extends JsonSerializer<byte[]> {
             return;
         }
 
-        writer.value( Base64Utils.toBase64( values ) );
+        writer.unescapeValue( Base64Utils.toBase64( values ) );
     }
 }

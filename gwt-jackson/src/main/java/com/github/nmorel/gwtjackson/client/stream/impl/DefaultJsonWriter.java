@@ -136,7 +136,6 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
    * error. http://code.google.com/p/google-gson/issues/detail?id=341
    */
   private static final String[] REPLACEMENT_CHARS;
-  private static final String[] HTML_SAFE_REPLACEMENT_CHARS;
   static {
     REPLACEMENT_CHARS = new String[128];
     for (int i = 0; i <= 0x1f; i++) {
@@ -156,16 +155,6 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
     REPLACEMENT_CHARS['\n'] = "\\n";
     REPLACEMENT_CHARS['\r'] = "\\r";
     REPLACEMENT_CHARS['\f'] = "\\f";
-
-    HTML_SAFE_REPLACEMENT_CHARS = new String[REPLACEMENT_CHARS.length];
-    for ( int i = 0; i < REPLACEMENT_CHARS.length; i++ ) {
-      HTML_SAFE_REPLACEMENT_CHARS[i] = REPLACEMENT_CHARS[i];
-    }
-    HTML_SAFE_REPLACEMENT_CHARS['<'] = "\\u003c";
-    HTML_SAFE_REPLACEMENT_CHARS['>'] = "\\u003e";
-    HTML_SAFE_REPLACEMENT_CHARS['&'] = "\\u0026";
-    HTML_SAFE_REPLACEMENT_CHARS['='] = "\\u003d";
-    HTML_SAFE_REPLACEMENT_CHARS['\''] = "\\u0027";
   }
 
   /** The output data, containing at most one top-level array or object. */
@@ -190,7 +179,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
 
   private boolean lenient;
 
-  private boolean htmlSafe;
+  private String deferredUnescapeName;
 
   private String deferredName;
 
@@ -227,25 +216,6 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
    */
   public boolean isLenient() {
     return lenient;
-  }
-
-  /**
-   * Configure this writer to emit JSON that's safe for direct inclusion in HTML
-   * and XML documents. This escapes the HTML characters {@code <}, {@code >},
-   * {@code &} and {@code =} before writing them to the stream. Without this
-   * setting, your XML/HTML encoder should replace these characters with the
-   * corresponding escape sequences.
-   */
-  public final void setHtmlSafe(boolean htmlSafe) {
-    this.htmlSafe = htmlSafe;
-  }
-
-  /**
-   * Returns true if this writer writes JSON that's safe for inclusion in HTML
-   * and XML documents.
-   */
-  public final boolean isHtmlSafe() {
-    return htmlSafe;
   }
 
   @Override
@@ -305,8 +275,8 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
     if (context != nonempty && context != empty) {
       throw new IllegalStateException("Nesting problem.");
     }
-    if (deferredName != null) {
-      throw new IllegalStateException("Dangling name: " + deferredName);
+    if (deferredUnescapeName != null || deferredName != null) {
+      throw new IllegalStateException("Dangling name: " + (deferredUnescapeName == null ? deferredName : deferredUnescapeName));
     }
 
     stackSize--;
@@ -340,21 +310,36 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
 
   @Override
   public DefaultJsonWriter name( String name ) {
+    checkName(name);
+    deferredName = name;
+    return this;
+  }
+
+  @Override
+  public DefaultJsonWriter unescapeName( String name ) {
+    checkName(name);
+    deferredUnescapeName = name;
+    return this;
+  }
+
+  private void checkName(String name) {
     if (name == null) {
       throw new NullPointerException("name == null");
     }
-    if (deferredName != null) {
+    if (deferredUnescapeName != null || deferredName != null) {
       throw new IllegalStateException();
     }
     if (stackSize == 0) {
       throw new IllegalStateException("JsonWriter is closed.");
     }
-    deferredName = name;
-    return this;
   }
 
   private void writeDeferredName() {
-    if (deferredName != null) {
+    if (deferredUnescapeName != null) {
+      beforeName();
+      out.append('\"').append(deferredUnescapeName).append('\"');
+      deferredUnescapeName = null;
+    } else if (deferredName != null) {
       beforeName();
       string(deferredName);
       deferredName = null;
@@ -373,11 +358,23 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
   }
 
   @Override
+  public DefaultJsonWriter unescapeValue( String value ) {
+    if (value == null) {
+      return nullValue();
+    }
+    writeDeferredName();
+    beforeValue(false);
+    out.append('\"').append(value).append('\"');
+    return this;
+  }
+
+  @Override
   public DefaultJsonWriter nullValue() {
-    if (deferredName != null) {
+    if (deferredUnescapeName != null || deferredName != null) {
       if (serializeNulls) {
         writeDeferredName();
       } else {
+        deferredUnescapeName = null;
         deferredName = null;
         return this; // skip the name and the value
       }
@@ -389,7 +386,9 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
 
   @Override
   public DefaultJsonWriter cancelName() {
-    if (deferredName != null) {
+    if (deferredUnescapeName != null) {
+      deferredUnescapeName = null;
+    } else if (deferredName != null) {
       deferredName = null;
     }
     return this;
@@ -468,7 +467,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
   }
 
   private void string(String value) {
-    String[] replacements = htmlSafe ? HTML_SAFE_REPLACEMENT_CHARS : REPLACEMENT_CHARS;
+    String[] replacements = REPLACEMENT_CHARS;
     out.append("\"");
     int last = 0;
     int length = value.length();

@@ -76,7 +76,12 @@ public class MultimapJsonSerializer<M extends Multimap<K, V>, K, V> extends Json
         if ( !multimap.isEmpty() ) {
 
             for ( Entry<K, Collection<V>> entry : multimap.asMap().entrySet() ) {
-                writer.name( keySerializer.serialize( entry.getKey(), ctx ) );
+                String name = keySerializer.serialize( entry.getKey(), ctx );
+                if ( keySerializer.mustBeEscaped( ctx ) ) {
+                    writer.name( name );
+                } else {
+                    writer.unescapeName( name );
+                }
                 writer.beginArray();
                 for ( V value : entry.getValue() ) {
                     valueSerializer.serialize( writer, value, ctx, params );

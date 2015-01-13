@@ -55,6 +55,8 @@ public abstract class BaseDateJsonSerializer<D extends Date> extends JsonSeriali
                                     JsonSerializerParameters params ) {
             if ( params.getShape().isNumeric() || ctx.isWriteDatesAsTimestamps() ) {
                 writer.value( value.getTime() );
+            } else if (null == params.getPattern()) {
+                writer.unescapeValue( DateFormat.format( value ) );
             } else {
                 writer.value( DateFormat.format( params.getPattern(), value ) );
             }
@@ -80,7 +82,7 @@ public abstract class BaseDateJsonSerializer<D extends Date> extends JsonSeriali
         @Override
         protected void doSerialize( JsonWriter writer, @Nonnull java.sql.Date value, JsonSerializationContext ctx,
                                     JsonSerializerParameters params ) {
-            writer.value( value.toString() );
+            writer.unescapeValue( value.toString() );
         }
     }
 
@@ -103,7 +105,7 @@ public abstract class BaseDateJsonSerializer<D extends Date> extends JsonSeriali
         @Override
         protected void doSerialize( JsonWriter writer, @Nonnull Time value, JsonSerializationContext ctx,
                                     JsonSerializerParameters params ) {
-            writer.value( value.toString() );
+            writer.unescapeValue( value.toString() );
         }
     }
 
@@ -128,6 +130,8 @@ public abstract class BaseDateJsonSerializer<D extends Date> extends JsonSeriali
                                     JsonSerializerParameters params ) {
             if ( params.getShape().isNumeric() || ctx.isWriteDatesAsTimestamps() ) {
                 writer.value( value.getTime() );
+            } else if (null == params.getPattern()) {
+                writer.unescapeValue( DateFormat.format( value ) );
             } else {
                 writer.value( DateFormat.format( params.getPattern(), value ) );
             }

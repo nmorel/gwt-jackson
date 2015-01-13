@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Nicolas Morel
+ * Copyright 2015 Nicolas Morel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,28 +17,27 @@
 package com.github.nmorel.gwtjackson.client.ser.map.key;
 
 import javax.annotation.Nonnull;
-import java.util.Date;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
-import com.github.nmorel.gwtjackson.client.utils.DateFormat;
 
 /**
- * Default implementation of {@link KeySerializer} for dates.
+ * Default {@link KeySerializer} implementation for {@link Boolean}.
  *
  * @author Nicolas Morel
  */
-public class DateKeySerializer<D extends Date> extends KeySerializer<D> {
+public final class BooleanKeySerializer extends KeySerializer<Boolean> {
 
-    private static final DateKeySerializer INSTANCE = new DateKeySerializer();
+    private static final BooleanKeySerializer INSTANCE = new BooleanKeySerializer();
 
     /**
-     * @return an instance of {@link DateKeySerializer}
+     * @return an instance of {@link BooleanKeySerializer}
      */
-    public static DateKeySerializer getInstance() {
+    @SuppressWarnings( "unchecked" )
+    public static BooleanKeySerializer getInstance() {
         return INSTANCE;
     }
 
-    private DateKeySerializer() { }
+    private BooleanKeySerializer() { }
 
     @Override
     public boolean mustBeEscaped( JsonSerializationContext ctx ) {
@@ -46,11 +45,7 @@ public class DateKeySerializer<D extends Date> extends KeySerializer<D> {
     }
 
     @Override
-    protected String doSerialize( @Nonnull Date value, JsonSerializationContext ctx ) {
-        if ( ctx.isWriteDateKeysAsTimestamps() ) {
-            return Long.toString( value.getTime() );
-        } else {
-            return DateFormat.format( value );
-        }
+    protected String doSerialize( @Nonnull Boolean value, JsonSerializationContext ctx ) {
+        return value.toString();
     }
 }

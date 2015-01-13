@@ -166,9 +166,12 @@ import com.github.nmorel.gwtjackson.client.ser.array.dd.PrimitiveIntegerArray2dJ
 import com.github.nmorel.gwtjackson.client.ser.array.dd.PrimitiveLongArray2dJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.array.dd.PrimitiveShortArray2dJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.MapJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.map.key.BooleanKeySerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.key.DateKeySerializer;
+import com.github.nmorel.gwtjackson.client.ser.map.key.NumberKeySerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.key.ObjectKeySerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.key.ToStringKeySerializer;
+import com.github.nmorel.gwtjackson.client.ser.map.key.UUIDKeySerializer;
 
 /**
  * {@link AbstractConfiguration} implementation containing all the default serializers and deserializers.
@@ -285,22 +288,22 @@ public final class DefaultConfiguration extends AbstractConfiguration {
         // Map's key mappers
         key( Object.class ).serializer( ObjectKeySerializer.class ).deserializer( StringKeyDeserializer.class );
         key( Serializable.class ).serializer( ObjectKeySerializer.class ).deserializer( StringKeyDeserializer.class );
-        key( BigDecimal.class ).serializer( ToStringKeySerializer.class ).deserializer( BigDecimalKeyDeserializer.class );
-        key( BigInteger.class ).serializer( ToStringKeySerializer.class ).deserializer( BigIntegerKeyDeserializer.class );
-        key( Boolean.class ).serializer( ToStringKeySerializer.class ).deserializer( BooleanKeyDeserializer.class );
-        key( Byte.class ).serializer( ToStringKeySerializer.class ).deserializer( ByteKeyDeserializer.class );
+        key( BigDecimal.class ).serializer( NumberKeySerializer.class ).deserializer( BigDecimalKeyDeserializer.class );
+        key( BigInteger.class ).serializer( NumberKeySerializer.class ).deserializer( BigIntegerKeyDeserializer.class );
+        key( Boolean.class ).serializer( BooleanKeySerializer.class ).deserializer( BooleanKeyDeserializer.class );
+        key( Byte.class ).serializer( NumberKeySerializer.class ).deserializer( ByteKeyDeserializer.class );
         key( Character.class ).serializer( ToStringKeySerializer.class ).deserializer( CharacterKeyDeserializer.class );
         key( Date.class ).serializer( DateKeySerializer.class ).deserializer( DateKeyDeserializer.class );
-        key( Double.class ).serializer( ToStringKeySerializer.class ).deserializer( DoubleKeyDeserializer.class );
+        key( Double.class ).serializer( NumberKeySerializer.class ).deserializer( DoubleKeyDeserializer.class );
         // key( Enum.class ).serializer( EnumKeySerializer.class ).deserializer( EnumKeyDeserializer.class );
-        key( Float.class ).serializer( ToStringKeySerializer.class ).deserializer( FloatKeyDeserializer.class );
-        key( Integer.class ).serializer( ToStringKeySerializer.class ).deserializer( IntegerKeyDeserializer.class );
-        key( Long.class ).serializer( ToStringKeySerializer.class ).deserializer( LongKeyDeserializer.class );
-        key( Short.class ).serializer( ToStringKeySerializer.class ).deserializer( ShortKeyDeserializer.class );
+        key( Float.class ).serializer( NumberKeySerializer.class ).deserializer( FloatKeyDeserializer.class );
+        key( Integer.class ).serializer( NumberKeySerializer.class ).deserializer( IntegerKeyDeserializer.class );
+        key( Long.class ).serializer( NumberKeySerializer.class ).deserializer( LongKeyDeserializer.class );
+        key( Short.class ).serializer( NumberKeySerializer.class ).deserializer( ShortKeyDeserializer.class );
         key( java.sql.Date.class ).serializer( DateKeySerializer.class ).deserializer( SqlDateKeyDeserializer.class );
         key( Time.class ).serializer( DateKeySerializer.class ).deserializer( SqlTimeKeyDeserializer.class );
         key( Timestamp.class ).serializer( DateKeySerializer.class ).deserializer( SqlTimestampKeyDeserializer.class );
         key( String.class ).serializer( ToStringKeySerializer.class ).deserializer( StringKeyDeserializer.class );
-        key( UUID.class ).serializer( ToStringKeySerializer.class ).deserializer( UUIDKeyDeserializer.class );
+        key( UUID.class ).serializer( UUIDKeySerializer.class ).deserializer( UUIDKeyDeserializer.class );
     }
 }

@@ -30,6 +30,15 @@ import com.github.nmorel.gwtjackson.client.exception.JsonSerializationException;
 public abstract class KeySerializer<T> {
 
     /**
+     * @param ctx Context for the full serialization process
+     *
+     * @return true if the serialized key must be escaped
+     */
+    public boolean mustBeEscaped( JsonSerializationContext ctx ) {
+        return true;
+    }
+
+    /**
      * Serializes an object into a {@link String} to use as map's key.
      *
      * @param value Object to serialize

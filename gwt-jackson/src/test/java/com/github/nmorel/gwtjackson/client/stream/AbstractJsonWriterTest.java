@@ -490,11 +490,22 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
     public void testEscaping() {
         JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.beginObject();
-        jsonWriter.name( "json" );
+        jsonWriter.name( "\"json\"" );
         jsonWriter.value( "{\"key\":\"value\"}" );
         jsonWriter.endObject();
         jsonWriter.close();
 
-        assertEquals( "{\"json\":\"{\\\"key\\\":\\\"value\\\"}\"}", jsonWriter.getOutput() );
+        assertEquals( "{\"\\\"json\\\"\":\"{\\\"key\\\":\\\"value\\\"}\"}", jsonWriter.getOutput() );
+    }
+
+    public void testNoEscaping() {
+        JsonWriter jsonWriter = newJsonWriter();
+        jsonWriter.beginObject();
+        jsonWriter.unescapeName( "\"json\"" );
+        jsonWriter.unescapeValue( "{\"key\":\"value\"}" );
+        jsonWriter.endObject();
+        jsonWriter.close();
+
+        assertEquals( "{\"\"json\"\":\"{\"key\":\"value\"}\"}", jsonWriter.getOutput() );
     }
 }

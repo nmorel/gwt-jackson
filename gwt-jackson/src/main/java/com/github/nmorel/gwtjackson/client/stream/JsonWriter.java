@@ -89,12 +89,28 @@ public interface JsonWriter {
     JsonWriter name( String name );
 
     /**
+     * Encodes the property name without escaping it.
+     *
+     * @param name the name of the forthcoming value. May not be null.
+     * @return this writer.
+     */
+    JsonWriter unescapeName( String name );
+
+    /**
      * Encodes {@code value}.
      *
      * @param value the literal string value, or null to encode a null literal.
      * @return this writer.
      */
     JsonWriter value( String value );
+
+    /**
+     * Encodes {@code value} without escaping it.
+     *
+     * @param value the literal string value, or null to encode a null literal.
+     * @return this writer.
+     */
+    JsonWriter unescapeValue( String value );
 
     /**
      * Encodes {@code null}.

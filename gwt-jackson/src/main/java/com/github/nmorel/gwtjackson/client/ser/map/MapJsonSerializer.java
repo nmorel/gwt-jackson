@@ -89,7 +89,12 @@ public class MapJsonSerializer<M extends Map<K, V>, K, V> extends JsonSerializer
             if ( ctx.isWriteNullMapValues() ) {
 
                 for ( Entry<K, V> entry : map.entrySet() ) {
-                    writer.name( keySerializer.serialize( entry.getKey(), ctx ) );
+                    String name = keySerializer.serialize( entry.getKey(), ctx );
+                    if ( keySerializer.mustBeEscaped( ctx ) ) {
+                        writer.name( name );
+                    } else {
+                        writer.unescapeName( name );
+                    }
                     valueSerializer.serialize( writer, entry.getValue(), ctx, params );
                 }
 
@@ -97,7 +102,12 @@ public class MapJsonSerializer<M extends Map<K, V>, K, V> extends JsonSerializer
 
                 for ( Entry<K, V> entry : map.entrySet() ) {
                     if ( null != entry.getValue() ) {
-                        writer.name( keySerializer.serialize( entry.getKey(), ctx ) );
+                        String name = keySerializer.serialize( entry.getKey(), ctx );
+                        if ( keySerializer.mustBeEscaped( ctx ) ) {
+                            writer.name( name );
+                        } else {
+                            writer.unescapeName( name );
+                        }
                         valueSerializer.serialize( writer, entry.getValue(), ctx, params );
                     }
                 }

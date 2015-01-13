@@ -44,6 +44,6 @@ public class EnumJsonSerializer<E extends Enum<E>> extends JsonSerializer<E> {
 
     @Override
     public void doSerialize( JsonWriter writer, @Nonnull E value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
-        writer.value( value.name() );
+        writer.unescapeValue( value.name() );
     }
 }

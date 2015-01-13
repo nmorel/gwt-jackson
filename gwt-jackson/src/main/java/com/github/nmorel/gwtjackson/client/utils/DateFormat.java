@@ -104,13 +104,8 @@ public final class DateFormat {
      * @return the formatted date
      */
     public static String format( String pattern, Date date ) {
-        DateTimeFormat dateTimeFormat;
-        if ( null == pattern ) {
-            dateTimeFormat = DateFormat.DATE_FORMAT_STR_ISO8601;
-        } else {
-            // GWT already handle a cache, no need to make our own
-            dateTimeFormat = DateTimeFormat.getFormat( pattern );
-        }
+        // GWT already handle a cache, no need to make our own
+        DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat( pattern );
         return format( dateTimeFormat, UTC_TIMEZONE, date );
     }
 

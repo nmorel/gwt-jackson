@@ -51,7 +51,7 @@ public class PrimitiveByteArray2dJsonSerializer extends JsonSerializer<byte[][]>
 
         writer.beginArray();
         for ( byte[] array : values ) {
-            writer.value( Base64Utils.toBase64( array ) );
+            writer.unescapeValue( Base64Utils.toBase64( array ) );
         }
         writer.endArray();
     }

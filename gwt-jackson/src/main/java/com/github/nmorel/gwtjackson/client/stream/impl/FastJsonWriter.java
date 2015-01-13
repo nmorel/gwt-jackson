@@ -53,6 +53,8 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
 
   private boolean lenient;
 
+  private String deferredUnescapeName;
+
   private String deferredName;
 
   private boolean serializeNulls = true;
@@ -147,8 +149,8 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
     if (context != nonempty && context != empty) {
       throw new IllegalStateException("Nesting problem.");
     }
-    if (deferredName != null) {
-      throw new IllegalStateException("Dangling name: " + deferredName);
+    if (deferredUnescapeName != null || deferredName != null) {
+      throw new IllegalStateException("Dangling name: " + (deferredUnescapeName == null ? deferredName : deferredUnescapeName));
     }
 
     stackSize--;
@@ -182,21 +184,36 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
 
   @Override
   public FastJsonWriter name( String name ) {
+    checkName(name);
+    deferredName = name;
+    return this;
+  }
+
+  @Override
+  public FastJsonWriter unescapeName( String name ) {
+    checkName(name);
+    deferredUnescapeName = name;
+    return this;
+  }
+
+  private void checkName(String name) {
     if (name == null) {
       throw new NullPointerException("name == null");
     }
-    if (deferredName != null) {
+    if (deferredUnescapeName != null || deferredName != null) {
       throw new IllegalStateException();
     }
     if (stackSize == 0) {
       throw new IllegalStateException("JsonWriter is closed.");
     }
-    deferredName = name;
-    return this;
   }
 
   private void writeDeferredName() {
-    if (deferredName != null) {
+    if (deferredUnescapeName != null) {
+      beforeName();
+      out.append('\"').append(deferredUnescapeName).append('\"');
+      deferredUnescapeName = null;
+    } else if (deferredName != null) {
       beforeName();
       string(deferredName);
       deferredName = null;
@@ -215,11 +232,23 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
   }
 
   @Override
+  public FastJsonWriter unescapeValue( String value ) {
+    if (value == null) {
+      return nullValue();
+    }
+    writeDeferredName();
+    beforeValue(false);
+    out.append('\"').append(value).append('\"');
+    return this;
+  }
+
+  @Override
   public FastJsonWriter nullValue() {
-    if (deferredName != null) {
+    if (deferredUnescapeName != null || deferredName != null) {
       if (serializeNulls) {
         writeDeferredName();
       } else {
+        deferredUnescapeName = null;
         deferredName = null;
         return this; // skip the name and the value
       }
@@ -231,7 +260,9 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
 
   @Override
   public FastJsonWriter cancelName() {
-    if (deferredName != null) {
+    if (deferredUnescapeName != null) {
+      deferredUnescapeName = null;
+    } else if (deferredName != null) {
       deferredName = null;
     }
     return this;
