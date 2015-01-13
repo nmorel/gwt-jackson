@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.github.nmorel.gwtjackson.client.JsonSerializerParameters;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.TimeZone;
 
@@ -96,17 +97,52 @@ public final class DateFormat {
     }
 
     /**
-     * Format a date using the pattern given in parameter or {@link #DATE_FORMAT_STR_ISO8601} if null and {@link #UTC_TIMEZONE}.
+     * Format a date using {@link JsonSerializerParameters} or default values : {@link #DATE_FORMAT_STR_ISO8601} and {@link #UTC_TIMEZONE}
      *
-     * @param pattern pattern to use. If null, {@link #DATE_FORMAT_STR_ISO8601} will be used.
      * @param date date to format
      *
      * @return the formatted date
      */
-    public static String format( String pattern, Date date ) {
-        // GWT already handle a cache, no need to make our own
-        DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat( pattern );
-        return format( dateTimeFormat, UTC_TIMEZONE, date );
+    public static String format( JsonSerializerParameters params, Date date ) {
+        DateTimeFormat format;
+        if ( null == params.getPattern() ) {
+            format = DateFormat.DATE_FORMAT_STR_ISO8601;
+        } else {
+            format = DateTimeFormat.getFormat( params.getPattern() );
+        }
+
+        TimeZone timeZone;
+        if ( null == params.getTimezone() ) {
+            timeZone = DateFormat.UTC_TIMEZONE;
+        } else {
+            timeZone = params.getTimezone();
+        }
+
+        return format( format, timeZone, date );
+    }
+
+    /**
+     * Format a date using the {@link DateTimeFormat} given in parameter and {@link #UTC_TIMEZONE}.
+     *
+     * @param format format to use
+     * @param date date to format
+     *
+     * @return the formatted date
+     */
+    public static String format( DateTimeFormat format, Date date ) {
+        return format( format, UTC_TIMEZONE, date );
+    }
+
+    /**
+     * Format a date using {@link #DATE_FORMAT_STR_ISO8601} and {@link TimeZone} given in parameter
+     *
+     * @param timeZone timezone to use
+     * @param date date to format
+     *
+     * @return the formatted date
+     */
+    public static String format( TimeZone timeZone, Date date ) {
+        return format( DateFormat.DATE_FORMAT_STR_ISO8601, timeZone, date );
     }
 
     /**
@@ -187,7 +223,7 @@ public final class DateFormat {
             }
 
             // Outside quote now.
-            if ( "Zzv".indexOf( ch ) > 0 ) {
+            if ( "Zzv".indexOf( ch ) >= 0 ) {
                 return true;
             }
 

@@ -25,9 +25,6 @@ import com.github.nmorel.gwtjackson.client.deser.bean.IdentityDeserializationInf
 import com.github.nmorel.gwtjackson.client.deser.bean.TypeDeserializationInfo;
 import com.github.nmorel.gwtjackson.client.deser.collection.ListJsonDeserializer;
 
-import static com.fasterxml.jackson.annotation.JsonFormat.DEFAULT_LOCALE;
-import static com.fasterxml.jackson.annotation.JsonFormat.DEFAULT_TIMEZONE;
-
 /**
  * This class includes parameters defined through properties annotations like {@link JsonIgnoreProperties}. They are specific to one
  * {@link JsonDeserializer} and that's why they are not contained inside {@link JsonDeserializationContext}.
@@ -60,12 +57,7 @@ public final class JsonDeserializerParameters {
     /**
      * Locale to use for deserialization (if needed).
      */
-    private String locale = DEFAULT_LOCALE;
-
-    /**
-     * TimeZone to use for deserialization (if needed).
-     */
-    private String timezone = DEFAULT_TIMEZONE;
+    private String locale;
 
     /**
      * Names of properties to ignore.
@@ -117,15 +109,6 @@ public final class JsonDeserializerParameters {
 
     public JsonDeserializerParameters setLocale( String locale ) {
         this.locale = locale;
-        return this;
-    }
-
-    public String getTimezone() {
-        return timezone;
-    }
-
-    public JsonDeserializerParameters setTimezone( String timezone ) {
-        this.timezone = timezone;
         return this;
     }
 

@@ -420,11 +420,6 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
                 source.println();
                 source.print( ".setLocale(\"%s\")", format.locale() );
             }
-            if ( !Strings.isNullOrEmpty( format.timezone() ) && !JsonFormat.DEFAULT_TIMEZONE.equals( format.timezone() ) ) {
-                logger.log( Type.WARN, "JsonFormat.timezone is not supported by default" );
-                source.println();
-                source.print( ".setTimezone(\"%s\")", format.timezone() );
-            }
         }
         if ( property.getIgnoredProperties().isPresent() ) {
             for ( String ignoredProperty : property.getIgnoredProperties().get() ) {

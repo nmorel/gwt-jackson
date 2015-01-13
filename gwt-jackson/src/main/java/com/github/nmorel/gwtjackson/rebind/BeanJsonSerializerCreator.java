@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.RawValueJsonSerializer;
@@ -40,7 +41,9 @@ import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.TreeLogger.Type;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
+import com.google.gwt.i18n.client.TimeZone;
 import com.google.gwt.thirdparty.guava.common.base.Optional;
+import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.google.gwt.thirdparty.guava.common.collect.ImmutableList;
 import com.google.gwt.thirdparty.guava.common.collect.ImmutableMap;
 import com.google.gwt.user.rebind.SourceWriter;
@@ -284,6 +287,19 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
             source.indent();
 
             generateCommonPropertyParameters( source, property, serializerType );
+
+            if ( property.getFormat().isPresent() ) {
+                JsonFormat format = property.getFormat().get();
+                if ( !Strings.isNullOrEmpty( format.timezone() ) && !JsonFormat.DEFAULT_TIMEZONE.equals( format.timezone() ) ) {
+                    source.println();
+                    java.util.TimeZone timeZoneJdk = java.util.TimeZone.getTimeZone( format.timezone() );
+                    // in java the offset is in milliseconds from timezone to GMT
+                    // in gwt the offset is in minutes from GMT to timezone
+                    // so we convert the milliseconds in minutes and invert the sign
+                    int timeZoneOffsetGwt = (timeZoneJdk.getRawOffset() / 1000 / 60) * -1;
+                    source.print( ".setTimezone(%s.createTimeZone( %d ))", TimeZone.class.getCanonicalName(), timeZoneOffsetGwt );
+                }
+            }
 
             if ( property.getInclude().isPresent() ) {
                 source.println();

@@ -51,14 +51,16 @@ public abstract class BaseDateJsonSerializer<D extends Date> extends JsonSeriali
         private DateJsonSerializer() { }
 
         @Override
-        protected void doSerialize( JsonWriter writer, @Nonnull Date value, JsonSerializationContext ctx,
-                                    JsonSerializerParameters params ) {
-            if ( params.getShape().isNumeric() || ctx.isWriteDatesAsTimestamps() ) {
+        protected void doSerialize( JsonWriter writer, @Nonnull Date value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
+            if ( ctx.isWriteDatesAsTimestamps() || params.getShape().isNumeric() ) {
                 writer.value( value.getTime() );
-            } else if (null == params.getPattern()) {
-                writer.unescapeValue( DateFormat.format( value ) );
             } else {
-                writer.value( DateFormat.format( params.getPattern(), value ) );
+                String date = DateFormat.format( params, value );
+                if ( null == params.getPattern() ) {
+                    writer.unescapeValue( date );
+                } else {
+                    writer.value( date );
+                }
             }
         }
     }
@@ -103,8 +105,8 @@ public abstract class BaseDateJsonSerializer<D extends Date> extends JsonSeriali
         private SqlTimeJsonSerializer() { }
 
         @Override
-        protected void doSerialize( JsonWriter writer, @Nonnull Time value, JsonSerializationContext ctx,
-                                    JsonSerializerParameters params ) {
+        protected void doSerialize( JsonWriter writer, @Nonnull Time value, JsonSerializationContext ctx, JsonSerializerParameters params
+        ) {
             writer.unescapeValue( value.toString() );
         }
     }
@@ -126,14 +128,17 @@ public abstract class BaseDateJsonSerializer<D extends Date> extends JsonSeriali
         private SqlTimestampJsonSerializer() { }
 
         @Override
-        protected void doSerialize( JsonWriter writer, @Nonnull Timestamp value, JsonSerializationContext ctx,
-                                    JsonSerializerParameters params ) {
-            if ( params.getShape().isNumeric() || ctx.isWriteDatesAsTimestamps() ) {
+        protected void doSerialize( JsonWriter writer, @Nonnull Timestamp value, JsonSerializationContext ctx, JsonSerializerParameters
+                params ) {
+            if ( ctx.isWriteDatesAsTimestamps() || params.getShape().isNumeric() ) {
                 writer.value( value.getTime() );
-            } else if (null == params.getPattern()) {
-                writer.unescapeValue( DateFormat.format( value ) );
             } else {
-                writer.value( DateFormat.format( params.getPattern(), value ) );
+                String date = DateFormat.format( params, value );
+                if ( null == params.getPattern() ) {
+                    writer.unescapeValue( date );
+                } else {
+                    writer.value( date );
+                }
             }
         }
     }

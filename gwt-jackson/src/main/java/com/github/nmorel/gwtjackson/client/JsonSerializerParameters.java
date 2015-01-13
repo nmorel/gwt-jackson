@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.nmorel.gwtjackson.client.ser.IterableJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.IdentitySerializationInfo;
 import com.github.nmorel.gwtjackson.client.ser.bean.TypeSerializationInfo;
+import com.google.gwt.i18n.client.TimeZone;
 
 /**
  * This class includes parameters defined through properties annotations like {@link JsonFormat}. They are specific to one
@@ -63,7 +64,7 @@ public final class JsonSerializerParameters {
     /**
      * Timezone to use for serialization (if needed).
      */
-    private String timezone;
+    private TimeZone timezone;
 
     /**
      * Names of properties to ignore.
@@ -112,11 +113,11 @@ public final class JsonSerializerParameters {
         return this;
     }
 
-    public String getTimezone() {
+    public TimeZone getTimezone() {
         return timezone;
     }
 
-    public JsonSerializerParameters setTimezone( String timezone ) {
+    public JsonSerializerParameters setTimezone( TimeZone timezone ) {
         this.timezone = timezone;
         return this;
     }

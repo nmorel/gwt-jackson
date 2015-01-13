@@ -31,7 +31,7 @@ import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
 public final class JsonFormatTester extends AbstractTester {
 
     // currently, jackson does not take JsonFormat on parent into account
-    @JsonFormat(pattern = "/yyyy/MM/dd/HH/mm/ss")
+    @JsonFormat( pattern = "/yyyy/MM/dd/HH/mm/ss" )
     public static class FormatDateBean {
 
         @JsonFormat( shape = Shape.STRING, pattern = "/yyyy/MM/dd/" )
@@ -40,6 +40,12 @@ public final class JsonFormatTester extends AbstractTester {
         // we asked for a number so we should get the date in milliseconds and the pattern ignored
         @JsonFormat( shape = Shape.NUMBER, pattern = "/yyyy/MM/dd/" )
         public Date dateNumber;
+
+        @JsonFormat( shape = Shape.STRING, timezone = "Europe/Paris")
+        public Date dateParis;
+
+        @JsonFormat( shape = Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS Z", timezone = "America/Los_Angeles")
+        public Date dateLosAngeles;
 
         public Date date;
 
@@ -50,12 +56,20 @@ public final class JsonFormatTester extends AbstractTester {
         @JsonFormat( shape = Shape.NUMBER, pattern = "/yyyy/MM/dd/" )
         public Timestamp timestampNumber;
 
+        @JsonFormat( shape = Shape.STRING, timezone = "Europe/Paris")
+        public Date timestampParis;
+
+        @JsonFormat( shape = Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS Z", timezone = "America/Los_Angeles")
+        public Date timestampLosAngeles;
+
         public Timestamp timestamp;
 
         private final Date dateInParameter;
 
         public FormatDateBean( @JsonProperty( "dateInParameter" ) @JsonFormat( shape = Shape.STRING,
-                pattern = "'P'yyyy/MM/dd" ) Date dateParameter ) {this.dateInParameter = dateParameter;}
+                pattern = "'P'yyyy/MM/dd" ) Date dateParameter ) {
+            this.dateInParameter = dateParameter;
+        }
 
         public Date getDateInParameter() {
             return dateInParameter;
@@ -75,18 +89,26 @@ public final class JsonFormatTester extends AbstractTester {
         FormatDateBean bean = new FormatDateBean( new Date( millis ) );
         bean.dateString = date;
         bean.dateNumber = date;
+        bean.dateParis = date;
+        bean.dateLosAngeles = date;
         bean.date = date;
         bean.timestampString = timestamp;
         bean.timestampNumber = timestamp;
+        bean.timestampParis = timestamp;
+        bean.timestampLosAngeles = timestamp;
         bean.timestamp = timestamp;
 
         String expected = "{" +
                 "\"dateInParameter\":\"P2013/12/25\"," +
                 "\"dateString\":\"/2013/12/25/\"," +
                 "\"dateNumber\":" + millis + "," +
+                "\"dateParis\":\"2013-12-25T01:00:00.000+0100\"," +
+                "\"dateLosAngeles\":\"2013-12-24 16:00:00.000 -0800\"," +
                 "\"date\":\"2013-12-25T00:00:00.000+0000\"," +
                 "\"timestampString\":\"/2013/12/25/\"," +
                 "\"timestampNumber\":" + millis + "," +
+                "\"timestampParis\":\"2013-12-25T01:00:00.000+0100\"," +
+                "\"timestampLosAngeles\":\"2013-12-24 16:00:00.000 -0800\"," +
                 "\"timestamp\":\"2013-12-25T00:00:00.000+0000\"" +
                 "}";
         String result = mapper.write( bean );
@@ -95,10 +117,14 @@ public final class JsonFormatTester extends AbstractTester {
         FormatDateBean actual = mapper.read( expected );
         assertEquals( date, actual.dateString );
         assertEquals( date, actual.dateNumber );
+        assertEquals( date.getTime(), actual.dateParis.getTime() );
+        assertEquals( date.getTime(), actual.dateLosAngeles.getTime() );
         assertEquals( date, actual.date );
         assertEquals( date, actual.dateInParameter );
         assertEquals( timestamp, actual.timestampString );
         assertEquals( timestamp, actual.timestampNumber );
+        assertEquals( timestamp.getTime(), actual.timestampParis.getTime() );
+        assertEquals( timestamp.getTime(), actual.timestampLosAngeles.getTime() );
         assertEquals( timestamp, actual.timestamp );
     }
 
