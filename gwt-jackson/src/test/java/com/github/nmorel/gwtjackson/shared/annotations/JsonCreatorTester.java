@@ -82,15 +82,16 @@ public final class JsonCreatorTester extends AbstractTester {
 
     public static class BeanWithoutDefaultConstructorAndPropertiesAnnotation {
 
+        @JsonProperty( "@intProperty" )
         private int intProperty;
 
+        @JsonProperty( value = "stringProperty!", required = true )
         private String stringProperty;
 
         private Boolean booleanProperty;
 
-        public BeanWithoutDefaultConstructorAndPropertiesAnnotation( @JsonProperty( "intProperty" ) int intProperty, @JsonProperty( value
-                = "stringProperty",
-                required = true ) String stringProperty ) {
+        public BeanWithoutDefaultConstructorAndPropertiesAnnotation( @JsonProperty( "@intProperty" ) int intProperty, @JsonProperty(
+                value = "stringProperty!", required = true ) String stringProperty ) {
             this.intProperty = intProperty;
             this.stringProperty = stringProperty;
         }
@@ -388,8 +389,8 @@ public final class JsonCreatorTester extends AbstractTester {
                 "IAmAString" );
         bean.booleanProperty = true;
 
-        String expected = "{\"intProperty\":15," +
-                "\"stringProperty\":\"IAmAString\"," +
+        String expected = "{\"@intProperty\":15," +
+                "\"stringProperty!\":\"IAmAString\"," +
                 "\"booleanProperty\":true}";
         String result = writer.write( bean );
 
@@ -398,8 +399,8 @@ public final class JsonCreatorTester extends AbstractTester {
 
     public void testDeserializeBeanWithoutDefaultConstructorAndPropertiesAnnotation(
             ObjectReaderTester<BeanWithoutDefaultConstructorAndPropertiesAnnotation> reader ) {
-        String input = "{\"intProperty\":15," +
-                "\"stringProperty\":\"IAmAString\"," +
+        String input = "{\"@intProperty\":15," +
+                "\"stringProperty!\":\"IAmAString\"," +
                 "\"booleanProperty\":true}";
 
         BeanWithoutDefaultConstructorAndPropertiesAnnotation result = reader.read( input );
@@ -411,7 +412,7 @@ public final class JsonCreatorTester extends AbstractTester {
 
     public void testDeserializeBeanWithMissingRequiredPropertyInCreator(
             ObjectReaderTester<BeanWithoutDefaultConstructorAndPropertiesAnnotation> reader ) {
-        String input = "{\"intProperty\":15,\"booleanProperty\":true}";
+        String input = "{\"@intProperty\":15,\"booleanProperty\":true}";
 
         try {
             reader.read( input );

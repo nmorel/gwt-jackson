@@ -401,7 +401,7 @@ public final class PropertyProcessor {
             setterAutoDetect, final boolean fieldAutoDetect, final PropertyInfoBuilder builder ) {
         // if one of field/setter is present and the property has an annotation like JsonProperty or field/setter is auto detected
         if ( (propertyAccessors.getSetter().isPresent() || propertyAccessors.getField()
-                .isPresent()) && (fieldAutoDetect || setterAutoDetect) ) {
+                .isPresent()) && (fieldAutoDetect || setterAutoDetect || builder.getBackReference().isPresent()) ) {
             builder.setSetterAccessor( Optional.of( new FieldWriteAccessor( builder
                     .getPropertyName(), samePackage, fieldAutoDetect, propertyAccessors.getField(), setterAutoDetect, propertyAccessors
                     .getSetter() ) ) );

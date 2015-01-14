@@ -56,7 +56,7 @@ final class FieldReadAccessor extends FieldAccessor {
             enclosingType = field.get().getEnclosingType();
         }
 
-        final String methodName = "get" + propertyName.substring( 0, 1 ).toUpperCase() + propertyName.substring( 1 );
+        final String methodName = "getValueWithJsni";
 
         String accessor = methodName + "(" + beanName + ")";
         AdditionalMethod additionalMethod = new AdditionalMethod() {

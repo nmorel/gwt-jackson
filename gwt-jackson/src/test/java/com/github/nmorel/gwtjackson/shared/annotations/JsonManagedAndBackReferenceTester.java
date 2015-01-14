@@ -240,7 +240,7 @@ public class JsonManagedAndBackReferenceTester extends AbstractTester {
             return parent;
         }
 
-        public void setParent( Parent parent ) {
+        void setParent( Parent parent ) {
             this.parent = parent;
         }
     }

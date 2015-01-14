@@ -69,7 +69,7 @@ final class FieldWriteAccessor extends FieldAccessor {
         }
 
         // field/setter has not been detected or is private or is in a different package. We use JSNI to access private setter/field.
-        final String methodName = "set" + propertyName.substring( 0, 1 ).toUpperCase() + propertyName.substring( 1 );
+        final String methodName = "setValueWithJsni";
         String accessor = methodName + "(" + beanName + ", " + params + ")";
         AdditionalMethod additionalMethod = new AdditionalMethod() {
             @Override
