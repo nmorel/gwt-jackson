@@ -82,7 +82,10 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
         }
     }
 
-    protected JsonDeserializer<T> getDeserializer() {
+    /**
+     * @return the {@link JsonDeserializer} used by this mapper
+     */
+    public JsonDeserializer<T> getDeserializer() {
         if ( null == deserializer ) {
             deserializer = newDeserializer();
         }
@@ -122,7 +125,10 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
         }
     }
 
-    protected JsonSerializer<T> getSerializer() {
+    /**
+     * @return the {@link JsonSerializer} used by this mapper
+     */
+    public JsonSerializer<T> getSerializer() {
         if ( null == serializer ) {
             serializer = newSerializer();
         }
