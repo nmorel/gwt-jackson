@@ -467,8 +467,13 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
   }
 
   private void string(String value) {
-    String[] replacements = REPLACEMENT_CHARS;
     out.append("\"");
+    encodeString( value, out );
+    out.append("\"");
+  }
+
+  private static void encodeString(final String value, final StringBuilder out) {
+    String[] replacements = REPLACEMENT_CHARS;
     int last = 0;
     int length = value.length();
     for (int i = 0; i < length; i++) {
@@ -495,7 +500,12 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
     if (last < length) {
       out.append(value, last, length);
     }
-    out.append("\"");
+  }
+
+  public static String encodeString(final String value) {
+    StringBuilder out = new StringBuilder();
+    encodeString( value, out );
+    return out.toString();
   }
 
   private void newline() {

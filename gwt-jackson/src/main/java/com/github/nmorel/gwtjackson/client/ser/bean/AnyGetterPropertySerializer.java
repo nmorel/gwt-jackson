@@ -31,6 +31,14 @@ public abstract class AnyGetterPropertySerializer<T> extends BeanPropertySeriali
 
     protected abstract MapJsonSerializer newSerializer();
 
+    public AnyGetterPropertySerializer() {
+        super( null );
+    }
+
+    public void serializePropertyName( JsonWriter writer, T bean, JsonSerializationContext ctx ) {
+        // no-op
+    }
+
     /**
      * Serializes the property defined for this instance.
      *
@@ -40,7 +48,7 @@ public abstract class AnyGetterPropertySerializer<T> extends BeanPropertySeriali
      */
     public void serialize( JsonWriter writer, T bean, JsonSerializationContext ctx ) {
         Map map = getValue( bean, ctx );
-        if(null != map) {
+        if ( null != map ) {
             ((MapJsonSerializer) getSerializer()).serializeValues( writer, map, ctx, getParameters() );
         }
     }

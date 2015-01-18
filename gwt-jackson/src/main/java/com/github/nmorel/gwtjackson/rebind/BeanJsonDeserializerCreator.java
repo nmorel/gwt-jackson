@@ -61,6 +61,7 @@ import com.google.gwt.thirdparty.guava.common.collect.ImmutableMap;
 import com.google.gwt.user.rebind.SourceWriter;
 
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.QUOTED_FUNCTION;
+import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.escapeString;
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.getDefaultValueForType;
 
 /**
@@ -537,7 +538,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
             PropertyInfo property = entry.getKey();
             JDeserializerType deserializerType = entry.getValue();
 
-            source.print( "map.put(\"%s\", ", property.getPropertyName() );
+            source.print( "map.put(\"%s\", ", escapeString( property.getPropertyName() ) );
 
             generateDeserializer( source, beanInfo, property, property.getType(), deserializerType );
 
@@ -680,8 +681,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
             Accessor accessor = property.getSetterAccessor().get().getAccessor( "bean" );
 
             // this is a back reference, we add the special back reference property that will be called by the parent
-            source.println( "map.put(\"%s\", new %s<%s, %s>() {", property.getBackReference()
-                    .get(), BACK_REFERENCE_PROPERTY_BEAN_CLASS, beanInfo.getType()
+            source.println( "map.put(\"%s\", new %s<%s, %s>() {", escapeString( property.getBackReference()
+                    .get() ), BACK_REFERENCE_PROPERTY_BEAN_CLASS, beanInfo.getType()
                     .getParameterizedQualifiedSourceName(), getParameterizedQualifiedClassName( property.getType() ) );
 
             source.indent();

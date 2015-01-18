@@ -23,21 +23,16 @@ import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
  *
  * @author Nicolas Morel
  */
-public class PropertyIdentitySerializationInfo<T> implements IdentitySerializationInfo<T> {
+public abstract class PropertyIdentitySerializationInfo<T, V> extends BeanPropertySerializer<T, V> implements IdentitySerializationInfo<T> {
 
     /**
      * if we always serialize the bean as an id even for the first encounter.
      */
     private final boolean alwaysAsId;
 
-    /**
-     * Name of the property holding the identity
-     */
-    private final String propertyName;
-
     public PropertyIdentitySerializationInfo( boolean alwaysAsId, String propertyName ) {
+        super( propertyName );
         this.alwaysAsId = alwaysAsId;
-        this.propertyName = propertyName;
     }
 
     @Override
@@ -51,12 +46,7 @@ public class PropertyIdentitySerializationInfo<T> implements IdentitySerializati
     }
 
     @Override
-    public String getPropertyName() {
-        return propertyName;
-    }
-
-    @Override
     public ObjectIdSerializer<?> getObjectId( T bean, JsonSerializationContext ctx ) {
-        throw ctx.traceError( bean, "getObjectId() is not supported by PropertyIdentitySerializationInfo" );
+        return new ObjectIdSerializer( getValue( bean, ctx ), getSerializer() );
     }
 }

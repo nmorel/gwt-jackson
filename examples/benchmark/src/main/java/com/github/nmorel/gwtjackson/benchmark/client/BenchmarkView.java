@@ -48,8 +48,6 @@ import org.gwtbootstrap3.client.ui.Row;
  */
 public class BenchmarkView extends Composite implements Editor<Criteria> {
 
-    public static interface PersonMapper extends ObjectMapper<List<Person>> {}
-
     interface CriteriaDriver extends SimpleBeanEditorDriver<Criteria, BenchmarkView> {}
 
     interface BenchmarkViewUiBinder extends UiBinder<Widget, BenchmarkView> {}

@@ -16,8 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.ser.bean;
 
-import java.util.Map;
-
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.JsonSerializerParameters;
@@ -39,9 +37,8 @@ public abstract class SubtypeSerializer<T, S extends JsonSerializer<T>> extends 
 
         @Override
         public void serializeInternally( JsonWriter writer, T value, JsonSerializationContext ctx, JsonSerializerParameters params,
-                                         IdentitySerializationInfo<T> defaultIdentityInfo, TypeSerializationInfo<T> defaultTypeInfo,
-                                         Map<String, BeanPropertySerializer<T, ?>> serializers ) {
-            getSerializer().serializeInternally( writer, value, ctx, params, defaultIdentityInfo, defaultTypeInfo, serializers );
+                                         IdentitySerializationInfo<T> defaultIdentityInfo, TypeSerializationInfo<T> defaultTypeInfo ) {
+            getSerializer().serializeInternally( writer, value, ctx, params, defaultIdentityInfo, defaultTypeInfo );
         }
     }
 
@@ -54,8 +51,7 @@ public abstract class SubtypeSerializer<T, S extends JsonSerializer<T>> extends 
 
         @Override
         public void serializeInternally( JsonWriter writer, T value, JsonSerializationContext ctx, JsonSerializerParameters params,
-                                         IdentitySerializationInfo<T> defaultIdentityInfo, TypeSerializationInfo<T> defaultTypeInfo,
-                                         Map<String, BeanPropertySerializer<T, ?>> serializers ) {
+                                         IdentitySerializationInfo<T> defaultIdentityInfo, TypeSerializationInfo<T> defaultTypeInfo ) {
 
             final TypeSerializationInfo typeInfo = null == params.getTypeInfo() ? defaultTypeInfo : params.getTypeInfo();
 

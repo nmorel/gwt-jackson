@@ -37,7 +37,7 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  */
 public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> implements InternalSerializer<T> {
 
-    protected final Map<String, BeanPropertySerializer<T, ?>> serializers;
+    protected final BeanPropertySerializer[] serializers;
 
     private final Map<Class, SubtypeSerializer> subtypeClassToSerializer;
 
@@ -59,8 +59,8 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
      * Initialize the {@link Map} containing the property serializers. Returns an empty map if there are no properties to
      * serialize.
      */
-    protected Map<String, BeanPropertySerializer<T, ?>> initSerializers() {
-        return Collections.emptyMap();
+    protected BeanPropertySerializer[] initSerializers() {
+        return new BeanPropertySerializer[0];
     }
 
     /**
@@ -95,8 +95,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
 
     @Override
     public void doSerialize( JsonWriter writer, @Nonnull T value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
-        getSerializer( writer, value, ctx )
-                .serializeInternally( writer, value, ctx, params, defaultIdentityInfo, defaultTypeInfo, serializers );
+        getSerializer( writer, value, ctx ).serializeInternally( writer, value, ctx, params, defaultIdentityInfo, defaultTypeInfo );
     }
 
     private InternalSerializer<T> getSerializer( JsonWriter writer, T value, JsonSerializationContext ctx ) {
@@ -115,8 +114,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
     }
 
     public void serializeInternally( JsonWriter writer, T value, JsonSerializationContext ctx, JsonSerializerParameters params,
-                                     IdentitySerializationInfo<T> defaultIdentityInfo, TypeSerializationInfo<T> defaultTypeInfo,
-                                     Map<String, BeanPropertySerializer<T, ?>> serializers ) {
+                                     IdentitySerializationInfo<T> defaultIdentityInfo, TypeSerializationInfo<T> defaultTypeInfo ) {
 
         // Processing the parameters. We fallback to default if parameter is not present.
         final IdentitySerializationInfo identityInfo = null == params.getIdentityInfo() ? defaultIdentityInfo : params.getIdentityInfo();
@@ -133,12 +131,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
                 return;
             }
 
-            if ( identityInfo.isProperty() ) {
-                BeanPropertySerializer<T, ?> propertySerializer = serializers.get( identityInfo.getPropertyName() );
-                idWriter = new ObjectIdSerializer( propertySerializer.getValue( value, ctx ), propertySerializer.getSerializer() );
-            } else {
-                idWriter = identityInfo.getObjectId( value, ctx );
-            }
+            idWriter = identityInfo.getObjectId( value, ctx );
             if ( identityInfo.isAlwaysAsId() ) {
                 idWriter.serializeId( writer, ctx );
                 return;
@@ -227,11 +220,11 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
             idWriter.serializeId( writer, ctx );
         }
 
-        for ( Map.Entry<String, BeanPropertySerializer<T, ?>> entry : serializers.entrySet() ) {
-            if ( (null == identityInfo || !identityInfo.isProperty() || !identityInfo.getPropertyName().equals( entry
-                    .getKey() )) && !ignoredProperties.contains( entry.getKey() ) ) {
-                writer.name( entry.getKey() );
-                entry.getValue().serialize( writer, value, ctx );
+        for ( BeanPropertySerializer<T, ?> propertySerializer : serializers ) {
+            if ( (null == identityInfo || !identityInfo.isProperty() || !identityInfo.getPropertyName().equals( propertySerializer
+                    .getPropertyName() )) && !ignoredProperties.contains( propertySerializer.getPropertyName() ) ) {
+                propertySerializer.serializePropertyName( writer, value, ctx );
+                propertySerializer.serialize( writer, value, ctx );
             }
         }
 

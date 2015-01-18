@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
+import com.github.nmorel.gwtjackson.client.stream.impl.DefaultJsonWriter;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.typeinfo.HasAnnotations;
 import com.google.gwt.core.ext.typeinfo.JClassType;
@@ -76,8 +77,8 @@ public final class CreatorUtils {
         return Optional.absent();
     }
 
-    public static <T extends Annotation> boolean isAnnotationPresent( Class<T> annotation,
-                                                                      List<? extends HasAnnotations> hasAnnotationsList ) {
+    public static <T extends Annotation> boolean isAnnotationPresent( Class<T> annotation, List<? extends HasAnnotations>
+            hasAnnotationsList ) {
         for ( HasAnnotations accessor : hasAnnotationsList ) {
             if ( accessor.isAnnotationPresent( annotation ) ) {
                 return true;
@@ -86,8 +87,8 @@ public final class CreatorUtils {
         return false;
     }
 
-    public static <T extends Annotation> Optional<T> getAnnotation( Class<T> annotation,
-                                                                    List<? extends HasAnnotations> hasAnnotationsList ) {
+    public static <T extends Annotation> Optional<T> getAnnotation( Class<T> annotation, List<? extends HasAnnotations>
+            hasAnnotationsList ) {
         for ( HasAnnotations accessor : hasAnnotationsList ) {
             if ( accessor.isAnnotationPresent( annotation ) ) {
                 return Optional.of( accessor.getAnnotation( annotation ) );
@@ -175,6 +176,17 @@ public final class CreatorUtils {
             }
         }
         return builder.build();
+    }
+
+    /**
+     * Escapes the {@link String} given in parameter
+     *
+     * @param value the {@link String}
+     *
+     * @return the escaped {@link String}
+     */
+    public static String escapeString( String value ) {
+        return DefaultJsonWriter.encodeString( value );
     }
 
     private CreatorUtils() {

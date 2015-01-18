@@ -16,8 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.ser.bean;
 
-import java.util.Map;
-
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
@@ -30,8 +28,7 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 interface InternalSerializer<T> {
 
     void serializeInternally( JsonWriter writer, T value, JsonSerializationContext ctx, JsonSerializerParameters params,
-                              IdentitySerializationInfo<T> defaultIdentityInfo, TypeSerializationInfo<T> defaultTypeInfo, Map<String,
-            BeanPropertySerializer<T, ?>> serializers );
+                              IdentitySerializationInfo<T> defaultIdentityInfo, TypeSerializationInfo<T> defaultTypeInfo );
 
 }
 

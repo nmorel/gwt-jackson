@@ -21,8 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.RawValueJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.AnyGetterPropertySerializer;
@@ -30,10 +28,9 @@ import com.github.nmorel.gwtjackson.client.ser.bean.IdentitySerializationInfo;
 import com.github.nmorel.gwtjackson.client.ser.bean.SubtypeSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.SubtypeSerializer.BeanSubtypeSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.SubtypeSerializer.DefaultSubtypeSerializer;
-import com.github.nmorel.gwtjackson.client.ser.map.MapJsonSerializer;
+import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 import com.github.nmorel.gwtjackson.rebind.bean.BeanInfo;
 import com.github.nmorel.gwtjackson.rebind.exception.UnsupportedTypeException;
-import com.github.nmorel.gwtjackson.rebind.property.FieldAccessor.Accessor;
 import com.github.nmorel.gwtjackson.rebind.property.PropertyInfo;
 import com.github.nmorel.gwtjackson.rebind.type.JSerializerType;
 import com.google.gwt.core.ext.GeneratorContext;
@@ -41,12 +38,12 @@ import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.TreeLogger.Type;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
-import com.google.gwt.i18n.client.TimeZone;
 import com.google.gwt.thirdparty.guava.common.base.Optional;
-import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.google.gwt.thirdparty.guava.common.collect.ImmutableList;
 import com.google.gwt.thirdparty.guava.common.collect.ImmutableMap;
 import com.google.gwt.user.rebind.SourceWriter;
+
+import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.escapeString;
 
 /**
  * @author Nicolas Morel
@@ -54,8 +51,6 @@ import com.google.gwt.user.rebind.SourceWriter;
 public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
 
     private static final String BEAN_PROPERTY_SERIALIZER_CLASS = "com.github.nmorel.gwtjackson.client.ser.bean.BeanPropertySerializer";
-
-    private static final String JSON_SERIALIZER_PARAMETERS_CLASS = "com.github.nmorel.gwtjackson.client.JsonSerializerParameters";
 
     public BeanJsonSerializerCreator( TreeLogger logger, GeneratorContext context, RebindConfiguration configuration, JacksonTypeOracle
             typeOracle ) {
@@ -184,25 +179,24 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
 
     private void generateInitSerializersMethod( SourceWriter source, BeanInfo beanInfo, Map<PropertyInfo, JSerializerType> properties )
             throws UnableToCompleteException {
-        String mapType = String.format( "<%s, %s<%s, ?>>", String.class.getCanonicalName(), BEAN_PROPERTY_SERIALIZER_CLASS, beanInfo
-                .getType().getParameterizedQualifiedSourceName() );
-        String resultType = String.format( "%s%s", Map.class.getCanonicalName(), mapType );
+        String arrayType = String.format( "%s", BEAN_PROPERTY_SERIALIZER_CLASS );
 
         source.println( "@Override" );
-        source.println( "protected %s initSerializers() {", resultType );
+        source.println( "protected %s[] initSerializers() {", arrayType );
         source.indent();
 
-        source.println( "%s map = new %s%s(%s);", resultType, LinkedHashMap.class.getCanonicalName(), mapType, properties.size() );
+        source.println( "%s[] result = new %s[%s];", arrayType, arrayType, properties.size() );
         source.println();
 
+        int i = 0;
         for ( Entry<PropertyInfo, JSerializerType> entry : properties.entrySet() ) {
-            source.print( "map.put(\"%s\", ", entry.getKey().getPropertyName() );
+            source.print( "result[%s] = ", i++ );
             generateSerializer( source, beanInfo, entry.getKey(), entry.getValue() );
-            source.println( ");" );
+            source.println( ";" );
             source.println();
         }
 
-        source.println( "return map;" );
+        source.println( "return result;" );
         source.outdent();
         source.println( "}" );
     }
@@ -225,116 +219,39 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
 
     private void generateSerializer( SourceWriter source, BeanInfo beanInfo, PropertyInfo property, JSerializerType serializerType )
             throws UnableToCompleteException {
-        Accessor getterAccessor = property.getGetterAccessor().get().getAccessor( "bean" );
+
+        String escapedPropertyName = escapeString( property.getPropertyName() );
 
         if ( property.isAnyGetter() ) {
             source.println( "new %s<%s>() {", AnyGetterPropertySerializer.class
                     .getCanonicalName(), getParameterizedQualifiedClassName( beanInfo.getType() ) );
         } else {
-            source.println( "new %s<%s, %s>() {", BEAN_PROPERTY_SERIALIZER_CLASS, getParameterizedQualifiedClassName( beanInfo
-                    .getType() ), getParameterizedQualifiedClassName( property.getType() ) );
+            source.println( "new %s<%s, %s>(\"%s\") {", BEAN_PROPERTY_SERIALIZER_CLASS, getParameterizedQualifiedClassName( beanInfo
+                    .getType() ), getParameterizedQualifiedClassName( property.getType() ), escapedPropertyName );
         }
 
         source.indent();
-        source.println( "@Override" );
-        String returnType;
-        if ( property.isAnyGetter() ) {
-            returnType = MapJsonSerializer.class.getCanonicalName();
-        } else {
-            returnType = String.format( "%s<?>", JSON_SERIALIZER_CLASS );
-        }
-        source.println( "protected %s newSerializer() {", returnType );
-        source.indent();
-        source.println( "return %s;", serializerType.getInstance() );
-        source.outdent();
-        source.println( "}" );
 
-        generatePropertySerializerParameters( source, property, serializerType );
+        generateBeanPropertySerializerBody( source, beanInfo.getType(), property, serializerType );
 
-        source.println();
-
-        source.println( "@Override" );
-        source.println( "public %s getValue(%s bean, %s ctx) {", getParameterizedQualifiedClassName( property
-                .getType() ), getParameterizedQualifiedClassName( beanInfo.getType() ), JSON_SERIALIZATION_CONTEXT_CLASS );
-        source.indent();
-        source.println( "return %s;", getterAccessor.getAccessor() );
-        source.outdent();
-        source.println( "}" );
-
-        if ( getterAccessor.getAdditionalMethod().isPresent() ) {
+        boolean requireEscaping = !property.getPropertyName().equals( escapedPropertyName );
+        if ( requireEscaping ) {
             source.println();
-            getterAccessor.getAdditionalMethod().get().write( source );
+            source.println( "@Override" );
+            source.println( "public void serializePropertyName(%s writer, %s bean, %s ctx) {", JsonWriter.class
+                    .getCanonicalName(), getParameterizedQualifiedClassName( beanInfo.getType() ), JSON_SERIALIZATION_CONTEXT_CLASS );
+            source.indent();
+            source.println( "writer.name( propertyName );" );
+            source.outdent();
+            source.println( "}" );
         }
 
         source.outdent();
         source.print( "}" );
     }
 
-    private void generatePropertySerializerParameters( SourceWriter source, PropertyInfo property, JSerializerType serializerType )
-            throws UnableToCompleteException {
-        if ( property.getFormat().isPresent() || property.getIgnoredProperties().isPresent() || property.getIgnoreUnknown().isPresent() ||
-                property.getIdentityInfo().isPresent() || property.getTypeInfo().isPresent() || property.getInclude().isPresent() ) {
-
-            JClassType annotatedType = findFirstTypeToApplyPropertyAnnotation( serializerType );
-
-            source.println();
-
-            source.println( "@Override" );
-            source.println( "protected %s newParameters() {", JSON_SERIALIZER_PARAMETERS_CLASS );
-            source.indent();
-            source.print( "return new %s()", JSON_SERIALIZER_PARAMETERS_CLASS );
-
-            source.indent();
-
-            generateCommonPropertyParameters( source, property, serializerType );
-
-            if ( property.getFormat().isPresent() ) {
-                JsonFormat format = property.getFormat().get();
-                if ( !Strings.isNullOrEmpty( format.timezone() ) && !JsonFormat.DEFAULT_TIMEZONE.equals( format.timezone() ) ) {
-                    source.println();
-                    java.util.TimeZone timeZoneJdk = java.util.TimeZone.getTimeZone( format.timezone() );
-                    // in java the offset is in milliseconds from timezone to GMT
-                    // in gwt the offset is in minutes from GMT to timezone
-                    // so we convert the milliseconds in minutes and invert the sign
-                    int timeZoneOffsetGwt = (timeZoneJdk.getRawOffset() / 1000 / 60) * -1;
-                    source.print( ".setTimezone(%s.createTimeZone( %d ))", TimeZone.class.getCanonicalName(), timeZoneOffsetGwt );
-                }
-            }
-
-            if ( property.getInclude().isPresent() ) {
-                source.println();
-                source.print( ".setInclude(%s.%s)", Include.class.getCanonicalName(), property.getInclude().get().name() );
-            }
-
-            if ( property.getIdentityInfo().isPresent() ) {
-                try {
-                    Optional<JSerializerType> identitySerializerType = getIdentitySerializerType( property.getIdentityInfo().get() );
-                    source.println();
-                    source.print( ".setIdentityInfo(" );
-                    generateIdentifierSerializationInfo( source, annotatedType, property.getIdentityInfo().get(), identitySerializerType );
-                    source.print( ")" );
-                } catch ( UnsupportedTypeException e ) {
-                    logger.log( Type.WARN, "Identity type is not supported. We ignore it." );
-                }
-            }
-
-            if ( property.getTypeInfo().isPresent() ) {
-                source.println();
-                source.print( ".setTypeInfo(" );
-                generateTypeInfo( source, property.getTypeInfo().get(), true );
-                source.print( ")" );
-            }
-
-            source.println( ";" );
-            source.outdent();
-
-            source.outdent();
-            source.println( "}" );
-        }
-    }
-
     private void generateInitIdentityInfoMethod( SourceWriter source, BeanInfo beanInfo, Optional<JSerializerType> serializerType )
-            throws UnableToCompleteException {
+            throws UnableToCompleteException, UnsupportedTypeException {
         source.println( "@Override" );
         source.println( "protected %s<%s> initIdentityInfo() {", IdentitySerializationInfo.class.getCanonicalName(), beanInfo.getType()
                 .getParameterizedQualifiedSourceName() );

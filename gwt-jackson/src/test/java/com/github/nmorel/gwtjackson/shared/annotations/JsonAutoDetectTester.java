@@ -27,7 +27,7 @@ import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
  */
 public final class JsonAutoDetectTester extends AbstractTester {
 
-    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC, getterVisibility = JsonAutoDetect.Visibility.NONE)
+    @JsonAutoDetect( fieldVisibility = JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC, getterVisibility = JsonAutoDetect.Visibility.NONE )
     public static class BeanOne {
 
         public String publicFieldVisible;
@@ -38,7 +38,7 @@ public final class JsonAutoDetectTester extends AbstractTester {
 
         private String visibleWithSetter;
 
-        @JsonProperty("@fieldWithJsonProperty")
+        @JsonProperty( "\"fieldWithJsonProperty\"" )
         private String fieldWithJsonProperty;
 
         public String getVisibleWithSetter() {
@@ -73,7 +73,7 @@ public final class JsonAutoDetectTester extends AbstractTester {
 
         String expected = "{\"publicFieldVisible\":\"publicField\"," +
                 "\"protectedFieldVisible\":\"protectedField\"," +
-                "\"@fieldWithJsonProperty\":\"jsonProperty\"}";
+                "\"\\\"fieldWithJsonProperty\\\"\":\"jsonProperty\"}";
         String result = writer.write( bean );
 
         assertEquals( expected, result );
@@ -84,7 +84,7 @@ public final class JsonAutoDetectTester extends AbstractTester {
                 "\"publicFieldVisible\":\"publicField\"," +
                 "\"protectedFieldVisible\":\"protectedField\"," +
                 "\"notVisibleField\":2," +
-                "\"@fieldWithJsonProperty\":\"jsonProperty\"}";
+                "\"\\\"fieldWithJsonProperty\\\"\":\"jsonProperty\"}";
 
         BeanOne result = reader.read( input );
 

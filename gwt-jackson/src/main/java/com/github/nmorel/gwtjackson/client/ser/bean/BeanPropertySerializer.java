@@ -28,7 +28,13 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  */
 public abstract class BeanPropertySerializer<T, V> extends HasSerializer<V, JsonSerializer<V>> {
 
+    protected final String propertyName;
+
     private JsonSerializerParameters parameters;
+
+    protected BeanPropertySerializer( String propertyName ) {
+        this.propertyName = propertyName;
+    }
 
     protected JsonSerializerParameters getParameters() {
         if ( null == parameters ) {
@@ -39,6 +45,21 @@ public abstract class BeanPropertySerializer<T, V> extends HasSerializer<V, Json
 
     protected JsonSerializerParameters newParameters() {
         return JsonSerializerParameters.DEFAULT;
+    }
+
+    public String getPropertyName() {
+        return propertyName;
+    }
+
+    /**
+     * Serializes the property name
+     *
+     * @param writer writer
+     * @param bean bean containing the property to serialize
+     * @param ctx context of the serialization process
+     */
+    public void serializePropertyName( JsonWriter writer, T bean, JsonSerializationContext ctx ) {
+        writer.unescapeName( propertyName );
     }
 
     /**
