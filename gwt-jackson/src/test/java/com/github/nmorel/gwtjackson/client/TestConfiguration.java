@@ -32,7 +32,8 @@ public class TestConfiguration extends AbstractConfiguration {
         addMixInAnnotations( EmptyBean.class, MixInForSimple.class );
 
         // object tests
-        whitelist( "com.github.nmorel.gwtjackson.shared.advanced.ObjectTester.*" );
+        whitelist( "com.github.nmorel.gwtjackson.shared.advanced.ObjectTester.InnerObject" );
+        whitelist( "com.github.nmorel.gwtjackson.shared.advanced.ObjectTester.Person" );
     }
 }
 
