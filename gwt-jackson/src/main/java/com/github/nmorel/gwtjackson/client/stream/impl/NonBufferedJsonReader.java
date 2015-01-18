@@ -23,7 +23,10 @@ import java.util.logging.Logger;
 
 import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
+import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayInteger;
+import com.google.gwt.core.client.JsonUtils;
 
 /**
  * Reads a JSON (<a href="http://www.ietf.org/rfc/rfc4627.txt">RFC 4627</a>)
@@ -1401,7 +1404,11 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
       return "null";
     }
 
-    StringBuilder builder = new StringBuilder();
+    // TODO rewrite to avoid using a JsonWriter
+    // we should be able to write the tree without escaping/unescaping
+    JsonWriter writer = new FastJsonWriter( new StringBuilder() );
+    writer.setLenient( true );
+
     int count = 0;
     do {
       p = peeked;
@@ -1412,58 +1419,48 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
       if (p == PEEKED_BEGIN_ARRAY) {
         push(JsonScope.EMPTY_ARRAY);
         count++;
-        builder.append('[');
+        writer.beginArray();
       } else if (p == PEEKED_BEGIN_OBJECT) {
         push(JsonScope.EMPTY_OBJECT);
         count++;
-        builder.append('{');
+        writer.beginObject();
       } else if (p == PEEKED_END_ARRAY) {
         stackSize--;
         count--;
-        builder.append(']');
+        writer.endArray();
       } else if (p == PEEKED_END_OBJECT) {
         stackSize--;
         count--;
-        builder.append('}');
+        writer.endObject();
       } else if (p == PEEKED_UNQUOTED_NAME) {
-        builder.append(nextUnquotedValue());
-        builder.append(':');
+        writer.name(nextUnquotedValue());
       } else if (p == PEEKED_SINGLE_QUOTED_NAME) {
-        builder.append('\'');
-        builder.append(nextQuotedValue( '\'' ));
-        builder.append('\'');
-        builder.append(':');
+        writer.name(nextQuotedValue( '\'' ));
       } else if (p == PEEKED_DOUBLE_QUOTED_NAME) {
-        builder.append('"');
-        builder.append(nextQuotedValue( '"' ));
-        builder.append('"');
-        builder.append(':');
+        writer.name(nextQuotedValue( '"' ));
       } else if (p == PEEKED_UNQUOTED) {
-        builder.append(nextUnquotedValue());
+        writer.value(nextUnquotedValue());
       } else if (p == PEEKED_SINGLE_QUOTED) {
-        builder.append('\'');
-        builder.append(nextQuotedValue( '\'' ));
-        builder.append('\'');
+        writer.value(nextQuotedValue( '\'' ));
       } else if (p == PEEKED_DOUBLE_QUOTED) {
-        builder.append('"');
-        builder.append(nextQuotedValue( '"' ));
-        builder.append('"');
+        writer.value(nextQuotedValue( '"' ));
       } else if (p == PEEKED_NUMBER) {
-        builder.append( in.substring( pos, pos + peekedNumberLength) );
+        writer.value( in.substring( pos, pos + peekedNumberLength) );
         pos += peekedNumberLength;
       } else if (p == PEEKED_TRUE) {
-        builder.append( true );
+        writer.value( true );
       } else if (p == PEEKED_FALSE) {
-        builder.append( false );
+        writer.value( false );
       } else if (p == PEEKED_LONG) {
-        builder.append( peekedLong );
+        writer.value( peekedLong );
       } else if (p == PEEKED_BUFFERED) {
-        builder.append( peekedString );
+        writer.value( peekedString );
       }
       peeked = PEEKED_NONE;
     } while (count != 0);
 
-    return builder.toString();
+    writer.close();
+    return writer.getOutput();
   }
 
   @Override
@@ -1566,6 +1563,36 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
     peekedString = null;
     peeked = PEEKED_NONE;
     return result;
+  }
+
+  @Override
+  public JavaScriptObject nextJavaScriptObject( boolean useSafeEval ) {
+    int p = peeked;
+    if (p == PEEKED_NONE) {
+      p = doPeek();
+    }
+
+    switch (p) {
+    case PEEKED_BEGIN_OBJECT:
+    case PEEKED_BEGIN_ARRAY:
+      JavaScriptObject result;
+      int peekStack = stack.get(stackSize - 1);
+      if (peekStack == JsonScope.NONEMPTY_DOCUMENT) {
+        // start of the document
+        String toEval = in;
+        result = useSafeEval ? JsonUtils.safeEval( toEval ) : JsonUtils.unsafeEval( toEval );
+        // we read everything, we move the pointer to the end of the document
+        pos = toEval.length();
+        peeked = PEEKED_NONE;
+      } else {
+        String toEval = nextValue();
+        result = useSafeEval ? JsonUtils.safeEval( toEval ) : JsonUtils.unsafeEval( toEval );
+      }
+      return result;
+    default:
+      throw new IllegalStateException("Expected an array or object to evaluate a JavaScriptObject but was " + peek()
+          + " at line " + getLineNumber() + " column " + getColumnNumber());
+    }
   }
 }
 //@formatter:on

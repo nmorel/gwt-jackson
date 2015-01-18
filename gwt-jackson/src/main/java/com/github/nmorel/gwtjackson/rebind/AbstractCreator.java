@@ -191,6 +191,12 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             return builder.build();
         }
 
+        if ( typeOracle.isJavaScriptObject( type ) ) {
+            // it's a JSO and the user didn't give a custom serializer. We use the default one.
+            configuredSerializer = configuration.getSerializer( typeOracle.getJavaScriptObject() );
+            return builder.instance( configuredSerializer.get().getInstanceCreation() ).build();
+        }
+
         JEnumType enumType = type.isEnum();
         if ( null != enumType ) {
             return builder.instance( String.format( "%s.<%s<%s>>getInstance()", EnumJsonSerializer.class
@@ -391,6 +397,12 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                 builder.instance( configuredDeserializer.get().getInstanceCreation() );
             }
             return builder.build();
+        }
+
+        if ( typeOracle.isJavaScriptObject( type ) ) {
+            // it's a JSO and the user didn't give a custom deserializer. We use the default one.
+            configuredDeserializer = configuration.getDeserializer( typeOracle.getJavaScriptObject() );
+            return builder.instance( configuredDeserializer.get().getInstanceCreation() ).build();
         }
 
         JEnumType enumType = type.isEnum();

@@ -67,6 +67,7 @@ import com.github.nmorel.gwtjackson.client.deser.BaseNumberJsonDeserializer.Numb
 import com.github.nmorel.gwtjackson.client.deser.BaseNumberJsonDeserializer.ShortJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.BooleanJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.CharacterJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.JavaScriptObjectJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.StringJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.UUIDJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.VoidJsonDeserializer;
@@ -146,6 +147,7 @@ import com.github.nmorel.gwtjackson.client.ser.BaseNumberJsonSerializer.ShortJso
 import com.github.nmorel.gwtjackson.client.ser.BooleanJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.CharacterJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.IterableJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.JavaScriptObjectJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.StringJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.UUIDJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.VoidJsonSerializer;
@@ -172,6 +174,7 @@ import com.github.nmorel.gwtjackson.client.ser.map.key.NumberKeySerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.key.ObjectKeySerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.key.ToStringKeySerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.key.UUIDKeySerializer;
+import com.google.gwt.core.client.JavaScriptObject;
 
 /**
  * {@link AbstractConfiguration} implementation containing all the default serializers and deserializers.
@@ -198,6 +201,8 @@ public final class DefaultConfiguration extends AbstractConfiguration {
         type( Character.class ).serializer( CharacterJsonSerializer.class ).deserializer( CharacterJsonDeserializer.class );
         type( UUID.class ).serializer( UUIDJsonSerializer.class ).deserializer( UUIDJsonDeserializer.class );
         type( Void.class ).serializer( VoidJsonSerializer.class ).deserializer( VoidJsonDeserializer.class );
+        type( JavaScriptObject.class ).serializer( JavaScriptObjectJsonSerializer.class )
+                .deserializer( JavaScriptObjectJsonDeserializer.class );
         // type( Enum.class ).serializer( EnumJsonSerializer.class ).deserializer( EnumJsonDeserializer.class );
 
         // Number mappers

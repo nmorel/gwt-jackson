@@ -18,6 +18,9 @@ package com.github.nmorel.gwtjackson.client.stream;
 
 import java.math.BigInteger;
 
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsonUtils;
+
 public interface JsonReader
 {
 
@@ -191,4 +194,13 @@ public interface JsonReader
      * @throws NumberFormatException if the next value cannot be parsed as a number.
      */
     Number nextNumber();
+
+    /**
+     * Returns the {@link JavaScriptObject} of the next token, consuming it.
+     *
+     * @param useSafeEval whether it should use {@link JsonUtils#safeEval(String)} or {@link JsonUtils#unsafeEval(String)}
+     *
+     * @return the {@link JavaScriptObject}
+     */
+    JavaScriptObject nextJavaScriptObject( boolean useSafeEval );
 }

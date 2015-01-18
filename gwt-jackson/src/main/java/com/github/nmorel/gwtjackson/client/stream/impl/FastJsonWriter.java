@@ -21,6 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.github.nmorel.gwtjackson.client.exception.JsonSerializationException;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayInteger;
 import com.google.gwt.core.client.JsonUtils;
 
@@ -311,6 +312,21 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
     out.append(string);
     return this;
   }
+
+  @Override
+  public FastJsonWriter value( JavaScriptObject value ) {
+    if (value == null) {
+      return nullValue();
+    }
+    writeDeferredName();
+    beforeValue(false);
+    out.append(stringify( value ));
+    return this;
+  }
+
+  private native String stringify( JavaScriptObject jso ) /*-{
+      return JSON.stringify(jso);
+  }-*/;
 
   @Override
   public FastJsonWriter rawValue( Object value ) {

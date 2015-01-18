@@ -16,6 +16,8 @@
 
 package com.github.nmorel.gwtjackson.client.stream;
 
+import com.google.gwt.core.client.JavaScriptObject;
+
 public interface JsonWriter {
 
     /**
@@ -152,6 +154,14 @@ public interface JsonWriter {
      * @return this writer.
      */
     JsonWriter value( Number value );
+
+    /**
+     * Encodes {@code value}.
+     *
+     * @param value a value .
+     * @return this writer.
+     */
+    JsonWriter value( JavaScriptObject value );
 
     /**
      * Encodes {@code value}.toString() as is.

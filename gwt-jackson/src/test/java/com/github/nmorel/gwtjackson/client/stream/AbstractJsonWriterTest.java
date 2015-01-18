@@ -21,6 +21,7 @@ import java.math.BigInteger;
 
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
 
 @SuppressWarnings( "resource" )
 public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
@@ -507,5 +508,34 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
         jsonWriter.close();
 
         assertEquals( "{\"\"json\"\":\"{\"key\":\"value\"}\"}", jsonWriter.getOutput() );
+    }
+
+    public void testRootJavaScriptObject() {
+        Person person = JavaScriptObject.createObject().cast();
+        person.setFirstName( "Bob" );
+        person.setLastName( "Morane" );
+
+        JsonWriter jsonWriter = newJsonWriter();
+        jsonWriter.setLenient( true );
+
+        jsonWriter.value( person );
+        jsonWriter.close();
+
+        assertEquals( "{\"firstName\":\"Bob\",\"lastName\":\"Morane\"}", jsonWriter.getOutput() );
+    }
+
+    public void testNoRootJavaScriptObject() {
+        Person person = JavaScriptObject.createObject().cast();
+        person.setFirstName( "Bob" );
+        person.setLastName( "Morane" );
+
+        JsonWriter jsonWriter = newJsonWriter();
+        jsonWriter.beginObject();
+        jsonWriter.name( "jso" );
+        jsonWriter.value( person );
+        jsonWriter.endObject();
+        jsonWriter.close();
+
+        assertEquals( "{\"jso\":{\"firstName\":\"Bob\",\"lastName\":\"Morane\"}}", jsonWriter.getOutput() );
     }
 }

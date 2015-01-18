@@ -21,6 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.github.nmorel.gwtjackson.client.exception.JsonSerializationException;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayInteger;
 
 /**
@@ -437,6 +438,21 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
     out.append(string);
     return this;
   }
+
+  @Override
+  public DefaultJsonWriter value( JavaScriptObject value ) {
+    if (value == null) {
+      return nullValue();
+    }
+    writeDeferredName();
+    beforeValue(false);
+    out.append(stringify( value ));
+    return this;
+  }
+
+  private native String stringify( JavaScriptObject jso ) /*-{
+      return JSON.stringify(jso);
+  }-*/;
 
   @Override
   public DefaultJsonWriter rawValue( Object value ) {

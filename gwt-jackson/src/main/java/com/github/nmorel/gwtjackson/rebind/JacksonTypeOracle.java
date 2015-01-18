@@ -27,6 +27,7 @@ import com.github.nmorel.gwtjackson.client.ObjectReader;
 import com.github.nmorel.gwtjackson.client.ObjectWriter;
 import com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer;
 import com.github.nmorel.gwtjackson.client.ser.map.key.KeySerializer;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
@@ -64,6 +65,8 @@ public class JacksonTypeOracle {
 
     private final JClassType enumSetType;
 
+    private final JClassType jsoType;
+
     private final Map<JClassType, BeanJsonMapperInfo> typeToMapperInfo = new HashMap<JClassType, BeanJsonMapperInfo>();
 
     public JacksonTypeOracle( TreeLogger logger, TypeOracle typeOracle ) {
@@ -80,6 +83,7 @@ public class JacksonTypeOracle {
         this.mapType = typeOracle.findType( Map.class.getCanonicalName() );
         this.enumMapType = typeOracle.findType( EnumMap.class.getCanonicalName() );
         this.iterableType = typeOracle.findType( Iterable.class.getCanonicalName() );
+        this.jsoType = typeOracle.findType( JavaScriptObject.class.getCanonicalName() );
     }
 
     public JClassType getType( String type ) throws UnableToCompleteException {
@@ -133,6 +137,14 @@ public class JacksonTypeOracle {
 
     public boolean isJsonDeserializer( JType type ) {
         return null != type.isClass() && type.isClass().isAssignableTo( jsonDeserializerType );
+    }
+
+    public boolean isJavaScriptObject( JType type ) {
+        return null != type.isClass() && type.isClass().isAssignableTo( jsoType );
+    }
+
+    public JClassType getJavaScriptObject() {
+        return jsoType;
     }
 
     public BeanJsonMapperInfo getBeanJsonMapperInfo( JClassType type ) {

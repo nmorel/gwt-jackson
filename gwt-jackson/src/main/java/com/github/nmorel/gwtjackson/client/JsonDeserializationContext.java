@@ -25,6 +25,8 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerator.IdKey;
 import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.impl.NonBufferedJsonReader;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsonUtils;
 
 /**
  * Context for the deserialization process.
@@ -42,6 +44,8 @@ public class JsonDeserializationContext extends JsonMappingContext {
         private boolean acceptSingleValueAsArray = false;
 
         private boolean wrapExceptions = true;
+
+        private boolean useSafeEval = true;
 
         /**
          * Determines whether encountering of unknown
@@ -115,8 +119,21 @@ public class JsonDeserializationContext extends JsonMappingContext {
             return this;
         }
 
+        /**
+         * Feature that determines whether gwt-jackson should use {@link JsonUtils#safeEval(String)} or {@link JsonUtils#unsafeEval(String)}
+         * to deserialize {@link JavaScriptObject}
+         * <br>
+         * <br>
+         * {@link JsonUtils#safeEval(String)} is used by default.
+         */
+        public Builder useSafeEval( boolean useSafeEval ) {
+            this.useSafeEval = useSafeEval;
+            return this;
+        }
+
         public JsonDeserializationContext build() {
-            return new JsonDeserializationContext( failOnUnknownProperties, unwrapRootValue, acceptSingleValueAsArray, wrapExceptions );
+            return new JsonDeserializationContext( failOnUnknownProperties, unwrapRootValue, acceptSingleValueAsArray, wrapExceptions,
+                    useSafeEval );
         }
     }
 
@@ -135,12 +152,15 @@ public class JsonDeserializationContext extends JsonMappingContext {
 
     private final boolean wrapExceptions;
 
+    private final boolean useSafeEval;
+
     private JsonDeserializationContext( boolean failOnUnknownProperties, boolean unwrapRootValue, boolean acceptSingleValueAsArray,
-                                        boolean wrapExceptions ) {
+                                        boolean wrapExceptions, boolean useSafeEval ) {
         this.failOnUnknownProperties = failOnUnknownProperties;
         this.unwrapRootValue = unwrapRootValue;
         this.acceptSingleValueAsArray = acceptSingleValueAsArray;
         this.wrapExceptions = wrapExceptions;
+        this.useSafeEval = useSafeEval;
     }
 
     @Override
@@ -167,6 +187,13 @@ public class JsonDeserializationContext extends JsonMappingContext {
      */
     public boolean isAcceptSingleValueAsArray() {
         return acceptSingleValueAsArray;
+    }
+
+    /**
+     * @see Builder#useSafeEval(boolean)
+     */
+    public boolean isUseSafeEval() {
+        return useSafeEval;
     }
 
     public JsonReader newJsonReader( String input ) {

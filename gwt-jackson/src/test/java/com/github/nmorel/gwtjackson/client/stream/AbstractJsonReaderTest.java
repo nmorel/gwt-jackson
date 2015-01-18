@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.stream;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 
@@ -24,6 +23,8 @@ import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException;
 import com.github.nmorel.gwtjackson.client.stream.impl.MalformedJsonException;
 import com.github.nmorel.gwtjackson.client.stream.impl.StringReader;
+import com.google.gwt.core.client.JsArrayMixed;
+import com.google.gwt.core.client.JsArrayString;
 
 import static com.github.nmorel.gwtjackson.client.stream.JsonToken.BEGIN_ARRAY;
 import static com.github.nmorel.gwtjackson.client.stream.JsonToken.BEGIN_OBJECT;
@@ -1684,6 +1685,135 @@ public abstract class AbstractJsonReaderTest extends GwtJacksonTestCase {
         assertEquals( Long.MAX_VALUE, reader.nextNumber() );
         assertEquals( new BigInteger( Long.MAX_VALUE + "" ).add( BigInteger.ONE ), reader.nextNumber() );
         reader.endArray();
+        assertEquals( JsonToken.END_DOCUMENT, reader.peek() );
+    }
+
+    public void testNextJavaScriptObjectRootNoObjectOrArray() {
+        JsonReader reader = newJsonReader( "true" );
+        reader.setLenient( true );
+        try {
+            reader.nextJavaScriptObject( true );
+            fail();
+        } catch ( IllegalStateException e ) {
+            // expected exception
+        }
+    }
+
+    public void testNextJavaScriptObjectNoRootNoObjectOrArray() {
+        JsonReader reader = newJsonReader( "{\"name\":\"wrapper\",\"jso\":true}" );
+        reader.setLenient( true );
+
+        reader.beginObject();
+        assertEquals( "name", reader.nextName() );
+        assertEquals( "wrapper", reader.nextString() );
+
+        assertEquals( "jso", reader.nextName() );
+        try {
+            reader.nextJavaScriptObject( true );
+            fail();
+        } catch ( IllegalStateException e ) {
+            // expected exception
+        }
+    }
+
+    public void testNextJavaScriptObjectRootObject() {
+        // safeEval
+        JsonReader reader = newJsonReader( "{\"firstName\":\"Bob\",\"lastName\":\"Morane\"}" );
+        Person person = reader.nextJavaScriptObject( true ).cast();
+        assertEquals( "Bob", person.getFirstName() );
+        assertEquals( "Morane", person.getLastName() );
+        assertEquals( JsonToken.END_DOCUMENT, reader.peek() );
+
+        // unsafeEval
+        reader = newJsonReader( "  \n {\"firstName\":\"Bob\",\"lastName\":\"Morane\"}" );
+        person = reader.nextJavaScriptObject( false ).cast();
+        assertEquals( "Bob", person.getFirstName() );
+        assertEquals( "Morane", person.getLastName() );
+        assertEquals( JsonToken.END_DOCUMENT, reader.peek() );
+    }
+
+    public void testNextJavaScriptObjectRootArray() {
+        // safeEval
+        JsonReader reader = newJsonReader( "       [\"Bob\",\"Morane\"]  " );
+        JsArrayString array = reader.nextJavaScriptObject( true ).cast();
+        assertEquals( 2, array.length() );
+        assertEquals( "Bob", array.get( 0 ) );
+        assertEquals( "Morane", array.get( 1 ) );
+        assertEquals( JsonToken.END_DOCUMENT, reader.peek() );
+
+        // unsafeEval
+        reader = newJsonReader( "[\"Bob\",\"Morane\"]" );
+        array = reader.nextJavaScriptObject( false ).cast();
+        assertEquals( 2, array.length() );
+        assertEquals( "Bob", array.get( 0 ) );
+        assertEquals( "Morane", array.get( 1 ) );
+        assertEquals( JsonToken.END_DOCUMENT, reader.peek() );
+    }
+
+    public void testNextJavaScriptObjectNoRootObject() {
+        // safeEval
+        JsonReader reader = newJsonReader( "{\"name\":\"wrapper\",\"jso\":{\"firstName\":\"Bob\",\"lastName\":\"Mor\\\"ane\"}}" );
+        reader.beginObject();
+        assertEquals( "name", reader.nextName() );
+        assertEquals( "wrapper", reader.nextString() );
+
+        assertEquals( "jso", reader.nextName() );
+        Person person = reader.nextJavaScriptObject( true ).cast();
+        assertEquals( "Bob", person.getFirstName() );
+        assertEquals( "Mor\"ane", person.getLastName() );
+
+        reader.endObject();
+        assertEquals( JsonToken.END_DOCUMENT, reader.peek() );
+
+        // unsafeEval
+        reader = newJsonReader( "{\"jso\":{\"firstName\":\"Bob\",\"lastName\":\"Morane\"},\"name\":\"wrapper\"}" );
+        reader.beginObject();
+
+        assertEquals( "jso", reader.nextName() );
+        person = reader.nextJavaScriptObject( false ).cast();
+        assertEquals( "Bob", person.getFirstName() );
+        assertEquals( "Morane", person.getLastName() );
+
+        assertEquals( "name", reader.nextName() );
+        assertEquals( "wrapper", reader.nextString() );
+        reader.endObject();
+        assertEquals( JsonToken.END_DOCUMENT, reader.peek() );
+    }
+
+    public void testNextJavaScriptObjectNoRootArray() {
+        // safeEval
+        JsonReader reader = newJsonReader( "   {\"name\":\"wrapper\",\"jso\":    [\"Bob\",\"Morane\", true, 145] } " );
+        reader.beginObject();
+        assertEquals( "name", reader.nextName() );
+        assertEquals( "wrapper", reader.nextString() );
+
+        assertEquals( "jso", reader.nextName() );
+        JsArrayMixed array = reader.nextJavaScriptObject( true ).cast();
+        assertEquals( 4, array.length() );
+        assertEquals( "Bob", array.getString( 0 ) );
+        assertEquals( "Morane", array.getString( 1 ) );
+        assertTrue( array.getBoolean( 2 ) );
+        assertEquals( 145d, array.getNumber( 3 ) );
+
+        reader.endObject();
+        assertEquals( JsonToken.END_DOCUMENT, reader.peek() );
+
+        // unsafeEval
+        reader = newJsonReader( "   {\"jso\":    [\"Bob\",\"Morane\", true, 145] ,\"name\":\"wrapper\" } " );
+        reader.beginObject();
+
+        assertEquals( "jso", reader.nextName() );
+        array = reader.nextJavaScriptObject( false ).cast();
+        assertEquals( 4, array.length() );
+        assertEquals( "Bob", array.getString( 0 ) );
+        assertEquals( "Morane", array.getString( 1 ) );
+        assertTrue( array.getBoolean( 2 ) );
+        assertEquals( 145d, array.getNumber( 3 ) );
+
+        assertEquals( "name", reader.nextName() );
+        assertEquals( "wrapper", reader.nextString() );
+
+        reader.endObject();
         assertEquals( JsonToken.END_DOCUMENT, reader.peek() );
     }
 
