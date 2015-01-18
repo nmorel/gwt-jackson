@@ -122,6 +122,12 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
         final Set<String> ignoredProperties = null == params.getIgnoredProperties() ? Collections.<String>emptySet() : params
                 .getIgnoredProperties();
 
+        if ( params.isUnwrapped() ) {
+            // if unwrapped, we serialize the properties inside the current object
+            serializeProperties( writer, value, ctx, ignoredProperties, identityInfo );
+            return;
+        }
+
         ObjectIdSerializer<?> idWriter = null;
         if ( null != identityInfo ) {
             idWriter = ctx.getObjectId( value );
@@ -220,6 +226,13 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
             idWriter.serializeId( writer, ctx );
         }
 
+        serializeProperties( writer, value, ctx, ignoredProperties, identityInfo );
+
+        writer.endObject();
+    }
+
+    private void serializeProperties( JsonWriter writer, T value, JsonSerializationContext ctx, Set<String> ignoredProperties,
+                                      IdentitySerializationInfo identityInfo ) {
         for ( BeanPropertySerializer<T, ?> propertySerializer : serializers ) {
             if ( (null == identityInfo || !identityInfo.isProperty() || !identityInfo.getPropertyName().equals( propertySerializer
                     .getPropertyName() )) && !ignoredProperties.contains( propertySerializer.getPropertyName() ) ) {
@@ -231,7 +244,5 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
         if ( null != anyGetterPropertySerializer ) {
             anyGetterPropertySerializer.serialize( writer, value, ctx );
         }
-
-        writer.endObject();
     }
 }

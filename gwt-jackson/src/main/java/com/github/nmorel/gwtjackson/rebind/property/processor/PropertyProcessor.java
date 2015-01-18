@@ -41,6 +41,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.github.nmorel.gwtjackson.rebind.JacksonTypeOracle;
 import com.github.nmorel.gwtjackson.rebind.RebindConfiguration;
@@ -236,6 +237,11 @@ public final class PropertyProcessor {
         if ( jsonAnySetter.isPresent() && builder.getSetterAccessor().isPresent() && builder.getSetterAccessor().get().getMethod()
                 .isPresent() && builder.getSetterAccessor().get().getMethod().get().getParameterTypes().length == 2 ) {
             builder.setAnySetter( true );
+        }
+
+        Optional<JsonUnwrapped> jsonUnwrapped = propertyAccessors.getAnnotation( JsonUnwrapped.class );
+        if ( jsonUnwrapped.isPresent() && jsonUnwrapped.get().enabled() ) {
+            builder.setUnwrapped( true );
         }
 
         processBeanAnnotation( logger, typeOracle, configuration, type, propertyAccessors, builder );

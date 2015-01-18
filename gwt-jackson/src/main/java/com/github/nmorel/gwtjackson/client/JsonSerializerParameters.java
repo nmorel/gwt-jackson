@@ -86,6 +86,11 @@ public final class JsonSerializerParameters {
      */
     private TypeSerializationInfo typeInfo;
 
+    /**
+     * If true, all the properties of an object will be serialized inside the current object.
+     */
+    private boolean unwrapped = false;
+
     public String getPattern() {
         return pattern;
     }
@@ -158,6 +163,15 @@ public final class JsonSerializerParameters {
 
     public JsonSerializerParameters setTypeInfo( TypeSerializationInfo typeInfo ) {
         this.typeInfo = typeInfo;
+        return this;
+    }
+
+    public boolean isUnwrapped() {
+        return unwrapped;
+    }
+
+    public JsonSerializerParameters setUnwrapped( boolean unwrapped ) {
+        this.unwrapped = unwrapped;
         return this;
     }
 }

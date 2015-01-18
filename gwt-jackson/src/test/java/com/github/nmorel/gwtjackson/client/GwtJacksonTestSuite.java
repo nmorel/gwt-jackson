@@ -48,6 +48,7 @@ import com.github.nmorel.gwtjackson.client.annotation.JsonManagedAndBackReferenc
 import com.github.nmorel.gwtjackson.client.annotation.JsonPropertyOrderGwtTest;
 import com.github.nmorel.gwtjackson.client.annotation.JsonRawValueGwtTest;
 import com.github.nmorel.gwtjackson.client.annotation.JsonRootNameGwtTest;
+import com.github.nmorel.gwtjackson.client.annotation.JsonUnwrappedGwtTest;
 import com.github.nmorel.gwtjackson.client.deser.BooleanJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.CharacterJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.EnumJsonDeserializerTest;
@@ -288,6 +289,7 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( JsonRawValueGwtTest.class );
         suite.addTestSuite( JsonFormatGwtTest.class );
         suite.addTestSuite( JsonAnyGetterSetterGwtTest.class );
+        suite.addTestSuite( JsonUnwrappedGwtTest.class );
 
         // Advanced use cases
         suite.addTestSuite( ProxyAndAnonymousClassSerializationGwtTest.class );

@@ -46,6 +46,8 @@ final class ImmutablePropertyInfo implements PropertyInfo {
 
     private final boolean anySetter;
 
+    private final boolean unwrapped;
+
     private final Optional<String> managedReference;
 
     private final Optional<String> backReference;
@@ -67,10 +69,11 @@ final class ImmutablePropertyInfo implements PropertyInfo {
     private final Optional<String[]> ignoredProperties;
 
     ImmutablePropertyInfo( String propertyName, JType type, boolean ignored, boolean required, boolean rawValue, boolean value, boolean
-            anyGetter, boolean anySetter, Optional<String> managedReference, Optional<String> backReference, Optional<? extends
+            anyGetter, boolean anySetter, boolean unwrapped, Optional<String> managedReference, Optional<String> backReference,
+                           Optional<? extends
             FieldAccessor> getterAccessor, Optional<? extends FieldAccessor> setterAccessor, Optional<BeanIdentityInfo> identityInfo,
                            Optional<BeanTypeInfo> typeInfo, Optional<JsonFormat> format, Optional<Include> include, Optional<Boolean>
-            ignoreUnknown, Optional<String[]> ignoredProperties ) {
+                                   ignoreUnknown, Optional<String[]> ignoredProperties ) {
         this.propertyName = propertyName;
         this.type = type;
         this.ignored = ignored;
@@ -79,6 +82,7 @@ final class ImmutablePropertyInfo implements PropertyInfo {
         this.value = value;
         this.anyGetter = anyGetter;
         this.anySetter = anySetter;
+        this.unwrapped = unwrapped;
         this.managedReference = managedReference;
         this.backReference = backReference;
         this.getterAccessor = getterAccessor;
@@ -129,6 +133,11 @@ final class ImmutablePropertyInfo implements PropertyInfo {
     @Override
     public boolean isAnySetter() {
         return anySetter;
+    }
+
+    @Override
+    public boolean isUnwrapped() {
+        return unwrapped;
     }
 
     @Override

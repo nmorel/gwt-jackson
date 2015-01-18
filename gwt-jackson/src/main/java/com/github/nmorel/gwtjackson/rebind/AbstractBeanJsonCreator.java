@@ -290,7 +290,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
             JSerializerType propertySerializerType = getJsonSerializerFromType( propertyInfo.getType() );
 
             source.println( "new %s<%s, %s>(%s, \"%s\") {", PropertyIdentitySerializationInfo.class.getName(), type
-                    .getParameterizedQualifiedSourceName(), getParameterizedQualifiedClassName( propertyInfo.getType()), identityInfo
+                    .getParameterizedQualifiedSourceName(), getParameterizedQualifiedClassName( propertyInfo.getType() ), identityInfo
                     .isAlwaysAsId(), identityInfo.getPropertyName() );
 
             source.indent();
@@ -496,7 +496,8 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
     protected void generatePropertySerializerParameters( SourceWriter source, PropertyInfo property, JSerializerType serializerType )
             throws UnableToCompleteException {
         if ( property.getFormat().isPresent() || property.getIgnoredProperties().isPresent() || property.getIgnoreUnknown().isPresent() ||
-                property.getIdentityInfo().isPresent() || property.getTypeInfo().isPresent() || property.getInclude().isPresent() ) {
+                property.getIdentityInfo().isPresent() || property.getTypeInfo().isPresent() || property.getInclude()
+                .isPresent() || property.isUnwrapped() ) {
 
             JClassType annotatedType = findFirstTypeToApplyPropertyAnnotation( serializerType );
 
@@ -546,6 +547,11 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
                 source.print( ".setTypeInfo(" );
                 generateTypeInfo( source, property.getTypeInfo().get(), true );
                 source.print( ")" );
+            }
+
+            if ( property.isUnwrapped() ) {
+                source.println();
+                source.print( ".setUnwrapped(true)" );
             }
 
             source.println( ";" );

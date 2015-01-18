@@ -235,13 +235,17 @@ public class BeanJsonSerializerCreator extends AbstractBeanJsonCreator {
         generateBeanPropertySerializerBody( source, beanInfo.getType(), property, serializerType );
 
         boolean requireEscaping = !property.getPropertyName().equals( escapedPropertyName );
-        if ( requireEscaping ) {
+        if ( property.isUnwrapped() || requireEscaping ) {
             source.println();
             source.println( "@Override" );
             source.println( "public void serializePropertyName(%s writer, %s bean, %s ctx) {", JsonWriter.class
                     .getCanonicalName(), getParameterizedQualifiedClassName( beanInfo.getType() ), JSON_SERIALIZATION_CONTEXT_CLASS );
             source.indent();
-            source.println( "writer.name( propertyName );" );
+            if ( property.isUnwrapped() ) {
+                source.println( "// unwrapped property" );
+            } else {
+                source.println( "writer.name( propertyName );" );
+            }
             source.outdent();
             source.println( "}" );
         }

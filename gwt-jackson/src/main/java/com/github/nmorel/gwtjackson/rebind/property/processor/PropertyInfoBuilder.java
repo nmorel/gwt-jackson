@@ -46,6 +46,8 @@ final class PropertyInfoBuilder {
 
     private boolean anySetter = false;
 
+    private boolean unwrapped = false;
+
     private Optional<String> managedReference = Optional.absent();
 
     private Optional<String> backReference = Optional.absent();
@@ -125,6 +127,14 @@ final class PropertyInfoBuilder {
 
     void setAnySetter( boolean anySetter ) {
         this.anySetter = anySetter;
+    }
+
+    boolean isUnwrapped() {
+        return unwrapped;
+    }
+
+    void setUnwrapped( boolean unwrapped ) {
+        this.unwrapped = unwrapped;
     }
 
     Optional<String> getManagedReference() {
@@ -208,7 +218,7 @@ final class PropertyInfoBuilder {
     }
 
     PropertyInfo build() {
-        return new ImmutablePropertyInfo( propertyName, type, ignored, required, rawValue, value, anyGetter, anySetter, managedReference, backReference,
+        return new ImmutablePropertyInfo( propertyName, type, ignored, required, rawValue, value, anyGetter, anySetter, unwrapped, managedReference, backReference,
                 getterAccessor, setterAccessor, identityInfo, typeInfo, format, include, ignoreUnknown, ignoredProperties );
     }
 }

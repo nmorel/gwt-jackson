@@ -44,6 +44,8 @@ public interface PropertyInfo {
 
     boolean isAnySetter();
 
+    boolean isUnwrapped();
+
     Optional<String> getManagedReference();
 
     Optional<String> getBackReference();
