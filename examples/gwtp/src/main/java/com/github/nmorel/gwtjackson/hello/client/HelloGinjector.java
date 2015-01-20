@@ -18,7 +18,7 @@ package com.github.nmorel.gwtjackson.hello.client;
 
 import com.google.gwt.inject.client.GinModules;
 import com.google.gwt.inject.client.Ginjector;
-import com.gwtplatform.dispatch.rest.shared.RestDispatch;
+import com.gwtplatform.dispatch.rest.client.RestDispatch;
 
 /**
  * @author Nicolas Morel.

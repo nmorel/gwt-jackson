@@ -10,8 +10,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
@@ -19,6 +19,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.gwtplatform.dispatch.rest.client.RestCallback;
 
 /**
  * @author Nicolas Morel
@@ -121,13 +122,26 @@ public class Hello implements EntryPoint {
                 serverResponseLabel.setText( "" );
 
                 ginjector.getRestDispatch().execute( ginjector.getHelloRestService()
-                        .greet( new GreetingRequest( textToServer ) ), new AsyncCallback<GreetingResponse>() {
+                        .greet( new GreetingRequest( textToServer ) ), new RestCallback<GreetingResponse>() {
+
+                    private Response response;
+
+                    @Override
+                    public void setResponse( Response response ) {
+                        this.response = response;
+                    }
+
                     @Override
                     public void onFailure( Throwable caught ) {
                         // Show the RPC error message to the user
                         dialogBox.setText( "Remote Procedure Call - Failure" );
                         serverResponseLabel.addStyleName( "serverResponseLabelError" );
-                        serverResponseLabel.setHTML( SERVER_ERROR );
+                        if ( null == response ) {
+                            serverResponseLabel.setHTML( SERVER_ERROR );
+                        } else {
+                            serverResponseLabel.setHTML( new SafeHtmlBuilder().appendEscaped( Integer.toString( response.getStatusCode() ) )
+                                    .appendEscaped( " : " ).appendEscaped( response.getStatusText() ).toSafeHtml() );
+                        }
                         dialogBox.center();
                         closeButton.setFocus( true );
                     }
