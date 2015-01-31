@@ -20,7 +20,7 @@ import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;
 import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
 import com.github.nmorel.gwtjackson.shared.advanced.jsontype.VisibleTypeIdTester;
-import com.github.nmorel.gwtjackson.shared.advanced.jsontype.VisibleTypeIdTester.ExternalIdWrapper;
+import com.github.nmorel.gwtjackson.shared.advanced.jsontype.VisibleTypeIdTester.ExternalBeanWithId;
 import com.github.nmorel.gwtjackson.shared.advanced.jsontype.VisibleTypeIdTester.ExternalIdWrapper2;
 import com.github.nmorel.gwtjackson.shared.advanced.jsontype.VisibleTypeIdTester.I263Base;
 import com.github.nmorel.gwtjackson.shared.advanced.jsontype.VisibleTypeIdTester.MultipleIds;
@@ -52,11 +52,6 @@ public class VisibleTypeIdGwtTest extends GwtJacksonTestCase {
         static WrapperObjectBeanMapper INSTANCE = GWT.create( WrapperObjectBeanMapper.class );
     }
 
-    public interface ExternalIdWrapperMapper extends ObjectMapper<ExternalIdWrapper>, ObjectMapperTester<ExternalIdWrapper> {
-
-        static ExternalIdWrapperMapper INSTANCE = GWT.create( ExternalIdWrapperMapper.class );
-    }
-
     public interface TypeIdFromFieldPropertyMapper extends ObjectMapper<TypeIdFromFieldProperty>,
             ObjectMapperTester<TypeIdFromFieldProperty> {
 
@@ -83,6 +78,11 @@ public class VisibleTypeIdGwtTest extends GwtJacksonTestCase {
         static I263BaseMapper INSTANCE = GWT.create( I263BaseMapper.class );
     }
 
+    public interface ExternalBeanWithIdMapper extends ObjectMapper<ExternalBeanWithId>, ObjectMapperTester<ExternalBeanWithId> {
+
+        static ExternalBeanWithIdMapper INSTANCE = GWT.create( ExternalBeanWithIdMapper.class );
+    }
+
     public interface MultipleIdsMapper extends ObjectMapper<MultipleIds>, ObjectMapperTester<MultipleIds> {
 
         static MultipleIdsMapper INSTANCE = GWT.create( MultipleIdsMapper.class );
@@ -101,11 +101,6 @@ public class VisibleTypeIdGwtTest extends GwtJacksonTestCase {
     public void testVisibleWithWrapperObject() {
         tester.testVisibleWithWrapperObject( WrapperObjectBeanMapper.INSTANCE );
     }
-
-    // TODO Support for JsonTypeInfo.As.EXTERNAL_PROPERTY
-    //    public void testVisibleWithExternalId() {
-    //        tester.testVisibleWithExternalId( ExternalIdWrapperMapper.INSTANCE );
-    //    }
 
     // TODO Support for @JsonTypeId
     //    public void testTypeIdFromProperty() {
@@ -130,6 +125,11 @@ public class VisibleTypeIdGwtTest extends GwtJacksonTestCase {
     // TODO Support for @JsonTypeId
     //    public void testIssue263() {
     //        tester.testIssue263( I263BaseMapper.INSTANCE );
+    //    }
+
+    // TODO Support for JsonTypeInfo.As.EXTERNAL_PROPERTY
+    //    public void testVisibleTypeId408() {
+    //        tester.testVisibleTypeId408( ExternalBeanWithIdMapper.INSTANCE );
     //    }
 
     // TODO Support for @JsonTypeId
