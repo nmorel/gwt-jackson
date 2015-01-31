@@ -122,12 +122,12 @@ public final class BeanProcessor {
      * as non instantiable.
      *
      * @param logger logger
-     * @param beanType
+     * @param beanType type to look for constructor
      * @param builder current bean builder
      */
     private static void determineInstanceCreator( RebindConfiguration configuration, TreeLogger logger, JClassType beanType,
                                                   BeanInfoBuilder builder ) {
-        if ( null != beanType.isInterface() || beanType.isAbstract() || isObjectOrSerializable( beanType ) ) {
+        if ( isObjectOrSerializable( beanType ) ) {
             return;
         }
 
@@ -140,38 +140,41 @@ public final class BeanProcessor {
         // we keep the list containing the mixin creator and the real creator
         List<? extends JAbstractMethod> creators = Collections.emptyList();
 
-        for ( JConstructor constructor : beanType.getConstructors() ) {
-            if ( constructor.getParameters().length == 0 ) {
-                creatorDefaultConstructor = constructor;
-                continue;
-            }
-
-            // A constructor is considered as a creator if
-            // - he is annotated with JsonCreator and
-            //   * all its parameters are annotated with JsonProperty
-            //   * or it has only one parameter
-            // - or all its parameters are annotated with JsonProperty
-
-            List<JConstructor> constructors = new ArrayList<JConstructor>();
-            if ( mixinClass.isPresent() && null == mixinClass.get().isInterface() ) {
-                JConstructor mixinConstructor = mixinClass.get().findConstructor( constructor.getParameterTypes() );
-                if ( null != mixinConstructor ) {
-                    constructors.add( mixinConstructor );
+        if ( null == beanType.isInterface() && !beanType.isAbstract() ) {
+            for ( JConstructor constructor : beanType.getConstructors() ) {
+                if ( constructor.getParameters().length == 0 ) {
+                    creatorDefaultConstructor = constructor;
+                    continue;
                 }
-            }
-            constructors.add( constructor );
 
-            Optional<JsonIgnore> jsonIgnore = getAnnotation( JsonIgnore.class, constructors );
-            if ( jsonIgnore.isPresent() && jsonIgnore.get().value() ) {
-                continue;
-            }
+                // A constructor is considered as a creator if
+                // - he is annotated with JsonCreator and
+                //   * all its parameters are annotated with JsonProperty
+                //   * or it has only one parameter
+                // - or all its parameters are annotated with JsonProperty
 
-            boolean isAllParametersAnnotatedWithJsonProperty = isAllParametersAnnotatedWith( constructors.get( 0 ), JsonProperty.class );
-            if ( (isAnnotationPresent( JsonCreator.class, constructors ) && ((isAllParametersAnnotatedWithJsonProperty) || (constructor
-                    .getParameters().length == 1))) || isAllParametersAnnotatedWithJsonProperty ) {
-                creatorConstructor = constructor;
-                creators = constructors;
-                break;
+                List<JConstructor> constructors = new ArrayList<JConstructor>();
+                if ( mixinClass.isPresent() && null == mixinClass.get().isInterface() ) {
+                    JConstructor mixinConstructor = mixinClass.get().findConstructor( constructor.getParameterTypes() );
+                    if ( null != mixinConstructor ) {
+                        constructors.add( mixinConstructor );
+                    }
+                }
+                constructors.add( constructor );
+
+                Optional<JsonIgnore> jsonIgnore = getAnnotation( JsonIgnore.class, constructors );
+                if ( jsonIgnore.isPresent() && jsonIgnore.get().value() ) {
+                    continue;
+                }
+
+                boolean isAllParametersAnnotatedWithJsonProperty = isAllParametersAnnotatedWith( constructors
+                        .get( 0 ), JsonProperty.class );
+                if ( (isAnnotationPresent( JsonCreator.class, constructors ) && ((isAllParametersAnnotatedWithJsonProperty) || (constructor
+                        .getParameters().length == 1))) || isAllParametersAnnotatedWithJsonProperty ) {
+                    creatorConstructor = constructor;
+                    creators = constructors;
+                    break;
+                }
             }
         }
 

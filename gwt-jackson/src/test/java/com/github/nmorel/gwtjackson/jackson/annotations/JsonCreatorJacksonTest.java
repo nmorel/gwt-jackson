@@ -159,4 +159,10 @@ public class JsonCreatorJacksonTest extends AbstractJacksonTest {
                 .testBeanWithMapConstructorDelegationAndTypeInfo( createMapper( JsonCreatorTester
                         .BeanWithMapConstructorDelegationAndTypeInfo.class ) );
     }
+
+    @Test
+    public void testDeserializeAbstractBeanWithFactoryMethod() {
+        JsonCreatorTester.INSTANCE
+                .testDeserializeAbstractBeanWithFactoryMethod( createReader( JsonCreatorTester.AbstractBeanWithFactoryMethod.class ) );
+    }
 }

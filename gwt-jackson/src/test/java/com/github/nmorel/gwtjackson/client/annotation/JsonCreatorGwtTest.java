@@ -22,6 +22,7 @@ import com.github.nmorel.gwtjackson.client.ObjectReader;
 import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
 import com.github.nmorel.gwtjackson.shared.ObjectReaderTester;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester;
+import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester.AbstractBeanWithFactoryMethod;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester.BeanWithBooleanConstructorDelegation;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester.BeanWithBooleanConstructorDelegationAndTypeInfo;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester.BeanWithBooleanFactoryDelegation;
@@ -220,5 +221,19 @@ public class JsonCreatorGwtTest extends GwtJacksonTestCase {
     public void testBeanWithMapConstructorDelegationAndTypeInfo() {
         JsonCreatorTester.INSTANCE
                 .testBeanWithMapConstructorDelegationAndTypeInfo( BeanWithMapConstructorDelegationAndTypeInfoMapper.INSTANCE );
+    }
+
+    /* ################################ */
+
+    public interface AbstractBeanWithFactoryMethodMapper extends ObjectReader<AbstractBeanWithFactoryMethod>,
+            ObjectReaderTester<AbstractBeanWithFactoryMethod> {
+
+        static AbstractBeanWithFactoryMethodMapper INSTANCE = GWT
+                .create( AbstractBeanWithFactoryMethodMapper.class );
+    }
+
+    public void testDeserializeAbstractBeanWithFactoryMethod() {
+        JsonCreatorTester.INSTANCE
+                .testDeserializeAbstractBeanWithFactoryMethod( AbstractBeanWithFactoryMethodMapper.INSTANCE );
     }
 }

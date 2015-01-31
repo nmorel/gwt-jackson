@@ -325,6 +325,49 @@ public final class JsonCreatorTester extends AbstractTester {
         }
     }
 
+    public static abstract class AbstractBeanWithFactoryMethod {
+
+        private final String a;
+
+        private Integer b;
+
+        @JsonCreator
+        public static AbstractBeanWithFactoryMethod create( @JsonProperty( "a" ) String a ) {
+            return new AbstractBeanWithFactoryMethodImpl( a );
+        }
+
+        protected AbstractBeanWithFactoryMethod( String a ) {
+            this.a = a;
+        }
+
+        public String getA() {
+            return a;
+        }
+
+        public Integer getB() {
+            return b;
+        }
+
+        public void setB( Integer b ) {
+            this.b = b;
+        }
+
+        public abstract String getAB();
+
+    }
+
+    public static class AbstractBeanWithFactoryMethodImpl extends AbstractBeanWithFactoryMethod {
+
+        public AbstractBeanWithFactoryMethodImpl( String a ) {
+            super( a );
+        }
+
+        @Override
+        public String getAB() {
+            return getA() + "+" + getB();
+        }
+    }
+
     public static final JsonCreatorTester INSTANCE = new JsonCreatorTester();
 
     private JsonCreatorTester() {
@@ -571,6 +614,13 @@ public final class JsonCreatorTester extends AbstractTester {
         bean = mapper.read( json );
         assertEquals( "string A", bean.a );
         assertEquals( 148, bean.b.intValue() );
+    }
+
+    public void testDeserializeAbstractBeanWithFactoryMethod( ObjectReaderTester<AbstractBeanWithFactoryMethod> reader ) {
+        AbstractBeanWithFactoryMethod result = reader.read( "{\"a\":\"string A\",\"b\":148}" );
+        assertEquals( "string A", result.getA() );
+        assertEquals( 148, result.getB().intValue());
+        assertEquals( "string A+148", result.getAB() );
     }
 
 }
