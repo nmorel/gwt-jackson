@@ -17,6 +17,7 @@
 package com.github.nmorel.gwtjackson.client.ser;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Iterator;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
@@ -53,6 +54,11 @@ public class IterableJsonSerializer<I extends Iterable<T>, T> extends JsonSerial
             throw new IllegalArgumentException( "serializer cannot be null" );
         }
         this.serializer = serializer;
+    }
+
+    @Override
+    protected boolean isEmpty( @Nullable I value ) {
+        return null == value || !value.iterator().hasNext();
     }
 
     @Override

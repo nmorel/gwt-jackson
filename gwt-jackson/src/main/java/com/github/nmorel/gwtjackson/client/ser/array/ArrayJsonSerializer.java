@@ -17,6 +17,7 @@
 package com.github.nmorel.gwtjackson.client.ser.array;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
@@ -52,6 +53,11 @@ public class ArrayJsonSerializer<T> extends JsonSerializer<T[]> {
             throw new IllegalArgumentException( "serializer cannot be null" );
         }
         this.serializer = serializer;
+    }
+
+    @Override
+    protected boolean isEmpty( @Nullable T[] value ) {
+        return null == value || value.length == 0;
     }
 
     @Override

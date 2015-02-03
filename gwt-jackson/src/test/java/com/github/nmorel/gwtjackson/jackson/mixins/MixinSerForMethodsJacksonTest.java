@@ -39,13 +39,13 @@ public class MixinSerForMethodsJacksonTest extends AbstractJacksonTest {
 
     @Test
     public void testLeafMixin() {
-        objectMapper.addMixInAnnotations( BaseClass.class, MixIn.class );
+        objectMapper.addMixIn( BaseClass.class, MixIn.class );
         MixinSerForMethodsTester.INSTANCE.testLeafMixin( createWriter( BaseClass.class ) );
     }
 
     @Test
     public void testIntermediateMixin() {
-        objectMapper.addMixInAnnotations( BaseClass.class, MixIn.class );
+        objectMapper.addMixIn( BaseClass.class, MixIn.class );
 
         JavaType type = objectMapper.getTypeFactory().constructType( LeafClass.class );
         BeanDescription desc = objectMapper.getSerializationConfig().introspect( type );
@@ -56,13 +56,13 @@ public class MixinSerForMethodsJacksonTest extends AbstractJacksonTest {
 
     @Test
     public void testIntermediateMixin2() {
-        objectMapper.addMixInAnnotations( EmptyBean.class, MixInForSimple.class );
+        objectMapper.addMixIn( EmptyBean.class, MixInForSimple.class );
         MixinSerForMethodsTester.INSTANCE.testIntermediateMixin2( createWriter( SimpleBean.class ) );
     }
 
     @Test
     public void testObjectMixin() {
-        objectMapper.addMixInAnnotations( Object.class, ObjectMixIn.class );
+        objectMapper.addMixIn( Object.class, ObjectMixIn.class );
         MixinSerForMethodsTester.INSTANCE.testObjectMixin( createWriter( BaseClass.class ) );
     }
 }

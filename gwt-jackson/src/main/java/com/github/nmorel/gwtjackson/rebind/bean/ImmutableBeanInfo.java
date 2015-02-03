@@ -22,6 +22,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.nmorel.gwtjackson.rebind.property.PropertyInfo;
 import com.google.gwt.core.ext.typeinfo.JAbstractMethod;
 import com.google.gwt.core.ext.typeinfo.JClassType;
@@ -80,12 +81,10 @@ final class ImmutableBeanInfo implements BeanInfo {
     /*####  Identity info  ####*/
     private final Optional<BeanIdentityInfo> identityInfo;
 
-    ImmutableBeanInfo( JClassType type, List<JClassType> parameterizedTypes, Optional<JAbstractMethod> creatorMethod, Map<String,
-            JParameter> creatorParameters, boolean creatorDefaultConstructor, boolean creatorDelegation, Optional<BeanTypeInfo> typeInfo,
-                       Optional<PropertyInfo> valuePropertyInfo, Optional<PropertyInfo> anyGetterPropertyInfo, Optional<PropertyInfo>
-            anySetterPropertyInfo, Set<String> ignoredFields, Visibility fieldVisibility, Visibility getterVisibility, Visibility
-            isGetterVisibility, Visibility setterVisibility, Visibility creatorVisibility, boolean ignoreUnknown, List<String>
-            propertyOrderList, boolean propertyOrderAlphabetic, Optional<BeanIdentityInfo> identityInfo ) {
+    /*#### Inclusion info ####*/
+    private final Optional<Include> include;
+
+    ImmutableBeanInfo( JClassType type, List<JClassType> parameterizedTypes, Optional<JAbstractMethod> creatorMethod, Map<String, JParameter> creatorParameters, boolean creatorDefaultConstructor, boolean creatorDelegation, Optional<BeanTypeInfo> typeInfo, Optional<PropertyInfo> valuePropertyInfo, Optional<PropertyInfo> anyGetterPropertyInfo, Optional<PropertyInfo> anySetterPropertyInfo, Set<String> ignoredFields, Visibility fieldVisibility, Visibility getterVisibility, Visibility isGetterVisibility, Visibility setterVisibility, Visibility creatorVisibility, boolean ignoreUnknown, List<String> propertyOrderList, boolean propertyOrderAlphabetic, Optional<BeanIdentityInfo> identityInfo, Optional<Include> include ) {
 
         this.type = type;
         this.parameterizedTypes = ImmutableList.copyOf( parameterizedTypes );
@@ -109,6 +108,7 @@ final class ImmutableBeanInfo implements BeanInfo {
         this.propertyOrderList = ImmutableList.copyOf( propertyOrderList );
         this.propertyOrderAlphabetic = propertyOrderAlphabetic;
         this.identityInfo = identityInfo;
+        this.include = include;
     }
 
     @Override
@@ -209,5 +209,10 @@ final class ImmutableBeanInfo implements BeanInfo {
     @Override
     public Optional<BeanIdentityInfo> getIdentityInfo() {
         return identityInfo;
+    }
+
+    @Override
+    public Optional<Include> getInclude() {
+        return include;
     }
 }

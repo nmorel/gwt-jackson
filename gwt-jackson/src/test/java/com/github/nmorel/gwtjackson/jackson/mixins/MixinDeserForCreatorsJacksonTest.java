@@ -36,19 +36,19 @@ public class MixinDeserForCreatorsJacksonTest extends AbstractJacksonTest {
 
     @Test
     public void testForConstructor() {
-        objectMapper.addMixInAnnotations( BaseClass.class, MixinDeserForCreatorsTester.MixIn.class );
+        objectMapper.addMixIn( BaseClass.class, MixinDeserForCreatorsTester.MixIn.class );
         MixinDeserForCreatorsTester.INSTANCE.testForConstructor( createReader( BaseClass.class ) );
     }
 
     @Test
     public void testForFactory() {
-        objectMapper.addMixInAnnotations( BaseClass.class, MixInFactory.class );
+        objectMapper.addMixIn( BaseClass.class, MixInFactory.class );
         MixinDeserForCreatorsTester.INSTANCE.testForFactory( createReader( BaseClass.class ) );
     }
 
     @Test
     public void testForIgnoreCreator() {
-        objectMapper.addMixInAnnotations( BaseClass2.class, MixInIgnore.class );
+        objectMapper.addMixIn( BaseClass2.class, MixInIgnore.class );
         MixinDeserForCreatorsTester.INSTANCE.testForIgnoreCreator( createReader( BaseClass2.class ) );
     }
 }

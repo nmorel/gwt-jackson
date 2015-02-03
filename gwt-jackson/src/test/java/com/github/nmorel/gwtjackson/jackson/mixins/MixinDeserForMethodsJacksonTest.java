@@ -29,7 +29,7 @@ public class MixinDeserForMethodsJacksonTest extends AbstractJacksonTest {
 
     @Test
     public void testWithAnySetter() {
-        objectMapper.addMixInAnnotations( BaseClass.class, MixIn.class );
+        objectMapper.addMixIn( BaseClass.class, MixIn.class );
         MixinDeserForMethodsTester.INSTANCE.testWithAnySetter( createReader( BaseClass.class ) );
     }
 }

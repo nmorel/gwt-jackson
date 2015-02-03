@@ -17,6 +17,7 @@
 package com.github.nmorel.gwtjackson.client.ser.map;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
@@ -46,8 +47,8 @@ public class MapJsonSerializer<M extends Map<K, V>, K, V> extends JsonSerializer
      *
      * @return a new instance of {@link MapJsonSerializer}
      */
-    public static <M extends Map<?, ?>> MapJsonSerializer<M, ?, ?> newInstance( KeySerializer<?> keySerializer,
-                                                                                JsonSerializer<?> valueSerializer ) {
+    public static <M extends Map<?, ?>> MapJsonSerializer<M, ?, ?> newInstance( KeySerializer<?> keySerializer, JsonSerializer<?>
+            valueSerializer ) {
         return new MapJsonSerializer( keySerializer, valueSerializer );
     }
 
@@ -68,6 +69,11 @@ public class MapJsonSerializer<M extends Map<K, V>, K, V> extends JsonSerializer
         }
         this.keySerializer = keySerializer;
         this.valueSerializer = valueSerializer;
+    }
+
+    @Override
+    protected boolean isEmpty( @Nullable M value ) {
+        return null == value || value.isEmpty();
     }
 
     @Override

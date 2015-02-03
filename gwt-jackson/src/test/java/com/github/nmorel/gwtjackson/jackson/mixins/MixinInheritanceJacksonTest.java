@@ -31,13 +31,13 @@ public class MixinInheritanceJacksonTest extends AbstractJacksonTest {
 
     @Test
     public void testMixinFieldInheritance() {
-        objectMapper.addMixInAnnotations( Beano.class, BeanoMixinSub.class );
+        objectMapper.addMixIn( Beano.class, BeanoMixinSub.class );
         MixinInheritanceTester.INSTANCE.testMixinFieldInheritance( createMapper( Beano.class ) );
     }
 
     @Test
     public void testMixinMethodInheritance() {
-        objectMapper.addMixInAnnotations( Beano2.class, BeanoMixinSub2.class );
+        objectMapper.addMixIn( Beano2.class, BeanoMixinSub2.class );
         MixinInheritanceTester.INSTANCE.testMixinMethodInheritance( createMapper( Beano2.class ) );
     }
 }

@@ -17,6 +17,7 @@
 package com.github.nmorel.gwtjackson.client.ser;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
@@ -40,6 +41,11 @@ public class BooleanJsonSerializer extends JsonSerializer<Boolean> {
     }
 
     private BooleanJsonSerializer() { }
+
+    @Override
+    protected boolean isDefault( @Nullable Boolean value ) {
+        return null == value || !value;
+    }
 
     @Override
     public void doSerialize( JsonWriter writer, @Nonnull Boolean value, JsonSerializationContext ctx, JsonSerializerParameters params ) {

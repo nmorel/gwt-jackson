@@ -17,6 +17,7 @@
 package com.github.nmorel.gwtjackson.client.ser;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -47,6 +48,11 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         }
 
         private BigDecimalJsonSerializer() { }
+
+        @Override
+        protected boolean isDefault( @Nullable BigDecimal value ) {
+            return null == value || BigDecimal.ZERO.compareTo( value ) == 0;
+        }
     }
 
     /**
@@ -64,6 +70,11 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         }
 
         private BigIntegerJsonSerializer() { }
+
+        @Override
+        protected boolean isDefault( @Nullable BigInteger value ) {
+            return null == value || BigInteger.ZERO.compareTo( value ) == 0;
+        }
     }
 
     /**
@@ -80,7 +91,14 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
             return INSTANCE;
         }
 
+        private static byte defaultValue;
+
         private ByteJsonSerializer() { }
+
+        @Override
+        protected boolean isDefault( @Nullable Byte value ) {
+            return null == value || defaultValue == value;
+        }
     }
 
     /**
@@ -98,6 +116,11 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         }
 
         private DoubleJsonSerializer() { }
+
+        @Override
+        protected boolean isDefault( @Nullable Double value ) {
+            return null == value || value == 0d;
+        }
 
         @Override
         public void doSerialize( JsonWriter writer, @Nonnull Double value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
@@ -121,6 +144,11 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         }
 
         private FloatJsonSerializer() { }
+
+        @Override
+        protected boolean isDefault( @Nullable Float value ) {
+            return null == value || value == 0f;
+        }
     }
 
     /**
@@ -138,6 +166,11 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         }
 
         private IntegerJsonSerializer() { }
+
+        @Override
+        protected boolean isDefault( @Nullable Integer value ) {
+            return null == value || value == 0;
+        }
     }
 
     /**
@@ -155,6 +188,11 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         }
 
         private LongJsonSerializer() { }
+
+        @Override
+        protected boolean isDefault( @Nullable Long value ) {
+            return null == value || value == 0l;
+        }
 
         @Override
         public void doSerialize( JsonWriter writer, @Nonnull Long value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
@@ -177,7 +215,14 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
             return INSTANCE;
         }
 
+        private static short defaultValue;
+
         private ShortJsonSerializer() { }
+
+        @Override
+        protected boolean isDefault( @Nullable Short value ) {
+            return null == value || defaultValue == value;
+        }
     }
 
     /**
@@ -195,6 +240,11 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         }
 
         private NumberJsonSerializer() { }
+
+        @Override
+        protected boolean isDefault( @Nullable Number value ) {
+            return null == value || value.intValue() == 0;
+        }
     }
 
     @Override

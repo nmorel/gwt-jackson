@@ -303,6 +303,13 @@ public class JsonSerializationContext extends JsonMappingContext {
     }
 
     /**
+     * @see Builder#serializeNulls(boolean)
+     */
+    public boolean isSerializeNulls() {
+        return serializeNulls;
+    }
+
+    /**
      * @see Builder#writeDatesAsTimestamps(boolean)
      */
     public boolean isWriteDatesAsTimestamps() {
@@ -361,7 +368,6 @@ public class JsonSerializationContext extends JsonMappingContext {
     public JsonWriter newJsonWriter() {
         JsonWriter writer = new FastJsonWriter( new StringBuilder() );
         writer.setLenient( true );
-        writer.setSerializeNulls( serializeNulls );
         if ( indent ) {
             writer.setIndent( "  " );
         }

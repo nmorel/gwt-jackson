@@ -23,6 +23,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.nmorel.gwtjackson.rebind.property.PropertyInfo;
 import com.google.gwt.core.ext.typeinfo.JAbstractMethod;
 import com.google.gwt.core.ext.typeinfo.JClassType;
@@ -74,6 +75,8 @@ final class BeanInfoBuilder {
 
     private Optional<BeanIdentityInfo> identityInfo = Optional.absent();
 
+    private Optional<Include> include = Optional.absent();
+
     BeanInfoBuilder() {
     }
 
@@ -100,6 +103,7 @@ final class BeanInfoBuilder {
         this.propertyOrderList = beanInfo.getPropertyOrderList();
         this.propertyOrderAlphabetic = beanInfo.isPropertyOrderAlphabetic();
         this.identityInfo = beanInfo.getIdentityInfo();
+        this.include = beanInfo.getInclude();
     }
 
     void setType( JClassType type ) {
@@ -178,7 +182,7 @@ final class BeanInfoBuilder {
         this.propertyOrderList = propertyOrderList;
     }
 
-    public boolean isPropertyOrderAlphabetic() {
+    boolean isPropertyOrderAlphabetic() {
         return propertyOrderAlphabetic;
     }
 
@@ -190,10 +194,18 @@ final class BeanInfoBuilder {
         this.identityInfo = identityInfo;
     }
 
+    void setInclude( Optional<Include> include ) {
+        this.include = include;
+    }
+
+    Optional<Include> getInclude() {
+        return include;
+    }
+
     BeanInfo build() {
         return new ImmutableBeanInfo( type, parameterizedTypes, creatorMethod, creatorParameters, creatorDefaultConstructor,
                 creatorDelegation, typeInfo, valuePropertyInfo, anyGetterPropertyInfo, anySetterPropertyInfo, ignoredFields,
                 fieldVisibility, getterVisibility, isGetterVisibility, setterVisibility, creatorVisibility, ignoreUnknown,
-                propertyOrderList, propertyOrderAlphabetic, identityInfo );
+                propertyOrderList, propertyOrderAlphabetic, identityInfo, include );
     }
 }

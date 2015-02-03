@@ -17,6 +17,7 @@
 package com.github.nmorel.gwtjackson.guava.rebind;
 
 import com.github.nmorel.gwtjackson.client.AbstractConfiguration;
+import com.github.nmorel.gwtjackson.client.ser.CollectionJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.IterableJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.MapJsonSerializer;
 import com.github.nmorel.gwtjackson.guava.client.deser.ArrayListMultimapJsonDeserializer;
@@ -96,11 +97,11 @@ public class GuavaConfiguration extends AbstractConfiguration {
         type( FluentIterable.class ).serializer( IterableJsonSerializer.class );
 
         // Immutable Collections
-        type( ImmutableCollection.class ).serializer( IterableJsonSerializer.class ).deserializer( ImmutableCollectionJsonDeserializer
-                .class );
-        type( ImmutableList.class ).serializer( IterableJsonSerializer.class ).deserializer( ImmutableListJsonDeserializer.class );
-        type( ImmutableSet.class ).serializer( IterableJsonSerializer.class ).deserializer( ImmutableSetJsonDeserializer.class );
-        type( ImmutableSortedSet.class ).serializer( IterableJsonSerializer.class )
+        type( ImmutableCollection.class ).serializer( CollectionJsonSerializer.class )
+                .deserializer( ImmutableCollectionJsonDeserializer.class );
+        type( ImmutableList.class ).serializer( CollectionJsonSerializer.class ).deserializer( ImmutableListJsonDeserializer.class );
+        type( ImmutableSet.class ).serializer( CollectionJsonSerializer.class ).deserializer( ImmutableSetJsonDeserializer.class );
+        type( ImmutableSortedSet.class ).serializer( CollectionJsonSerializer.class )
                 .deserializer( ImmutableSortedSetJsonDeserializer.class );
 
         // Immutable Map
@@ -115,23 +116,24 @@ public class GuavaConfiguration extends AbstractConfiguration {
         type( EnumHashBiMap.class ).serializer( MapJsonSerializer.class ).deserializer( EnumHashBiMapJsonDeserializer.class );
 
         // Multiset
-        type( Multiset.class ).serializer( IterableJsonSerializer.class ).deserializer( MultisetJsonDeserializer.class );
-        type( HashMultiset.class ).serializer( IterableJsonSerializer.class ).deserializer( HashMultisetJsonDeserializer.class );
-        type( LinkedHashMultiset.class ).serializer( IterableJsonSerializer.class )
+        type( Multiset.class ).serializer( CollectionJsonSerializer.class ).deserializer( MultisetJsonDeserializer.class );
+        type( HashMultiset.class ).serializer( CollectionJsonSerializer.class ).deserializer( HashMultisetJsonDeserializer.class );
+        type( LinkedHashMultiset.class ).serializer( CollectionJsonSerializer.class )
                 .deserializer( LinkedHashMultisetJsonDeserializer.class );
-        type( SortedMultiset.class ).serializer( IterableJsonSerializer.class ).deserializer( SortedMultisetJsonDeserializer.class );
-        type( TreeMultiset.class ).serializer( IterableJsonSerializer.class ).deserializer( TreeMultisetJsonDeserializer.class );
-        type( ImmutableMultiset.class ).serializer( IterableJsonSerializer.class ).deserializer( ImmutableMultisetJsonDeserializer.class );
-        type( EnumMultiset.class ).serializer( IterableJsonSerializer.class ).deserializer( EnumMultisetJsonDeserializer.class );
+        type( SortedMultiset.class ).serializer( CollectionJsonSerializer.class ).deserializer( SortedMultisetJsonDeserializer.class );
+        type( TreeMultiset.class ).serializer( CollectionJsonSerializer.class ).deserializer( TreeMultisetJsonDeserializer.class );
+        type( ImmutableMultiset.class ).serializer( CollectionJsonSerializer.class )
+                .deserializer( ImmutableMultisetJsonDeserializer.class );
+        type( EnumMultiset.class ).serializer( CollectionJsonSerializer.class ).deserializer( EnumMultisetJsonDeserializer.class );
 
         // Multimap
         type( Multimap.class ).serializer( MultimapJsonSerializer.class ).deserializer( MultimapJsonDeserializer.class );
 
         type( ImmutableMultimap.class ).serializer( MultimapJsonSerializer.class ).deserializer( ImmutableMultimapJsonDeserializer.class );
-        type( ImmutableSetMultimap.class ).serializer( MultimapJsonSerializer.class ).deserializer( ImmutableSetMultimapJsonDeserializer
-                .class );
-        type( ImmutableListMultimap.class ).serializer( MultimapJsonSerializer.class ).deserializer( ImmutableListMultimapJsonDeserializer
-                .class );
+        type( ImmutableSetMultimap.class ).serializer( MultimapJsonSerializer.class )
+                .deserializer( ImmutableSetMultimapJsonDeserializer.class );
+        type( ImmutableListMultimap.class ).serializer( MultimapJsonSerializer.class )
+                .deserializer( ImmutableListMultimapJsonDeserializer.class );
 
         type( SetMultimap.class ).serializer( MultimapJsonSerializer.class ).deserializer( SetMultimapJsonDeserializer.class );
         type( HashMultimap.class ).serializer( MultimapJsonSerializer.class ).deserializer( HashMultimapJsonDeserializer.class );

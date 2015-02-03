@@ -17,6 +17,7 @@
 package com.github.nmorel.gwtjackson.client;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.github.nmorel.gwtjackson.client.exception.JsonSerializationException;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
@@ -53,11 +54,46 @@ public abstract class JsonSerializer<T> {
      */
     public void serialize( JsonWriter writer, T value, JsonSerializationContext ctx, JsonSerializerParameters params ) throws
             JsonSerializationException {
-        if ( null == value ) {
-            serializeNullValue( writer, ctx, params );
-            return;
+        if ( null != params.getInclude() ) {
+            switch ( params.getInclude() ) {
+                case ALWAYS:
+                    if ( null == value ) {
+                        serializeNullValue( writer, ctx, params );
+                    } else {
+                        doSerialize( writer, value, ctx, params );
+                    }
+                    break;
+                case NON_DEFAULT:
+                    if ( isDefault( value ) ) {
+                        writer.cancelName();
+                    } else {
+                        doSerialize( writer, value, ctx, params );
+                    }
+                    break;
+                case NON_EMPTY:
+                    if ( isEmpty( value ) ) {
+                        writer.cancelName();
+                    } else {
+                        doSerialize( writer, value, ctx, params );
+                    }
+                    break;
+                case NON_NULL:
+                    if ( null == value ) {
+                        writer.cancelName();
+                    } else {
+                        doSerialize( writer, value, ctx, params );
+                    }
+                    break;
+            }
+        } else if ( null == value ) {
+            if ( ctx.isSerializeNulls() ) {
+                serializeNullValue( writer, ctx, params );
+            } else {
+                writer.cancelName();
+            }
+        } else {
+            doSerialize( writer, value, ctx, params );
         }
-        doSerialize( writer, value, ctx, params );
     }
 
     /**
@@ -72,6 +108,20 @@ public abstract class JsonSerializer<T> {
     }
 
     /**
+     * @return true if the value corresponds to the default one
+     */
+    protected boolean isDefault( @Nullable T value ) {
+        return isEmpty( value );
+    }
+
+    /**
+     * @return true if the value is empty
+     */
+    protected boolean isEmpty( @Nullable T value ) {
+        return null == value;
+    }
+
+    /**
      * Serializes a non-null object into JSON output.
      *
      * @param writer {@link JsonWriter} used to write the serialized JSON
@@ -79,6 +129,6 @@ public abstract class JsonSerializer<T> {
      * @param ctx Context for the full serialization process
      * @param params Parameters for this serialization
      */
-    protected abstract void doSerialize( JsonWriter writer, @Nonnull T value, JsonSerializationContext ctx,
-                                         JsonSerializerParameters params );
+    protected abstract void doSerialize( JsonWriter writer, @Nonnull T value, JsonSerializationContext ctx, JsonSerializerParameters
+            params );
 }

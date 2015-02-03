@@ -17,6 +17,7 @@
 package com.github.nmorel.gwtjackson.client.ser;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -141,5 +142,10 @@ public abstract class BaseDateJsonSerializer<D extends Date> extends JsonSeriali
                 }
             }
         }
+    }
+
+    @Override
+    protected boolean isEmpty( @Nullable D value ) {
+        return null == value || value.getTime() == 0l;
     }
 }

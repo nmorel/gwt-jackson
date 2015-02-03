@@ -74,7 +74,7 @@ public final class JsonSerializerParameters {
     /**
      * Inclusion rule to use.
      */
-    private Include include = Include.ALWAYS;
+    private Include include;
 
     /**
      * Bean identity informations

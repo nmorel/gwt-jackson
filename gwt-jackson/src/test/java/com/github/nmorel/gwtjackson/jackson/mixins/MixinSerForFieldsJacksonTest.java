@@ -33,7 +33,7 @@ public class MixinSerForFieldsJacksonTest extends AbstractJacksonTest {
 
     @Test
     public void testFieldMixInsTopLevel() {
-        objectMapper.addMixInAnnotations( BaseClass.class, MixIn.class );
+        objectMapper.addMixIn( BaseClass.class, MixIn.class );
         MixinSerForFieldsTester.INSTANCE.testFieldMixInsTopLevel( createWriter( BaseClass.class ) );
     }
 
@@ -42,7 +42,7 @@ public class MixinSerForFieldsJacksonTest extends AbstractJacksonTest {
         HashMap<Class<?>, Class<?>> mixins = new HashMap<Class<?>, Class<?>>();
         mixins.put( SubClass.class, MixIn.class );
         mixins.put( BaseClass.class, MixIn2.class );
-        objectMapper.setMixInAnnotations( mixins );
+        objectMapper.setMixIns( mixins );
         MixinSerForFieldsTester.INSTANCE.testMultipleFieldMixIns( createWriter( SubClass.class ) );
     }
 }

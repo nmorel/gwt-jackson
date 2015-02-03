@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -109,6 +110,12 @@ public final class BeanProcessor {
             if ( builder.isPropertyOrderAlphabetic() ) {
                 Collections.sort( propertyOrderList );
             }
+        }
+
+        Optional<JsonInclude> jsonInclude = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, beanType,
+                JsonInclude.class );
+        if ( jsonInclude.isPresent() ) {
+            builder.setInclude( Optional.of( jsonInclude.get().value() ) );
         }
 
         builder.setIdentityInfo( processIdentity( logger, typeOracle, configuration, beanType ) );

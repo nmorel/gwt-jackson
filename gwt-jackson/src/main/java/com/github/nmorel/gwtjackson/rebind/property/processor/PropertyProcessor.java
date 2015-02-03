@@ -251,6 +251,8 @@ public final class PropertyProcessor {
         Optional<JsonInclude> jsonInclude = propertyAccessors.getAnnotation( JsonInclude.class );
         if ( jsonInclude.isPresent() ) {
             builder.setInclude( Optional.of( jsonInclude.get().value() ) );
+        } else {
+            builder.setInclude( beanInfo.getInclude() );
         }
 
         Optional<JsonIgnoreProperties> jsonIgnoreProperties = propertyAccessors.getAnnotation( JsonIgnoreProperties.class );

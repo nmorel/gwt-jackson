@@ -30,19 +30,19 @@ public class MixinDeserForClassJacksonTest extends AbstractJacksonTest {
 
     @Test
     public void testClassMixInsTopLevel() {
-        objectMapper.addMixInAnnotations( LeafClass.class, MixIn.class );
+        objectMapper.addMixIn( LeafClass.class, MixIn.class );
         MixinDeserForClassTester.INSTANCE.testClassMixInsTopLevel( createReader( LeafClass.class ) );
     }
 
     @Test
     public void testClassMixInsMidLevel() {
-        objectMapper.addMixInAnnotations( BaseClass.class, MixIn.class );
+        objectMapper.addMixIn( BaseClass.class, MixIn.class );
         MixinDeserForClassTester.INSTANCE.testClassMixInsMidLevel( createReader( BaseClass.class ), createReader( LeafClass.class ) );
     }
 
     @Test
     public void testClassMixInsForObjectClass() {
-        objectMapper.addMixInAnnotations( Object.class, MixIn.class );
+        objectMapper.addMixIn( Object.class, MixIn.class );
         MixinDeserForClassTester.INSTANCE.testClassMixInsForObjectClass( createReader( BaseClass.class ), createReader( LeafClass.class ) );
     }
 }

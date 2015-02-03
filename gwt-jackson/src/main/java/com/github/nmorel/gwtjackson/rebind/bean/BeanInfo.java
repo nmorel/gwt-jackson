@@ -17,6 +17,7 @@
 package com.github.nmorel.gwtjackson.rebind.bean;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.nmorel.gwtjackson.rebind.property.PropertyInfo;
 import com.google.gwt.core.ext.typeinfo.JAbstractMethod;
 import com.google.gwt.core.ext.typeinfo.JClassType;
@@ -70,4 +71,6 @@ public interface BeanInfo {
     boolean isPropertyOrderAlphabetic();
 
     Optional<BeanIdentityInfo> getIdentityInfo();
+
+    Optional<Include> getInclude();
 }

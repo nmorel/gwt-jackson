@@ -146,6 +146,7 @@ import com.github.nmorel.gwtjackson.client.ser.BaseNumberJsonSerializer.NumberJs
 import com.github.nmorel.gwtjackson.client.ser.BaseNumberJsonSerializer.ShortJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.BooleanJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.CharacterJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.CollectionJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.IterableJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.JavaScriptObjectJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.StringJsonSerializer;
@@ -224,27 +225,27 @@ public final class DefaultConfiguration extends AbstractConfiguration {
 
         // Iterable mappers
         type( Iterable.class ).serializer( IterableJsonSerializer.class ).deserializer( IterableJsonDeserializer.class );
-        type( Collection.class ).serializer( IterableJsonSerializer.class ).deserializer( CollectionJsonDeserializer.class );
-        type( AbstractCollection.class ).serializer( IterableJsonSerializer.class )
+        type( Collection.class ).serializer( CollectionJsonSerializer.class ).deserializer( CollectionJsonDeserializer.class );
+        type( AbstractCollection.class ).serializer( CollectionJsonSerializer.class )
                 .deserializer( AbstractCollectionJsonDeserializer.class );
-        type( AbstractList.class ).serializer( IterableJsonSerializer.class ).deserializer( AbstractListJsonDeserializer.class );
-        type( AbstractQueue.class ).serializer( IterableJsonSerializer.class ).deserializer( AbstractQueueJsonDeserializer.class );
-        type( AbstractSequentialList.class ).serializer( IterableJsonSerializer.class )
+        type( AbstractList.class ).serializer( CollectionJsonSerializer.class ).deserializer( AbstractListJsonDeserializer.class );
+        type( AbstractQueue.class ).serializer( CollectionJsonSerializer.class ).deserializer( AbstractQueueJsonDeserializer.class );
+        type( AbstractSequentialList.class ).serializer( CollectionJsonSerializer.class )
                 .deserializer( AbstractSequentialListJsonDeserializer.class );
-        type( AbstractSet.class ).serializer( IterableJsonSerializer.class ).deserializer( AbstractSetJsonDeserializer.class );
-        type( ArrayList.class ).serializer( IterableJsonSerializer.class ).deserializer( ArrayListJsonDeserializer.class );
-        type( EnumSet.class ).serializer( IterableJsonSerializer.class ).deserializer( EnumSetJsonDeserializer.class );
-        type( HashSet.class ).serializer( IterableJsonSerializer.class ).deserializer( HashSetJsonDeserializer.class );
-        type( LinkedHashSet.class ).serializer( IterableJsonSerializer.class ).deserializer( LinkedHashSetJsonDeserializer.class );
-        type( LinkedList.class ).serializer( IterableJsonSerializer.class ).deserializer( LinkedListJsonDeserializer.class );
-        type( List.class ).serializer( IterableJsonSerializer.class ).deserializer( ListJsonDeserializer.class );
-        type( PriorityQueue.class ).serializer( IterableJsonSerializer.class ).deserializer( PriorityQueueJsonDeserializer.class );
-        type( Queue.class ).serializer( IterableJsonSerializer.class ).deserializer( QueueJsonDeserializer.class );
-        type( Set.class ).serializer( IterableJsonSerializer.class ).deserializer( SetJsonDeserializer.class );
-        type( SortedSet.class ).serializer( IterableJsonSerializer.class ).deserializer( SortedSetJsonDeserializer.class );
-        type( Stack.class ).serializer( IterableJsonSerializer.class ).deserializer( StackJsonDeserializer.class );
-        type( TreeSet.class ).serializer( IterableJsonSerializer.class ).deserializer( TreeSetJsonDeserializer.class );
-        type( Vector.class ).serializer( IterableJsonSerializer.class ).deserializer( VectorJsonDeserializer.class );
+        type( AbstractSet.class ).serializer( CollectionJsonSerializer.class ).deserializer( AbstractSetJsonDeserializer.class );
+        type( ArrayList.class ).serializer( CollectionJsonSerializer.class ).deserializer( ArrayListJsonDeserializer.class );
+        type( EnumSet.class ).serializer( CollectionJsonSerializer.class ).deserializer( EnumSetJsonDeserializer.class );
+        type( HashSet.class ).serializer( CollectionJsonSerializer.class ).deserializer( HashSetJsonDeserializer.class );
+        type( LinkedHashSet.class ).serializer( CollectionJsonSerializer.class ).deserializer( LinkedHashSetJsonDeserializer.class );
+        type( LinkedList.class ).serializer( CollectionJsonSerializer.class ).deserializer( LinkedListJsonDeserializer.class );
+        type( List.class ).serializer( CollectionJsonSerializer.class ).deserializer( ListJsonDeserializer.class );
+        type( PriorityQueue.class ).serializer( CollectionJsonSerializer.class ).deserializer( PriorityQueueJsonDeserializer.class );
+        type( Queue.class ).serializer( CollectionJsonSerializer.class ).deserializer( QueueJsonDeserializer.class );
+        type( Set.class ).serializer( CollectionJsonSerializer.class ).deserializer( SetJsonDeserializer.class );
+        type( SortedSet.class ).serializer( CollectionJsonSerializer.class ).deserializer( SortedSetJsonDeserializer.class );
+        type( Stack.class ).serializer( CollectionJsonSerializer.class ).deserializer( StackJsonDeserializer.class );
+        type( TreeSet.class ).serializer( CollectionJsonSerializer.class ).deserializer( TreeSetJsonDeserializer.class );
+        type( Vector.class ).serializer( CollectionJsonSerializer.class ).deserializer( VectorJsonDeserializer.class );
 
         // Map mappers
         type( Map.class ).serializer( MapJsonSerializer.class ).deserializer( MapJsonDeserializer.class );

@@ -17,6 +17,7 @@
 package com.github.nmorel.gwtjackson.client.ser.array.dd;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
@@ -40,6 +41,11 @@ public class PrimitiveIntegerArray2dJsonSerializer extends JsonSerializer<int[][
     }
 
     private PrimitiveIntegerArray2dJsonSerializer() { }
+
+    @Override
+    protected boolean isEmpty( @Nullable int[][] value ) {
+        return null == value || value.length == 0;
+    }
 
     @Override
     public void doSerialize( JsonWriter writer, @Nonnull int[][] values, JsonSerializationContext ctx, JsonSerializerParameters params ) {

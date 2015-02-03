@@ -17,6 +17,7 @@
 package com.github.nmorel.gwtjackson.client.ser;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
@@ -39,7 +40,14 @@ public class CharacterJsonSerializer extends JsonSerializer<Character> {
         return INSTANCE;
     }
 
+    private static char defaultValue;
+
     private CharacterJsonSerializer() { }
+
+    @Override
+    protected boolean isDefault( @Nullable Character value ) {
+        return null == value || value == defaultValue;
+    }
 
     @Override
     public void doSerialize( JsonWriter writer, @Nonnull Character value, JsonSerializationContext ctx, JsonSerializerParameters params ) {

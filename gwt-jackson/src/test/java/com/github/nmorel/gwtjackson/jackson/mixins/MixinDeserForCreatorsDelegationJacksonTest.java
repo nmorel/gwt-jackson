@@ -31,21 +31,20 @@ public class MixinDeserForCreatorsDelegationJacksonTest extends AbstractJacksonT
 
     @Test
     public void testForConstructor() {
-        objectMapper.addMixInAnnotations( BaseClassWithPrivateCtor.class, MixInForPrivate.class );
+        objectMapper.addMixIn( BaseClassWithPrivateCtor.class, MixInForPrivate.class );
         MixinDeserForCreatorsDelegationTester.INSTANCE.testForConstructor( createReader( BaseClassWithPrivateCtor.class ) );
     }
 
     @Test
     public void testForFactoryAndCtor() {
-        objectMapper.addMixInAnnotations( MixinDeserForCreatorsDelegationTester.BaseClass.class, MixinDeserForCreatorsDelegationTester.MixIn
-                .class );
+        objectMapper.addMixIn( MixinDeserForCreatorsDelegationTester.BaseClass.class, MixinDeserForCreatorsDelegationTester.MixIn.class );
         MixinDeserForCreatorsDelegationTester.INSTANCE
                 .testForFactoryAndCtor( createReader( MixinDeserForCreatorsDelegationTester.BaseClass.class ) );
     }
 
     @Test
     public void testFactoryMixIn() {
-        objectMapper.addMixInAnnotations( StringWrapper.class, StringWrapperMixIn.class );
+        objectMapper.addMixIn( StringWrapper.class, StringWrapperMixIn.class );
         MixinDeserForCreatorsDelegationTester.INSTANCE.testFactoryMixIn( createReader( StringWrapper.class ) );
     }
 }
