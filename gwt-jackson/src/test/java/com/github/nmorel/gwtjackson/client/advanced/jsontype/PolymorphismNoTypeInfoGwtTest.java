@@ -51,7 +51,7 @@ public class PolymorphismNoTypeInfoGwtTest extends GwtJacksonTestCase {
     }
 
     public void testDeserializeInstantiableBean() {
-        tester.testDeserializeInstantiableBean( createMapper( PolymorphismEmployeeMapper.INSTANCE, new JsonDeserializationContext.Builder()
+        tester.testDeserializeInstantiableBean( createMapper( PolymorphismEmployeeMapper.INSTANCE, JsonDeserializationContext.builder()
                 .failOnUnknownProperties( false ).build(), newDefaultSerializationContext() ) );
     }
 }

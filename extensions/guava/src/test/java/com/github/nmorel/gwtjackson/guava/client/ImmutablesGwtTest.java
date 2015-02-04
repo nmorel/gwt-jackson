@@ -84,8 +84,8 @@ public class ImmutablesGwtTest extends GwtJacksonGuavaTestCase {
     }
 
     public void testImmutableSetFromSingle() {
-        tester.testImmutableSetFromSingle( createMapper( ImmutableSetStringMapper.INSTANCE, new JsonDeserializationContext.Builder()
-                .acceptSingleValueAsArray( true ).build(), new JsonSerializationContext.Builder().writeSingleElemArraysUnwrapped( true )
+        tester.testImmutableSetFromSingle( createMapper( ImmutableSetStringMapper.INSTANCE, JsonDeserializationContext.builder()
+                .acceptSingleValueAsArray( true ).build(), JsonSerializationContext.builder().writeSingleElemArraysUnwrapped( true )
                 .build() ) );
     }
 

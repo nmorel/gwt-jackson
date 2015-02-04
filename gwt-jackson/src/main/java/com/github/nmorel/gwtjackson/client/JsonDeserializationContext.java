@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerator.IdKey;
 import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.impl.NonBufferedJsonReader;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsonUtils;
 
@@ -35,17 +36,36 @@ import com.google.gwt.core.client.JsonUtils;
  */
 public class JsonDeserializationContext extends JsonMappingContext {
 
+    /**
+     * Builder for {@link JsonDeserializationContext}. To override default settings globally, you can extend this class, modify the
+     * default settings inside the constructor and tell the compiler to use your builder instead in your gwt.xml file :
+     * <pre>
+     * {@code
+     *
+     * <replace-with class=""your.package.YourBuilder">
+     *   <when-type-assignable class="com.github.nmorel.gwtjackson.client.JsonDeserializationContext.Builder" />
+     * </replace-with>
+     *
+     * }
+     * </pre>
+     */
     public static class Builder {
 
-        private boolean failOnUnknownProperties = true;
+        protected boolean failOnUnknownProperties = true;
 
-        private boolean unwrapRootValue = false;
+        protected boolean unwrapRootValue = false;
 
-        private boolean acceptSingleValueAsArray = false;
+        protected boolean acceptSingleValueAsArray = false;
 
-        private boolean wrapExceptions = true;
+        protected boolean wrapExceptions = true;
 
-        private boolean useSafeEval = true;
+        protected boolean useSafeEval = true;
+
+        /**
+         * @deprecated Use {@link JsonDeserializationContext#builder()} instead. This constructor will be made protected in v1.0.
+         */
+        @Deprecated
+        public Builder() { }
 
         /**
          * Determines whether encountering of unknown
@@ -131,10 +151,20 @@ public class JsonDeserializationContext extends JsonMappingContext {
             return this;
         }
 
-        public JsonDeserializationContext build() {
+        public final JsonDeserializationContext build() {
             return new JsonDeserializationContext( failOnUnknownProperties, unwrapRootValue, acceptSingleValueAsArray, wrapExceptions,
                     useSafeEval );
         }
+    }
+
+    public static class DefaultBuilder extends Builder {
+
+        private DefaultBuilder() {}
+
+    }
+
+    public static Builder builder() {
+        return GWT.create( Builder.class );
     }
 
     private static final Logger logger = Logger.getLogger( "JsonDeserialization" );

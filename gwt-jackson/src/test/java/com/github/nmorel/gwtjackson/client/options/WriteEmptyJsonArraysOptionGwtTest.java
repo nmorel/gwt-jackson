@@ -17,7 +17,7 @@
 package com.github.nmorel.gwtjackson.client.options;
 
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
-import com.github.nmorel.gwtjackson.client.JsonSerializationContext.Builder;
+import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.ObjectWriter;
 import com.github.nmorel.gwtjackson.shared.options.WriteEmptyJsonArraysOptionTester;
 import com.github.nmorel.gwtjackson.shared.options.WriteEmptyJsonArraysOptionTester.EmptyArrayBean;
@@ -50,10 +50,12 @@ public class WriteEmptyJsonArraysOptionGwtTest extends GwtJacksonTestCase {
     }
 
     public void testWriteNonEmptyList() {
-        tester.testWriteNonEmptyList( createWriter( EmptyListBeanWriter.INSTANCE, new Builder().writeEmptyJsonArrays( false ).build() ) );
+        tester.testWriteNonEmptyList( createWriter( EmptyListBeanWriter.INSTANCE, JsonSerializationContext.builder()
+                .writeEmptyJsonArrays( false ).build() ) );
     }
 
     public void testWriteNonEmptyArray() {
-        tester.testWriteNonEmptyArray( createWriter( EmptyArrayBeanWriter.INSTANCE, new Builder().writeEmptyJsonArrays( false ).build() ) );
+        tester.testWriteNonEmptyArray( createWriter( EmptyArrayBeanWriter.INSTANCE, JsonSerializationContext.builder()
+                .writeEmptyJsonArrays( false ).build() ) );
     }
 }

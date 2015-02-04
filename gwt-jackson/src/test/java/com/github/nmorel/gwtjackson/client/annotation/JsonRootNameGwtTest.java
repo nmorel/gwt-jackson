@@ -66,7 +66,7 @@ public class JsonRootNameGwtTest extends GwtJacksonTestCase {
     }
 
     protected <T> ObjectMapperTester<T> createRootMapper( final ObjectMapper<T> mapper ) {
-        return createMapper( mapper, new JsonDeserializationContext.Builder().unwrapRootValue( true )
-                .build(), new JsonSerializationContext.Builder().wrapRootValue( true ).build() );
+        return createMapper( mapper, JsonDeserializationContext.builder().unwrapRootValue( true ).build(), JsonSerializationContext
+                .builder().wrapRootValue( true ).build() );
     }
 }

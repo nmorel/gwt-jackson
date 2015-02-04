@@ -36,9 +36,7 @@ public class JsonFormatGwtTest extends GwtJacksonTestCase {
     private JsonFormatTester tester = JsonFormatTester.INSTANCE;
 
     public void testFormatDate() {
-        tester.testFormatDate( createMapper( JsonFormatDateMapper.INSTANCE, newDefaultDeserializationContext(),
-                new JsonSerializationContext.Builder()
-                        .writeDatesAsTimestamps( false ).build()
-        ) );
+        tester.testFormatDate( createMapper( JsonFormatDateMapper.INSTANCE, newDefaultDeserializationContext(), JsonSerializationContext
+                        .builder().writeDatesAsTimestamps( false ).build() ) );
     }
 }

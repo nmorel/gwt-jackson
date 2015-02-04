@@ -40,7 +40,7 @@ public class WriteNullMapValuesOptionGwtTest extends GwtJacksonTestCase {
 
     public void testWriteNonNullValues() {
         WriteNullMapValuesOptionTester.INSTANCE
-                .testWriteNonNullValues( createWriter( MapStringStringWriter.INSTANCE, new JsonSerializationContext.Builder()
+                .testWriteNonNullValues( createWriter( MapStringStringWriter.INSTANCE, JsonSerializationContext.builder()
                         .writeNullMapValues( false ).build() ) );
     }
 }

@@ -34,7 +34,7 @@ public abstract class AbstractJsonDeserializerTest<T> extends GwtJacksonTestCase
     }
 
     protected T deserialize( String value ) {
-        JsonDeserializationContext ctx = new Builder().build();
+        JsonDeserializationContext ctx = JsonDeserializationContext.builder().build();
         JsonReader reader = ctx.newJsonReader( value );
         return createDeserializer().deserialize( reader, ctx );
     }

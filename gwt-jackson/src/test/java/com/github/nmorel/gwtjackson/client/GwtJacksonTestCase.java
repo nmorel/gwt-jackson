@@ -90,10 +90,10 @@ public abstract class GwtJacksonTestCase extends GWTTestCase {
     }
 
     protected JsonDeserializationContext newDefaultDeserializationContext() {
-        return new JsonDeserializationContext.Builder().build();
+        return JsonDeserializationContext.builder().build();
     }
 
     protected JsonSerializationContext newDefaultSerializationContext() {
-        return new JsonSerializationContext.Builder().build();
+        return JsonSerializationContext.builder().build();
     }
 }

@@ -38,8 +38,7 @@ public class CharArrayOptionGwtTest extends GwtJacksonTestCase {
     }
 
     public void testCharArraysAsArray() {
-        CharArrayOptionTester.INSTANCE
-                .testCharArraysAsArray( createMapper( CharArrayMapper.INSTANCE, new JsonDeserializationContext.Builder()
-                        .build(), new JsonSerializationContext.Builder().writeCharArraysAsJsonArrays( true ).build() ) );
+        CharArrayOptionTester.INSTANCE.testCharArraysAsArray( createMapper( CharArrayMapper.INSTANCE, JsonDeserializationContext.builder()
+                .build(), JsonSerializationContext.builder().writeCharArraysAsJsonArrays( true ).build() ) );
     }
 }

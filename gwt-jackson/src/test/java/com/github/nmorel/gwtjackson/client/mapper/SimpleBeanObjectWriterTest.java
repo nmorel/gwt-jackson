@@ -40,7 +40,7 @@ public class SimpleBeanObjectWriterTest extends GwtJacksonTestCase {
     }
 
     public void testWriteBeanWithNullProperties() {
-        tester.testWriteWithNullProperties( createWriter( SimpleBeanMapper.INSTANCE, new JsonSerializationContext.Builder()
+        tester.testWriteWithNullProperties( createWriter( SimpleBeanMapper.INSTANCE, JsonSerializationContext.builder()
                 .serializeNulls( false ).build() ) );
     }
 }

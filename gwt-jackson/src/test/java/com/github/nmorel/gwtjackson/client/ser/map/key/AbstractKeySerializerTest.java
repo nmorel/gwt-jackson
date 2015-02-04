@@ -31,7 +31,7 @@ public abstract class AbstractKeySerializerTest<T> extends GwtJacksonTestCase {
     }
 
     protected String serialize( T value ) {
-        JsonSerializationContext ctx = new JsonSerializationContext.Builder().build();
+        JsonSerializationContext ctx = JsonSerializationContext.builder().build();
         return createSerializer().serialize( value, ctx );
     }
 

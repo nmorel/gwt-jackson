@@ -80,7 +80,7 @@ public class SingleArrayOptionGwtTest extends GwtJacksonTestCase {
     }
 
     private JsonSerializationContext createSerializationContext() {
-        return new JsonSerializationContext.Builder().writeSingleElemArraysUnwrapped( true ).build();
+        return JsonSerializationContext.builder().writeSingleElemArraysUnwrapped( true ).build();
     }
 
     public void testSerialize() {
@@ -134,7 +134,7 @@ public class SingleArrayOptionGwtTest extends GwtJacksonTestCase {
     }
 
     private JsonDeserializationContext createDeserializationContext() {
-        return new JsonDeserializationContext.Builder().acceptSingleValueAsArray( true ).build();
+        return JsonDeserializationContext.builder().acceptSingleValueAsArray( true ).build();
     }
 
     public void testDeserialize() {

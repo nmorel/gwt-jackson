@@ -40,7 +40,7 @@ public class OrderMapEntriesByKeysOptionGwtTest extends GwtJacksonTestCase {
 
     public void testWriteOrdered() {
         OrderMapEntriesByKeysOptionTester.INSTANCE
-                .testWriteOrdered( createWriter( LinkedHashMapStringIntegerWriter.INSTANCE, new JsonSerializationContext.Builder()
+                .testWriteOrdered( createWriter( LinkedHashMapStringIntegerWriter.INSTANCE, JsonSerializationContext.builder()
                         .orderMapEntriesByKeys( true ).build() ) );
     }
 }

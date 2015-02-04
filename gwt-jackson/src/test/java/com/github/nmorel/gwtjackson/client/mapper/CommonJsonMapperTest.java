@@ -46,8 +46,8 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
             protected JsonDeserializer<String[]> newDeserializer() {
                 return new JsonDeserializer<String[]>() {
                     @Override
-                    protected String[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx,
-                                                      JsonDeserializerParameters params ) {
+                    protected String[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters
+                            params ) {
                         throw exception;
                     }
                 };
@@ -68,15 +68,15 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
             protected JsonDeserializer<String[]> newDeserializer() {
                 return new JsonDeserializer<String[]>() {
                     @Override
-                    protected String[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx,
-                                                      JsonDeserializerParameters params ) {
+                    protected String[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters
+                            params ) {
                         throw exception;
                     }
                 };
             }
         };
         try {
-            reader.read( "[\"fail\"]", new JsonDeserializationContext.Builder().wrapExceptions( false ).build() );
+            reader.read( "[\"fail\"]", JsonDeserializationContext.builder().wrapExceptions( false ).build() );
             fail();
         } catch ( UnsupportedOperationException e ) {
             assertSame( exception, e );
@@ -90,8 +90,8 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
             protected JsonDeserializer<String[]> newDeserializer() {
                 return new JsonDeserializer<String[]>() {
                     @Override
-                    protected String[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx,
-                                                      JsonDeserializerParameters params ) {
+                    protected String[] doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters
+                            params ) {
                         throw jsonDeserializationException;
                     }
                 };
@@ -142,7 +142,7 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
             }
         };
         try {
-            writer.write( "fail", new JsonSerializationContext.Builder().wrapExceptions( false ).build() );
+            writer.write( "fail", JsonSerializationContext.builder().wrapExceptions( false ).build() );
             fail();
         } catch ( NullPointerException e ) {
             assertSame( exception, e );

@@ -41,7 +41,7 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
 
     @Override
     public T read( String in ) throws JsonDeserializationException {
-        return read( in, new JsonDeserializationContext.Builder().build() );
+        return read( in, JsonDeserializationContext.builder().build() );
     }
 
     @Override
@@ -101,7 +101,7 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
 
     @Override
     public String write( T value ) throws JsonSerializationException {
-        return write( value, new JsonSerializationContext.Builder().build() );
+        return write( value, JsonSerializationContext.builder().build() );
     }
 
     @Override

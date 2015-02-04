@@ -16,7 +16,7 @@
 
 package com.github.nmorel.gwtjackson.guava.client;
 
-import com.github.nmorel.gwtjackson.client.JsonSerializationContext.Builder;
+import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;
 import com.github.nmorel.gwtjackson.guava.shared.OptionalTester;
 import com.github.nmorel.gwtjackson.guava.shared.OptionalTester.BeanWithOptional;
@@ -48,8 +48,8 @@ public class OptionalGwtTest extends GwtJacksonGuavaTestCase {
     }
 
     public void testSerializeWithNonNullSerialization() {
-        tester.testSerializeWithNonNullSerialization( createWriter( BeanWithOptionalMapper.INSTANCE, new Builder().serializeNulls( false )
-                .build() ) );
+        tester.testSerializeWithNonNullSerialization( createWriter( BeanWithOptionalMapper.INSTANCE, JsonSerializationContext.builder()
+                .serializeNulls( false ).build() ) );
     }
 
     public void testDeserialize() {

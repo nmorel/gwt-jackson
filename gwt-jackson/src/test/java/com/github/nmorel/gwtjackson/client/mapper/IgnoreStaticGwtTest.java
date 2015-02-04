@@ -17,7 +17,7 @@
 package com.github.nmorel.gwtjackson.client.mapper;
 
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
-import com.github.nmorel.gwtjackson.client.JsonDeserializationContext.Builder;
+import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;
 import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
 import com.github.nmorel.gwtjackson.shared.mapper.IgnoreStaticTester;
@@ -35,8 +35,8 @@ public class IgnoreStaticGwtTest extends GwtJacksonTestCase {
     }
 
     public void testDeserializeValue() {
-        IgnoreStaticTester.INSTANCE.testDeserializeValue( createReader( IgnoreStaticBeanMapper.INSTANCE, new Builder()
-                .failOnUnknownProperties( false ).build() ) );
+        IgnoreStaticTester.INSTANCE.testDeserializeValue( createReader( IgnoreStaticBeanMapper.INSTANCE, JsonDeserializationContext
+                .builder().failOnUnknownProperties( false ).build() ) );
     }
 
     public void testSerializeValue() {

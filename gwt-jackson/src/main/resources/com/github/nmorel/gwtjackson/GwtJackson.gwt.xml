@@ -32,6 +32,14 @@
     <when-type-assignable class="com.github.nmorel.gwtjackson.client.ObjectWriter" />
   </generate-with>
 
+  <replace-with class="com.github.nmorel.gwtjackson.client.JsonSerializationContext.DefaultBuilder">
+    <when-type-assignable class="com.github.nmorel.gwtjackson.client.JsonSerializationContext.Builder" />
+  </replace-with>
+
+  <replace-with class="com.github.nmorel.gwtjackson.client.JsonDeserializationContext.DefaultBuilder">
+    <when-type-assignable class="com.github.nmorel.gwtjackson.client.JsonDeserializationContext.Builder" />
+  </replace-with>
+
   <!-- Property allowing user to extend default configuration -->
   <define-configuration-property name="gwtjackson.configuration.extension" is-multi-valued="true" />
 

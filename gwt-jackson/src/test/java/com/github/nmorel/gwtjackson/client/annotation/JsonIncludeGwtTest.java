@@ -46,7 +46,7 @@ public class JsonIncludeGwtTest extends GwtJacksonTestCase {
     }
 
     public void testSerializeAlways() {
-        tester.testSerializeAlways( createWriter( BeanJsonIncludeAlwaysMapper.INSTANCE, new JsonSerializationContext.Builder()
+        tester.testSerializeAlways( createWriter( BeanJsonIncludeAlwaysMapper.INSTANCE, JsonSerializationContext.builder()
                 .serializeNulls( false ).build() ) );
     }
 

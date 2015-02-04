@@ -32,7 +32,7 @@ public abstract class AbstractKeyDeserializerTest<T> extends GwtJacksonTestCase 
     }
 
     protected T deserialize( String value ) {
-        JsonDeserializationContext ctx = new Builder().build();
+        JsonDeserializationContext ctx = JsonDeserializationContext.builder().build();
         return createDeserializer().deserialize( value, ctx );
     }
 

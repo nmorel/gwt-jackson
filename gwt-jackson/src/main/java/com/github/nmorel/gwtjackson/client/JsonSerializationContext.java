@@ -30,6 +30,7 @@ import com.github.nmorel.gwtjackson.client.ser.bean.AbstractBeanJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.ObjectIdSerializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 import com.github.nmorel.gwtjackson.client.stream.impl.FastJsonWriter;
+import com.google.gwt.core.client.GWT;
 
 /**
  * Context for the serialization process.
@@ -38,31 +39,50 @@ import com.github.nmorel.gwtjackson.client.stream.impl.FastJsonWriter;
  */
 public class JsonSerializationContext extends JsonMappingContext {
 
+    /**
+     * Builder for {@link JsonSerializationContext}. To override default settings globally, you can extend this class, modify the
+     * default settings inside the constructor and tell the compiler to use your builder instead in your gwt.xml file :
+     * <pre>
+     * {@code
+     *
+     * <replace-with class="your.package.YourBuilder">
+     *   <when-type-assignable class="com.github.nmorel.gwtjackson.client.JsonSerializationContext.Builder" />
+     * </replace-with>
+     *
+     * }
+     * </pre>
+     */
     public static class Builder {
 
-        private boolean useEqualityForObjectId = false;
+        protected boolean useEqualityForObjectId = false;
 
-        private boolean serializeNulls = true;
+        protected boolean serializeNulls = true;
 
-        private boolean writeDatesAsTimestamps = true;
+        protected boolean writeDatesAsTimestamps = true;
 
-        private boolean writeDateKeysAsTimestamps = false;
+        protected boolean writeDateKeysAsTimestamps = false;
 
-        private boolean indent = false;
+        protected boolean indent = false;
 
-        private boolean wrapRootValue = false;
+        protected boolean wrapRootValue = false;
 
-        private boolean writeCharArraysAsJsonArrays = false;
+        protected boolean writeCharArraysAsJsonArrays = false;
 
-        private boolean writeNullMapValues = true;
+        protected boolean writeNullMapValues = true;
 
-        private boolean writeEmptyJsonArrays = true;
+        protected boolean writeEmptyJsonArrays = true;
 
-        private boolean orderMapEntriesByKeys = false;
+        protected boolean orderMapEntriesByKeys = false;
 
-        private boolean writeSingleElemArraysUnwrapped = false;
+        protected boolean writeSingleElemArraysUnwrapped = false;
 
-        private boolean wrapExceptions = true;
+        protected boolean wrapExceptions = true;
+
+        /**
+         * @deprecated Use {@link JsonSerializationContext#builder()} instead. This constructor will be made protected in v1.0.
+         */
+        @Deprecated
+        public Builder() { }
 
         /**
          * Determines whether Object Identity is compared using
@@ -239,11 +259,21 @@ public class JsonSerializationContext extends JsonMappingContext {
             return this;
         }
 
-        public JsonSerializationContext build() {
+        public final JsonSerializationContext build() {
             return new JsonSerializationContext( useEqualityForObjectId, serializeNulls, writeDatesAsTimestamps,
                     writeDateKeysAsTimestamps, indent, wrapRootValue, writeCharArraysAsJsonArrays, writeNullMapValues,
                     writeEmptyJsonArrays, orderMapEntriesByKeys, writeSingleElemArraysUnwrapped, wrapExceptions );
         }
+    }
+
+    public static class DefaultBuilder extends Builder {
+
+        private DefaultBuilder() { }
+
+    }
+
+    public static Builder builder() {
+        return GWT.create( Builder.class );
     }
 
     private static final Logger logger = Logger.getLogger( "JsonSerialization" );
@@ -279,10 +309,10 @@ public class JsonSerializationContext extends JsonMappingContext {
 
     private final boolean wrapExceptions;
 
-    private JsonSerializationContext( boolean useEqualityForObjectId, boolean serializeNulls, boolean writeDatesAsTimestamps,
-                                      boolean writeDateKeysAsTimestamps, boolean indent, boolean wrapRootValue,
-                                      boolean writeCharArraysAsJsonArrays, boolean writeNullMapValues, boolean writeEmptyJsonArrays,
-                                      boolean orderMapEntriesByKeys, boolean writeSingleElemArraysUnwrapped, boolean wrapExceptions ) {
+    private JsonSerializationContext( boolean useEqualityForObjectId, boolean serializeNulls, boolean writeDatesAsTimestamps, boolean
+            writeDateKeysAsTimestamps, boolean indent, boolean wrapRootValue, boolean writeCharArraysAsJsonArrays, boolean
+            writeNullMapValues, boolean writeEmptyJsonArrays, boolean orderMapEntriesByKeys, boolean writeSingleElemArraysUnwrapped,
+                                      boolean wrapExceptions ) {
         this.useEqualityForObjectId = useEqualityForObjectId;
         this.serializeNulls = serializeNulls;
         this.writeDatesAsTimestamps = writeDatesAsTimestamps;
@@ -468,7 +498,7 @@ public class JsonSerializationContext extends JsonMappingContext {
      *
      * @param generator instance of generator to add
      */
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings( "UnusedDeclaration" )
     public void addGenerator( ObjectIdGenerator<?> generator ) {
         if ( null == generators ) {
             generators = new ArrayList<ObjectIdGenerator<?>>();
@@ -481,7 +511,7 @@ public class JsonSerializationContext extends JsonMappingContext {
      *
      * @param gen generator used to find equivalent generator
      */
-    @SuppressWarnings({"UnusedDeclaration", "unchecked"})
+    @SuppressWarnings( {"UnusedDeclaration", "unchecked"} )
     public <T> ObjectIdGenerator<T> findObjectIdGenerator( ObjectIdGenerator<T> gen ) {
         if ( null != generators ) {
             for ( ObjectIdGenerator<?> generator : generators ) {

@@ -65,7 +65,7 @@ public class IndentGwtTest extends GwtJacksonTestCase {
                 "}";
 
         // activating the indentation
-        result = IndentMapper.INSTANCE.write( bean, new JsonSerializationContext.Builder().indent( true ).build() );
+        result = IndentMapper.INSTANCE.write( bean, JsonSerializationContext.builder().indent( true ).build() );
         assertEquals( expected, result );
     }
 }

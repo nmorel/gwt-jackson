@@ -37,6 +37,6 @@ public class ObjectIdWithEqualsGwtTest extends GwtJacksonTestCase {
 
     public void testSimpleEquals() {
         tester.testSimpleEquals( createMapper( FooMapper.INSTANCE, newDefaultDeserializationContext(),
-                new JsonSerializationContext.Builder().useEqualityForObjectId( true ).build() ) );
+                JsonSerializationContext.builder().useEqualityForObjectId( true ).build() ) );
     }
 }
