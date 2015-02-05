@@ -16,18 +16,19 @@
 
 package com.github.nmorel.gwtjackson.rebind;
 
-import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.github.nmorel.gwtjackson.client.stream.impl.DefaultJsonWriter;
+import com.github.nmorel.gwtjackson.rebind.type.JMapperType;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.typeinfo.HasAnnotations;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
 import com.google.gwt.core.ext.typeinfo.JType;
-import com.google.gwt.thirdparty.guava.common.base.Function;
 import com.google.gwt.thirdparty.guava.common.base.Optional;
 import com.google.gwt.thirdparty.guava.common.collect.ImmutableList;
 
@@ -35,16 +36,6 @@ import com.google.gwt.thirdparty.guava.common.collect.ImmutableList;
  * @author Nicolas Morel
  */
 public final class CreatorUtils {
-
-    public static final Function<Object, String> QUOTED_FUNCTION = new Function<Object, String>() {
-        @Override
-        public String apply( @Nullable Object o ) {
-            if ( null == o ) {
-                return null;
-            }
-            return "\"" + o + "\"";
-        }
-    };
 
     /**
      * Browse all the hierarchy of the type and return the first corresponding annotation it found
@@ -77,6 +68,15 @@ public final class CreatorUtils {
         return Optional.absent();
     }
 
+    /**
+     * Returns true when one of the type  has the specified annotation
+     *
+     * @param annotation the annotation
+     * @param hasAnnotationsList the types
+     * @param <T> Type of the annotation
+     *
+     * @return true if one the type has the annotation
+     */
     public static <T extends Annotation> boolean isAnnotationPresent( Class<T> annotation, List<? extends HasAnnotations>
             hasAnnotationsList ) {
         for ( HasAnnotations accessor : hasAnnotationsList ) {
@@ -87,6 +87,15 @@ public final class CreatorUtils {
         return false;
     }
 
+    /**
+     * Returns the first occurence of the annotation found on the types
+     *
+     * @param annotation the annotation
+     * @param hasAnnotationsList the types
+     * @param <T> Type of the annotation
+     *
+     * @return the first occurence of the annotation found on the types
+     */
     public static <T extends Annotation> Optional<T> getAnnotation( Class<T> annotation, List<? extends HasAnnotations>
             hasAnnotationsList ) {
         for ( HasAnnotations accessor : hasAnnotationsList ) {
@@ -152,8 +161,9 @@ public final class CreatorUtils {
         ImmutableList.Builder<JClassType> builder = ImmutableList.builder();
         if ( type.getSubtypes().length > 0 ) {
             for ( JClassType subtype : type.getSubtypes() ) {
-                if ( null == subtype.isAnnotation() && subtype.isPublic() && (!filterOnlySupportedType || configuration
-                        .isTypeSupportedForSerialization( logger, subtype )) ) {
+                if ( null == subtype.isAnnotation()
+                        && subtype.isPublic()
+                        && (!filterOnlySupportedType || configuration.isTypeSupportedForSerialization( logger, subtype )) ) {
                     builder.add( subtype );
                 }
             }
@@ -168,9 +178,10 @@ public final class CreatorUtils {
         ImmutableList.Builder<JClassType> builder = ImmutableList.builder();
         if ( type.getSubtypes().length > 0 ) {
             for ( JClassType subtype : type.getSubtypes() ) {
-                if ( (null == subtype.isInterface() && !subtype.isAbstract() && (!subtype.isMemberType() || subtype
-                        .isStatic())) && null == subtype.isAnnotation() && subtype.isPublic() && (!filterOnlySupportedType || configuration
-                        .isTypeSupportedForDeserialization( logger, subtype )) ) {
+                if ( (null == subtype.isInterface() && !subtype.isAbstract() && (!subtype.isMemberType() || subtype.isStatic()))
+                        && null == subtype.isAnnotation()
+                        && subtype.isPublic()
+                        && (!filterOnlySupportedType || configuration.isTypeSupportedForDeserialization( logger, subtype )) ) {
                     builder.add( subtype );
                 }
             }
@@ -187,6 +198,37 @@ public final class CreatorUtils {
      */
     public static String escapeString( String value ) {
         return DefaultJsonWriter.encodeString( value );
+    }
+
+    /**
+     * @param mapperType the type to search inside
+     *
+     * @return the first bean type encountered
+     */
+    public static JClassType findFirstTypeToApplyPropertyAnnotation( JMapperType mapperType ) {
+        return findFirstTypeToApplyPropertyAnnotation( Arrays.asList( mapperType ) );
+    }
+
+    /**
+     * @param mapperTypeList the types to search inside
+     *
+     * @return the first bean type encountered
+     */
+    private static JClassType findFirstTypeToApplyPropertyAnnotation( List<JMapperType> mapperTypeList ) {
+        if ( mapperTypeList.isEmpty() ) {
+            return null;
+        }
+
+        List<JMapperType> subLevel = new ArrayList<JMapperType>();
+        for ( JMapperType mapperType : mapperTypeList ) {
+            if ( mapperType.isBeanMapper() ) {
+                return mapperType.getType().isClass();
+            } else if ( mapperType.getParameters().size() > 0 ) {
+                subLevel.addAll( mapperType.getParameters() );
+            }
+        }
+
+        return findFirstTypeToApplyPropertyAnnotation( subLevel );
     }
 
     private CreatorUtils() {

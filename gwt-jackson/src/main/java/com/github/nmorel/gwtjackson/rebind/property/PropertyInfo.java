@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Nicolas Morel
+ * Copyright 2013 Nicolas Morel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,45 +24,149 @@ import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.thirdparty.guava.common.base.Optional;
 
 /**
- * @author Nicolas Morel.
+ * @author Nicolas Morel
  */
-public interface PropertyInfo {
+public final class PropertyInfo {
 
-    String getPropertyName();
+    private final String propertyName;
 
-    JType getType();
+    private final JType type;
 
-    boolean isIgnored();
+    private final boolean ignored;
 
-    boolean isRequired();
+    private final boolean required;
 
-    boolean isRawValue();
+    private final boolean rawValue;
 
-    boolean isValue();
+    private final boolean value;
 
-    boolean isAnyGetter();
+    private final boolean anyGetter;
 
-    boolean isAnySetter();
+    private final boolean anySetter;
 
-    boolean isUnwrapped();
+    private final boolean unwrapped;
 
-    Optional<String> getManagedReference();
+    private final Optional<String> managedReference;
 
-    Optional<String> getBackReference();
+    private final Optional<String> backReference;
 
-    Optional<? extends FieldAccessor> getGetterAccessor();
+    private final Optional<? extends FieldAccessor> getterAccessor;
 
-    Optional<? extends FieldAccessor> getSetterAccessor();
+    private final Optional<? extends FieldAccessor> setterAccessor;
 
-    Optional<BeanIdentityInfo> getIdentityInfo();
+    private final Optional<BeanIdentityInfo> identityInfo;
 
-    Optional<BeanTypeInfo> getTypeInfo();
+    private final Optional<BeanTypeInfo> typeInfo;
 
-    Optional<JsonFormat> getFormat();
+    private final Optional<JsonFormat> format;
 
-    Optional<Include> getInclude();
+    private final Optional<Include> include;
 
-    Optional<Boolean> getIgnoreUnknown();
+    private final Optional<Boolean> ignoreUnknown;
 
-    Optional<String[]> getIgnoredProperties();
+    private final Optional<String[]> ignoredProperties;
+
+    PropertyInfo( String propertyName, JType type, boolean ignored, boolean required, boolean rawValue, boolean value, boolean
+            anyGetter, boolean anySetter, boolean unwrapped, Optional<String> managedReference, Optional<String> backReference,
+                  Optional<? extends
+                          FieldAccessor> getterAccessor, Optional<? extends FieldAccessor> setterAccessor, Optional<BeanIdentityInfo>
+            identityInfo,
+                  Optional<BeanTypeInfo> typeInfo, Optional<JsonFormat> format, Optional<Include> include, Optional<Boolean>
+                          ignoreUnknown, Optional<String[]> ignoredProperties ) {
+        this.propertyName = propertyName;
+        this.type = type;
+        this.ignored = ignored;
+        this.required = required;
+        this.rawValue = rawValue;
+        this.value = value;
+        this.anyGetter = anyGetter;
+        this.anySetter = anySetter;
+        this.unwrapped = unwrapped;
+        this.managedReference = managedReference;
+        this.backReference = backReference;
+        this.getterAccessor = getterAccessor;
+        this.setterAccessor = setterAccessor;
+        this.identityInfo = identityInfo;
+        this.typeInfo = typeInfo;
+        this.format = format;
+        this.include = include;
+        this.ignoreUnknown = ignoreUnknown;
+        this.ignoredProperties = ignoredProperties;
+    }
+
+    public String getPropertyName() {
+        return propertyName;
+    }
+
+    public JType getType() {
+        return type;
+    }
+
+    public boolean isIgnored() {
+        return ignored;
+    }
+
+    public boolean isRequired() {
+        return required;
+    }
+
+    public boolean isRawValue() {
+        return rawValue;
+    }
+
+    public boolean isValue() {
+        return value;
+    }
+
+    public boolean isAnyGetter() {
+        return anyGetter;
+    }
+
+    public boolean isAnySetter() {
+        return anySetter;
+    }
+
+    public boolean isUnwrapped() {
+        return unwrapped;
+    }
+
+    public Optional<String> getManagedReference() {
+        return managedReference;
+    }
+
+    public Optional<String> getBackReference() {
+        return backReference;
+    }
+
+    public Optional<? extends FieldAccessor> getGetterAccessor() {
+        return getterAccessor;
+    }
+
+    public Optional<? extends FieldAccessor> getSetterAccessor() {
+        return setterAccessor;
+    }
+
+    public Optional<BeanIdentityInfo> getIdentityInfo() {
+        return identityInfo;
+    }
+
+    public Optional<BeanTypeInfo> getTypeInfo() {
+        return typeInfo;
+    }
+
+    public Optional<JsonFormat> getFormat() {
+        return format;
+    }
+
+    public Optional<Include> getInclude() {
+        return include;
+    }
+
+    public Optional<Boolean> getIgnoreUnknown() {
+        return ignoreUnknown;
+    }
+
+    public Optional<String[]> getIgnoredProperties() {
+        return ignoredProperties;
+    }
 }

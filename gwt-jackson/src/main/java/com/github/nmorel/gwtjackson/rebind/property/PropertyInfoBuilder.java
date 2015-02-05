@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.nmorel.gwtjackson.rebind.property.processor;
+package com.github.nmorel.gwtjackson.rebind.property;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.nmorel.gwtjackson.rebind.bean.BeanIdentityInfo;
 import com.github.nmorel.gwtjackson.rebind.bean.BeanTypeInfo;
-import com.github.nmorel.gwtjackson.rebind.property.FieldAccessor;
-import com.github.nmorel.gwtjackson.rebind.property.PropertyInfo;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.thirdparty.guava.common.base.Optional;
 
@@ -218,7 +216,8 @@ final class PropertyInfoBuilder {
     }
 
     PropertyInfo build() {
-        return new ImmutablePropertyInfo( propertyName, type, ignored, required, rawValue, value, anyGetter, anySetter, unwrapped, managedReference, backReference,
-                getterAccessor, setterAccessor, identityInfo, typeInfo, format, include, ignoreUnknown, ignoredProperties );
+        return new PropertyInfo( propertyName, type, ignored, required, rawValue, value, anyGetter, anySetter, unwrapped,
+                managedReference, backReference, getterAccessor, setterAccessor, identityInfo, typeInfo, format, include, ignoreUnknown,
+                ignoredProperties );
     }
 }

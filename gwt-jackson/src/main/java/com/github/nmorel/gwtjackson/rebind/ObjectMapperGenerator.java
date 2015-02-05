@@ -28,7 +28,7 @@ import com.google.gwt.core.ext.typeinfo.JClassType;
 public class ObjectMapperGenerator extends Generator {
 
     @Override
-    public String generate( TreeLogger logger, GeneratorContext context, String typeName ) throws UnableToCompleteException {
+    public final String generate( TreeLogger logger, GeneratorContext context, String typeName ) throws UnableToCompleteException {
         JacksonTypeOracle typeOracle = new JacksonTypeOracle( logger, context.getTypeOracle() );
         JClassType rootMapperClass = typeOracle.getType( typeName );
         RebindConfiguration configuration = new RebindConfiguration( logger, context, typeOracle, rootMapperClass );

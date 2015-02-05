@@ -16,7 +16,12 @@
 
 package com.github.nmorel.gwtjackson.rebind.bean;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.nmorel.gwtjackson.rebind.property.PropertyInfo;
 import com.google.gwt.core.ext.typeinfo.JAbstractMethod;
@@ -30,47 +35,163 @@ import com.google.gwt.thirdparty.guava.common.collect.ImmutableSet;
 /**
  * @author Nicolas Morel
  */
-public interface BeanInfo {
+public final class BeanInfo {
 
-    JClassType getType();
+    private final JClassType type;
 
-    ImmutableList<JClassType> getParameterizedTypes();
+    private final ImmutableList<JClassType> parameterizedTypes;
 
-    boolean isCreatorDefaultConstructor();
+    /*####  Instantiation properties  ####*/
+    private final Optional<JAbstractMethod> creatorMethod;
 
-    Optional<JAbstractMethod> getCreatorMethod();
+    private final ImmutableMap<String, JParameter> creatorParameters;
 
-    ImmutableMap<String, JParameter> getCreatorParameters();
+    private final boolean creatorDefaultConstructor;
 
-    boolean isCreatorDelegation();
+    private final boolean creatorDelegation;
 
-    Optional<BeanTypeInfo> getTypeInfo();
+    private final Optional<BeanTypeInfo> typeInfo;
 
-    Optional<PropertyInfo> getValuePropertyInfo();
+    private final Optional<PropertyInfo> valuePropertyInfo;
 
-    Optional<PropertyInfo> getAnyGetterPropertyInfo();
+    private final Optional<PropertyInfo> anyGetterPropertyInfo;
 
-    Optional<PropertyInfo> getAnySetterPropertyInfo();
+    private final Optional<PropertyInfo> anySetterPropertyInfo;
 
-    ImmutableSet<String> getIgnoredFields();
+    /*####  Visibility properties  ####*/
+    private final ImmutableSet<String> ignoredFields;
 
-    JsonAutoDetect.Visibility getFieldVisibility();
+    private final JsonAutoDetect.Visibility fieldVisibility;
 
-    JsonAutoDetect.Visibility getGetterVisibility();
+    private final JsonAutoDetect.Visibility getterVisibility;
 
-    JsonAutoDetect.Visibility getIsGetterVisibility();
+    private final JsonAutoDetect.Visibility isGetterVisibility;
 
-    JsonAutoDetect.Visibility getSetterVisibility();
+    private final JsonAutoDetect.Visibility setterVisibility;
 
-    JsonAutoDetect.Visibility getCreatorVisibility();
+    private final JsonAutoDetect.Visibility creatorVisibility;
 
-    boolean isIgnoreUnknown();
+    private final boolean ignoreUnknown;
 
-    ImmutableList<String> getPropertyOrderList();
+    /*####  Ordering properties  ####*/
+    private final ImmutableList<String> propertyOrderList;
 
-    boolean isPropertyOrderAlphabetic();
+    private final boolean propertyOrderAlphabetic;
 
-    Optional<BeanIdentityInfo> getIdentityInfo();
+    /*####  Identity info  ####*/
+    private final Optional<BeanIdentityInfo> identityInfo;
 
-    Optional<Include> getInclude();
+    /*#### Inclusion info ####*/
+    private final Optional<Include> include;
+
+    BeanInfo( JClassType type, List<JClassType> parameterizedTypes, Optional<JAbstractMethod> creatorMethod, Map<String, JParameter> creatorParameters, boolean creatorDefaultConstructor, boolean creatorDelegation, Optional<BeanTypeInfo> typeInfo, Optional<PropertyInfo> valuePropertyInfo, Optional<PropertyInfo> anyGetterPropertyInfo, Optional<PropertyInfo> anySetterPropertyInfo, Set<String> ignoredFields, Visibility fieldVisibility, Visibility getterVisibility, Visibility isGetterVisibility, Visibility setterVisibility, Visibility creatorVisibility, boolean ignoreUnknown, List<String> propertyOrderList, boolean propertyOrderAlphabetic, Optional<BeanIdentityInfo> identityInfo, Optional<Include> include ) {
+
+        this.type = type;
+        this.parameterizedTypes = ImmutableList.copyOf( parameterizedTypes );
+        this.creatorMethod = creatorMethod;
+        this.creatorParameters = ImmutableMap.copyOf( creatorParameters );
+        this.creatorDefaultConstructor = creatorDefaultConstructor;
+        this.creatorDelegation = creatorDelegation;
+        this.typeInfo = typeInfo;
+        this.valuePropertyInfo = valuePropertyInfo;
+        this.anyGetterPropertyInfo = anyGetterPropertyInfo;
+        this.anySetterPropertyInfo = anySetterPropertyInfo;
+        this.ignoredFields = ImmutableSet.copyOf( ignoredFields );
+
+        this.fieldVisibility = fieldVisibility;
+        this.getterVisibility = getterVisibility;
+        this.isGetterVisibility = isGetterVisibility;
+        this.setterVisibility = setterVisibility;
+        this.creatorVisibility = creatorVisibility;
+
+        this.ignoreUnknown = ignoreUnknown;
+        this.propertyOrderList = ImmutableList.copyOf( propertyOrderList );
+        this.propertyOrderAlphabetic = propertyOrderAlphabetic;
+        this.identityInfo = identityInfo;
+        this.include = include;
+    }
+
+    public JClassType getType() {
+        return type;
+    }
+
+    public ImmutableList<JClassType> getParameterizedTypes() {
+        return parameterizedTypes;
+    }
+
+    public Optional<JAbstractMethod> getCreatorMethod() {
+        return creatorMethod;
+    }
+
+    public ImmutableMap<String, JParameter> getCreatorParameters() {
+        return creatorParameters;
+    }
+
+    public boolean isCreatorDefaultConstructor() {
+        return creatorDefaultConstructor;
+    }
+
+    public boolean isCreatorDelegation() {
+        return creatorDelegation;
+    }
+
+    public Optional<BeanTypeInfo> getTypeInfo() {
+        return typeInfo;
+    }
+
+    public Optional<PropertyInfo> getValuePropertyInfo() {
+        return valuePropertyInfo;
+    }
+
+    public Optional<PropertyInfo> getAnyGetterPropertyInfo() {
+        return anyGetterPropertyInfo;
+    }
+
+    public Optional<PropertyInfo> getAnySetterPropertyInfo() {
+        return anySetterPropertyInfo;
+    }
+
+    public ImmutableSet<String> getIgnoredFields() {
+        return ignoredFields;
+    }
+
+    public Visibility getFieldVisibility() {
+        return fieldVisibility;
+    }
+
+    public Visibility getGetterVisibility() {
+        return getterVisibility;
+    }
+
+    public Visibility getIsGetterVisibility() {
+        return isGetterVisibility;
+    }
+
+    public Visibility getSetterVisibility() {
+        return setterVisibility;
+    }
+
+    public Visibility getCreatorVisibility() {
+        return creatorVisibility;
+    }
+
+    public boolean isIgnoreUnknown() {
+        return ignoreUnknown;
+    }
+
+    public ImmutableList<String> getPropertyOrderList() {
+        return propertyOrderList;
+    }
+
+    public boolean isPropertyOrderAlphabetic() {
+        return propertyOrderAlphabetic;
+    }
+
+    public Optional<BeanIdentityInfo> getIdentityInfo() {
+        return identityInfo;
+    }
+
+    public Optional<Include> getInclude() {
+        return include;
+    }
 }

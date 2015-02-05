@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package com.github.nmorel.gwtjackson.rebind.property.parser;
+package com.github.nmorel.gwtjackson.rebind.property;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.nmorel.gwtjackson.rebind.CreatorUtils;
-import com.github.nmorel.gwtjackson.rebind.property.PropertyAccessors;
 import com.google.gwt.core.ext.typeinfo.HasAnnotations;
 import com.google.gwt.core.ext.typeinfo.JField;
 import com.google.gwt.core.ext.typeinfo.JMethod;
@@ -113,7 +112,7 @@ final class PropertyAccessorsBuilder {
     }
 
     PropertyAccessors build() {
-        return new ImmutablePropertyAccessors( propertyName, field, getter, setter, parameter, ImmutableList.copyOf( fields ), ImmutableList
-                .copyOf( getters ), ImmutableList.copyOf( setters ), ImmutableList.copyOf( accessors ) );
+        return new PropertyAccessors( propertyName, field, getter, setter, parameter, ImmutableList.copyOf( fields ),
+                ImmutableList.copyOf( getters ), ImmutableList.copyOf( setters ), ImmutableList.copyOf( accessors ) );
     }
 }

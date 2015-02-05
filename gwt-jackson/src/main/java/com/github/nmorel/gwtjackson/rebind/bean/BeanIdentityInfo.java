@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Nicolas Morel
+ * Copyright 2013 Nicolas Morel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,19 +21,62 @@ import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.thirdparty.guava.common.base.Optional;
 
 /**
- * @author Nicolas Morel.
+ * @author Nicolas Morel
  */
-public interface BeanIdentityInfo {
+public final class BeanIdentityInfo {
 
-    boolean isIdABeanProperty();
+    private final String propertyName;
 
-    String getPropertyName();
+    private final boolean idABeanProperty;
 
-    boolean isAlwaysAsId();
+    private final boolean alwaysAsId;
 
-    Class<? extends ObjectIdGenerator<?>> getGenerator();
+    private final Class<? extends ObjectIdGenerator<?>> generator;
 
-    Class<?> getScope();
+    private final Class<?> scope;
 
-    Optional<JType> getType();
+    private final Optional<JType> type;
+
+    BeanIdentityInfo( String propertyName, boolean alwaysAsId, Class<? extends ObjectIdGenerator<?>> generator, Class<?> scope ) {
+        this.propertyName = propertyName;
+        this.alwaysAsId = alwaysAsId;
+        this.generator = generator;
+        this.scope = scope;
+        this.idABeanProperty = true;
+        this.type = Optional.absent();
+    }
+
+    BeanIdentityInfo( String propertyName, boolean alwaysAsId, Class<? extends ObjectIdGenerator<?>> generator, Class<?> scope,
+                      JType type ) {
+        this.propertyName = propertyName;
+        this.alwaysAsId = alwaysAsId;
+        this.generator = generator;
+        this.scope = scope;
+        this.idABeanProperty = false;
+        this.type = Optional.of( type );
+    }
+
+    public boolean isIdABeanProperty() {
+        return idABeanProperty;
+    }
+
+    public String getPropertyName() {
+        return propertyName;
+    }
+
+    public boolean isAlwaysAsId() {
+        return alwaysAsId;
+    }
+
+    public Class<? extends ObjectIdGenerator<?>> getGenerator() {
+        return generator;
+    }
+
+    public Class<?> getScope() {
+        return scope;
+    }
+
+    public Optional<JType> getType() {
+        return type;
+    }
 }

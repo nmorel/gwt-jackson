@@ -108,17 +108,17 @@ public final class RebindConfiguration {
 
         private final JClassType mapperType;
 
-        private final String instanceCreation;
+        private final JAbstractMethod instanceCreationMethod;
 
         private final MapperType[] parameters;
 
-        private MapperInstance( JClassType mapperType, String instanceCreation ) {
-            this( mapperType, instanceCreation, new MapperType[0] );
+        private MapperInstance( JClassType mapperType, JAbstractMethod instanceCreationMethod ) {
+            this( mapperType, instanceCreationMethod, new MapperType[0] );
         }
 
-        private MapperInstance( JClassType mapperType, String instanceCreation, MapperType[] parameters ) {
+        private MapperInstance( JClassType mapperType, JAbstractMethod instanceCreationMethod, MapperType[] parameters ) {
             this.mapperType = mapperType;
-            this.instanceCreation = instanceCreation;
+            this.instanceCreationMethod = instanceCreationMethod;
             this.parameters = parameters;
         }
 
@@ -126,8 +126,8 @@ public final class RebindConfiguration {
             return mapperType;
         }
 
-        public String getInstanceCreation() {
-            return instanceCreation;
+        public JAbstractMethod getInstanceCreationMethod() {
+            return instanceCreationMethod;
         }
 
         public MapperType[] getParameters() {
@@ -184,8 +184,8 @@ public final class RebindConfiguration {
 
     private final TypeFilter additionalSupportedTypes;
 
-    public RebindConfiguration( TreeLogger logger, GeneratorContext context, JacksonTypeOracle typeOracle,
-                                JClassType rootMapperClass ) throws UnableToCompleteException {
+    public RebindConfiguration( TreeLogger logger, GeneratorContext context, JacksonTypeOracle typeOracle, JClassType rootMapperClass )
+            throws UnableToCompleteException {
         this.logger = logger;
         this.context = context;
         this.typeOracle = typeOracle;
@@ -247,9 +247,8 @@ public final class RebindConfiguration {
      * @param allSupportedSerializationClassBuilder builder aggregating all the types that have a serializer
      * @param allSupportedDeserializationClassBuilder builder aggregating all the types that have a deserializer
      */
-    private void addMappers( final AbstractConfiguration configuration, final MapperType mapperType,
-                             Builder<JClassType> allSupportedSerializationClassBuilder,
-                             Builder<JClassType> allSupportedDeserializationClassBuilder ) {
+    private void addMappers( final AbstractConfiguration configuration, final MapperType mapperType, Builder<JClassType>
+            allSupportedSerializationClassBuilder, Builder<JClassType> allSupportedDeserializationClassBuilder ) {
         Map<Class, Class> configuredMapper = mapperType.getMapperTypeConfiguration( configuration );
 
         for ( Entry<Class, Class> entry : configuredMapper.entrySet() ) {
@@ -348,17 +347,7 @@ public final class RebindConfiguration {
                     continue;
                 }
 
-                StringBuilder builder = new StringBuilder();
-                builder.append( classType.getQualifiedSourceName() ).append( '.' ).append( method.getName() ).append( '(' );
-                for ( int i = 0; i < nbParam; i++ ) {
-                    if ( i > 0 ) {
-                        builder.append( ", %s" );
-                    } else {
-                        builder.append( "%s" );
-                    }
-                }
-                builder.append( ')' );
-                return new MapperInstance( classType, builder.toString(), parameters );
+                return new MapperInstance( classType, method, parameters );
             }
         }
 
@@ -370,17 +359,7 @@ public final class RebindConfiguration {
                     continue;
                 }
 
-                StringBuilder builder = new StringBuilder();
-                builder.append( "new " ).append( classType.getQualifiedSourceName() ).append( '(' );
-                for ( int i = 0; i < nbParam; i++ ) {
-                    if ( i > 0 ) {
-                        builder.append( ", %s" );
-                    } else {
-                        builder.append( "%s" );
-                    }
-                }
-                builder.append( ')' );
-                return new MapperInstance( classType, builder.toString(), parameters );
+                return new MapperInstance( classType, constructor, parameters );
             }
         }
 
@@ -425,18 +404,14 @@ public final class RebindConfiguration {
             // method must be public static, return the instance type and take no parameters
             if ( method.isStatic() && method.getReturnType().getQualifiedSourceName().equals( classType.getQualifiedSourceName() ) && method
                     .getParameters().length == 0 && method.isPublic() ) {
-                StringBuilder builder = new StringBuilder();
-                builder.append( classType.getQualifiedSourceName() ).append( '.' ).append( method.getName() ).append( "()" );
-                return new MapperInstance( classType, builder.toString() );
+                return new MapperInstance( classType, method );
             }
         }
 
         // then we search the default constructor
         for ( JConstructor constructor : classType.getConstructors() ) {
             if ( constructor.isPublic() && constructor.getParameters().length == 0 ) {
-                StringBuilder builder = new StringBuilder();
-                builder.append( "new " ).append( classType.getQualifiedSourceName() ).append( "()" );
-                return new MapperInstance( classType, builder.toString() );
+                return new MapperInstance( classType, constructor );
             }
         }
 
@@ -538,12 +513,12 @@ public final class RebindConfiguration {
     }
 
     public boolean isTypeSupportedForSerialization( TreeLogger logger, JClassType classType ) {
-        return allSupportedSerializationClass.contains( classType ) || additionalSupportedTypes.isIncluded( logger, classType
-                .getQualifiedSourceName() );
+        return allSupportedSerializationClass.contains( classType )
+                || additionalSupportedTypes.isIncluded( logger, classType.getQualifiedSourceName() );
     }
 
     public boolean isTypeSupportedForDeserialization( TreeLogger logger, JClassType classType ) {
-        return allSupportedDeserializationClass.contains( classType ) || additionalSupportedTypes.isIncluded( logger, classType
-                .getQualifiedSourceName() );
+        return allSupportedDeserializationClass.contains( classType )
+                || additionalSupportedTypes.isIncluded( logger, classType.getQualifiedSourceName() );
     }
 }

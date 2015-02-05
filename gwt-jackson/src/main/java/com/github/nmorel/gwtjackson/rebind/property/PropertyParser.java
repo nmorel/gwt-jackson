@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.nmorel.gwtjackson.rebind.property.parser;
+package com.github.nmorel.gwtjackson.rebind.property;
 
 import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
@@ -24,7 +24,6 @@ import java.util.Map.Entry;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.github.nmorel.gwtjackson.rebind.RebindConfiguration;
 import com.github.nmorel.gwtjackson.rebind.bean.BeanInfo;
-import com.github.nmorel.gwtjackson.rebind.property.PropertyAccessors;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.TreeLogger.Type;
 import com.google.gwt.core.ext.typeinfo.JClassType;

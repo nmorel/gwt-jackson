@@ -24,16 +24,44 @@ import com.google.gwt.thirdparty.guava.common.collect.ImmutableMap;
 /**
  * @author Nicolas Morel
  */
-public interface BeanTypeInfo {
+public final class BeanTypeInfo {
 
-    Id getUse();
+    private final Id use;
 
-    As getInclude();
+    private final As include;
 
-    String getPropertyName();
+    private final String propertyName;
 
-    ImmutableMap<JClassType, String> getMapTypeToSerializationMetadata();
+    private final ImmutableMap<JClassType, String> mapTypeToSerializationMetadata;
 
-    ImmutableMap<JClassType, String> getMapTypeToDeserializationMetadata();
+    private final ImmutableMap<JClassType, String> mapTypeToDeserializationMetadata;
 
+    BeanTypeInfo( Id use, As include, String propertyName, ImmutableMap<JClassType, String> mapTypeToSerializationMetadata,
+                  ImmutableMap<JClassType, String> mapTypeToDeserializationMetadata ) {
+        this.use = use;
+        this.include = include;
+        this.propertyName = propertyName;
+        this.mapTypeToSerializationMetadata = mapTypeToSerializationMetadata;
+        this.mapTypeToDeserializationMetadata = mapTypeToDeserializationMetadata;
+    }
+
+    public Id getUse() {
+        return use;
+    }
+
+    public As getInclude() {
+        return include;
+    }
+
+    public String getPropertyName() {
+        return propertyName;
+    }
+
+    public ImmutableMap<JClassType, String> getMapTypeToSerializationMetadata() {
+        return mapTypeToSerializationMetadata;
+    }
+
+    public ImmutableMap<JClassType, String> getMapTypeToDeserializationMetadata() {
+        return mapTypeToDeserializationMetadata;
+    }
 }

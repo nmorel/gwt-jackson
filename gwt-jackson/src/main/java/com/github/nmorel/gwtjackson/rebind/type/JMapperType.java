@@ -18,9 +18,10 @@ package com.github.nmorel.gwtjackson.rebind.type;
 
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.thirdparty.guava.common.collect.ImmutableList;
+import com.squareup.javapoet.CodeBlock;
 
 /**
- * Contains informations about serializer or deserializer like its type or the string to instantiate it.
+ * Contains informations about serializer or deserializer like its type or the code to instantiate it.
  *
  * @author Nicolas Morel
  */
@@ -32,7 +33,7 @@ public abstract class JMapperType {
 
         protected JType type;
 
-        protected String instance;
+        protected CodeBlock instance;
 
         protected ImmutableList<M> parameters;
 
@@ -46,7 +47,7 @@ public abstract class JMapperType {
             return (B) this;
         }
 
-        public B instance( String instance ) {
+        public B instance( CodeBlock instance ) {
             this.instance = instance;
             return (B) this;
         }
@@ -61,30 +62,30 @@ public abstract class JMapperType {
 
     protected final JType type;
 
-    protected final String instance;
+    protected final CodeBlock instance;
 
     protected final ImmutableList<? extends JMapperType> parameters;
 
-    protected JMapperType( boolean beanMapper, JType type, String instance, ImmutableList<? extends JMapperType> parameters ) {
+    protected JMapperType( boolean beanMapper, JType type, CodeBlock instance, ImmutableList<? extends JMapperType> parameters ) {
         this.beanMapper = beanMapper;
         this.type = type;
         this.instance = instance;
         this.parameters = parameters;
     }
 
-    public boolean isBeanMapper() {
+    public final boolean isBeanMapper() {
         return beanMapper;
     }
 
-    public JType getType() {
+    public final JType getType() {
         return type;
     }
 
-    public String getInstance() {
+    public final CodeBlock getInstance() {
         return instance;
     }
 
-    public ImmutableList<? extends JMapperType> getParameters() {
+    public final ImmutableList<? extends JMapperType> getParameters() {
         return parameters;
     }
 }

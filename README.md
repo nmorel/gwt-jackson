@@ -79,7 +79,10 @@ You can also get maven snapshots using the following repository :
 
 Without Maven
 -------------
-In addition of gwt-jackson jar you can find [here](https://github.com/nmorel/gwt-jackson/releases), you also need [jackson-annotations-2.4.3.jar](http://search.maven.org/remotecontent?filepath=com/fasterxml/jackson/core/jackson-annotations/2.4.3/jackson-annotations-2.4.3.jar) and [jackson-annotations-2.4.3-sources.jar](http://search.maven.org/remotecontent?filepath=com/fasterxml/jackson/core/jackson-annotations/2.4.3/jackson-annotations-2.4.3-sources.jar).
+In addition of gwt-jackson jar you can find [here](https://github.com/nmorel/gwt-jackson/releases), you also need
+- [jackson-annotations-2.5.1.jar](http://search.maven.org/remotecontent?filepath=com/fasterxml/jackson/core/jackson-annotations/2.5.1/jackson-annotations-2.5.1.jar)
+- [jackson-annotations-2.5.1-sources.jar](http://search.maven.org/remotecontent?filepath=com/fasterxml/jackson/core/jackson-annotations/2.5.1/jackson-annotations-2.5.1-sources.jar) for the GWT compilation only
+- [javapoet-1.0.0.jar](http://search.maven.org/remotecontent?filepath=com/squareup/javapoet/1.0.0/javapoet-1.0.0.jar) for the GWT compilation only
 
 Server communication
 -------------

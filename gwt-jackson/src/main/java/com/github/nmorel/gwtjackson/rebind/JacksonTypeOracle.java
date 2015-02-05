@@ -16,8 +16,6 @@
 
 package com.github.nmorel.gwtjackson.rebind;
 
-import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,7 +29,6 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
-import com.google.gwt.core.ext.typeinfo.JParameterizedType;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.core.ext.typeinfo.NotFoundException;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
@@ -59,11 +56,7 @@ public class JacksonTypeOracle {
 
     private final JClassType mapType;
 
-    private final JClassType enumMapType;
-
     private final JClassType iterableType;
-
-    private final JClassType enumSetType;
 
     private final JClassType jsoType;
 
@@ -79,9 +72,7 @@ public class JacksonTypeOracle {
         this.keyDeserializerType = typeOracle.findType( KeyDeserializer.class.getCanonicalName() );
         this.jsonSerializerType = typeOracle.findType( JsonSerializer.class.getCanonicalName() );
         this.jsonDeserializerType = typeOracle.findType( JsonDeserializer.class.getCanonicalName() );
-        this.enumSetType = typeOracle.findType( EnumSet.class.getCanonicalName() );
         this.mapType = typeOracle.findType( Map.class.getCanonicalName() );
-        this.enumMapType = typeOracle.findType( EnumMap.class.getCanonicalName() );
         this.iterableType = typeOracle.findType( Iterable.class.getCanonicalName() );
         this.jsoType = typeOracle.findType( JavaScriptObject.class.getCanonicalName() );
     }
@@ -103,24 +94,12 @@ public class JacksonTypeOracle {
         return type.isAssignableTo( objectWriterType );
     }
 
-    public boolean isEnumSet( JClassType parameterizedType ) {
-        return parameterizedType.isAssignableTo( enumSetType );
-    }
-
-    public boolean isEnumMap( JClassType parameterizedType ) {
-        return parameterizedType.isAssignableTo( enumMapType );
-    }
-
     public boolean isMap( JClassType parameterizedType ) {
         return parameterizedType.isAssignableTo( mapType );
     }
 
     public boolean isIterable( JClassType parameterizedType ) {
         return parameterizedType.isAssignableTo( iterableType );
-    }
-
-    public boolean isObject( JType type ) {
-        return typeOracle.getJavaLangObject().equals( type );
     }
 
     public boolean isKeySerializer( JType type ) {
@@ -153,9 +132,5 @@ public class JacksonTypeOracle {
 
     public void addBeanJsonMapperInfo( JClassType type, BeanJsonMapperInfo info ) {
         typeToMapperInfo.put( type, info );
-    }
-
-    public JClassType findGenericType( JParameterizedType parameterizedType ) {
-        return typeOracle.findType( parameterizedType.getQualifiedSourceName() );
     }
 }

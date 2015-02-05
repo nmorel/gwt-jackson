@@ -152,6 +152,12 @@
       <classifier>sources</classifier>
     </dependency>
 
+    <!-- Generator dependencies -->
+    <dependency>
+      <groupId>com.squareup</groupId>
+      <artifactId>javapoet</artifactId>
+    </dependency>
+
     <!-- Test dependencies -->
     <dependency>
       <groupId>junit</groupId>

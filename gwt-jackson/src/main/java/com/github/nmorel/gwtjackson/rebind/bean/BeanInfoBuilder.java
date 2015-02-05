@@ -203,7 +203,7 @@ final class BeanInfoBuilder {
     }
 
     BeanInfo build() {
-        return new ImmutableBeanInfo( type, parameterizedTypes, creatorMethod, creatorParameters, creatorDefaultConstructor,
+        return new BeanInfo( type, parameterizedTypes, creatorMethod, creatorParameters, creatorDefaultConstructor,
                 creatorDelegation, typeInfo, valuePropertyInfo, anyGetterPropertyInfo, anySetterPropertyInfo, ignoredFields,
                 fieldVisibility, getterVisibility, isGetterVisibility, setterVisibility, creatorVisibility, ignoreUnknown,
                 propertyOrderList, propertyOrderAlphabetic, identityInfo, include );

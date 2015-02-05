@@ -20,6 +20,8 @@ import com.google.gwt.core.ext.typeinfo.JField;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.thirdparty.guava.common.base.Optional;
 import com.google.gwt.thirdparty.guava.common.base.Preconditions;
+import com.squareup.javapoet.CodeBlock;
+import com.squareup.javapoet.MethodSpec;
 
 /**
  * @author Nicolas Morel
@@ -28,17 +30,17 @@ public abstract class FieldAccessor {
 
     public static class Accessor {
 
-        private final String accessor;
+        private final CodeBlock accessor;
 
-        private final Optional<AdditionalMethod> additionalMethod;
+        private final Optional<MethodSpec> additionalMethod;
 
-        public Accessor( String accessor ) {
+        public Accessor( CodeBlock accessor ) {
             Preconditions.checkNotNull( accessor );
             this.accessor = accessor;
             this.additionalMethod = Optional.absent();
         }
 
-        public Accessor( String accessor, AdditionalMethod additionalMethod ) {
+        public Accessor( CodeBlock accessor, MethodSpec additionalMethod ) {
             Preconditions.checkNotNull( accessor );
             Preconditions.checkNotNull( additionalMethod );
 
@@ -46,11 +48,11 @@ public abstract class FieldAccessor {
             this.additionalMethod = Optional.of( additionalMethod );
         }
 
-        public String getAccessor() {
+        public CodeBlock getAccessor() {
             return accessor;
         }
 
-        public Optional<AdditionalMethod> getAdditionalMethod() {
+        public Optional<MethodSpec> getAdditionalMethod() {
             return additionalMethod;
         }
     }
@@ -75,7 +77,7 @@ public abstract class FieldAccessor {
         this.field = field;
         this.method = method;
 
-        // We first test if we can use the setter
+        // We first test if we can use the method
         if ( method.isPresent() && (methodAutoDetect || !fieldAutoDetect || !field.isPresent()) ) {
             useMethod = true;
         }
@@ -93,7 +95,7 @@ public abstract class FieldAccessor {
         return method;
     }
 
-    public Accessor getAccessor( final String beanName ) {
+    public Accessor getAccessor( final String beanName, Object... params ) {
         final boolean useJsni;
         if ( useMethod ) {
             useJsni = method.get().isPrivate() || (!samePackage && !method.get().isPublic());
@@ -102,8 +104,8 @@ public abstract class FieldAccessor {
         else {
             useJsni = field.get().isPrivate() || (!samePackage && !field.get().isPublic());
         }
-        return getAccessor( beanName, useMethod, useJsni );
+        return getAccessor( beanName, useMethod, useJsni, params );
     }
 
-    protected abstract Accessor getAccessor( final String beanName, final boolean useMethod, final boolean useJsni );
+    protected abstract Accessor getAccessor( final String beanName, final boolean useMethod, final boolean useJsni, Object... params );
 }

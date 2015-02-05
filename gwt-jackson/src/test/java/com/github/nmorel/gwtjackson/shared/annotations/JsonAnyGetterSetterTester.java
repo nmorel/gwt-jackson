@@ -60,7 +60,7 @@ public final class JsonAnyGetterSetterTester extends AbstractTester {
         }
 
         @JsonAnyGetter
-        public Map other() {
+        private Map other() {
             Map map = new LinkedHashMap();
             map.put( "notVisibleDouble", notVisibleDouble );
             map.put( "notVisibleList", notVisibleList );
@@ -68,7 +68,7 @@ public final class JsonAnyGetterSetterTester extends AbstractTester {
         }
 
         @JsonAnySetter
-        public void other( String property, Object value ) {
+        private void other( String property, Object value ) {
             if ( "notVisibleDouble".equals( property ) ) {
                 notVisibleDouble = (Double) value;
             } else if ( "notVisibleList".equals( property ) ) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Nicolas Morel
+ * Copyright 2014 Nicolas Morel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,85 +18,85 @@ package com.github.nmorel.gwtjackson.rebind.property;
 
 import java.lang.annotation.Annotation;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.nmorel.gwtjackson.rebind.CreatorUtils;
+import com.google.gwt.core.ext.typeinfo.HasAnnotations;
 import com.google.gwt.core.ext.typeinfo.JField;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JParameter;
 import com.google.gwt.thirdparty.guava.common.base.Optional;
+import com.google.gwt.thirdparty.guava.common.collect.ImmutableList;
 
 /**
- * Used to aggregate field, getter/setter method or parameter of the same property
- *
- * @author Nicolas Morel
+ * @author Nicolas Morel.
  */
-public interface PropertyAccessors {
+public final class PropertyAccessors {
 
-    /**
-     * Returns the name of the property. It can be the value defined in a {@link JsonProperty#value()},
-     * the name of a field or the name of a getter/setter method minus get/set.
-     *
-     * @return the name of the property
-     */
-    String getPropertyName();
+    private final String propertyName;
 
-    /**
-     * @return the field corresponding to the property
-     */
-    Optional<JField> getField();
+    private final Optional<JField> field;
 
-    /**
-     * @return the main getter corresponding to the property
-     */
-    Optional<JMethod> getGetter();
+    private final Optional<JMethod> getter;
 
-    /**
-     * @return the main setter corresponding to the property
-     */
-    Optional<JMethod> getSetter();
+    private final Optional<JMethod> setter;
 
-    /**
-     * @return the constructor parameter corresponding to the property
-     */
-    Optional<JParameter> getParameter();
+    private final Optional<JParameter> parameter;
 
-    /**
-     * @param annotation annotation to find
-     * @param <T> Type of the annotation
-     *
-     * @return true if the annotation is present on any field
-     */
-    <T extends Annotation> boolean isAnnotationPresentOnField( Class<T> annotation );
+    private final ImmutableList<JField> fields;
 
-    /**
-     * @param annotation annotation to find
-     * @param <T> Type of the annotation
-     *
-     * @return true if the annotation is present on any getter
-     */
-    <T extends Annotation> boolean isAnnotationPresentOnGetter( Class<T> annotation );
+    private final ImmutableList<JMethod> getters;
 
-    /**
-     * @param annotation annotation to find
-     * @param <T> Type of the annotation
-     *
-     * @return true if the annotation is present on any setter/parameter
-     */
-    <T extends Annotation> boolean isAnnotationPresentOnSetter( Class<T> annotation );
+    private final ImmutableList<JMethod> setters;
 
-    /**
-     * @param annotation annotation to find
-     * @param <T> Type of the annotation
-     *
-     * @return true if the annotation is present on any accessor
-     */
-    <T extends Annotation> boolean isAnnotationPresent( Class<T> annotation );
+    private final ImmutableList<HasAnnotations> accessors;
 
-    /**
-     * @param annotation annotation to find
-     * @param <T> Type of the annotation
-     *
-     * @return the first occurence of the annotation between all the accessors if any
-     */
-    <T extends Annotation> Optional<T> getAnnotation( Class<T> annotation );
+    PropertyAccessors( String propertyName, Optional<JField> field, Optional<JMethod> getter, Optional<JMethod> setter,
+                       Optional<JParameter> parameter, ImmutableList<JField> fields, ImmutableList<JMethod> getters,
+                       ImmutableList<JMethod> setters, ImmutableList<HasAnnotations> accessors ) {
 
+        this.propertyName = propertyName;
+        this.field = field;
+        this.getter = getter;
+        this.setter = setter;
+        this.parameter = parameter;
+        this.fields = fields;
+        this.getters = getters;
+        this.setters = setters;
+        this.accessors = accessors;
+    }
+
+    public String getPropertyName() {
+        return propertyName;
+    }
+
+    public Optional<JField> getField() {
+        return field;
+    }
+
+    public Optional<JMethod> getGetter() {
+        return getter;
+    }
+
+    public Optional<JMethod> getSetter() {
+        return setter;
+    }
+
+    public Optional<JParameter> getParameter() {
+        return parameter;
+    }
+
+    public <T extends Annotation> boolean isAnnotationPresentOnField( Class<T> annotation ) {
+        return CreatorUtils.isAnnotationPresent( annotation, fields );
+    }
+
+    public <T extends Annotation> boolean isAnnotationPresentOnGetter( Class<T> annotation ) {
+        return CreatorUtils.isAnnotationPresent( annotation, getters );
+    }
+
+    public <T extends Annotation> boolean isAnnotationPresentOnSetter( Class<T> annotation ) {
+        return CreatorUtils.isAnnotationPresent( annotation, setters );
+    }
+
+    public <T extends Annotation> Optional<T> getAnnotation( Class<T> annotation ) {
+        return CreatorUtils.getAnnotation( annotation, accessors );
+    }
 }

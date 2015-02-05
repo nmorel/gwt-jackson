@@ -19,15 +19,16 @@ package com.github.nmorel.gwtjackson.rebind.type;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.thirdparty.guava.common.base.Preconditions;
 import com.google.gwt.thirdparty.guava.common.collect.ImmutableList;
+import com.squareup.javapoet.CodeBlock;
 
 /**
- * Contains informations about serializer like its type or the string to instantiate it.
+ * Contains informations about serializer like its type or the code to instantiate it.
  *
  * @author Nicolas Morel
  */
-public class JSerializerType extends JMapperType {
+public final class JSerializerType extends JMapperType {
 
-    public static class Builder extends JMapperType.Builder<Builder, JSerializerType> {
+    public static final class Builder extends JMapperType.Builder<Builder, JSerializerType> {
 
         public JSerializerType build() {
             Preconditions.checkNotNull( instance, "instance is mandatory" );
@@ -39,7 +40,7 @@ public class JSerializerType extends JMapperType {
         }
     }
 
-    public JSerializerType( boolean beanMapper, JType type, String instance, ImmutableList<JSerializerType> parameters ) {
+    private JSerializerType( boolean beanMapper, JType type, CodeBlock instance, ImmutableList<JSerializerType> parameters ) {
         super( beanMapper, type, instance, parameters );
     }
 }

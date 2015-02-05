@@ -15,7 +15,8 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -89,7 +90,8 @@
 
     <!-- Dependencies version -->
     <gwt.version>2.7.0</gwt.version>
-    <jackson.version>2.5.0</jackson.version>
+    <jackson.version>2.5.1</jackson.version>
+    <javapoet.version>1.0.0</javapoet.version>
     <junit.version>4.12</junit.version>
   </properties>
 
@@ -125,6 +127,13 @@
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
         <version>${jackson.version}</version>
+      </dependency>
+
+      <!-- Generator dependencies -->
+      <dependency>
+        <groupId>com.squareup</groupId>
+        <artifactId>javapoet</artifactId>
+        <version>${javapoet.version}</version>
       </dependency>
 
       <!-- Test dependencies -->
@@ -180,7 +189,7 @@
             <persistentunitcachedir>${project.build.directory}/gwt/cache</persistentunitcachedir>
             <mode>htmlunit</mode>
             <userAgents>gecko1_8</userAgents>
-            <testTimeOut>300</testTimeOut>
+            <testTimeOut>1000</testTimeOut>
           </configuration>
           <dependencies>
             <dependency>

@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-package com.github.nmorel.gwtjackson.rebind.property.processor;
+package com.github.nmorel.gwtjackson.rebind.property;
 
-import com.github.nmorel.gwtjackson.rebind.property.AdditionalMethod;
+import javax.lang.model.element.Modifier;
+
 import com.github.nmorel.gwtjackson.rebind.property.FieldAccessor;
+import com.github.nmorel.gwtjackson.rebind.writer.JsniCodeBlockBuilder;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JField;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.thirdparty.guava.common.base.Optional;
-import com.google.gwt.user.rebind.SourceWriter;
+import com.squareup.javapoet.CodeBlock;
+import com.squareup.javapoet.MethodSpec;
+
+import static com.github.nmorel.gwtjackson.rebind.writer.JTypeName.typeName;
 
 /**
  * @author Nicolas Morel
@@ -36,12 +41,12 @@ final class FieldReadAccessor extends FieldAccessor {
     }
 
     @Override
-    protected Accessor getAccessor( final String beanName, final boolean useMethod, final boolean useJsni ) {
+    protected Accessor getAccessor( final String beanName, final boolean useMethod, final boolean useJsni, Object... params ) {
         if ( !useJsni ) {
             if ( useMethod ) {
-                return new Accessor( beanName + "." + method.get().getName() + "()" );
+                return new Accessor( CodeBlock.builder().add( beanName + "." + method.get().getName() + "()" ).build() );
             } else {
-                return new Accessor( beanName + "." + field.get().getName() );
+                return new Accessor( CodeBlock.builder().add( beanName + "." + field.get().getName() ).build() );
             }
         }
 
@@ -56,24 +61,21 @@ final class FieldReadAccessor extends FieldAccessor {
             enclosingType = field.get().getEnclosingType();
         }
 
-        final String methodName = "getValueWithJsni";
+        JsniCodeBlockBuilder jsniCode = JsniCodeBlockBuilder.builder();
+        if ( useMethod ) {
+            jsniCode.addStatement( "return bean.@$L::$L()()", enclosingType.getQualifiedSourceName(), method.get().getName() );
+        } else {
+            jsniCode.addStatement( "return bean.@$L::$L", enclosingType.getQualifiedSourceName(), field.get().getName() );
+        }
 
-        String accessor = methodName + "(" + beanName + ")";
-        AdditionalMethod additionalMethod = new AdditionalMethod() {
-            @Override
-            public void write( SourceWriter source ) {
-                source.println( "private native %s %s(%s bean) /*-{", fieldType
-                        .getParameterizedQualifiedSourceName(), methodName, enclosingType.getParameterizedQualifiedSourceName() );
-                source.indent();
-                if ( useMethod ) {
-                    source.println( "return bean.@%s::%s()();", enclosingType.getQualifiedSourceName(), method.get().getName() );
-                } else {
-                    source.println( "return bean.@%s::%s;", enclosingType.getQualifiedSourceName(), field.get().getName() );
-                }
-                source.outdent();
-                source.println( "}-*/;" );
-            }
-        };
+        MethodSpec additionalMethod = MethodSpec.methodBuilder( "getValueWithJsni" )
+                .addModifiers( Modifier.PRIVATE, Modifier.NATIVE )
+                .returns( typeName( fieldType ) )
+                .addParameter( typeName( enclosingType ), "bean" )
+                .addCode( jsniCode.build() )
+                .build();
+
+        CodeBlock accessor = CodeBlock.builder().add( "$N($L)", additionalMethod, beanName ).build();
 
         return new Accessor( accessor, additionalMethod );
     }

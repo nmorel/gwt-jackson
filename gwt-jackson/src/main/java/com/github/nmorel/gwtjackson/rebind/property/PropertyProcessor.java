@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.nmorel.gwtjackson.rebind.property.processor;
+package com.github.nmorel.gwtjackson.rebind.property;
 
 import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
@@ -47,10 +47,6 @@ import com.github.nmorel.gwtjackson.rebind.JacksonTypeOracle;
 import com.github.nmorel.gwtjackson.rebind.RebindConfiguration;
 import com.github.nmorel.gwtjackson.rebind.bean.BeanInfo;
 import com.github.nmorel.gwtjackson.rebind.bean.BeanProcessor;
-import com.github.nmorel.gwtjackson.rebind.property.PropertiesContainer;
-import com.github.nmorel.gwtjackson.rebind.property.PropertyAccessors;
-import com.github.nmorel.gwtjackson.rebind.property.PropertyInfo;
-import com.github.nmorel.gwtjackson.rebind.property.parser.PropertyParser;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.TreeLogger.Type;
 import com.google.gwt.core.ext.UnableToCompleteException;

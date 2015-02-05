@@ -269,7 +269,7 @@ public final class BeanProcessor {
 
     public static Optional<BeanIdentityInfo> processIdentity( TreeLogger logger, JacksonTypeOracle typeOracle, RebindConfiguration
             configuration, JClassType type, Optional<JsonIdentityInfo> jsonIdentityInfo, Optional<JsonIdentityReference>
-            jsonIdentityReference ) throws UnableToCompleteException {
+                                                                      jsonIdentityReference ) throws UnableToCompleteException {
 
         if ( !jsonIdentityInfo.isPresent() ) {
             jsonIdentityInfo = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, type, JsonIdentityInfo.class );
@@ -288,7 +288,7 @@ public final class BeanProcessor {
             BeanIdentityInfo beanIdentityInfo;
             if ( generator.isAssignableFrom( PropertyGenerator.class ) ) {
 
-                beanIdentityInfo = new ImmutableBeanIdentityInfo( propertyName, alwaysAsId, generator, scope );
+                beanIdentityInfo = new BeanIdentityInfo( propertyName, alwaysAsId, generator, scope );
 
             } else {
 
@@ -306,7 +306,7 @@ public final class BeanProcessor {
                     identityType = objectIdGeneratorType.isParameterized().getTypeArgs()[0];
                 }
 
-                beanIdentityInfo = new ImmutableBeanIdentityInfo( propertyName, alwaysAsId, generator, scope, identityType );
+                beanIdentityInfo = new BeanIdentityInfo( propertyName, alwaysAsId, generator, scope, identityType );
 
             }
             return Optional.of( beanIdentityInfo );
@@ -345,9 +345,8 @@ public final class BeanProcessor {
                 propertySubTypes, typeSubTypes, CreatorUtils
                         .filterSubtypesForDeserialization( logger, configuration, type ) );
 
-        return Optional
-                .<BeanTypeInfo>of( new ImmutableBeanTypeInfo( use, include, propertyName, classToSerializationMetadata,
-                        classToDeserializationMetadata ) );
+        return Optional.of(
+                new BeanTypeInfo( use, include, propertyName, classToSerializationMetadata, classToDeserializationMetadata ) );
     }
 
     private static ImmutableMap<JClassType, String> extractMetadata( TreeLogger logger, RebindConfiguration configuration, JClassType
@@ -477,7 +476,7 @@ public final class BeanProcessor {
                 .getTypeInfo().get().getInclude() ) ) {
             // if the bean has type info on property with @JsonValue, we change it to WRAPPER_ARRAY because the value may not be an object
             BeanTypeInfo typeInfo = beanInfo.getTypeInfo().get();
-            builder.setTypeInfo( Optional.<BeanTypeInfo>of( new ImmutableBeanTypeInfo( typeInfo.getUse(), As.WRAPPER_ARRAY, typeInfo
+            builder.setTypeInfo( Optional.of( new BeanTypeInfo( typeInfo.getUse(), As.WRAPPER_ARRAY, typeInfo
                     .getPropertyName(), typeInfo.getMapTypeToSerializationMetadata(), typeInfo.getMapTypeToDeserializationMetadata() ) ) );
         }
 
