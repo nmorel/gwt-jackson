@@ -30,7 +30,7 @@ public class HelloModule extends AbstractGinModule {
         RestDispatchAsyncModule.Builder dispatchBuilder = new RestDispatchAsyncModule.Builder();
         install( dispatchBuilder.build() );
 
-        bindConstant().annotatedWith( RestApplicationPath.class ).to( "/api" );
+        bindConstant().annotatedWith( RestApplicationPath.class ).to( "api" );
     }
 }
 
