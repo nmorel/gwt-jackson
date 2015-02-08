@@ -1,8 +1,11 @@
 gwt-jackson [![Build Status](https://nmorel.ci.cloudbees.com/buildStatus/icon?job=gwt-jackson)](https://nmorel.ci.cloudbees.com/job/gwt-jackson/)
 =====
-gwt-jackson is a [GWT](http://www.gwtproject.org/) JSON serializer/deserializer mechanism based on [Jackson 2.x annotations](https://github.com/FasterXML/jackson-annotations). Jackson 1.x annotations (`org.codehaus.jackson.*`) are not supported.
+gwt-jackson is a JSON parser for [GWT](http://www.gwtproject.org/). It uses [Jackson 2.x annotations](https://github.com/FasterXML/jackson-annotations) to customize the serialization/deserialization process.
 
-Lots of annotation are already supported, you can find many use cases in the [tests](gwt-jackson/src/test/java/com/github/nmorel/gwtjackson).
+Most of the [Jackson 2.x annotations](https://github.com/FasterXML/jackson-annotations) are supported. You can find an up-to-date list [here](https://github.com/nmorel/gwt-jackson/wiki/Jackson-annotations-support).
+You can also find a lot of use cases in the [tests](gwt-jackson/src/test/java/com/github/nmorel/gwtjackson).
+
+Jackson 1.x annotations (`org.codehaus.jackson.*`) are not supported.
 
 Check the [wiki](https://github.com/nmorel/gwt-jackson/wiki) for more informations.
 
@@ -12,7 +15,49 @@ Add `<inherits name="com.github.nmorel.gwtjackson.GwtJackson" />` to your module
 
 Then just create an interface extending `ObjectReader`, `ObjectWriter` or `ObjectMapper` if you want to read JSON, write an object to JSON or both.
 
-Here's an example :
+Here's an example without annotation :
+
+```java
+public class TestEntryPoint implements EntryPoint {
+
+    public static interface PersonMapper extends ObjectMapper<Person> {}
+
+    public static class Person {
+
+        private String firstName;
+        private String lastName;
+
+        public String getFirstName() {
+            return firstName;
+        }
+
+        public void setFirstName(String firstName) {
+            this.firstName = firstName;
+        }
+
+        public String getLastName() {
+            return lastName;
+        }
+
+        public void setLastName(String lastName) {
+            this.lastName = lastName;
+        }
+    }
+
+    @Override
+    public void onModuleLoad() {
+        PersonMapper mapper = GWT.create( PersonMapper.class );
+
+        String json = mapper.write( new Person( "John", "Doe" ) );
+        GWT.log( json ); // > {"firstName":"John","lastName":"Doe"}
+
+        Person person = mapper.read( json );
+        GWT.log( person.getFirstName() + " " + person.getLastName() ); // > John Doe
+    }
+}
+```
+
+And if you want to make your class immutable for example, you can add some Jackson annotations :
 
 ```java
 public class TestEntryPoint implements EntryPoint {
