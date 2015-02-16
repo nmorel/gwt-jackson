@@ -142,7 +142,7 @@ public final class CreatorUtils {
      * @return true if the type is {@link Serializable}, false otherwise
      */
     public static boolean isSerializable( JType type ) {
-        return null != type.isClass() && Serializable.class.getName().equals( type.getQualifiedSourceName() );
+        return null != type.isInterface() && Serializable.class.getName().equals( type.getQualifiedSourceName() );
     }
 
     /**
