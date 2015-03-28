@@ -135,29 +135,24 @@ public final class PropertyParser {
                 continue;
             }
 
-            JType returnType = method.getReturnType();
-            if ( null != returnType.isPrimitive() && JPrimitiveType.VOID.equals( returnType.isPrimitive() ) ) {
-                // might be a setter
-                if ( method.getParameters().length == 1 || (method.getParameters().length == 2 && method.isAnnotationPresent( JsonAnySetter.class )) ) {
-                    String fieldName = extractFieldNameFromGetterSetterMethodName( method.getName() );
-                    PropertyAccessorsBuilder property = propertiesMap.get( fieldName );
-                    if ( null == property ) {
-                        property = new PropertyAccessorsBuilder( fieldName );
-                        propertiesMap.put( fieldName, property );
-                    }
-                    property.addSetter( method, mixin );
-                }
-            } else {
+            if ( method.getParameters().length == 0 ) {
                 // might be a getter
-                if ( method.getParameters().length == 0 ) {
-                    String fieldName = extractFieldNameFromGetterSetterMethodName( method.getName() );
-                    PropertyAccessorsBuilder property = propertiesMap.get( fieldName );
-                    if ( null == property ) {
-                        property = new PropertyAccessorsBuilder( fieldName );
-                        propertiesMap.put( fieldName, property );
-                    }
-                    property.addGetter( method, mixin );
+                String fieldName = extractFieldNameFromGetterSetterMethodName( method.getName() );
+                PropertyAccessorsBuilder property = propertiesMap.get( fieldName );
+                if ( null == property ) {
+                    property = new PropertyAccessorsBuilder( fieldName );
+                    propertiesMap.put( fieldName, property );
                 }
+                property.addGetter( method, mixin );
+            } else if ( method.getParameters().length == 1 || (method.getParameters().length == 2 && method.isAnnotationPresent( JsonAnySetter.class )) ) {
+                // might be a setter
+                String fieldName = extractFieldNameFromGetterSetterMethodName( method.getName() );
+                PropertyAccessorsBuilder property = propertiesMap.get( fieldName );
+                if ( null == property ) {
+                    property = new PropertyAccessorsBuilder( fieldName );
+                    propertiesMap.put( fieldName, property );
+                }
+                property.addSetter( method, mixin );
             }
         }
     }
