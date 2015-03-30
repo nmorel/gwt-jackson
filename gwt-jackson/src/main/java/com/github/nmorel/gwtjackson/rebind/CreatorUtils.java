@@ -20,6 +20,8 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.List;
 
 import com.github.nmorel.gwtjackson.client.stream.impl.DefaultJsonWriter;
@@ -181,7 +183,11 @@ public final class CreatorUtils {
                 if ( (null == subtype.isInterface() && !subtype.isAbstract() && (!subtype.isMemberType() || subtype.isStatic()))
                         && null == subtype.isAnnotation()
                         && subtype.isPublic()
-                        && (!filterOnlySupportedType || configuration.isTypeSupportedForDeserialization( logger, subtype )) ) {
+                        && (!filterOnlySupportedType ||
+                        (configuration.isTypeSupportedForDeserialization( logger, subtype )
+                                // EnumSet and EnumMap are not supported in subtype deserialization because we can't know the enum to use.
+                                && !EnumSet.class.getCanonicalName().equals( subtype.getQualifiedSourceName() )
+                                && !EnumMap.class.getCanonicalName().equals( subtype.getQualifiedSourceName() ))) ) {
                     builder.add( subtype );
                 }
             }
