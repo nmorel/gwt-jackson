@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.github.nmorel.gwtjackson.client.AbstractConfiguration;
 import com.github.nmorel.gwtjackson.client.annotation.JsonMixIns;
 import com.github.nmorel.gwtjackson.client.annotation.JsonMixIns.JsonMixIn;
@@ -184,6 +186,16 @@ public final class RebindConfiguration {
 
     private final TypeFilter additionalSupportedTypes;
 
+    private final JsonAutoDetect.Visibility defaultFieldVisibility;
+
+    private final JsonAutoDetect.Visibility defaultGetterVisibility;
+
+    private final JsonAutoDetect.Visibility defaultIsGetterVisibility;
+
+    private final JsonAutoDetect.Visibility defaultSetterVisibility;
+
+    private final JsonAutoDetect.Visibility defaultCreatorVisibility;
+
     public RebindConfiguration( TreeLogger logger, GeneratorContext context, JacksonTypeOracle typeOracle, JClassType rootMapperClass )
             throws UnableToCompleteException {
         this.logger = logger;
@@ -199,17 +211,35 @@ public final class RebindConfiguration {
         Builder<JClassType> allSupportedDeserializationClassBuilder = ImmutableSet.builder();
         List<String> whitelist = new ArrayList<String>();
 
+        JsonAutoDetect.Visibility fieldVisibility = JsonAutoDetect.Visibility.DEFAULT;
+        JsonAutoDetect.Visibility getterVisibility = JsonAutoDetect.Visibility.DEFAULT;
+        JsonAutoDetect.Visibility isGetterVisibility = JsonAutoDetect.Visibility.DEFAULT;
+        JsonAutoDetect.Visibility setterVisibility = JsonAutoDetect.Visibility.DEFAULT;
+        JsonAutoDetect.Visibility creatorVisibility = JsonAutoDetect.Visibility.DEFAULT;
+
         for ( AbstractConfiguration configuration : configurations ) {
             for ( MapperType mapperType : MapperType.values() ) {
                 addMappers( configuration, mapperType, allSupportedSerializationClassBuilder, allSupportedDeserializationClassBuilder );
             }
             addMixInAnnotations( configuration.getMapMixInAnnotations(), rootMapperClass.getAnnotation( JsonMixIns.class ) );
             whitelist.addAll( configuration.getWhitelist() );
+
+            fieldVisibility = configuration.getFieldVisibility();
+            getterVisibility = configuration.getGetterVisibility();
+            isGetterVisibility = configuration.getIsGetterVisibility();
+            setterVisibility = configuration.getSetterVisibility();
+            creatorVisibility = configuration.getCreatorVisibility();
         }
 
         this.allSupportedSerializationClass = allSupportedSerializationClassBuilder.build();
         this.allSupportedDeserializationClass = allSupportedDeserializationClassBuilder.build();
         this.additionalSupportedTypes = new TypeFilter( logger, whitelist );
+
+        this.defaultFieldVisibility = fieldVisibility;
+        this.defaultGetterVisibility = getterVisibility;
+        this.defaultIsGetterVisibility = isGetterVisibility;
+        this.defaultSetterVisibility = setterVisibility;
+        this.defaultCreatorVisibility = creatorVisibility;
     }
 
     /**
@@ -520,5 +550,25 @@ public final class RebindConfiguration {
     public boolean isTypeSupportedForDeserialization( TreeLogger logger, JClassType classType ) {
         return allSupportedDeserializationClass.contains( classType )
                 || additionalSupportedTypes.isIncluded( logger, classType.getQualifiedSourceName() );
+    }
+
+    public Visibility getDefaultFieldVisibility() {
+        return defaultFieldVisibility;
+    }
+
+    public Visibility getDefaultGetterVisibility() {
+        return defaultGetterVisibility;
+    }
+
+    public Visibility getDefaultIsGetterVisibility() {
+        return defaultIsGetterVisibility;
+    }
+
+    public Visibility getDefaultSetterVisibility() {
+        return defaultSetterVisibility;
+    }
+
+    public Visibility getDefaultCreatorVisibility() {
+        return defaultCreatorVisibility;
     }
 }

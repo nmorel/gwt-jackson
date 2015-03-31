@@ -16,6 +16,7 @@
 
 package com.github.nmorel.gwtjackson.client;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.github.nmorel.gwtjackson.shared.mixins.MixinSerForMethodsTester.EmptyBean;
 import com.github.nmorel.gwtjackson.shared.mixins.MixinSerForMethodsTester.MixInForSimple;
 
@@ -34,6 +35,9 @@ public class TestConfiguration extends AbstractConfiguration {
         // object tests
         whitelist( "com.github.nmorel.gwtjackson.shared.advanced.ObjectTester.InnerObject" );
         whitelist( "com.github.nmorel.gwtjackson.shared.advanced.ObjectTester.Person" );
+
+        // visibility
+        setterVisibility( Visibility.PUBLIC_ONLY ).creatorVisibility( Visibility.ANY );
     }
 }
 

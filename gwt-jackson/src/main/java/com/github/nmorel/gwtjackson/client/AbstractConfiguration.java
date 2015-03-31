@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer;
 import com.github.nmorel.gwtjackson.client.ser.map.key.KeySerializer;
 
@@ -99,6 +101,16 @@ public abstract class AbstractConfiguration {
 
     private final List<String> whitelist = new ArrayList<String>();
 
+    private JsonAutoDetect.Visibility fieldVisibility = JsonAutoDetect.Visibility.DEFAULT;
+
+    private JsonAutoDetect.Visibility getterVisibility = JsonAutoDetect.Visibility.DEFAULT;
+
+    private JsonAutoDetect.Visibility isGetterVisibility = JsonAutoDetect.Visibility.DEFAULT;
+
+    private JsonAutoDetect.Visibility setterVisibility = JsonAutoDetect.Visibility.DEFAULT;
+
+    private JsonAutoDetect.Visibility creatorVisibility = JsonAutoDetect.Visibility.DEFAULT;
+
     protected AbstractConfiguration() {
         configure();
     }
@@ -162,6 +174,56 @@ public abstract class AbstractConfiguration {
         return this;
     }
 
+    /**
+     * Override the default behaviour of {@link JsonAutoDetect.Visibility#DEFAULT} for fields.
+     *
+     * @param visibility the new default behaviour
+     */
+    protected AbstractConfiguration fieldVisibility( JsonAutoDetect.Visibility visibility ) {
+        this.fieldVisibility = visibility;
+        return this;
+    }
+
+    /**
+     * Override the default behaviour of {@link JsonAutoDetect.Visibility#DEFAULT} for getters.
+     *
+     * @param visibility the new default behaviour
+     */
+    protected AbstractConfiguration getterVisibility( JsonAutoDetect.Visibility visibility ) {
+        this.getterVisibility = visibility;
+        return this;
+    }
+
+    /**
+     * Override the default behaviour of {@link JsonAutoDetect.Visibility#DEFAULT} for boolean getters.
+     *
+     * @param visibility the new default behaviour
+     */
+    protected AbstractConfiguration isGetterVisibility( JsonAutoDetect.Visibility visibility ) {
+        this.isGetterVisibility = visibility;
+        return this;
+    }
+
+    /**
+     * Override the default behaviour of {@link JsonAutoDetect.Visibility#DEFAULT} for setters.
+     *
+     * @param visibility the new default behaviour
+     */
+    protected AbstractConfiguration setterVisibility( JsonAutoDetect.Visibility visibility ) {
+        this.setterVisibility = visibility;
+        return this;
+    }
+
+    /**
+     * Override the default behaviour of {@link JsonAutoDetect.Visibility#DEFAULT} for creators.
+     *
+     * @param visibility the new default behaviour
+     */
+    protected AbstractConfiguration creatorVisibility( JsonAutoDetect.Visibility visibility ) {
+        this.creatorVisibility = visibility;
+        return this;
+    }
+
     protected abstract void configure();
 
     public Map<Class, Class> getMapTypeToSerializer() {
@@ -186,5 +248,25 @@ public abstract class AbstractConfiguration {
 
     public List<String> getWhitelist() {
         return whitelist;
+    }
+
+    public Visibility getFieldVisibility() {
+        return fieldVisibility;
+    }
+
+    public Visibility getGetterVisibility() {
+        return getterVisibility;
+    }
+
+    public Visibility getIsGetterVisibility() {
+        return isGetterVisibility;
+    }
+
+    public Visibility getSetterVisibility() {
+        return setterVisibility;
+    }
+
+    public Visibility getCreatorVisibility() {
+        return creatorVisibility;
     }
 }

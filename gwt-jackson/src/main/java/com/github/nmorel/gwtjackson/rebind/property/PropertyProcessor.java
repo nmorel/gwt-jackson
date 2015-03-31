@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -180,9 +181,9 @@ public final class PropertyProcessor {
     private static Optional<PropertyInfo> processProperty( RebindConfiguration configuration, TreeLogger logger, JacksonTypeOracle
             typeOracle, PropertyAccessors propertyAccessors, BeanInfo beanInfo, boolean samePackage ) throws UnableToCompleteException {
 
-        boolean getterAutoDetected = isGetterAutoDetected( propertyAccessors, beanInfo );
-        boolean setterAutoDetected = isSetterAutoDetected( propertyAccessors, beanInfo );
-        boolean fieldAutoDetected = isFieldAutoDetected( propertyAccessors, beanInfo );
+        boolean getterAutoDetected = isGetterAutoDetected( configuration, propertyAccessors, beanInfo );
+        boolean setterAutoDetected = isSetterAutoDetected( configuration, propertyAccessors, beanInfo );
+        boolean fieldAutoDetected = isFieldAutoDetected( configuration, propertyAccessors, beanInfo );
 
         if ( !getterAutoDetected && !setterAutoDetected && !fieldAutoDetected && !propertyAccessors.getParameter().isPresent() ) {
             // none of the field have been auto-detected, we ignore the field
@@ -262,7 +263,7 @@ public final class PropertyProcessor {
         return Optional.of( builder.build() );
     }
 
-    private static boolean isGetterAutoDetected( PropertyAccessors propertyAccessors, BeanInfo info ) {
+    private static boolean isGetterAutoDetected( RebindConfiguration configuration, PropertyAccessors propertyAccessors, BeanInfo info ) {
         if ( !propertyAccessors.getGetter().isPresent() ) {
             return false;
         }
@@ -282,10 +283,16 @@ public final class PropertyProcessor {
 
             // getter method for a boolean
             visibility = info.getIsGetterVisibility();
+            if ( Visibility.DEFAULT == visibility ) {
+                visibility = configuration.getDefaultIsGetterVisibility();
+            }
 
         } else if ( methodName.startsWith( "get" ) && methodName.length() > 3 ) {
 
             visibility = info.getGetterVisibility();
+            if ( Visibility.DEFAULT == visibility ) {
+                visibility = configuration.getDefaultGetterVisibility();
+            }
 
         } else {
             // no annotation on method and the method does not follow naming convention
@@ -294,7 +301,7 @@ public final class PropertyProcessor {
         return isAutoDetected( visibility, getter.isPrivate(), getter.isProtected(), getter.isPublic(), getter.isDefaultAccess() );
     }
 
-    private static boolean isSetterAutoDetected( PropertyAccessors propertyAccessors, BeanInfo info ) {
+    private static boolean isSetterAutoDetected( RebindConfiguration configuration, PropertyAccessors propertyAccessors, BeanInfo info ) {
         if ( !propertyAccessors.getSetter().isPresent() ) {
             return false;
         }
@@ -313,11 +320,15 @@ public final class PropertyProcessor {
             return false;
         }
 
-        return isAutoDetected( info.getSetterVisibility(), setter.isPrivate(), setter.isProtected(), setter.isPublic(), setter
+        JsonAutoDetect.Visibility visibility = info.getSetterVisibility();
+        if ( Visibility.DEFAULT == visibility ) {
+            visibility = configuration.getDefaultSetterVisibility();
+        }
+        return isAutoDetected( visibility, setter.isPrivate(), setter.isProtected(), setter.isPublic(), setter
                 .isDefaultAccess() );
     }
 
-    private static boolean isFieldAutoDetected( PropertyAccessors propertyAccessors, BeanInfo info ) {
+    private static boolean isFieldAutoDetected( RebindConfiguration configuration, PropertyAccessors propertyAccessors, BeanInfo info ) {
         if ( !propertyAccessors.getField().isPresent() ) {
             return false;
         }
@@ -330,7 +341,11 @@ public final class PropertyProcessor {
 
         JField field = propertyAccessors.getField().get();
 
-        return isAutoDetected( info.getFieldVisibility(), field.isPrivate(), field.isProtected(), field.isPublic(), field
+        JsonAutoDetect.Visibility visibility = info.getFieldVisibility();
+        if ( Visibility.DEFAULT == visibility ) {
+            visibility = configuration.getDefaultFieldVisibility();
+        }
+        return isAutoDetected( visibility, field.isPrivate(), field.isProtected(), field.isPublic(), field
                 .isDefaultAccess() );
     }
 
