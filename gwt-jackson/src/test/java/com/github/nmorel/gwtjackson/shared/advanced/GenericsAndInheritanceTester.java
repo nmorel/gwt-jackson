@@ -78,6 +78,30 @@ public class GenericsAndInheritanceTester extends AbstractTester {
 
     public static class IntegerResult extends Result<Integer> {}
 
+    @JsonTypeInfo( include = As.PROPERTY, use = Id.CLASS )
+    public static interface IdentifiableEntity<T extends IdentifiableEntity<T>> {
+
+        Long getId();
+
+        T setId( Long id );
+    }
+
+    public static class Entity implements IdentifiableEntity<Entity> {
+
+        public Long id;
+
+        @Override
+        public Long getId() {
+            return id;
+        }
+
+        @Override
+        public Entity setId( Long id ) {
+            this.id = id;
+            return this;
+        }
+    }
+
     public static final GenericsAndInheritanceTester INSTANCE = new GenericsAndInheritanceTester();
 
     private GenericsAndInheritanceTester() {
@@ -137,6 +161,10 @@ public class GenericsAndInheritanceTester extends AbstractTester {
                 "\"exceptionMessage\":null," +
                 "\"payload\":70" +
                 "}]", mapper.write( result ) );
+    }
+
+    public void testRecursiveInheritance( ObjectMapperTester<IdentifiableEntity<Entity>> mapper ) {
+
     }
 
 }

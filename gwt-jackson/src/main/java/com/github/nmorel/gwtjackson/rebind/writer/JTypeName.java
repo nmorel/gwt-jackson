@@ -17,7 +17,9 @@
 package com.github.nmorel.gwtjackson.rebind.writer;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.google.gwt.core.ext.typeinfo.JArrayType;
 import com.google.gwt.core.ext.typeinfo.JClassType;
@@ -40,6 +42,12 @@ import com.squareup.javapoet.WildcardTypeName;
  * @author Nicolas Morel
  */
 public final class JTypeName {
+
+    private static class ResolveContext {
+
+        final Set<JType> resolvedTypeVariableName = new HashSet<JType>();
+
+    }
 
     private JTypeName() {}
 
@@ -72,7 +80,7 @@ public final class JTypeName {
      * @return the {@link TypeName}
      */
     public static TypeName typeName( JType type ) {
-        return typeName( false, type );
+        return typeName( new ResolveContext(), type );
     }
 
     /**
@@ -82,20 +90,39 @@ public final class JTypeName {
      * @return the {@link TypeName}
      */
     public static TypeName typeName( boolean boxed, JType type ) {
+        return typeName( boxed, new ResolveContext(), type );
+    }
+
+    /**
+     * @param type the type
+     *
+     * @return the {@link TypeName}
+     */
+    private static TypeName typeName( ResolveContext context, JType type ) {
+        return typeName( false, context, type );
+    }
+
+    /**
+     * @param boxed true if the primitive should be boxed. Useful when use in a parameterized type.
+     * @param type the type
+     *
+     * @return the {@link TypeName}
+     */
+    private static TypeName typeName( boolean boxed, ResolveContext context, JType type ) {
         if ( null != type.isPrimitive() ) {
-            return primitiveName( type.isPrimitive(), boxed );
+            return primitiveName( context, type.isPrimitive(), boxed );
         } else if ( null != type.isParameterized() ) {
-            return parameterizedName( type.isParameterized() );
+            return parameterizedName( context, type.isParameterized() );
         } else if ( null != type.isGenericType() ) {
-            return genericName( type.isGenericType() );
+            return genericName( context, type.isGenericType() );
         } else if ( null != type.isArray() ) {
-            return arrayName( type.isArray() );
+            return arrayName( context, type.isArray() );
         } else if ( null != type.isTypeParameter() ) {
-            return typeVariableName( type.isTypeParameter() );
+            return typeVariableName( context, type.isTypeParameter() );
         } else if ( null != type.isWildcard() ) {
-            return wildcardName( type.isWildcard() );
+            return wildcardName( context, type.isWildcard() );
         } else {
-            return className( type.isClassOrInterface() );
+            return className( context, type.isClassOrInterface() );
         }
     }
 
@@ -106,7 +133,17 @@ public final class JTypeName {
      * @return the {@link ParameterizedTypeName}
      */
     public static ParameterizedTypeName parameterizedName( Class clazz, JType... types ) {
-        return ParameterizedTypeName.get( ClassName.get( clazz ), typeName( true, types ) );
+        return parameterizedName( new ResolveContext(), clazz, types );
+    }
+
+    /**
+     * @param clazz the raw type
+     * @param types the parameters
+     *
+     * @return the {@link ParameterizedTypeName}
+     */
+    private static ParameterizedTypeName parameterizedName( ResolveContext context, Class clazz, JType... types ) {
+        return ParameterizedTypeName.get( ClassName.get( clazz ), typeName( true, context, types ) );
     }
 
     /**
@@ -115,16 +152,25 @@ public final class JTypeName {
      * @return the raw {@link TypeName} without parameter
      */
     public static TypeName rawName( JType type ) {
+        return rawName( new ResolveContext(), type );
+    }
+
+    /**
+     * @param type type to convert
+     *
+     * @return the raw {@link TypeName} without parameter
+     */
+    private static TypeName rawName( ResolveContext context, JType type ) {
         if ( null != type.isPrimitive() ) {
-            return primitiveName( type.isPrimitive(), false );
+            return primitiveName( context, type.isPrimitive(), false );
         } else if ( null != type.isParameterized() ) {
-            return className( type.isParameterized().getRawType() );
+            return className( context, type.isParameterized().getRawType() );
         } else if ( null != type.isGenericType() ) {
-            return className( type.isGenericType().getRawType() );
+            return className( context, type.isGenericType().getRawType() );
         } else if ( null != type.isArray() ) {
-            return arrayName( type.isArray() );
+            return arrayName( context, type.isArray() );
         } else {
-            return className( type.isClassOrInterface() );
+            return className( context, type.isClassOrInterface() );
         }
     }
 
@@ -133,19 +179,19 @@ public final class JTypeName {
      *
      * @return the {@link TypeName}s
      */
-    public static TypeName[] typeName( JType... types ) {
-        return typeName( false, types );
+    private static TypeName[] typeName( ResolveContext context, JType... types ) {
+        return typeName( false, context, types );
     }
 
-    private static TypeName[] typeName( boolean boxed, JType... types ) {
+    private static TypeName[] typeName( boolean boxed, ResolveContext context, JType... types ) {
         TypeName[] result = new TypeName[types.length];
         for ( int i = 0; i < types.length; i++ ) {
-            result[i] = typeName( boxed, types[i] );
+            result[i] = typeName( boxed, context, types[i] );
         }
         return result;
     }
 
-    private static TypeName primitiveName( JPrimitiveType type, boolean boxed ) {
+    private static TypeName primitiveName( ResolveContext context, JPrimitiveType type, boolean boxed ) {
         if ( "boolean".equals( type.getSimpleSourceName() ) ) {
             return boxed ? BOOLEAN_NAME : TypeName.BOOLEAN;
         } else if ( "byte".equals( type.getSimpleSourceName() ) ) {
@@ -167,32 +213,44 @@ public final class JTypeName {
         }
     }
 
-    private static ParameterizedTypeName parameterizedName( JParameterizedType type ) {
-        return ParameterizedTypeName.get( className( type ), typeName( true, type.getTypeArgs() ) );
+    private static ParameterizedTypeName parameterizedName( ResolveContext context, JParameterizedType type ) {
+        return ParameterizedTypeName.get( className( context, type ), typeName( true, context, type.getTypeArgs() ) );
     }
 
-    private static ParameterizedTypeName genericName( JGenericType type ) {
-        return ParameterizedTypeName.get( className( type ), typeName( true, type.getTypeParameters() ) );
+    private static ParameterizedTypeName genericName( ResolveContext context, JGenericType type ) {
+        return ParameterizedTypeName.get( className( context, type ), typeName( true, context, type.getTypeParameters() ) );
     }
 
-    private static ArrayTypeName arrayName( JArrayType type ) {
-        return ArrayTypeName.of( typeName( type.getComponentType() ) );
+    private static ArrayTypeName arrayName( ResolveContext context, JArrayType type ) {
+        return ArrayTypeName.of( typeName( context, type.getComponentType() ) );
     }
 
     public static TypeVariableName typeVariableName( JTypeParameter type ) {
-        return TypeVariableName.get( type.getName(), typeName( type.getBounds() ) );
+        return typeVariableName( new ResolveContext(), type );
     }
 
-    private static WildcardTypeName wildcardName( JWildcardType type ) {
+    private static TypeVariableName typeVariableName( ResolveContext context, JTypeParameter type ) {
+        if ( context.resolvedTypeVariableName.contains( type ) ) {
+            // The type has been resolved already, it means we already have its bounds declared so we can just use its name.
+            return TypeVariableName.get( type.getName() );
+        }
+        context.resolvedTypeVariableName.add( type );
+        return TypeVariableName.get( type.getName(), typeName( context, type.getBounds() ) );
+    }
+
+    private static WildcardTypeName wildcardName( ResolveContext context, JWildcardType type ) {
         switch ( type.getBoundType() ) {
             case SUPER:
-                return WildcardTypeName.supertypeOf( typeName( type.getFirstBound() ) );
+                return WildcardTypeName.supertypeOf( typeName( context, type.getFirstBound() ) );
+            case EXTENDS:
+                return WildcardTypeName.subtypeOf( typeName( context, type.getFirstBound() ) );
             default:
-                return WildcardTypeName.subtypeOf( typeName( type.getFirstBound() ) );
+                // we use Object but javapoet will remove it and just generate '?'
+                return WildcardTypeName.subtypeOf( Object.class );
         }
     }
 
-    private static ClassName className( JClassType type ) {
+    private static ClassName className( ResolveContext context, JClassType type ) {
         JClassType enclosingType = type.getEnclosingType();
 
         if ( null == enclosingType ) {

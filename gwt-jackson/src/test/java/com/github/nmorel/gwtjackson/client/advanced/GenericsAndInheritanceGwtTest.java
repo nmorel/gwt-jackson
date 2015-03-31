@@ -20,6 +20,8 @@ import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;
 import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
 import com.github.nmorel.gwtjackson.shared.advanced.GenericsAndInheritanceTester;
+import com.github.nmorel.gwtjackson.shared.advanced.GenericsAndInheritanceTester.Entity;
+import com.github.nmorel.gwtjackson.shared.advanced.GenericsAndInheritanceTester.IdentifiableEntity;
 import com.github.nmorel.gwtjackson.shared.advanced.GenericsAndInheritanceTester.Result;
 import com.google.gwt.core.client.GWT;
 
@@ -28,14 +30,25 @@ import com.google.gwt.core.client.GWT;
  */
 public class GenericsAndInheritanceGwtTest extends GwtJacksonTestCase {
 
+    private GenericsAndInheritanceTester tester = GenericsAndInheritanceTester.INSTANCE;
+
     public static interface ListResultMapper extends ObjectMapper<Result<Integer>[]>, ObjectMapperTester<Result<Integer>[]> {
 
         static ListResultMapper INSTANCE = GWT.create( ListResultMapper.class );
     }
 
-    private GenericsAndInheritanceTester tester = GenericsAndInheritanceTester.INSTANCE;
-
     public void test() {
         tester.test( ListResultMapper.INSTANCE );
+    }
+
+    //######### Recursive inheritance
+
+    public static interface IdentifiableEntityMapper extends ObjectMapper<IdentifiableEntity<Entity>>, ObjectMapperTester<IdentifiableEntity<Entity>> {
+
+        static IdentifiableEntityMapper INSTANCE = GWT.create( IdentifiableEntityMapper.class );
+    }
+
+    public void testRecursiveInheritance() {
+        tester.testRecursiveInheritance( IdentifiableEntityMapper.INSTANCE );
     }
 }
