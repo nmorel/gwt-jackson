@@ -28,6 +28,7 @@ import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializa
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester.IdPropertyWrapperExt;
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester.Identifiable;
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester.IdentifiableCustom;
+import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester.ListFinalPropertyId;
 import com.github.nmorel.gwtjackson.shared.advanced.identity.ObjectIdDeserializationTester.UUIDNode;
 import com.google.gwt.core.client.GWT;
 
@@ -71,6 +72,11 @@ public class ObjectIdDeserializationGwtTest extends GwtJacksonTestCase {
         static IdParameterWrapperExtMapper INSTANCE = GWT.create( IdParameterWrapperExtMapper.class );
     }
 
+    public interface ListFinalPropertyIdMapper extends ObjectReader<ListFinalPropertyId>, ObjectReaderTester<ListFinalPropertyId> {
+
+        static ListFinalPropertyIdMapper INSTANCE = GWT.create( ListFinalPropertyIdMapper.class );
+    }
+
     private ObjectIdDeserializationTester tester = ObjectIdDeserializationTester.INSTANCE;
 
     public void testSimpleDeserializationClass() {
@@ -103,5 +109,9 @@ public class ObjectIdDeserializationGwtTest extends GwtJacksonTestCase {
 
     public void testCustomDeserializationParameter() {
         tester.testCustomDeserializationParameter( IdParameterWrapperExtMapper.INSTANCE );
+    }
+
+    public void testFinalPropertyId() {
+        tester.testFinalPropertyId( ListFinalPropertyIdMapper.INSTANCE );
     }
 }

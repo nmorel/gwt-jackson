@@ -26,6 +26,9 @@ import com.github.nmorel.gwtjackson.client.stream.JsonReader;
  */
 public interface InstanceBuilder<T> {
 
-    Instance<T> newInstance( JsonReader reader, JsonDeserializationContext ctx, Map<String, String> bufferedProperties );
+    Instance<T> newInstance( JsonReader reader, JsonDeserializationContext ctx, Map<String, String> bufferedProperties,
+                             Map<String, Object> bufferedPropertiesValues );
+
+    SimpleStringMap<HasDeserializerAndParameters> getParametersDeserializer();
 
 }

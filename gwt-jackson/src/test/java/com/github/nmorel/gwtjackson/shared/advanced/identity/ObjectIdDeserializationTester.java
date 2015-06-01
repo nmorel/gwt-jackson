@@ -16,6 +16,9 @@
 
 package com.github.nmorel.gwtjackson.shared.advanced.identity;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -29,7 +32,7 @@ import com.github.nmorel.gwtjackson.shared.ObjectReaderTester;
 public final class ObjectIdDeserializationTester extends AbstractTester {
     // // Classes for external id use
 
-    @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id")
+    @JsonIdentityInfo( generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id" )
     public static class Identifiable {
 
         public int value;
@@ -45,7 +48,7 @@ public final class ObjectIdDeserializationTester extends AbstractTester {
         }
     }
 
-    @JsonIdentityInfo(generator = ObjectIdGenerators.UUIDGenerator.class, property = "#")
+    @JsonIdentityInfo( generator = ObjectIdGenerators.UUIDGenerator.class, property = "#" )
     public static class UUIDNode {
 
         public int value;
@@ -193,6 +196,28 @@ public final class ObjectIdDeserializationTester extends AbstractTester {
         }
     }
 
+    public static class ListFinalPropertyId {
+
+        public List<FinalPropertyId> list;
+    }
+
+    @JsonIdentityInfo( generator = ObjectIdGenerators.PropertyGenerator.class, property = "id" )
+    public static class FinalPropertyId {
+
+        private final String id;
+
+        public String value;
+
+        @JsonCreator
+        public FinalPropertyId( @JsonProperty( "id" ) String id ) {
+            this.id = id;
+        }
+
+        public String getId() {
+            return id;
+        }
+    }
+
     /*
     /**********************************************************
     /* Constantes
@@ -295,5 +320,29 @@ public final class ObjectIdDeserializationTester extends AbstractTester {
         assertEquals( 99, result.test.value );
         assertSame( result.test, result.test.next.test );
         assertEquals( 3, result.test.customId );
+    }
+
+    public void testFinalPropertyId( ObjectReaderTester<ListFinalPropertyId> reader ) {
+        String input = "{" +
+                "\"list\":[" +
+                "{" +
+                "\"id\":\"1\"," +
+                "\"value\":\"abc\"" +
+                "}," +
+                "{" +
+                "\"id\":\"2\"," +
+                "\"value\":\"test\"" +
+                "}," +
+                "\"1\"" +
+                "]" +
+                "}";
+
+        ListFinalPropertyId result = reader.read( input );
+        assertEquals( 3, result.list.size() );
+        assertEquals( "1", result.list.get(0).getId() );
+        assertEquals( "abc", result.list.get(0).value );
+        assertEquals( "2", result.list.get(1).getId() );
+        assertEquals( "test", result.list.get(1).value );
+        assertSame( result.list.get(0), result.list.get(2) );
     }
 }

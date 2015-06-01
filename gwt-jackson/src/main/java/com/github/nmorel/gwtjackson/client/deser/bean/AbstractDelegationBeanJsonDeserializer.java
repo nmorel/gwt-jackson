@@ -29,7 +29,7 @@ public abstract class AbstractDelegationBeanJsonDeserializer<T> extends Abstract
     @Override
     public T deserializeWrapped( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params,
                                  IdentityDeserializationInfo identityInfo, TypeDeserializationInfo typeInfo, String typeInformation ) {
-        return instanceBuilder.newInstance( reader, ctx, null ).getInstance();
+        return instanceBuilder.newInstance( reader, ctx, null, null ).getInstance();
     }
 
 }
