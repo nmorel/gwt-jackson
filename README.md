@@ -135,7 +135,7 @@ If you need to communicate with your server using REST/Json payload, you can che
 - [GWTP Rest Dispatch](https://github.com/ArcBees/GWTP/wiki/Rest-Dispatch). Check the [example](https://github.com/nmorel/gwt-jackson/tree/master/examples/gwtp).
 - [Requestor](http://reinert.io/requestor/latest/). Check the [example](https://github.com/nmorel/gwt-jackson/tree/master/examples/requestor).
 - [gwt-jackson-rest](https://github.com/nmorel/gwt-jackson-rest). Check the [example](https://github.com/nmorel/gwt-jackson-rest/tree/master/examples/simple).
-- [GWT RequestBuilder](http://www.gwtproject.org/javadoc/latest/com/google/gwt/http/client/RequestBuilder.html). Check the [example](https://github.com/nmorel/gwt-jackson/tree/master/hello/gwtp).
+- [GWT RequestBuilder](http://www.gwtproject.org/javadoc/latest/com/google/gwt/http/client/RequestBuilder.html). Check the [example](https://github.com/nmorel/gwt-jackson/tree/master/examples/hello).
 
 Copyright and license
 -------------
