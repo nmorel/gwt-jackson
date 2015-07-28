@@ -24,6 +24,7 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.github.nmorel.gwtjackson.client.stream.impl.DefaultJsonWriter;
 import com.github.nmorel.gwtjackson.rebind.type.JMapperType;
 import com.google.gwt.core.ext.TreeLogger;
@@ -50,6 +51,22 @@ public final class CreatorUtils {
      */
     public static <T extends Annotation> Optional<T> findFirstEncounteredAnnotationsOnAllHierarchy( RebindConfiguration configuration,
                                                                                                     JClassType type, Class<T> annotation ) {
+        return findFirstEncounteredAnnotationsOnAllHierarchy( configuration, type, annotation, Optional.<JClassType>absent() );
+    }
+
+    /**
+     * Browse all the hierarchy of the type and return the first corresponding annotation it found
+     *
+     * @param type type
+     * @param annotation annotation to find
+     * @param <T> type of the annotation
+     * @param ignoreType type to ignore when browsing the hierarchy
+     *
+     * @return the annotation if found, null otherwise
+     */
+    private static <T extends Annotation> Optional<T> findFirstEncounteredAnnotationsOnAllHierarchy( RebindConfiguration configuration,
+                                                                                                    JClassType type, Class<T> annotation,
+                                                                                                    Optional<JClassType> ignoreType ) {
         JClassType currentType = type;
         while ( null != currentType ) {
             Optional<JClassType> mixin = configuration.getMixInAnnotations( currentType );
@@ -60,12 +77,17 @@ public final class CreatorUtils {
                 return Optional.of( currentType.getAnnotation( annotation ) );
             }
             for ( JClassType interf : currentType.getImplementedInterfaces() ) {
-                Optional<T> annot = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, interf, annotation );
-                if ( annot.isPresent() ) {
-                    return annot;
+                if (!ignoreType.isPresent() || !ignoreType.get().equals( interf )) {
+                    Optional<T> annot = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, interf, annotation );
+                    if ( annot.isPresent() ) {
+                        return annot;
+                    }
                 }
             }
             currentType = currentType.getSuperclass();
+            if ( ignoreType.isPresent() && ignoreType.get().equals( currentType ) ) {
+                currentType = null;
+            }
         }
         return Optional.absent();
     }
@@ -165,7 +187,8 @@ public final class CreatorUtils {
             for ( JClassType subtype : type.getSubtypes() ) {
                 if ( null == subtype.isAnnotation()
                         && subtype.isPublic()
-                        && (!filterOnlySupportedType || configuration.isTypeSupportedForSerialization( logger, subtype )) ) {
+                        && (!filterOnlySupportedType || configuration.isTypeSupportedForSerialization( logger, subtype ))
+                        && !findFirstEncounteredAnnotationsOnAllHierarchy( configuration, subtype.isClassOrInterface(), JsonIgnoreType.class, Optional.of( type ) ).isPresent()) {
                     builder.add( subtype );
                 }
             }
@@ -187,7 +210,8 @@ public final class CreatorUtils {
                         (configuration.isTypeSupportedForDeserialization( logger, subtype )
                                 // EnumSet and EnumMap are not supported in subtype deserialization because we can't know the enum to use.
                                 && !EnumSet.class.getCanonicalName().equals( subtype.getQualifiedSourceName() )
-                                && !EnumMap.class.getCanonicalName().equals( subtype.getQualifiedSourceName() ))) ) {
+                                && !EnumMap.class.getCanonicalName().equals( subtype.getQualifiedSourceName() )))
+                        && !findFirstEncounteredAnnotationsOnAllHierarchy( configuration, subtype.isClassOrInterface(), JsonIgnoreType.class, Optional.of( type ) ).isPresent() ) {
                     builder.add( subtype );
                 }
             }

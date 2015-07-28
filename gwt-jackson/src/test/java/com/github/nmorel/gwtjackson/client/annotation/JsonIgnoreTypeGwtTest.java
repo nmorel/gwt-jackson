@@ -20,6 +20,7 @@ import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;
 import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonIgnoreTypeTester;
+import com.github.nmorel.gwtjackson.shared.annotations.JsonIgnoreTypeTester.Bean;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonIgnoreTypeTester.NonIgnoredType;
 import com.google.gwt.core.client.GWT;
 
@@ -41,5 +42,16 @@ public class JsonIgnoreTypeGwtTest extends GwtJacksonTestCase {
 
     public void testDeserialize() {
         tester.testDeserialize( JsonIgnoreTypeMapper.INSTANCE );
+    }
+
+    // ##############
+
+    public interface BeanMapper extends ObjectMapper<Bean>, ObjectMapperTester<Bean> {
+
+        static BeanMapper INSTANCE = GWT.create( BeanMapper.class );
+    }
+
+    public void testWithIgnoredSubtype() {
+        tester.testWithIgnoredSubtype( BeanMapper.INSTANCE );
     }
 }

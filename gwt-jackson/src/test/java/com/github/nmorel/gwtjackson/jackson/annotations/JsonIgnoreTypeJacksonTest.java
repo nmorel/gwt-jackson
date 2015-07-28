@@ -34,4 +34,9 @@ public class JsonIgnoreTypeJacksonTest extends AbstractJacksonTest {
     public void testSerialize() {
         JsonIgnoreTypeTester.INSTANCE.testSerialize( createWriter( JsonIgnoreTypeTester.NonIgnoredType.class ) );
     }
+
+    @Test
+    public void testWithIgnoredSubtype() {
+        JsonIgnoreTypeTester.INSTANCE.testWithIgnoredSubtype( createMapper( JsonIgnoreTypeTester.Bean.class ) );
+    }
 }

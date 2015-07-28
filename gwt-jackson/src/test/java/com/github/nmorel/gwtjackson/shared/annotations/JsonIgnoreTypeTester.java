@@ -18,6 +18,7 @@ package com.github.nmorel.gwtjackson.shared.annotations;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
+import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
 import com.github.nmorel.gwtjackson.shared.ObjectReaderTester;
 import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
 
@@ -45,6 +46,21 @@ public final class JsonIgnoreTypeTester extends AbstractTester {
         public IgnoredType( IgnoredType src ) {
         }
     }
+
+    public static class Bean {
+        public Superclass d;
+    }
+
+    public static class Superclass {
+
+    }
+
+    public static class FailingClass<T extends FailingClass> extends Superclass implements IgnoreType {
+        public T test;
+    }
+
+    @JsonIgnoreType
+    public interface IgnoreType {}
 
     public static final JsonIgnoreTypeTester INSTANCE = new JsonIgnoreTypeTester();
 
@@ -76,5 +92,14 @@ public final class JsonIgnoreTypeTester extends AbstractTester {
         bean.ignored = new IgnoredType( null );
 
         assertEquals( "{\"value\":13}", writer.write( bean ) );
+    }
+
+    /**
+     * @see https://github.com/nmorel/gwt-jackson/issues/54
+     */
+    public void testWithIgnoredSubtype(ObjectMapperTester<Bean> mapper){
+        // Without the annotation, the compilation failed with a stackoverflow so we just test that there is no error
+        mapper.write( new Bean() );
+        mapper.read( "{}" );
     }
 }
