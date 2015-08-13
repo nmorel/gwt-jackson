@@ -178,13 +178,13 @@ public final class DateFormat {
      *
      * @return the parsed date
      */
-    public static Date parse( String pattern, String date ) {
+    public static Date parse( boolean adjustDatesToContextTimeZone, String pattern, String date ) {
         if ( null == pattern ) {
             return parse( DateFormat.DATE_FORMAT_STR_ISO8601, date );
         } else {
             DateParser parser = CACHE_PARSERS.get( pattern );
             if ( null == parser ) {
-                if ( hasTz( pattern ) ) {
+                if ( hasTz( pattern ) || !adjustDatesToContextTimeZone) {
                     parser = new DateParser( pattern );
                 } else {
                     // the pattern does not have a timezone, we use the UTC timezone as reference
@@ -195,6 +195,7 @@ public final class DateFormat {
             return parser.parse( date );
         }
     }
+
 
     /**
      * Find if a pattern contains informations about the timezone.

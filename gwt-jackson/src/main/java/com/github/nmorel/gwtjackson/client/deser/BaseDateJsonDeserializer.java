@@ -26,7 +26,6 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 import com.github.nmorel.gwtjackson.client.utils.DateFormat;
-import com.google.gwt.i18n.client.DateTimeFormat;
 
 /**
  * Base implementation of {@link JsonDeserializer} for dates.
@@ -57,10 +56,12 @@ public abstract class BaseDateJsonDeserializer<D extends Date> extends JsonDeser
         }
 
         @Override
-        protected Date deserializeString( String date, JsonDeserializerParameters params ) {
-            return DateFormat.parse( params.getPattern(), date );
+        protected Date deserializeString( String date, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
+            return DateFormat.parse(ctx.isAdjustDatesToContextTimeZone(), params.getPattern(), date );
         }
     }
+
+    private static final String SQL_DATE_FORMAT = "yyyy-MM-dd";
 
     /**
      * Default implementation of {@link BaseDateJsonDeserializer} for {@link java.sql.Date}
@@ -84,9 +85,8 @@ public abstract class BaseDateJsonDeserializer<D extends Date> extends JsonDeser
         }
 
         @Override
-        protected java.sql.Date deserializeString( String date, JsonDeserializerParameters params ) {
-            Date d = SQL_DATE_FORMAT.parse( date + " +0000" );
-            return new java.sql.Date( d.getTime() );
+        protected java.sql.Date deserializeString( String date, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
+            return new java.sql.Date( DateFormat.parse(ctx.isAdjustDatesToContextTimeZone(), SQL_DATE_FORMAT, date).getTime() );
         }
     }
 
@@ -112,7 +112,7 @@ public abstract class BaseDateJsonDeserializer<D extends Date> extends JsonDeser
         }
 
         @Override
-        protected Time deserializeString( String date, JsonDeserializerParameters params ) {
+        protected Time deserializeString( String date, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
             return Time.valueOf( date );
         }
     }
@@ -139,23 +139,21 @@ public abstract class BaseDateJsonDeserializer<D extends Date> extends JsonDeser
         }
 
         @Override
-        protected Timestamp deserializeString( String date, JsonDeserializerParameters params ) {
-            return new Timestamp( DateFormat.parse( params.getPattern(), date ).getTime() );
+        protected Timestamp deserializeString( String date, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
+            return new Timestamp( DateFormat.parse(ctx.isAdjustDatesToContextTimeZone(), params.getPattern(), date ).getTime() );
         }
     }
-
-    private static final DateTimeFormat SQL_DATE_FORMAT = DateTimeFormat.getFormat( "yyyy-MM-dd Z" );
 
     @Override
     public D doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         if ( params.getShape().isNumeric() || JsonToken.NUMBER.equals( reader.peek() ) ) {
             return deserializeNumber( reader.nextLong(), params );
         } else {
-            return deserializeString( reader.nextString(), params );
+            return deserializeString( reader.nextString(), ctx, params );
         }
     }
 
     protected abstract D deserializeNumber( long millis, JsonDeserializerParameters params );
 
-    protected abstract D deserializeString( String date, JsonDeserializerParameters params );
+    protected abstract D deserializeString( String date, JsonDeserializationContext ctx, JsonDeserializerParameters params );
 }
