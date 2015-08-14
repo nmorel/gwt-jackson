@@ -174,7 +174,7 @@ public class JsonDeserializationContext extends JsonMappingContext {
          *
          */
         public Builder adjustDatesToContextTimeZone(boolean adjustDatesToContextTimeZone) {
-            this.adjustDatesToContextTimeZone = true;
+            this.adjustDatesToContextTimeZone = adjustDatesToContextTimeZone;
             return this;
         }
 
