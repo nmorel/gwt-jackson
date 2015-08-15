@@ -96,7 +96,7 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         private ByteJsonSerializer() { }
 
         @Override
-        protected boolean isDefault( @Nullable Byte value ) {
+        protected boolean isEmpty( @Nullable Byte value ) {
             return null == value || defaultValue == value;
         }
     }
@@ -118,7 +118,7 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         private DoubleJsonSerializer() { }
 
         @Override
-        protected boolean isDefault( @Nullable Double value ) {
+        protected boolean isEmpty( @Nullable Double value ) {
             return null == value || value == 0d;
         }
 
@@ -146,7 +146,7 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         private FloatJsonSerializer() { }
 
         @Override
-        protected boolean isDefault( @Nullable Float value ) {
+        protected boolean isEmpty( @Nullable Float value ) {
             return null == value || value == 0f;
         }
     }
@@ -168,7 +168,7 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         private IntegerJsonSerializer() { }
 
         @Override
-        protected boolean isDefault( @Nullable Integer value ) {
+        protected boolean isEmpty( @Nullable Integer value ) {
             return null == value || value == 0;
         }
     }
@@ -190,7 +190,7 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         private LongJsonSerializer() { }
 
         @Override
-        protected boolean isDefault( @Nullable Long value ) {
+        protected boolean isEmpty( @Nullable Long value ) {
             return null == value || value == 0l;
         }
 
@@ -220,7 +220,7 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         private ShortJsonSerializer() { }
 
         @Override
-        protected boolean isDefault( @Nullable Short value ) {
+        protected boolean isEmpty( @Nullable Short value ) {
             return null == value || defaultValue == value;
         }
     }
@@ -242,7 +242,7 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         private NumberJsonSerializer() { }
 
         @Override
-        protected boolean isDefault( @Nullable Number value ) {
+        protected boolean isEmpty( @Nullable Number value ) {
             return null == value || value.intValue() == 0;
         }
     }

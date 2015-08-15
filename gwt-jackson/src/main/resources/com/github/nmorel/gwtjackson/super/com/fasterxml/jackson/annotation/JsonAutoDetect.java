@@ -7,12 +7,31 @@ import java.lang.annotation.Target;
 
 /**
  * Super source for {@link com.fasterxml.jackson.annotation.JsonAutoDetect} to remove the use of java.lang.reflect.* classes
+ *
+ * Class annotation that can be used to define which kinds of Methods
+ * are to be detected by auto-detection, and with what minimum access level.
+ * Auto-detection means using name conventions
+ * and/or signature templates to find methods to use for data binding.
+ * For example, so-called "getters" can be auto-detected by looking for
+ * public member methods that return a value, do not take argument,
+ * and have prefix "get" in their name.
+ *<p>
+ * Default setting for all accessors is {@link Visibility#DEFAULT}, which
+ * in turn means that the global defaults are used. Defaults
+ * are different for different accessor types (getters need to be public;
+ * setters can have any access modifier, for example).
+ * If you assign different {@link Visibility} type then it will override
+ * global defaults: for example, to require that all setters must be public,
+ * you would use:
+ *<pre>
+ *   &#64;JsonAutoDetect(setterVisibility=Visibility.PUBLIC_ONLY)
+ *</pre>
  */
 @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @JacksonAnnotation
-public @interface JsonAutoDetect {
-
+public @interface JsonAutoDetect
+{
     /**
      * Enumeration for possible visibility thresholds (minimum visibility)
      * that can be used to limit which methods (and fields) are
