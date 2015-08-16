@@ -54,7 +54,14 @@ public class EnumJsonDeserializer<E extends Enum<E>> extends JsonDeserializer<E>
 
     @Override
     public E doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
-        return Enum.valueOf( enumClass, reader.nextString() );
+        try {
+            return Enum.valueOf( enumClass, reader.nextString() );
+        } catch ( IllegalArgumentException ex ) {
+            if ( ctx.isReadUnknownEnumValuesAsNull() ) {
+                return null;
+            }
+            throw ex;
+        }
     }
 
     public Class<E> getEnumClass() {

@@ -16,6 +16,7 @@
 
 package com.github.nmorel.gwtjackson.client.deser.map.key;
 
+import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.deser.map.key.EnumKeyDeserializerTest.EnumTest;
 
 /**
@@ -38,5 +39,11 @@ public class EnumKeyDeserializerTest extends AbstractKeyDeserializerTest<EnumTes
         assertDeserialization( EnumTest.TWO, "TWO" );
         assertDeserialization( EnumTest.THREE, "THREE" );
         assertDeserialization( EnumTest.FOUR, "FOUR" );
+        try {
+            assertDeserialization( null, "UNKNOWN" );
+            fail( "IllegalArgumentException should be thrown!" );
+        } catch ( IllegalArgumentException ex ) {
+        }
+        assertDeserialization( JsonDeserializationContext.builder().readUnknownEnumValuesAsNull( true ).build(), null, "UNKNOWN" );
     }
 }

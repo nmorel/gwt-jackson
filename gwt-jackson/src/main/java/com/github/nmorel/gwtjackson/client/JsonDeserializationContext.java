@@ -61,10 +61,13 @@ public class JsonDeserializationContext extends JsonMappingContext {
 
         protected boolean useSafeEval = true;
 
+        protected boolean readUnknownEnumValuesAsNull = false;
+
         /**
          * @deprecated Use {@link JsonDeserializationContext#builder()} instead. This constructor will be made protected in v1.0.
          */
         @Deprecated
+
         public Builder() { }
 
         /**
@@ -151,9 +154,18 @@ public class JsonDeserializationContext extends JsonMappingContext {
             return this;
         }
 
+        /**
+         * Feature that determines whether gwt-jackson should return null for unknown enum values.
+         * Default is false which will throw {@link IllegalArgumentException} when unknown enum value is found.
+         */
+        public Builder readUnknownEnumValuesAsNull( boolean readUnknownEnumValuesAsNull ) {
+            this.readUnknownEnumValuesAsNull = readUnknownEnumValuesAsNull;
+            return this;
+        }
+
         public final JsonDeserializationContext build() {
             return new JsonDeserializationContext( failOnUnknownProperties, unwrapRootValue, acceptSingleValueAsArray, wrapExceptions,
-                    useSafeEval );
+                    useSafeEval, readUnknownEnumValuesAsNull );
         }
     }
 
@@ -184,13 +196,16 @@ public class JsonDeserializationContext extends JsonMappingContext {
 
     private final boolean useSafeEval;
 
+    private final boolean readUnknownEnumValuesAsNull;
+
     private JsonDeserializationContext( boolean failOnUnknownProperties, boolean unwrapRootValue, boolean acceptSingleValueAsArray,
-                                        boolean wrapExceptions, boolean useSafeEval ) {
+                                        boolean wrapExceptions, boolean useSafeEval, boolean readUnknownEnumValuesAsNull ) {
         this.failOnUnknownProperties = failOnUnknownProperties;
         this.unwrapRootValue = unwrapRootValue;
         this.acceptSingleValueAsArray = acceptSingleValueAsArray;
         this.wrapExceptions = wrapExceptions;
         this.useSafeEval = useSafeEval;
+        this.readUnknownEnumValuesAsNull = readUnknownEnumValuesAsNull;
     }
 
     @Override
@@ -224,6 +239,13 @@ public class JsonDeserializationContext extends JsonMappingContext {
      */
     public boolean isUseSafeEval() {
         return useSafeEval;
+    }
+
+    /**
+     * @see Builder#readUnknownEnumValuesAsNull(boolean)
+     */
+    public boolean isReadUnknownEnumValuesAsNull() {
+        return readUnknownEnumValuesAsNull;
     }
 
     public JsonReader newJsonReader( String input ) {

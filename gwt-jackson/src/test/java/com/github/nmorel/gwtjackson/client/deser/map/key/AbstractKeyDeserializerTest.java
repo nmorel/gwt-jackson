@@ -18,7 +18,6 @@ package com.github.nmorel.gwtjackson.client.deser.map.key;
 
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
-import com.github.nmorel.gwtjackson.client.JsonDeserializationContext.Builder;
 
 /**
  * @author Nicolas Morel
@@ -33,11 +32,19 @@ public abstract class AbstractKeyDeserializerTest<T> extends GwtJacksonTestCase 
 
     protected T deserialize( String value ) {
         JsonDeserializationContext ctx = JsonDeserializationContext.builder().build();
+        return deserialize( ctx, value );
+    }
+
+    protected T deserialize( JsonDeserializationContext ctx, String value ) {
         return createDeserializer().deserialize( value, ctx );
     }
 
     protected void assertDeserialization( T expected, String value ) {
         assertEquals( expected, deserialize( value ) );
+    }
+
+    protected void assertDeserialization( JsonDeserializationContext ctx, T expected, String value ) {
+        assertEquals( expected, deserialize( ctx, value ) );
     }
 
     public abstract void testDeserializeValue();
