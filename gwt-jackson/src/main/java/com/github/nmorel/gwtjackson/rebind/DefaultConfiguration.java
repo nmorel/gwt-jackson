@@ -67,6 +67,7 @@ import com.github.nmorel.gwtjackson.client.deser.BaseNumberJsonDeserializer.Numb
 import com.github.nmorel.gwtjackson.client.deser.BaseNumberJsonDeserializer.ShortJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.BooleanJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.CharacterJsonDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.EnumJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.JavaScriptObjectJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.StringJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.UUIDJsonDeserializer;
@@ -129,6 +130,7 @@ import com.github.nmorel.gwtjackson.client.deser.map.key.BaseNumberKeyDeserializ
 import com.github.nmorel.gwtjackson.client.deser.map.key.BaseNumberKeyDeserializer.ShortKeyDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.map.key.BooleanKeyDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.map.key.CharacterKeyDeserializer;
+import com.github.nmorel.gwtjackson.client.deser.map.key.EnumKeyDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.map.key.StringKeyDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.map.key.UUIDKeyDeserializer;
 import com.github.nmorel.gwtjackson.client.ser.BaseDateJsonSerializer.DateJsonSerializer;
@@ -147,6 +149,7 @@ import com.github.nmorel.gwtjackson.client.ser.BaseNumberJsonSerializer.ShortJso
 import com.github.nmorel.gwtjackson.client.ser.BooleanJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.CharacterJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.CollectionJsonSerializer;
+import com.github.nmorel.gwtjackson.client.ser.EnumJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.IterableJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.JavaScriptObjectJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.StringJsonSerializer;
@@ -171,6 +174,7 @@ import com.github.nmorel.gwtjackson.client.ser.array.dd.PrimitiveShortArray2dJso
 import com.github.nmorel.gwtjackson.client.ser.map.MapJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.key.BooleanKeySerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.key.DateKeySerializer;
+import com.github.nmorel.gwtjackson.client.ser.map.key.EnumKeySerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.key.NumberKeySerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.key.ObjectKeySerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.key.ToStringKeySerializer;
@@ -204,7 +208,7 @@ public final class DefaultConfiguration extends AbstractConfiguration {
         type( Void.class ).serializer( VoidJsonSerializer.class ).deserializer( VoidJsonDeserializer.class );
         type( JavaScriptObject.class ).serializer( JavaScriptObjectJsonSerializer.class )
                 .deserializer( JavaScriptObjectJsonDeserializer.class );
-        // type( Enum.class ).serializer( EnumJsonSerializer.class ).deserializer( EnumJsonDeserializer.class );
+        type( Enum.class ).serializer( EnumJsonSerializer.class ).deserializer( EnumJsonDeserializer.class );
 
         // Number mappers
         type( BigDecimal.class ).serializer( BigDecimalJsonSerializer.class ).deserializer( BigDecimalJsonDeserializer.class );
@@ -301,7 +305,7 @@ public final class DefaultConfiguration extends AbstractConfiguration {
         key( Character.class ).serializer( ToStringKeySerializer.class ).deserializer( CharacterKeyDeserializer.class );
         key( Date.class ).serializer( DateKeySerializer.class ).deserializer( DateKeyDeserializer.class );
         key( Double.class ).serializer( NumberKeySerializer.class ).deserializer( DoubleKeyDeserializer.class );
-        // key( Enum.class ).serializer( EnumKeySerializer.class ).deserializer( EnumKeyDeserializer.class );
+        key( Enum.class ).serializer( EnumKeySerializer.class ).deserializer( EnumKeyDeserializer.class );
         key( Float.class ).serializer( NumberKeySerializer.class ).deserializer( FloatKeyDeserializer.class );
         key( Integer.class ).serializer( NumberKeySerializer.class ).deserializer( IntegerKeyDeserializer.class );
         key( Long.class ).serializer( NumberKeySerializer.class ).deserializer( LongKeyDeserializer.class );

@@ -60,6 +60,8 @@ public class JacksonTypeOracle {
 
     private final JClassType jsoType;
 
+    private final JClassType enumType;
+
     private final Map<JClassType, BeanJsonMapperInfo> typeToMapperInfo = new HashMap<JClassType, BeanJsonMapperInfo>();
 
     public JacksonTypeOracle( TreeLogger logger, TypeOracle typeOracle ) {
@@ -75,6 +77,7 @@ public class JacksonTypeOracle {
         this.mapType = typeOracle.findType( Map.class.getCanonicalName() );
         this.iterableType = typeOracle.findType( Iterable.class.getCanonicalName() );
         this.jsoType = typeOracle.findType( JavaScriptObject.class.getCanonicalName() );
+        this.enumType = typeOracle.findType( Enum.class.getCanonicalName() );
     }
 
     public JClassType getType( String type ) throws UnableToCompleteException {
@@ -124,6 +127,18 @@ public class JacksonTypeOracle {
 
     public JClassType getJavaScriptObject() {
         return jsoType;
+    }
+
+    public boolean isEnumSupertype( JType type ) {
+        return Enum.class.getName().equals( type.getQualifiedSourceName() );
+    }
+
+    public boolean isEnum( JType type ) {
+        return null != type.isEnum();
+    }
+
+    public JClassType getEnum() {
+        return enumType;
     }
 
     public BeanJsonMapperInfo getBeanJsonMapperInfo( JClassType type ) {

@@ -16,24 +16,22 @@
 
 package com.github.nmorel.gwtjackson.rebind;
 
+import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Iterator;
+import java.util.List;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
-import com.github.nmorel.gwtjackson.client.deser.EnumJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.array.ArrayJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.array.ArrayJsonDeserializer.ArrayCreator;
 import com.github.nmorel.gwtjackson.client.deser.array.dd.Array2dJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.array.dd.Array2dJsonDeserializer.Array2dCreator;
-import com.github.nmorel.gwtjackson.client.deser.map.key.EnumKeyDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer;
-import com.github.nmorel.gwtjackson.client.ser.EnumJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.array.ArrayJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.array.dd.Array2dJsonSerializer;
 import com.github.nmorel.gwtjackson.client.ser.bean.AbstractBeanJsonSerializer;
-import com.github.nmorel.gwtjackson.client.ser.map.key.EnumKeySerializer;
 import com.github.nmorel.gwtjackson.client.ser.map.key.KeySerializer;
 import com.github.nmorel.gwtjackson.rebind.RebindConfiguration.MapperInstance;
 import com.github.nmorel.gwtjackson.rebind.RebindConfiguration.MapperType;
@@ -51,13 +49,14 @@ import com.google.gwt.core.ext.TreeLogger.Type;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JArrayType;
 import com.google.gwt.core.ext.typeinfo.JClassType;
-import com.google.gwt.core.ext.typeinfo.JEnumType;
 import com.google.gwt.core.ext.typeinfo.JGenericType;
 import com.google.gwt.core.ext.typeinfo.JParameterizedType;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.core.ext.typeinfo.JTypeParameter;
+import com.google.gwt.thirdparty.guava.common.base.Function;
 import com.google.gwt.thirdparty.guava.common.base.Optional;
 import com.google.gwt.thirdparty.guava.common.collect.ImmutableList;
+import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.google.gwt.user.rebind.AbstractSourceCreator;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
@@ -257,6 +256,9 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                 ImmutableList.Builder<JSerializerType> parametersSerializerBuilder = ImmutableList.builder();
                 for ( int i = 0; i < typeArgs.length; i++ ) {
                     JSerializerType parameterSerializerType;
+                    if (configuredSerializer.get().getParameters().length <= i) {
+                        break;
+                    }
                     if ( MapperType.KEY_SERIALIZER == configuredSerializer.get().getParameters()[i] ) {
                         parameterSerializerType = getKeySerializerFromType( typeArgs[i] );
                     } else {
@@ -266,7 +268,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                 }
                 ImmutableList<JSerializerType> parametersSerializer = parametersSerializerBuilder.build();
                 builder.parameters( parametersSerializer );
-                builder.instance( methodCallCode( configuredSerializer.get(), parametersSerializer ) );
+                builder.instance( methodCallCodeWithJMapperTypeParameters( configuredSerializer.get(), parametersSerializer ) );
 
             } else {
                 // The serializer has no parameters.
@@ -281,16 +283,9 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             return builder.instance( methodCallCode( configuredSerializer.get() ) ).build();
         }
 
-        JEnumType enumType = type.isEnum();
-        if ( null != enumType ) {
-            return builder.instance( CodeBlock.builder()
-                    .add( "$T.<$T<$T>>getInstance()", EnumJsonSerializer.class, EnumJsonSerializer.class, typeName( enumType ) )
-                    .build() )
-                    .build();
-        }
-
-        if ( Enum.class.getName().equals( type.getQualifiedSourceName() ) ) {
-            return builder.instance( CodeBlock.builder().add( "$T.getInstance()", EnumJsonSerializer.class ).build() ).build();
+        if ( typeOracle.isEnum( type ) || typeOracle.isEnumSupertype( type )  ) {
+            configuredSerializer = configuration.getSerializer( typeOracle.getEnum() );
+            return builder.instance( methodCallCode( configuredSerializer.get() ) ).build();
         }
 
         JArrayType arrayType = type.isArray();
@@ -382,16 +377,9 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             return builder.build();
         }
 
-        JEnumType enumType = type.isEnum();
-        if ( null != enumType ) {
-            builder.instance( CodeBlock.builder()
-                    .add( "$T.<$T<$T>>getInstance()", EnumKeySerializer.class, EnumKeySerializer.class, typeName( enumType ) )
-                    .build() );
-            return builder.build();
-        }
-
-        if ( Enum.class.getName().equals( type.getQualifiedSourceName() ) ) {
-            return builder.instance( CodeBlock.builder().add( "$T.getInstance()", EnumKeySerializer.class ).build() ).build();
+        if ( typeOracle.isEnum( type ) || typeOracle.isEnumSupertype( type ) ) {
+            keySerializer = configuration.getKeySerializer( typeOracle.getEnum() );
+            return builder.instance( methodCallCode( keySerializer.get() ) ).build();
         }
 
         String message = "Type '" + type.getQualifiedSourceName() + "' is not supported as map's key";
@@ -456,6 +444,12 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             }
         }
 
+        if ( typeOracle.isEnumSupertype( type ) ) {
+            String message = "Type java.lang.Enum is not supported by deserialization";
+            logger.log( TreeLogger.Type.WARN, message );
+            throw new UnsupportedTypeException( message );
+        }
+
         Optional<MapperInstance> configuredDeserializer = configuration.getDeserializer( type );
         if ( configuredDeserializer.isPresent() ) {
             // The type is configured in AbstractConfiguration.
@@ -479,7 +473,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
                 }
                 ImmutableList<JDeserializerType> parametersDeserializer = parametersDeserializerBuilder.build();
                 builder.parameters( parametersDeserializer );
-                builder.instance( methodCallCode( configuredDeserializer.get(), parametersDeserializer ) );
+                builder.instance( methodCallCodeWithJMapperTypeParameters( configuredDeserializer.get(), parametersDeserializer ) );
 
             } else {
                 // The deserializer has no parameters.
@@ -494,18 +488,9 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             return builder.instance( methodCallCode( configuredDeserializer.get() ) ).build();
         }
 
-        JEnumType enumType = type.isEnum();
-        if ( null != enumType ) {
-            return builder.instance( CodeBlock.builder()
-                    .add( "$T.newInstance($T.class)", EnumJsonDeserializer.class, typeName( enumType ) )
-                    .build() )
-                    .build();
-        }
-
-        if ( Enum.class.getName().equals( type.getQualifiedSourceName() ) ) {
-            String message = "Type java.lang.Enum is not supported by deserialization";
-            logger.log( TreeLogger.Type.WARN, message );
-            throw new UnsupportedTypeException( message );
+        if ( typeOracle.isEnum( type ) ) {
+            configuredDeserializer = configuration.getDeserializer( typeOracle.getEnum() );
+            return builder.instance( methodCallCodeWithClassParameters( configuredDeserializer.get(), ImmutableList.of( type ) ) ).build();
         }
 
         JArrayType arrayType = type.isArray();
@@ -617,18 +602,21 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             type = type.isRawType().getBaseType();
         }
 
+        if ( typeOracle.isEnumSupertype( type ) ) {
+            String message = "Type java.lang.Enum is not supported by deserialization";
+            logger.log( TreeLogger.Type.WARN, message );
+            throw new UnsupportedTypeException( message );
+        }
+
         Optional<MapperInstance> keyDeserializer = configuration.getKeyDeserializer( type );
         if ( keyDeserializer.isPresent() ) {
             builder.instance( methodCallCode( keyDeserializer.get() ) );
             return builder.build();
         }
 
-        JEnumType enumType = type.isEnum();
-        if ( null != enumType ) {
-            builder.instance( CodeBlock.builder()
-                    .add( "$T.newInstance($T.class)", EnumKeyDeserializer.class, typeName( enumType ) )
-                    .build() );
-            return builder.build();
+        if ( typeOracle.isEnum( type ) ) {
+            keyDeserializer = configuration.getKeyDeserializer( typeOracle.getEnum() );
+            return builder.instance( methodCallCodeWithClassParameters( keyDeserializer.get(), ImmutableList.of( type ) ) ).build();
         }
 
         String message = "Type '" + type.getQualifiedSourceName() + "' is not supported as map's key";
@@ -702,7 +690,24 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
     private CodeBlock constructorCallCode( ClassName className, ImmutableList<? extends JMapperType> parameters ) {
         CodeBlock.Builder builder = CodeBlock.builder();
         builder.add( "new $T", className );
-        return methodCallParametersCode( builder, parameters );
+        return methodCallCodeWithJMapperTypeParameters( builder, parameters );
+    }
+
+    /**
+     * Initialize the code builder to create a mapper.
+     *
+     * @param instance the class to call
+     *
+     * @return the code builder to create the mapper
+     */
+    private CodeBlock.Builder initMethodCallCode( MapperInstance instance ) {
+        CodeBlock.Builder builder = CodeBlock.builder();
+        if ( null == instance.getInstanceCreationMethod().isConstructor() ) {
+            builder.add( "$T.$L", rawName( instance.getMapperType() ), instance.getInstanceCreationMethod().getName() );
+        } else {
+            builder.add( "new $T", typeName( instance.getMapperType() ) );
+        }
+        return builder;
     }
 
     /**
@@ -713,7 +718,8 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      * @return the code to create the mapper
      */
     private CodeBlock methodCallCode( MapperInstance instance ) {
-        return methodCallCode( instance, ImmutableList.<JMapperType>of() );
+        CodeBlock.Builder builder = initMethodCallCode(instance);
+        return methodCallParametersCode( builder, ImmutableList.<CodeBlock>of() );
     }
 
     /**
@@ -724,14 +730,29 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      *
      * @return the code to create the mapper
      */
-    private CodeBlock methodCallCode( MapperInstance instance, ImmutableList<? extends JMapperType> parameters ) {
-        CodeBlock.Builder builder = CodeBlock.builder();
-        if ( null == instance.getInstanceCreationMethod().isConstructor() ) {
-            builder.add( "$T.$L", rawName( instance.getMapperType() ), instance.getInstanceCreationMethod().getName() );
-        } else {
-            builder.add( "new $T", typeName( instance.getMapperType() ) );
-        }
-        return methodCallParametersCode( builder, parameters );
+    private CodeBlock methodCallCodeWithClassParameters( MapperInstance instance, ImmutableList<? extends JType> parameters ) {
+        CodeBlock.Builder builder = initMethodCallCode(instance);
+        return methodCallParametersCode( builder, Lists.transform( parameters, new Function<JType, CodeBlock>(){
+
+            @Nullable
+            @Override
+            public CodeBlock apply( @Nullable JType jType ) {
+                return CodeBlock.builder().add( "$T.class", typeName( jType ) ).build();
+            }
+        }) );
+    }
+
+    /**
+     * Build the code to create a mapper.
+     *
+     * @param instance the class to call
+     * @param parameters the parameters of the method
+     *
+     * @return the code to create the mapper
+     */
+    private CodeBlock methodCallCodeWithJMapperTypeParameters( MapperInstance instance, ImmutableList<? extends JMapperType> parameters ) {
+        CodeBlock.Builder builder = initMethodCallCode(instance);
+        return methodCallCodeWithJMapperTypeParameters( builder, parameters );
     }
 
     /**
@@ -742,19 +763,38 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      *
      * @return the code
      */
-    private CodeBlock methodCallParametersCode( CodeBlock.Builder builder, ImmutableList<? extends JMapperType> parameters ) {
+    private CodeBlock methodCallCodeWithJMapperTypeParameters( CodeBlock.Builder builder, ImmutableList<? extends JMapperType> parameters ) {
+        return methodCallParametersCode( builder, Lists.transform(parameters, new Function<JMapperType, CodeBlock>(){
+
+            @Nullable
+            @Override
+            public CodeBlock apply( JMapperType jMapperType ) {
+                return jMapperType.getInstance();
+            }
+        }) );
+    }
+
+    /**
+     * Build the code for the parameters of a method call.
+     *
+     * @param builder the code builder
+     * @param parameters the parameters
+     *
+     * @return the code
+     */
+    private CodeBlock methodCallParametersCode( CodeBlock.Builder builder, List<CodeBlock> parameters ) {
         if ( parameters.isEmpty() ) {
             return builder.add( "()" ).build();
         }
 
         builder.add( "(" );
 
-        Iterator<? extends JMapperType> iterator = parameters.iterator();
-        builder.add( iterator.next().getInstance() );
+        Iterator<CodeBlock> iterator = parameters.iterator();
+        builder.add( iterator.next() );
 
         while ( iterator.hasNext() ) {
             builder.add( ", " );
-            builder.add( iterator.next().getInstance() );
+            builder.add( iterator.next() );
         }
 
         builder.add( ")" );

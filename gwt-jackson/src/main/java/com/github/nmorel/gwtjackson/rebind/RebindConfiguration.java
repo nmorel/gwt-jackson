@@ -90,7 +90,7 @@ public final class RebindConfiguration {
 
         private final boolean key;
 
-        private MapperType( boolean serializer, boolean key ) {
+        MapperType( boolean serializer, boolean key ) {
             this.serializer = serializer;
             this.key = key;
         }
@@ -113,10 +113,6 @@ public final class RebindConfiguration {
         private final JAbstractMethod instanceCreationMethod;
 
         private final MapperType[] parameters;
-
-        private MapperInstance( JClassType mapperType, JAbstractMethod instanceCreationMethod ) {
-            this( mapperType, instanceCreationMethod, new MapperType[0] );
-        }
 
         private MapperInstance( JClassType mapperType, JAbstractMethod instanceCreationMethod, MapperType[] parameters ) {
             this.mapperType = mapperType;
@@ -294,7 +290,7 @@ public final class RebindConfiguration {
             }
 
             if ( mapperType.isKey() ) {
-                MapperInstance keyMapperInstance = getKeyInstance( mapperClassType );
+                MapperInstance keyMapperInstance = getKeyInstance( mappedType, mapperClassType, mapperType.isSerializer() );
                 if ( mapperType.isSerializer() ) {
                     keySerializers.put( mappedType.getQualifiedSourceName(), keyMapperInstance );
                 } else {
@@ -363,16 +359,17 @@ public final class RebindConfiguration {
      */
     private MapperInstance getInstance( JType mappedType, JClassType classType, boolean isSerializers ) {
         int nbParam = 0;
-        if ( null != mappedType.isGenericType() ) {
+        if ( null != mappedType.isGenericType() && (!isSerializers || !typeOracle.isEnumSupertype( mappedType )) ) {
             nbParam = mappedType.isGenericType().getTypeParameters().length;
         }
 
         // we first look at static method
         for ( JMethod method : classType.getMethods() ) {
             // method must be public static, return the instance type and take no parameters
-            if ( method.isStatic() && method.getReturnType().getQualifiedSourceName().equals( classType.getQualifiedSourceName() ) && method
-                    .getParameters().length == nbParam && method.isPublic() ) {
-                MapperType[] parameters = getParameters( method, isSerializers );
+            if ( method.isStatic() && null != method.getReturnType().isClassOrInterface()
+                    && classType.isAssignableTo( method.getReturnType().isClassOrInterface() )
+                    && method.getParameters().length == nbParam && method.isPublic() ) {
+                MapperType[] parameters = getParameters( mappedType, method, isSerializers );
                 if ( null == parameters ) {
                     continue;
                 }
@@ -384,7 +381,7 @@ public final class RebindConfiguration {
         // then we search the default constructor
         for ( JConstructor constructor : classType.getConstructors() ) {
             if ( constructor.isPublic() && constructor.getParameters().length == nbParam ) {
-                MapperType[] parameters = getParameters( constructor, isSerializers );
+                MapperType[] parameters = getParameters( mappedType, constructor, isSerializers );
                 if ( null == parameters ) {
                     continue;
                 }
@@ -398,7 +395,18 @@ public final class RebindConfiguration {
         return null;
     }
 
-    private MapperType[] getParameters( JAbstractMethod method, boolean isSerializers ) {
+    private MapperType[] getParameters( JType mappedType, JAbstractMethod method, boolean isSerializers ) {
+        if ( !isSerializers && typeOracle.isEnumSupertype( mappedType ) ) {
+            // For enums, the constructor requires the enum class. We just return an empty array and will handle it later
+            if ( method.getParameters().length == 1 && Class.class.getName().equals( method.getParameters()[0].getType()
+                    .getQualifiedSourceName() ) ) {
+                return new MapperType[0];
+            } else {
+                // Not a valid method to create enum deserializer
+                return null;
+            }
+        }
+
         MapperType[] parameters = new MapperType[method.getParameters().length];
         for ( int i = 0; i < method.getParameters().length; i++ ) {
             JParameter parameter = method.getParameters()[i];
@@ -428,20 +436,36 @@ public final class RebindConfiguration {
     /**
      * Search a static method or constructor to instantiate the key mapper and return a {@link String} calling it.
      */
-    private MapperInstance getKeyInstance( JClassType classType ) {
+    private MapperInstance getKeyInstance( JType mappedType, JClassType classType, boolean isSerializers ) {
+        int nbParam = 0;
+        if ( !isSerializers && typeOracle.isEnumSupertype( mappedType ) ) {
+            nbParam = 1;
+        }
+
         // we first look at static method
         for ( JMethod method : classType.getMethods() ) {
             // method must be public static, return the instance type and take no parameters
-            if ( method.isStatic() && method.getReturnType().getQualifiedSourceName().equals( classType.getQualifiedSourceName() ) && method
-                    .getParameters().length == 0 && method.isPublic() ) {
-                return new MapperInstance( classType, method );
+            if ( method.isStatic() && null != method.getReturnType().isClassOrInterface()
+                    && classType.isAssignableTo( method.getReturnType().isClassOrInterface() )
+                    && method.getParameters().length == nbParam && method.isPublic() ) {
+                MapperType[] parameters = getParameters( mappedType, method, isSerializers );
+                if ( null == parameters ) {
+                    continue;
+                }
+
+                return new MapperInstance( classType, method, parameters );
             }
         }
 
         // then we search the default constructor
         for ( JConstructor constructor : classType.getConstructors() ) {
-            if ( constructor.isPublic() && constructor.getParameters().length == 0 ) {
-                return new MapperInstance( classType, constructor );
+            if ( constructor.isPublic() && constructor.getParameters().length == nbParam ) {
+                MapperType[] parameters = getParameters( mappedType, constructor, isSerializers );
+                if ( null == parameters ) {
+                    continue;
+                }
+
+                return new MapperInstance( classType, constructor, parameters );
             }
         }
 
