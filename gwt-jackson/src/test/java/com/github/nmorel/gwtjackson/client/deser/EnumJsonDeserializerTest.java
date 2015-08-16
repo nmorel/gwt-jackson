@@ -16,6 +16,7 @@
 
 package com.github.nmorel.gwtjackson.client.deser;
 
+import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.EnumJsonDeserializerTest.EnumTest;
 
@@ -39,5 +40,11 @@ public class EnumJsonDeserializerTest extends AbstractJsonDeserializerTest<EnumT
         assertDeserialization( EnumTest.TWO, "\"TWO\"" );
         assertDeserialization( EnumTest.THREE, "\"THREE\"" );
         assertDeserialization( EnumTest.FOUR, "\"FOUR\"" );
+        try {
+            assertDeserialization( null, "\"UNKNOWN\"" );
+            fail( "IllegalArgumentException should be thrown!" );
+        } catch ( IllegalArgumentException ex ) {
+        }
+        assertDeserialization( JsonDeserializationContext.builder().readUnknownEnumValuesAsNull( true ).build(), null, "\"UNKNOWN\"" );
     }
 }
