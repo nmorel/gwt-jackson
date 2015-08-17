@@ -61,14 +61,14 @@ public abstract class BaseDateJsonDeserializer<D extends Date> extends JsonDeser
         }
     }
 
-    private static final String SQL_DATE_FORMAT = "yyyy-MM-dd";
-
     /**
      * Default implementation of {@link BaseDateJsonDeserializer} for {@link java.sql.Date}
      */
     public static final class SqlDateJsonDeserializer extends BaseDateJsonDeserializer<java.sql.Date> {
 
         private static final SqlDateJsonDeserializer INSTANCE = new SqlDateJsonDeserializer();
+
+        private static final String SQL_DATE_FORMAT = "yyyy-MM-dd";
 
         /**
          * @return an instance of {@link SqlDateJsonDeserializer}
