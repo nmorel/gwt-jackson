@@ -57,7 +57,7 @@ public abstract class BaseDateJsonDeserializer<D extends Date> extends JsonDeser
 
         @Override
         protected Date deserializeString( String date, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
-            return DateFormat.parse(ctx.isAdjustDatesToContextTimeZone(), params.getPattern(), date );
+            return DateFormat.parse(ctx.isAdjustDatesToContextTimeZone(), params.getPattern(), null, date );
         }
     }
 
@@ -86,7 +86,7 @@ public abstract class BaseDateJsonDeserializer<D extends Date> extends JsonDeser
 
         @Override
         protected java.sql.Date deserializeString( String date, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
-            return new java.sql.Date( DateFormat.parse(ctx.isAdjustDatesToContextTimeZone(), SQL_DATE_FORMAT, date).getTime() );
+            return new java.sql.Date( DateFormat.parse(ctx.isAdjustDatesToContextTimeZone(), SQL_DATE_FORMAT, false, date).getTime() );
         }
     }
 
@@ -140,7 +140,7 @@ public abstract class BaseDateJsonDeserializer<D extends Date> extends JsonDeser
 
         @Override
         protected Timestamp deserializeString( String date, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
-            return new Timestamp( DateFormat.parse(ctx.isAdjustDatesToContextTimeZone(), params.getPattern(), date ).getTime() );
+            return new Timestamp( DateFormat.parse(ctx.isAdjustDatesToContextTimeZone(), params.getPattern(), null, date ).getTime() );
         }
     }
 
