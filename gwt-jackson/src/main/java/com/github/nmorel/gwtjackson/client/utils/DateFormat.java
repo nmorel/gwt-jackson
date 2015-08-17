@@ -184,7 +184,8 @@ public final class DateFormat {
         if ( null == pattern ) {
             return parse( DateFormat.DATE_FORMAT_STR_ISO8601, date );
         } else {
-            DateParser parser = CACHE_PARSERS.get( pattern );
+            String patternCacheKey = pattern + adjustDatesToContextTimeZone;
+            DateParser parser = CACHE_PARSERS.get( patternCacheKey );
             if ( null == parser ) {
                 boolean patternNeedTz = patternHasTz == null ?
                     !adjustDatesToContextTimeZone || hasTz(pattern) :
@@ -195,7 +196,7 @@ public final class DateFormat {
                     // the pattern does not have a timezone, we use the UTC timezone as reference
                     parser = new DateParserNoTz( pattern );
                 }
-                CACHE_PARSERS.put( pattern, parser );
+                CACHE_PARSERS.put( patternCacheKey, parser );
             }
             return parser.parse( date );
         }
