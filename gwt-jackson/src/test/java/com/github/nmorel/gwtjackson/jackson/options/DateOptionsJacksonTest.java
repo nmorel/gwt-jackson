@@ -16,11 +16,14 @@
 
 package com.github.nmorel.gwtjackson.jackson.options;
 
+import java.util.TimeZone;
+
+import org.junit.Test;
+
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.github.nmorel.gwtjackson.jackson.AbstractJacksonTest;
 import com.github.nmorel.gwtjackson.shared.options.DateOptionsTester;
 import com.github.nmorel.gwtjackson.shared.options.DateOptionsTester.BeanWithDates;
-import org.junit.Test;
 
 /**
  * @author Nicolas Morel
@@ -50,4 +53,11 @@ public class DateOptionsJacksonTest extends AbstractJacksonTest {
     public void testDeserializeDatesNotAsTimestamps() {
         DateOptionsTester.INSTANCE.testDeserializeDatesNotAsTimestamps( createReader( BeanWithDates.class ) );
     }
+
+    @Test
+    public void testDeserializeDatesNotAsTimestampsAndNotUseBrowserTimezone() {
+        objectMapper.setTimeZone(TimeZone.getDefault());
+        DateOptionsTester.INSTANCE.testDeserializeDatesNotAsTimestampsAndUseBrowserTimezone( createReader( BeanWithDates.class ) );
+    }
+
 }
