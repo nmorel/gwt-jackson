@@ -16,12 +16,14 @@
 
 package com.github.nmorel.gwtjackson.client.ser;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.JsonSerializerParameters;
@@ -53,7 +55,7 @@ public abstract class BaseDateJsonSerializer<D extends Date> extends JsonSeriali
 
         @Override
         protected void doSerialize( JsonWriter writer, @Nonnull Date value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
-            if ( ctx.isWriteDatesAsTimestamps() || params.getShape().isNumeric() ) {
+            if ( (ctx.isWriteDatesAsTimestamps() || params.getShape().isNumeric()) && params.getShape() != Shape.STRING ) {
                 writer.value( value.getTime() );
             } else {
                 String date = DateFormat.format( params, value );
