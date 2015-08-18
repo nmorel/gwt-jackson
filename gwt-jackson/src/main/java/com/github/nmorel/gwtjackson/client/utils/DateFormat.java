@@ -173,24 +173,28 @@ public final class DateFormat {
     /**
      * Parse a date using the pattern given in parameter or {@link #DATE_FORMAT_STR_ISO8601} and the browser timezone.
      *
+     * @param useBrowserTimezone when the date doesn't include timezone information use browser default or UTC.
      * @param pattern pattern to use. If null, {@link #DATE_FORMAT_STR_ISO8601} will be used.
+     * @param hasTz whether the pattern includes timezone information. when null the pattern will be parsed to search it.
      * @param date date to parse
      *
      * @return the parsed date
      */
-    public static Date parse( String pattern, String date ) {
+    public static Date parse( boolean useBrowserTimezone, String pattern, Boolean hasTz, String date ) {
         if ( null == pattern ) {
             return parse( DateFormat.DATE_FORMAT_STR_ISO8601, date );
         } else {
-            DateParser parser = CACHE_PARSERS.get( pattern );
+            String patternCacheKey = pattern + useBrowserTimezone;
+            DateParser parser = CACHE_PARSERS.get( patternCacheKey );
             if ( null == parser ) {
-                if ( hasTz( pattern ) ) {
+                boolean patternHasTz = useBrowserTimezone || (hasTz == null ? hasTz(pattern) : hasTz.booleanValue());
+                if ( patternHasTz ) {
                     parser = new DateParser( pattern );
                 } else {
                     // the pattern does not have a timezone, we use the UTC timezone as reference
                     parser = new DateParserNoTz( pattern );
                 }
-                CACHE_PARSERS.put( pattern, parser );
+                CACHE_PARSERS.put( patternCacheKey, parser );
             }
             return parser.parse( date );
         }

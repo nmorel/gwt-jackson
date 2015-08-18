@@ -17,6 +17,7 @@
 package com.github.nmorel.gwtjackson.client.options;
 
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
+import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;
 import com.github.nmorel.gwtjackson.shared.options.DateOptionsTester;
@@ -51,5 +52,10 @@ public class DateOptionsGwtTest extends GwtJacksonTestCase {
 
     public void testDeserializeDatesNotAsTimestamps() {
         tester.testDeserializeDatesNotAsTimestamps( createReader( BeanWithDatesMapper.INSTANCE ) );
+    }
+
+    public void testDeserializeDatesNotAsTimestampsAndUseBrowserTimezone() {
+        tester.testDeserializeDatesNotAsTimestampsAndUseBrowserTimezone(createReader( BeanWithDatesMapper.INSTANCE, JsonDeserializationContext.builder()
+            .useBrowserTimezone(true).build() ) );
     }
 }
