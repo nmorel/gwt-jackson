@@ -31,7 +31,7 @@ public class IterableJsonSerializerTest extends AbstractJsonSerializerTest<Itera
 
     @Override
     protected JsonSerializer<Iterable<String>> createSerializer() {
-        return IterableJsonSerializer.newInstance( StringJsonSerializer.getInstance() );
+        return (JsonSerializer) IterableJsonSerializer.newInstance( StringJsonSerializer.getInstance() );
     }
 
     public void testSerializeValue() {

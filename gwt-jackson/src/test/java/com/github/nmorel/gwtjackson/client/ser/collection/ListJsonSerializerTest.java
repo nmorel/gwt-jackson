@@ -32,7 +32,7 @@ public class ListJsonSerializerTest extends AbstractJsonSerializerTest<List<Stri
 
     @Override
     protected JsonSerializer<List<String>> createSerializer() {
-        return IterableJsonSerializer.newInstance( StringJsonSerializer.getInstance() );
+        return (JsonSerializer) IterableJsonSerializer.newInstance( StringJsonSerializer.getInstance() );
     }
 
     public void testSerializeValue() {

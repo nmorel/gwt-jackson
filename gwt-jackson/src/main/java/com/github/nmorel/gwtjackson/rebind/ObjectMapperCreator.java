@@ -37,10 +37,13 @@ import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JParameterizedType;
 import com.google.gwt.thirdparty.guava.common.base.Optional;
 import com.google.gwt.thirdparty.guava.common.base.Strings;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounteredAnnotationsOnAllHierarchy;
+import static com.github.nmorel.gwtjackson.rebind.writer.JTypeName.DEFAULT_WILDCARD;
 import static com.github.nmorel.gwtjackson.rebind.writer.JTypeName.parameterizedName;
 import static com.github.nmorel.gwtjackson.rebind.writer.JTypeName.typeName;
 
@@ -249,7 +252,7 @@ public class ObjectMapperCreator extends AbstractCreator {
         return MethodSpec.methodBuilder( "newSerializer" )
                 .addModifiers( Modifier.PROTECTED )
                 .addAnnotation( Override.class )
-                .returns( parameterizedName( JsonSerializer.class, mappedTypeClass ) )
+                .returns( ParameterizedTypeName.get( ClassName.get( JsonSerializer.class ), DEFAULT_WILDCARD ) )
                 .addStatement( "return $L", type.getInstance() )
                 .build();
     }

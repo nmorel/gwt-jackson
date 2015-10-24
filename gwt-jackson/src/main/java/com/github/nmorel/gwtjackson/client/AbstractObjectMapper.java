@@ -130,7 +130,7 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
      */
     public JsonSerializer<T> getSerializer() {
         if ( null == serializer ) {
-            serializer = newSerializer();
+            serializer = (JsonSerializer<T>) newSerializer();
         }
         return serializer;
     }
@@ -140,5 +140,5 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
      *
      * @return a new serializer
      */
-    protected abstract JsonSerializer<T> newSerializer();
+    protected abstract JsonSerializer<?> newSerializer();
 }

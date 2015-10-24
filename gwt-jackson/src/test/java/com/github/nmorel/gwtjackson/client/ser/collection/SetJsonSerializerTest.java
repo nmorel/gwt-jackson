@@ -33,7 +33,7 @@ public class SetJsonSerializerTest extends AbstractJsonSerializerTest<Set<String
 
     @Override
     protected JsonSerializer<Set<String>> createSerializer() {
-        return IterableJsonSerializer.newInstance( StringJsonSerializer.getInstance() );
+        return (JsonSerializer) IterableJsonSerializer.newInstance( StringJsonSerializer.getInstance() );
     }
 
     public void testSerializeValue() {
