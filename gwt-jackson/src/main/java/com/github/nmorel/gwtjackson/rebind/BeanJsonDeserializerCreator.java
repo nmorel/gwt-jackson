@@ -564,7 +564,8 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         }
 
         TypeSpec.Builder builder = TypeSpec.anonymousClassBuilder( "" )
-                .superclass( parameterizedName( superclass, beanInfo.getType(), propertyType ) );
+                .superclass( ParameterizedTypeName
+                        .get( ClassName.get( superclass ), typeName( true, beanInfo.getType() ), rawName( true, propertyType ) ) );
 
         List<MethodSpec> commonMethods = buildCommonPropertyDeserializerMethods( property, deserializerType );
         for ( MethodSpec commonMethod : commonMethods ) {
@@ -578,7 +579,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         if ( property.isAnySetter() ) {
             methodBuilder.addParameter( String.class, paramProperty );
         }
-        methodBuilder.addParameter( typeName( true, propertyType ), paramValue )
+        methodBuilder.addParameter( rawName( true, propertyType ), paramValue )
                 .addParameter( JsonDeserializationContext.class, "ctx" )
                 .addStatement( "$L", accessor.getAccessor() );
 

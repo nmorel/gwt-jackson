@@ -191,7 +191,7 @@ public final class PropertyProcessor {
         }
 
         final String propertyName = propertyAccessors.getPropertyName();
-        final JType type = findType( logger, propertyAccessors );
+        final JType type = findType( logger, propertyAccessors, typeOracle );
 
         PropertyInfoBuilder builder = new PropertyInfoBuilder( propertyName, type );
 
@@ -368,19 +368,33 @@ public final class PropertyProcessor {
         }
     }
 
-    private static JType findType( TreeLogger logger, PropertyAccessors fieldAccessors ) throws UnableToCompleteException {
+    private static JType findType( TreeLogger logger, PropertyAccessors fieldAccessors, JacksonTypeOracle typeOracle ) throws
+            UnableToCompleteException {
+        JType type;
         if ( fieldAccessors.getGetter().isPresent() ) {
-            return fieldAccessors.getGetter().get().getReturnType();
+            type = fieldAccessors.getGetter().get().getReturnType();
         } else if ( fieldAccessors.getSetter().isPresent() ) {
-            return fieldAccessors.getSetter().get().getParameters()[0].getType();
+            type = fieldAccessors.getSetter().get().getParameters()[0].getType();
         } else if ( fieldAccessors.getField().isPresent() ) {
-            return fieldAccessors.getField().get().getType();
+            type = fieldAccessors.getField().get().getType();
         } else if ( fieldAccessors.getParameter().isPresent() ) {
-            return fieldAccessors.getParameter().get().getType();
+            type = fieldAccessors.getParameter().get().getType();
         } else {
             logger.log( Type.ERROR, "Cannot find the type of the property " + fieldAccessors.getPropertyName() );
             throw new UnableToCompleteException();
         }
+
+        try {
+            Class clazz = Class.forName( "com.fasterxml.jackson.databind.annotation.JsonDeserialize" );
+            Optional<Annotation> jd = fieldAccessors.getAnnotation( clazz );
+            if ( jd.isPresent() ) {
+                return typeOracle.replaceType( logger, type, jd.get() );
+            }
+        } catch ( ClassNotFoundException e ) {
+            logger.log( Type.DEBUG, "com.fasterxml.jackson.databind.annotation.JsonDeserialize not found" );
+        }
+
+        return type;
     }
 
     private static boolean isPropertyIgnored( RebindConfiguration configuration, PropertyAccessors propertyAccessors, BeanInfo beanInfo,

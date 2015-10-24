@@ -16,6 +16,7 @@
 
 package com.github.nmorel.gwtjackson.client;
 
+import com.github.nmorel.gwtjackson.client.advanced.DeserializeAsGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.GenericsAndInheritanceGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.GenericsGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.InheritanceGwtTest;
@@ -305,6 +306,7 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( WildcardGwtTest.class );
         suite.addTestSuite( ObjectGwtTest.class );
         suite.addTestSuite( JavaScriptObjectGwtTest.class );
+        suite.addTestSuite( DeserializeAsGwtTest.class );
 
         // Polymorphism
         suite.addTestSuite( PolymorphismNoTypeInfoGwtTest.class );

@@ -16,6 +16,7 @@
 
 package com.github.nmorel.gwtjackson.rebind;
 
+import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,8 +28,12 @@ import com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer;
 import com.github.nmorel.gwtjackson.client.ser.map.key.KeySerializer;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.ext.TreeLogger;
+import com.google.gwt.core.ext.TreeLogger.Type;
 import com.google.gwt.core.ext.UnableToCompleteException;
+import com.google.gwt.core.ext.typeinfo.JArrayType;
 import com.google.gwt.core.ext.typeinfo.JClassType;
+import com.google.gwt.core.ext.typeinfo.JGenericType;
+import com.google.gwt.core.ext.typeinfo.JParameterizedType;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.core.ext.typeinfo.NotFoundException;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
@@ -147,5 +152,81 @@ public class JacksonTypeOracle {
 
     public void addBeanJsonMapperInfo( JClassType type, BeanJsonMapperInfo info ) {
         typeToMapperInfo.put( type, info );
+    }
+
+    public JType replaceType( TreeLogger logger, JType type, Annotation deserializeAs ) throws UnableToCompleteException {
+        JClassType classType = type.isClassOrInterface();
+        if ( null == classType ) {
+            return type;
+        }
+
+        JClassType typeAs = getClassFromJsonDeserializeAnnotation( logger, deserializeAs, "as" );
+        JClassType keyAs = getClassFromJsonDeserializeAnnotation( logger, deserializeAs, "keyAs" );
+        JClassType contentAs = getClassFromJsonDeserializeAnnotation( logger, deserializeAs, "contentAs" );
+
+        if ( null == typeAs && null == keyAs && null == contentAs ) {
+            return type;
+        }
+
+        JArrayType arrayType = type.isArray();
+        if ( null != arrayType ) {
+            if ( null != contentAs ) {
+                return typeOracle.getArrayType( contentAs );
+            } else if ( null != typeAs ) {
+                return typeOracle.getArrayType( typeAs );
+            } else {
+                return classType;
+            }
+        }
+
+        JParameterizedType parameterizedType = type.isParameterized();
+        if ( null != parameterizedType ) {
+            JGenericType genericType;
+            if ( null != typeAs ) {
+                genericType = typeAs.isGenericType();
+            } else {
+                genericType = parameterizedType.getBaseType();
+            }
+
+            if ( null == keyAs && null == contentAs ) {
+                return typeOracle.getParameterizedType( genericType, parameterizedType.getTypeArgs() );
+            } else if ( null != contentAs && isIterable( parameterizedType ) ) {
+                return typeOracle.getParameterizedType( genericType, new JClassType[]{contentAs} );
+            } else if ( isMap( parameterizedType ) ) {
+                JClassType key;
+                if ( null != keyAs ) {
+                    key = keyAs;
+                } else {
+                    key = parameterizedType.getTypeArgs()[0];
+                }
+
+                JClassType content;
+                if ( null != contentAs ) {
+                    content = contentAs;
+                } else {
+                    content = parameterizedType.getTypeArgs()[1];
+                }
+
+                return typeOracle.getParameterizedType( genericType, new JClassType[]{key, content} );
+            }
+        }
+
+        if ( null != typeAs ) {
+            return typeAs;
+        }
+
+        return type;
+    }
+
+    private JClassType getClassFromJsonDeserializeAnnotation( TreeLogger logger, Annotation annotation, String name ) {
+        try {
+            Class asClass = (Class) annotation.getClass().getDeclaredMethod( name ).invoke( annotation );
+            if ( asClass != Void.class ) {
+                return getType( asClass.getCanonicalName() );
+            }
+        } catch ( Exception e ) {
+            logger.log( Type.ERROR, "Cannot find method " + name + " on JsonDeserialize annotation", e );
+        }
+        return null;
     }
 }

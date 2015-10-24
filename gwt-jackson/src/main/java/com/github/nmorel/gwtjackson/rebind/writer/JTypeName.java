@@ -115,14 +115,26 @@ public final class JTypeName {
      * @return the raw {@link TypeName} without parameter
      */
     public static TypeName rawName( JType type ) {
+        return rawName( false, type );
+    }
+
+    /**
+     * @param boxed true if the primitive should be boxed. Useful when use in a parameterized type.
+     * @param type type to convert
+     *
+     * @return the raw {@link TypeName} without parameter
+     */
+    public static TypeName rawName( boolean boxed, JType type ) {
         if ( null != type.isPrimitive() ) {
-            return primitiveName( type.isPrimitive(), false );
+            return primitiveName( type.isPrimitive(), boxed );
         } else if ( null != type.isParameterized() ) {
             return className( type.isParameterized().getRawType() );
         } else if ( null != type.isGenericType() ) {
             return className( type.isGenericType().getRawType() );
         } else if ( null != type.isArray() ) {
             return arrayName( type.isArray() );
+        } else if ( null != type.isTypeParameter() ) {
+            return typeVariableName( type.isTypeParameter() );
         } else {
             return className( type.isClassOrInterface() );
         }

@@ -23,6 +23,7 @@
 
   <!-- Jackson annotations -->
   <inherits name="com.fasterxml.jackson.annotation.JacksonAnnotation" />
+  <inherits name="com.fasterxml.jackson.databind.annotation.JacksonDatabindAnnotation" />
 
   <generate-with class="com.github.nmorel.gwtjackson.rebind.ObjectMapperGenerator">
     <when-type-assignable class="com.github.nmorel.gwtjackson.client.ObjectReader" />
