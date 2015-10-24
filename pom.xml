@@ -71,12 +71,37 @@
     <url>https://github.com/nmorel/gwt-jackson/issues</url>
   </issueManagement>
 
+  <repositories>
+    <repository>
+      <id>Google Snapshots</id>
+      <url>https://oss.sonatype.org/content/repositories/google-snapshots</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>Sonatype Snapshots</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <!-- the api has to be compatible with minimal jdk version supported by GWT -->
-    <maven.compiler.source>1.6</maven.compiler.source>
-    <maven.compiler.target>1.6</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
 
     <!-- Plugins version -->
     <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
@@ -88,7 +113,7 @@
     <gwt-maven-plugin.version>2.7.0</gwt-maven-plugin.version>
 
     <!-- Dependencies version -->
-    <gwt.version>2.7.0</gwt.version>
+    <gwt.version>2.8.0-SNAPSHOT</gwt.version>
     <jackson.version>2.6.3</jackson.version>
     <javapoet.version>1.0.0</javapoet.version>
     <junit.version>4.12</junit.version>
