@@ -99,6 +99,7 @@ import com.github.nmorel.gwtjackson.client.mapper.AllMapsObjectMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.AutoDetectionGwtTest;
 import com.github.nmorel.gwtjackson.client.mapper.CommonJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.CustomIterableGwtTest;
+import com.github.nmorel.gwtjackson.client.mapper.EnumMapperGwtTest;
 import com.github.nmorel.gwtjackson.client.mapper.ErrorGwtTest;
 import com.github.nmorel.gwtjackson.client.mapper.IgnoreStaticGwtTest;
 import com.github.nmorel.gwtjackson.client.mapper.PropertyNamingGwtTest;
@@ -282,6 +283,7 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( PropertyNamingGwtTest.class );
         suite.addTestSuite( ErrorGwtTest.class );
         suite.addTestSuite( AutoDetectionGwtTest.class );
+        suite.addTestSuite( EnumMapperGwtTest.class );
 
         // Annotations test
         suite.addTestSuite( JsonAutoDetectGwtTest.class );
