@@ -22,6 +22,7 @@ import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
 import com.github.nmorel.gwtjackson.shared.advanced.WildcardTester;
 import com.github.nmorel.gwtjackson.shared.advanced.WildcardTester.Animal;
 import com.github.nmorel.gwtjackson.shared.advanced.WildcardTester.AnimalWildcard;
+import com.github.nmorel.gwtjackson.shared.advanced.WildcardTester.BeanWithCustomEnumMap;
 import com.github.nmorel.gwtjackson.shared.advanced.WildcardTester.GenericWildcard;
 import com.github.nmorel.gwtjackson.shared.advanced.WildcardTester.SimpleWildcard;
 import com.google.gwt.core.client.GWT;
@@ -46,6 +47,11 @@ public class WildcardGwtTest extends GwtJacksonTestCase {
         static GenericWildcardMapper INSTANCE = GWT.create( GenericWildcardMapper.class );
     }
 
+    public interface BeanWithCustomEnumMapMapper extends ObjectMapper<BeanWithCustomEnumMap<String>>, ObjectMapperTester<BeanWithCustomEnumMap<String>> {
+
+        static BeanWithCustomEnumMapMapper INSTANCE = GWT.create( BeanWithCustomEnumMapMapper.class );
+    }
+
     private WildcardTester tester = WildcardTester.INSTANCE;
 
     public void testSerializeSimpleWildcard() {
@@ -56,14 +62,13 @@ public class WildcardGwtTest extends GwtJacksonTestCase {
         tester.testDeserializeSimpleWildcard( SimpleWildcardMapper.INSTANCE );
     }
 
-    // TODO not working currently
-    //    public void testSerializeAnimalWildcard() {
-    //        tester.testSerializeAnimalWildcard( AnimalWildcardMapper.INSTANCE );
-    //    }
-    //
-    //    public void testDeserializeAnimalWildcard() {
-    //        tester.testDeserializeAnimalWildcard( AnimalWildcardMapper.INSTANCE );
-    //    }
+    public void testSerializeAnimalWildcard() {
+        tester.testSerializeAnimalWildcard( AnimalWildcardMapper.INSTANCE );
+    }
+
+    public void testDeserializeAnimalWildcard() {
+        tester.testDeserializeAnimalWildcard( AnimalWildcardMapper.INSTANCE );
+    }
 
     public void testSerializeGenericWildcard() {
         tester.testSerializeGenericWildcard( GenericWildcardMapper.INSTANCE );
@@ -71,5 +76,13 @@ public class WildcardGwtTest extends GwtJacksonTestCase {
 
     public void testDeserializeGenericWildcard() {
         tester.testDeserializeGenericWildcard( GenericWildcardMapper.INSTANCE );
+    }
+
+    public void testSerializeBeanWithCustomEnumMap() {
+        tester.testSerializeBeanWithCustomEnumMap( BeanWithCustomEnumMapMapper.INSTANCE );
+    }
+
+    public void testDeserializeBeanWithCustomEnumMap() {
+        tester.testDeserializeBeanWithCustomEnumMap( BeanWithCustomEnumMapMapper.INSTANCE );
     }
 }

@@ -18,6 +18,7 @@ package com.github.nmorel.gwtjackson.shared.advanced;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeMap;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -106,6 +107,37 @@ public final class WildcardTester extends AbstractTester {
 
         public void setGenerics( List<? extends T> generics ) {
             this.generics = generics;
+        }
+    }
+
+    @JsonTypeInfo( use = Id.NAME, include = As.PROPERTY, property = "type" )
+    @JsonSubTypes( {@Type( value = EnumString.class, name = "string" )} )
+    public static abstract class AbstractEnum<T extends Comparable<T>> {
+
+        private TreeMap<T, String> map = new TreeMap<T, String>();
+
+        public TreeMap<T, String> getMap() {
+            return map;
+        }
+
+        public void setMap( TreeMap<T, String> map ) {
+            this.map = map;
+        }
+    }
+
+    public static class EnumString extends AbstractEnum<String> {
+    }
+
+    public static class BeanWithCustomEnumMap<T extends Comparable<T>> {
+
+        private AbstractEnum<T> enumMap;
+
+        public AbstractEnum<T> getEnumMap() {
+            return enumMap;
+        }
+
+        public void setEnumMap( AbstractEnum<T> enumMap ) {
+            this.enumMap = enumMap;
         }
     }
 
@@ -263,6 +295,27 @@ public final class WildcardTester extends AbstractTester {
         assertTrue( bean.generics.get( 1 ) instanceof Cat );
         Cat cat = (Cat) bean.generics.get( 1 );
         assertEquals( "Felix", cat.name );
+    }
+
+    public void testSerializeBeanWithCustomEnumMap( ObjectWriterTester<BeanWithCustomEnumMap<String>> writer ) {
+        BeanWithCustomEnumMap<String> bean = new BeanWithCustomEnumMap<String>();
+        EnumString enums = new EnumString();
+        enums.getMap().put( "Hello", "World" );
+        bean.setEnumMap( enums );
+
+        String expected = "{\"enumMap\":{\"type\":\"string\",\"map\":{\"Hello\":\"World\"}}}";
+
+        assertEquals( expected, writer.write( bean ) );
+    }
+
+    public void testDeserializeBeanWithCustomEnumMap( ObjectReaderTester<BeanWithCustomEnumMap<String>> reader ) {
+        String input = "{\"enumMap\":{\"type\":\"string\",\"map\":{\"Hello\":\"World\"}}}";
+
+        BeanWithCustomEnumMap bean = reader.read( input );
+        assertNotNull( bean );
+        assertEquals( 1, bean.getEnumMap().getMap().size() );
+
+        assertEquals( "World", bean.getEnumMap().getMap().get( "Hello" ) );
     }
 
 }

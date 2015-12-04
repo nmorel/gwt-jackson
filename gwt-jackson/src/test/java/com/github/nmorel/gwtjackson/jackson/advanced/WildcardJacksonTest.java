@@ -21,6 +21,7 @@ import com.github.nmorel.gwtjackson.jackson.AbstractJacksonTest;
 import com.github.nmorel.gwtjackson.shared.advanced.WildcardTester;
 import com.github.nmorel.gwtjackson.shared.advanced.WildcardTester.Animal;
 import com.github.nmorel.gwtjackson.shared.advanced.WildcardTester.AnimalWildcard;
+import com.github.nmorel.gwtjackson.shared.advanced.WildcardTester.BeanWithCustomEnumMap;
 import com.github.nmorel.gwtjackson.shared.advanced.WildcardTester.GenericWildcard;
 import com.github.nmorel.gwtjackson.shared.advanced.WildcardTester.SimpleWildcard;
 import org.junit.Test;
@@ -58,5 +59,16 @@ public class WildcardJacksonTest extends AbstractJacksonTest {
     @Test
     public void testDeserializeGenericWildcard() {
         WildcardTester.INSTANCE.testDeserializeGenericWildcard( createReader( new TypeReference<GenericWildcard<Animal>>() {} ) );
+    }
+
+    @Test
+    public void testSerializeBeanWithCustomEnumMap() {
+        WildcardTester.INSTANCE.testSerializeBeanWithCustomEnumMap( createWriter( new TypeReference<BeanWithCustomEnumMap<String>>() {} ) );
+    }
+
+    @Test
+    public void testDeserializeBeanWithCustomEnumMap() {
+        WildcardTester.INSTANCE
+                .testDeserializeBeanWithCustomEnumMap( createReader( new TypeReference<BeanWithCustomEnumMap<String>>() {} ) );
     }
 }

@@ -27,12 +27,13 @@ public class GwtJacksonGuavaTestSuite extends TestCase {
 
     public static Test suite() {
         GWTTestSuite suite = new GWTTestSuite();
-        suite.addTestSuite( OptionalGwtTest.class );
+        suite.addTestSuite( BiMapGwtTest.class );
         suite.addTestSuite( FluentIterableGwtTest.class );
         suite.addTestSuite( ImmutablesGwtTest.class );
-        suite.addTestSuite( BiMapGwtTest.class );
-        suite.addTestSuite( MultisetGwtTest.class );
         suite.addTestSuite( MultimapGwtTest.class );
+        suite.addTestSuite( MultisetGwtTest.class );
+        suite.addTestSuite( ObjectGwtTest.class );
+        suite.addTestSuite( OptionalGwtTest.class );
         return suite;
     }
 }
