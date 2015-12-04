@@ -35,14 +35,11 @@ public final class TreeMultimapJsonDeserializer<K extends Comparable<K>, V exten
     /**
      * @param keyDeserializer {@link KeyDeserializer} used to deserialize the keys.
      * @param valueDeserializer {@link JsonDeserializer} used to deserialize the values.
-     * @param <K> Type of the keys inside the {@link TreeMultimap}
-     * @param <V> Type of the values inside the {@link TreeMultimap}
      *
      * @return a new instance of {@link TreeMultimapJsonDeserializer}
      */
-    public static <K extends Comparable<K>, V extends Comparable<V>> TreeMultimapJsonDeserializer<K,
-            V> newInstance( KeyDeserializer<K> keyDeserializer, JsonDeserializer<V> valueDeserializer ) {
-        return new TreeMultimapJsonDeserializer<K, V>( keyDeserializer, valueDeserializer );
+    public static TreeMultimapJsonDeserializer newInstance( KeyDeserializer keyDeserializer, JsonDeserializer valueDeserializer ) {
+        return new TreeMultimapJsonDeserializer( keyDeserializer, valueDeserializer );
     }
 
     /**

@@ -30,12 +30,11 @@ public final class TreeMultisetJsonDeserializer<T extends Comparable<T>> extends
 
     /**
      * @param deserializer {@link JsonDeserializer} used to deserialize the objects inside the {@link TreeMultiset}.
-     * @param <T> Type of the elements inside the {@link TreeMultiset}
      *
      * @return a new instance of {@link TreeMultisetJsonDeserializer}
      */
-    public static <T extends Comparable<T>> TreeMultisetJsonDeserializer<T> newInstance( JsonDeserializer<T> deserializer ) {
-        return new TreeMultisetJsonDeserializer<T>( deserializer );
+    public static TreeMultisetJsonDeserializer newInstance( JsonDeserializer deserializer ) {
+        return new TreeMultisetJsonDeserializer( deserializer );
     }
 
     /**
