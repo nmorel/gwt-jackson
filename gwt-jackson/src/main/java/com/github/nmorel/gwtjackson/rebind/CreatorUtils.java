@@ -120,6 +120,25 @@ public final class CreatorUtils {
      *
      * @return the first occurence of the annotation found on the types
      */
+    public static <T extends Annotation> Optional<T> getAnnotation( String annotation, List<? extends HasAnnotations>
+            hasAnnotationsList ) {
+        try {
+            Class clazz = Class.forName( annotation );
+            return getAnnotation( clazz, hasAnnotationsList );
+        } catch ( ClassNotFoundException e ) {
+            return Optional.absent();
+        }
+    }
+
+    /**
+     * Returns the first occurence of the annotation found on the types
+     *
+     * @param annotation the annotation
+     * @param hasAnnotationsList the types
+     * @param <T> Type of the annotation
+     *
+     * @return the first occurence of the annotation found on the types
+     */
     public static <T extends Annotation> Optional<T> getAnnotation( Class<T> annotation, List<? extends HasAnnotations>
             hasAnnotationsList ) {
         for ( HasAnnotations accessor : hasAnnotationsList ) {

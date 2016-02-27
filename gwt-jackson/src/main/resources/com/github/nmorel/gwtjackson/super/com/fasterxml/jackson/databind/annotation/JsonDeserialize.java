@@ -62,4 +62,15 @@ public @interface JsonDeserialize
      * thrown by deserializer.
      */
     public Class<?> contentAs() default Void.class;
+
+    /**
+     * Annotation for specifying if an external Builder class
+     * is to be used for building up deserialized instances
+     * of annotated class. If so, an instance of referenced
+     * class is first constructed (possibly using a Creator
+     * method; or if none defined, using default constructor),
+     * and its "with-methods" are used for populating fields;
+     * and finally "build-method" is invoked to complete deserialization.
+     */
+    public Class<?> builder() default Void.class;
 }

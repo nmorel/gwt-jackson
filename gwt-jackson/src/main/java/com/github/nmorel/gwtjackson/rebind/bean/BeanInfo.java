@@ -42,6 +42,8 @@ public final class BeanInfo {
     private final ImmutableList<JClassType> parameterizedTypes;
 
     /*####  Instantiation properties  ####*/
+    private final Optional<JClassType> builder;
+
     private final Optional<JAbstractMethod> creatorMethod;
 
     private final ImmutableMap<String, JParameter> creatorParameters;
@@ -84,10 +86,12 @@ public final class BeanInfo {
     /*#### Inclusion info ####*/
     private final Optional<Include> include;
 
-    BeanInfo( JClassType type, List<JClassType> parameterizedTypes, Optional<JAbstractMethod> creatorMethod, Map<String, JParameter> creatorParameters, boolean creatorDefaultConstructor, boolean creatorDelegation, Optional<BeanTypeInfo> typeInfo, Optional<PropertyInfo> valuePropertyInfo, Optional<PropertyInfo> anyGetterPropertyInfo, Optional<PropertyInfo> anySetterPropertyInfo, Set<String> ignoredFields, Visibility fieldVisibility, Visibility getterVisibility, Visibility isGetterVisibility, Visibility setterVisibility, Visibility creatorVisibility, boolean ignoreUnknown, List<String> propertyOrderList, boolean propertyOrderAlphabetic, Optional<BeanIdentityInfo> identityInfo, Optional<Include> include ) {
+    BeanInfo( JClassType type, List<JClassType> parameterizedTypes, Optional<JClassType> builder, Optional<JAbstractMethod> creatorMethod, Map<String, JParameter> creatorParameters, boolean creatorDefaultConstructor, boolean creatorDelegation, Optional<BeanTypeInfo> typeInfo, Optional<PropertyInfo> valuePropertyInfo, Optional<PropertyInfo> anyGetterPropertyInfo, Optional<PropertyInfo> anySetterPropertyInfo, Set<String> ignoredFields, Visibility fieldVisibility, Visibility getterVisibility, Visibility isGetterVisibility, Visibility setterVisibility, Visibility creatorVisibility, boolean ignoreUnknown, List<String> propertyOrderList, boolean propertyOrderAlphabetic, Optional<BeanIdentityInfo> identityInfo, Optional<Include> include ) {
 
         this.type = type;
         this.parameterizedTypes = ImmutableList.copyOf( parameterizedTypes );
+
+        this.builder = builder;
         this.creatorMethod = creatorMethod;
         this.creatorParameters = ImmutableMap.copyOf( creatorParameters );
         this.creatorDefaultConstructor = creatorDefaultConstructor;
@@ -117,6 +121,10 @@ public final class BeanInfo {
 
     public ImmutableList<JClassType> getParameterizedTypes() {
         return parameterizedTypes;
+    }
+
+    public Optional<JClassType> getBuilder() {
+        return builder;
     }
 
     public Optional<JAbstractMethod> getCreatorMethod() {

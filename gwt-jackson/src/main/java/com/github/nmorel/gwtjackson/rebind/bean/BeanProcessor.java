@@ -80,7 +80,7 @@ public final class BeanProcessor {
             builder.setParameterizedTypes( Arrays.<JClassType>asList( beanType.isGenericType().getTypeParameters() ) );
         }
 
-        determineInstanceCreator( configuration, logger, beanType, builder );
+        determineInstanceCreator( configuration, typeOracle, logger, beanType, builder );
 
         Optional<JsonAutoDetect> jsonAutoDetect = findFirstEncounteredAnnotationsOnAllHierarchy( configuration, beanType, JsonAutoDetect
                 .class );
@@ -128,17 +128,34 @@ public final class BeanProcessor {
      * Look for the method to create a new instance of the bean. If none are found or the bean is abstract or an interface, we considered it
      * as non instantiable.
      *
+     * @param typeOracle the oracle
      * @param logger logger
      * @param beanType type to look for constructor
      * @param builder current bean builder
      */
-    private static void determineInstanceCreator( RebindConfiguration configuration, TreeLogger logger, JClassType beanType,
+    private static void determineInstanceCreator( RebindConfiguration configuration, JacksonTypeOracle typeOracle, TreeLogger logger, JClassType beanType,
                                                   BeanInfoBuilder builder ) {
         if ( isObjectOrSerializable( beanType ) ) {
             return;
         }
 
         Optional<JClassType> mixinClass = configuration.getMixInAnnotations( beanType );
+
+        List<JClassType> accessors = new ArrayList<JClassType>();
+        if ( mixinClass.isPresent() ) {
+            accessors.add( mixinClass.get() );
+        }
+        accessors.add( beanType );
+
+        // Look for a builder class
+        Optional<Annotation> jsonDeserialize = CreatorUtils.getAnnotation( "com.fasterxml.jackson.databind.annotation.JsonDeserialize", accessors );
+        if (jsonDeserialize.isPresent()) {
+            Optional<JClassType> builderClass = typeOracle.getClassFromJsonDeserializeAnnotation( logger, jsonDeserialize.get(), "builder" );
+            if (builderClass.isPresent()) {
+                builder.setBuilder( builderClass.get() );
+                return;
+            }
+        }
 
         // we search for @JsonCreator annotation
         JConstructor creatorDefaultConstructor = null;

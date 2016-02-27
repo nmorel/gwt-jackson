@@ -56,6 +56,7 @@ import com.github.nmorel.gwtjackson.rebind.property.FieldAccessor;
 import com.github.nmorel.gwtjackson.rebind.property.FieldAccessor.Accessor;
 import com.github.nmorel.gwtjackson.rebind.property.PropertyInfo;
 import com.github.nmorel.gwtjackson.rebind.type.JDeserializerType;
+import com.github.nmorel.gwtjackson.rebind.writer.JTypeName;
 import com.github.nmorel.gwtjackson.rebind.writer.JsniCodeBlockBuilder;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
@@ -109,7 +110,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
     @Override
     protected final void buildSpecific( TypeSpec.Builder typeBuilder ) throws UnableToCompleteException, UnsupportedTypeException {
 
-        if ( beanInfo.getCreatorMethod().isPresent() ) {
+        if ( beanInfo.getBuilder().isPresent() || beanInfo.getCreatorMethod().isPresent() ) {
             typeBuilder.addMethod( buildInitInstanceBuilderMethod() );
         }
 
@@ -181,6 +182,15 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         } else {
             initInstanceBuilderMethodBuilder.addStatement( "final $T deserializers = null", deserializersMapTypeName );
         }
+
+        if ( beanInfo.getBuilder().isPresent() ) {
+            // we create the deserializer for the builder class itself
+            JDeserializerType builderType = getJsonDeserializerFromType( beanInfo.getBuilder().get() );
+            initInstanceBuilderMethodBuilder.addStatement( "final $T builderDeserializer = $L",
+                    JTypeName.parameterizedName( AbstractBeanJsonDeserializer.class, beanInfo.getBuilder().get() ),
+                    builderType.getInstance() );
+        }
+
         initInstanceBuilderMethodBuilder.addCode( "\n" );
 
         return initInstanceBuilderMethodBuilder
@@ -189,7 +199,10 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
     }
 
     private TypeSpec buildInstanceBuilderClass() {
-        MethodSpec createMethod = buildInstanceBuilderCreateMethod();
+        MethodSpec createMethod = null;
+        if ( !beanInfo.getBuilder().isPresent() ) {
+            createMethod = buildInstanceBuilderCreateMethod();
+        }
 
         MethodSpec.Builder newInstanceMethodBuilder = MethodSpec.methodBuilder( "newInstance" )
                 .addModifiers( Modifier.PUBLIC )
@@ -197,10 +210,13 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
                 .returns( parameterizedName( Instance.class, beanInfo.getType() ) )
                 .addParameter( JsonReader.class, "reader" )
                 .addParameter( JsonDeserializationContext.class, "ctx" )
+                .addParameter( JsonDeserializerParameters.class, "params" )
                 .addParameter( ParameterizedTypeName.get( Map.class, String.class, String.class ), "bufferedProperties" )
                 .addParameter( ParameterizedTypeName.get( Map.class, String.class, Object.class ), "bufferedPropertiesValues" );
 
-        if ( beanInfo.isCreatorDefaultConstructor() ) {
+        if ( beanInfo.getBuilder().isPresent() ) {
+            buildNewInstanceMethodForBuilder( newInstanceMethodBuilder );
+        } else if ( beanInfo.isCreatorDefaultConstructor() ) {
             buildNewInstanceMethodForDefaultConstructor( newInstanceMethodBuilder, createMethod );
         } else if ( beanInfo.isCreatorDelegation() ) {
             buildNewInstanceMethodForConstructorOrFactoryMethodDelegation( newInstanceMethodBuilder, createMethod );
@@ -218,10 +234,25 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         TypeSpec.Builder instanceBuilder = TypeSpec.anonymousClassBuilder( "" )
                 .addSuperinterface( parameterizedName( InstanceBuilder.class, beanInfo.getType() ) )
                 .addMethod( newInstanceMethodBuilder.build() )
-                .addMethod( createMethod )
                 .addMethod( deserializersGetter.build() );
 
+        if ( null != createMethod ) {
+            instanceBuilder.addMethod( createMethod );
+        }
+
         return instanceBuilder.build();
+    }
+
+    /**
+     * Generate the instance builder class body for a builder.
+     *
+     * @param newInstanceMethodBuilder builder for the
+     * {@link InstanceBuilder#newInstance(JsonReader, JsonDeserializationContext, JsonDeserializerParameters, Map, Map)}
+     * method
+     */
+    private void buildNewInstanceMethodForBuilder( MethodSpec.Builder newInstanceMethodBuilder ) {
+        newInstanceMethodBuilder.addStatement( "return new $T(builderDeserializer.deserializeInline(reader, ctx, params, null, null, null, bufferedProperties).build(), bufferedProperties)",
+                parameterizedName( Instance.class, beanInfo.getType() ) );
     }
 
     /**
@@ -229,7 +260,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
      * set the properties to it
      *
      * @param newInstanceMethodBuilder builder for the
-     * {@link InstanceBuilder#newInstance(JsonReader, JsonDeserializationContext, Map, Map)}
+     * {@link InstanceBuilder#newInstance(JsonReader, JsonDeserializationContext, JsonDeserializerParameters, Map, Map)}
      * method
      * @param createMethod the create method
      */
@@ -243,7 +274,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
      * instanciate the bean only on build() method when all properties have been deserialiazed
      *
      * @param newInstanceMethodBuilder builder for the
-     * {@link InstanceBuilder#newInstance(JsonReader, JsonDeserializationContext, Map, Map)} method
+     * {@link InstanceBuilder#newInstance(JsonReader, JsonDeserializationContext, JsonDeserializerParameters, Map, Map)} method
      * @param createMethod the create method
      */
     private void buildNewInstanceMethodForConstructorOrFactoryMethod( MethodSpec.Builder newInstanceMethodBuilder,
@@ -385,7 +416,7 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
      * Generate the instance builder class body for a constructor or factory method with delegation.
      *
      * @param newInstanceMethodBuilder builder for the
-     * {@link InstanceBuilder#newInstance(JsonReader, JsonDeserializationContext, Map, Map)}
+     * {@link InstanceBuilder#newInstance(JsonReader, JsonDeserializationContext, JsonDeserializerParameters, Map, Map)}
      * method
      * @param createMethod the create method
      */

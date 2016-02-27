@@ -343,7 +343,7 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
 
         // we first instantiate the bean. It might buffer properties if there are properties required for constructor and they are not in
         // first position
-        Instance<T> instance = instanceBuilder.newInstance( reader, ctx, bufferedProperties, bufferedPropertiesValues );
+        Instance<T> instance = instanceBuilder.newInstance( reader, ctx, params, bufferedProperties, bufferedPropertiesValues );
 
         T bean = instance.getInstance();
         bufferedProperties = instance.getBufferedProperties();

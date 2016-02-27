@@ -384,14 +384,9 @@ public final class PropertyProcessor {
             throw new UnableToCompleteException();
         }
 
-        try {
-            Class clazz = Class.forName( "com.fasterxml.jackson.databind.annotation.JsonDeserialize" );
-            Optional<Annotation> jd = fieldAccessors.getAnnotation( clazz );
-            if ( jd.isPresent() ) {
-                return typeOracle.replaceType( logger, type, jd.get() );
-            }
-        } catch ( ClassNotFoundException e ) {
-            logger.log( Type.DEBUG, "com.fasterxml.jackson.databind.annotation.JsonDeserialize not found" );
+        Optional<Annotation> jd = fieldAccessors.getAnnotation( "com.fasterxml.jackson.databind.annotation.JsonDeserialize" );
+        if ( jd.isPresent() ) {
+            return typeOracle.replaceType( logger, type, jd.get() );
         }
 
         return type;

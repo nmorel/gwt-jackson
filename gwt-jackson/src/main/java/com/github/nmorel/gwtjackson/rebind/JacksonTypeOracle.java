@@ -37,6 +37,7 @@ import com.google.gwt.core.ext.typeinfo.JParameterizedType;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.core.ext.typeinfo.NotFoundException;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
+import com.google.gwt.thirdparty.guava.common.base.Optional;
 
 /**
  * @author Nicolas Morel
@@ -160,20 +161,20 @@ public class JacksonTypeOracle {
             return type;
         }
 
-        JClassType typeAs = getClassFromJsonDeserializeAnnotation( logger, deserializeAs, "as" );
-        JClassType keyAs = getClassFromJsonDeserializeAnnotation( logger, deserializeAs, "keyAs" );
-        JClassType contentAs = getClassFromJsonDeserializeAnnotation( logger, deserializeAs, "contentAs" );
+        Optional<JClassType> typeAs = getClassFromJsonDeserializeAnnotation( logger, deserializeAs, "as" );
+        Optional<JClassType> keyAs = getClassFromJsonDeserializeAnnotation( logger, deserializeAs, "keyAs" );
+        Optional<JClassType> contentAs = getClassFromJsonDeserializeAnnotation( logger, deserializeAs, "contentAs" );
 
-        if ( null == typeAs && null == keyAs && null == contentAs ) {
+        if ( !typeAs.isPresent() && !keyAs.isPresent() && !contentAs.isPresent() ) {
             return type;
         }
 
         JArrayType arrayType = type.isArray();
         if ( null != arrayType ) {
-            if ( null != contentAs ) {
-                return typeOracle.getArrayType( contentAs );
-            } else if ( null != typeAs ) {
-                return typeOracle.getArrayType( typeAs );
+            if ( contentAs.isPresent() ) {
+                return typeOracle.getArrayType( contentAs.get() );
+            } else if ( typeAs.isPresent() ) {
+                return typeOracle.getArrayType( typeAs.get() );
             } else {
                 return classType;
             }
@@ -182,27 +183,27 @@ public class JacksonTypeOracle {
         JParameterizedType parameterizedType = type.isParameterized();
         if ( null != parameterizedType ) {
             JGenericType genericType;
-            if ( null != typeAs ) {
-                genericType = typeAs.isGenericType();
+            if ( typeAs.isPresent() ) {
+                genericType = typeAs.get().isGenericType();
             } else {
                 genericType = parameterizedType.getBaseType();
             }
 
-            if ( null == keyAs && null == contentAs ) {
+            if ( !keyAs.isPresent() && !contentAs.isPresent() ) {
                 return typeOracle.getParameterizedType( genericType, parameterizedType.getTypeArgs() );
-            } else if ( null != contentAs && isIterable( parameterizedType ) ) {
-                return typeOracle.getParameterizedType( genericType, new JClassType[]{contentAs} );
+            } else if ( contentAs.isPresent() && isIterable( parameterizedType ) ) {
+                return typeOracle.getParameterizedType( genericType, new JClassType[]{contentAs.get()} );
             } else if ( isMap( parameterizedType ) ) {
                 JClassType key;
-                if ( null != keyAs ) {
-                    key = keyAs;
+                if ( keyAs.isPresent() ) {
+                    key = keyAs.get();
                 } else {
                     key = parameterizedType.getTypeArgs()[0];
                 }
 
                 JClassType content;
-                if ( null != contentAs ) {
-                    content = contentAs;
+                if ( contentAs.isPresent() ) {
+                    content = contentAs.get();
                 } else {
                     content = parameterizedType.getTypeArgs()[1];
                 }
@@ -211,22 +212,22 @@ public class JacksonTypeOracle {
             }
         }
 
-        if ( null != typeAs ) {
-            return typeAs;
+        if ( typeAs.isPresent() ) {
+            return typeAs.get();
         }
 
         return type;
     }
 
-    private JClassType getClassFromJsonDeserializeAnnotation( TreeLogger logger, Annotation annotation, String name ) {
+    public Optional<JClassType> getClassFromJsonDeserializeAnnotation( TreeLogger logger, Annotation annotation, String name ) {
         try {
             Class asClass = (Class) annotation.getClass().getDeclaredMethod( name ).invoke( annotation );
             if ( asClass != Void.class ) {
-                return getType( asClass.getCanonicalName() );
+                return Optional.fromNullable( getType( asClass.getCanonicalName() ) );
             }
         } catch ( Exception e ) {
             logger.log( Type.ERROR, "Cannot find method " + name + " on JsonDeserialize annotation", e );
         }
-        return null;
+        return Optional.absent();
     }
 }

@@ -96,6 +96,10 @@ public final class PropertyAccessors {
         return CreatorUtils.isAnnotationPresent( annotation, setters );
     }
 
+    public <T extends Annotation> Optional<T> getAnnotation( String annotation ) {
+        return CreatorUtils.getAnnotation( annotation, accessors );
+    }
+
     public <T extends Annotation> Optional<T> getAnnotation( Class<T> annotation ) {
         return CreatorUtils.getAnnotation( annotation, accessors );
     }

@@ -39,6 +39,8 @@ final class BeanInfoBuilder {
 
     private List<JClassType> parameterizedTypes = Collections.emptyList();
 
+    private Optional<JClassType> builder = Optional.absent();
+
     private Optional<JAbstractMethod> creatorMethod = Optional.absent();
 
     private Map<String, JParameter> creatorParameters = Collections.emptyMap();
@@ -83,6 +85,7 @@ final class BeanInfoBuilder {
     BeanInfoBuilder( BeanInfo beanInfo ) {
         this.type = beanInfo.getType();
         this.parameterizedTypes = beanInfo.getParameterizedTypes();
+        this.builder = beanInfo.getBuilder();
         this.creatorMethod = beanInfo.getCreatorMethod();
         this.creatorParameters = beanInfo.getCreatorParameters();
         this.creatorDefaultConstructor = beanInfo.isCreatorDefaultConstructor();
@@ -112,6 +115,10 @@ final class BeanInfoBuilder {
 
     void setParameterizedTypes( List<JClassType> parameterizedTypes ) {
         this.parameterizedTypes = parameterizedTypes;
+    }
+
+    void setBuilder( JClassType builder ) {
+        this.builder = Optional.of(builder);
     }
 
     void setCreatorMethod( Optional<JAbstractMethod> creatorMethod ) {
@@ -203,7 +210,7 @@ final class BeanInfoBuilder {
     }
 
     BeanInfo build() {
-        return new BeanInfo( type, parameterizedTypes, creatorMethod, creatorParameters, creatorDefaultConstructor,
+        return new BeanInfo( type, parameterizedTypes, builder, creatorMethod, creatorParameters, creatorDefaultConstructor,
                 creatorDelegation, typeInfo, valuePropertyInfo, anyGetterPropertyInfo, anySetterPropertyInfo, ignoredFields,
                 fieldVisibility, getterVisibility, isGetterVisibility, setterVisibility, creatorVisibility, ignoreUnknown,
                 propertyOrderList, propertyOrderAlphabetic, identityInfo, include );
