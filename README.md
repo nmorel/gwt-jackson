@@ -105,7 +105,7 @@ With Maven
 <dependency>
   <groupId>com.github.nmorel.gwtjackson</groupId>
   <artifactId>gwt-jackson</artifactId>
-  <version>0.11.1</version>
+  <version>0.12.0</version>
   <scope>provided</scope>
 </dependency>
 ```
