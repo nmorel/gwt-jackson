@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
  *    used to change between numeric (index) and textual (name or <code>toString()</code>);
  *    but it is also possible to use {@link Shape#OBJECT} to serialize (but not deserialize)
  *    {@link java.lang.Enum}s as JSON Objects (as if they were POJOs). NOTE: serialization
- *     as JSON Object only works with class annotation; 
+ *     as JSON Object only works with class annotation;
  *    will not work as per-property annotation.
  *   </li>
  * <li>{@link java.util.Collection}s can be serialized as (and deserialized from) JSON Objects,
@@ -50,7 +50,7 @@ import java.lang.annotation.Target;
  * @since 2.0
  */
 @Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER,
-        ElementType.TYPE})
+    ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @JacksonAnnotation
 public @interface JsonFormat
@@ -122,7 +122,7 @@ public @interface JsonFormat
      * @since 2.6
      */
     public JsonFormat.Feature[] without() default { };
-    
+
     /*
     /**********************************************************
     /* Value enumeration(s), value class(es)

@@ -150,6 +150,8 @@ public final class JsonIncludeTester extends AbstractTester {
     public void testSerializeNonEmpty( ObjectWriterTester<BeanJsonInclude> writer ) {
 
         String expected = "{" +
+                "\"integerZero\":0," +
+                "\"intDefault\":0," +
                 "\"bigIntegerZero\":0," +
                 "\"bigDecimalZero\":0" +
                 "}";
