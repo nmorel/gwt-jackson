@@ -29,7 +29,7 @@
   <description>Extension to support Guava types like Optional or ImmutableSet</description>
 
   <properties>
-    <guava.version>19.0-rc2</guava.version>
+    <guava.version>19.0</guava.version>
   </properties>
 
   <dependencies>
