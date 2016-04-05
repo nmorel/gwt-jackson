@@ -25,6 +25,7 @@ import com.github.nmorel.gwtjackson.client.advanced.ObjectGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.PrivateAccessGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.ProxyAndAnonymousClassSerializationGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.WildcardGwtTest;
+import com.github.nmorel.gwtjackson.client.advanced.identity.ObjectIdBackReferenceGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.identity.ObjectIdDeserializationGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.identity.ObjectIdGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.identity.ObjectIdSerializationGwtTest;
@@ -312,6 +313,7 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( JavaScriptObjectGwtTest.class );
         suite.addTestSuite( DeserializeAsGwtTest.class );
 
+
         // Polymorphism
         suite.addTestSuite( PolymorphismNoTypeInfoGwtTest.class );
         suite.addTestSuite( PolymorphismIdClassAsPropertyGwtTest.class );
@@ -330,7 +332,8 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( ObjectIdSerializationGwtTest.class );
         suite.addTestSuite( ObjectIdWithPolymorphicGwtTest.class );
         suite.addTestSuite( ObjectIdWithEqualsGwtTest.class );
-
+        suite.addTestSuite( ObjectIdBackReferenceGwtTest.class);
+        
         // Options
         suite.addTestSuite( IndentGwtTest.class );
         suite.addTestSuite( DateOptionsGwtTest.class );
