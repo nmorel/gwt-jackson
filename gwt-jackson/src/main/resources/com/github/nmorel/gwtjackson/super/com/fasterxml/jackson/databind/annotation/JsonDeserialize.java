@@ -27,8 +27,69 @@ import java.lang.annotation.Target;
 @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.TYPE, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @com.fasterxml.jackson.annotation.JacksonAnnotation
-public @interface JsonDeserialize
-{
+public @interface JsonDeserialize {
+    /**
+     * <b>NOTE: </b>This is not yet used in GwtJackson. It is here
+     * to avoid GWT compilation errors when using annotated shared classes.
+     * <p>
+     * Deserializer class to use for deserializing associated value.
+     * Depending on what is annotated,
+     * value is either an instance of annotated class (used globablly
+     * anywhere where class deserializer is needed); or only used for
+     * deserializing property access via a setter method.
+     */
+    Class<?> using() default Void.class;
+
+    /**
+     * <b>NOTE: </b>This is not yet used in GwtJackson. It is here
+     * to avoid GWT compilation errors when using annotated shared classes.
+     * <p>
+     * Deserializer class to use for deserializing contents (elements
+     * of a Collection/array, values of Maps) of annotated property.
+     * Can only be used on instances (methods, fields, constructors),
+     * and not value classes themselves.
+     */
+    Class<?> contentUsing() default Void.class;
+
+    /**
+     * <b>NOTE: </b>This is not yet used in GwtJackson. It is here
+     * to avoid GWT compilation errors when using annotated shared classes.
+     * <p>
+     * Deserializer class to use for deserializing Map keys
+     * of annotated property.
+     * Can only be used on instances (methods, fields, constructors),
+     * and not value classes themselves.
+     */
+    Class<?> keyUsing() default Void.class;
+
+    // // // Annotations for specifying intermediate Converters (2.2+)
+
+    /**
+     * <b>NOTE: </b>This is not yet used in GwtJackson. It is here
+     * to avoid GWT compilation errors when using annotated shared classes.
+     * <p>
+     * Which helper object (if any) is to be used to convert from Jackson-bound
+     * intermediate type (source type of converter) into actual property type
+     * (which must be same as result type of converter). This is often used
+     * for two-step deserialization; Jackson binds data into suitable intermediate
+     * type (like Tree representation), and converter then builds actual property
+     * type.
+     *
+     * @since 2.2
+     */
+    Class<?> converter() default Void.class;
+
+    /**
+     * <b>NOTE: </b>This is not yet used in GwtJackson. It is here
+     * to avoid GWT compilation errors when using annotated shared classes.
+     * <p>
+     * Similar to {@link #converter}, but used for values of structures types
+     * (List, arrays, Maps).
+     *
+     * @since 2.2
+     */
+    Class<?> contentConverter() default Void.class;
+
     /**
      * Concrete type to deserialize values as, instead of type otherwise
      * declared. Must be a subtype of declared type; otherwise an
@@ -44,7 +105,7 @@ public @interface JsonDeserialize
      * deserializer)
      * and value of this annotation property is ignored.
      */
-    public Class<?> as() default Void.class;
+    Class<?> as() default Void.class;
 
     /**
      * Concrete type to deserialize keys of {@link java.util.Map} as,
@@ -52,7 +113,7 @@ public @interface JsonDeserialize
      * Must be a subtype of declared type; otherwise an exception may be
      * thrown by deserializer.
      */
-    public Class<?> keyAs() default Void.class;
+    Class<?> keyAs() default Void.class;
 
     /**
      * Concrete type to deserialize content (elements
@@ -61,7 +122,7 @@ public @interface JsonDeserialize
      * Must be a subtype of declared type; otherwise an exception may be
      * thrown by deserializer.
      */
-    public Class<?> contentAs() default Void.class;
+    Class<?> contentAs() default Void.class;
 
     /**
      * Annotation for specifying if an external Builder class
@@ -72,5 +133,5 @@ public @interface JsonDeserialize
      * and its "with-methods" are used for populating fields;
      * and finally "build-method" is invoked to complete deserialization.
      */
-    public Class<?> builder() default Void.class;
+    Class<?> builder() default Void.class;
 }
