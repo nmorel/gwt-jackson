@@ -29,6 +29,7 @@ import com.github.nmorel.gwtjackson.client.ObjectMapper;
 import com.github.nmorel.gwtjackson.rebind.exception.UnsupportedTypeException;
 import com.github.nmorel.gwtjackson.rebind.type.JDeserializerType;
 import com.github.nmorel.gwtjackson.rebind.type.JSerializerType;
+import com.github.nmorel.gwtjackson.rebind.writer.JTypeName;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.TreeLogger.Type;
@@ -203,9 +204,16 @@ public class ObjectMapperCreator extends AbstractCreator {
             rootName = jsonRootName.get().value();
         }
 
-        return MethodSpec.constructorBuilder()
+        MethodSpec.Builder spec = MethodSpec.constructorBuilder()
                 .addModifiers( Modifier.PUBLIC )
-                .addStatement( "super($S)", rootName )
+                .addStatement( "super($S)", rootName );
+
+        logger.log( Type.ERROR, "caching : " + context.isGeneratorResultCachingEnabled() );
+        for ( JClassType mixin : configuration.getAllMixInTypes() ) {
+            spec.addStatement( "$T.class.getName()", JTypeName.typeName( mixin ) );
+        }
+
+        return spec
                 .build();
     }
 

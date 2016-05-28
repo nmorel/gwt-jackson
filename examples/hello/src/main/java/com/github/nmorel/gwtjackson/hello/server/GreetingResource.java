@@ -34,10 +34,8 @@ public class GreetingResource extends HttpServlet {
             throw new IllegalArgumentException( "Name must be at least 4 characters long" );
         }
 
-        GreetingResponse response = new GreetingResponse();
-        response.setServerInfo( getServletContext().getServerInfo() );
-        response.setUserAgent( req.getHeader( "User-Agent" ) );
-        response.setGreeting( "Hello, " + greetingRequest.getName() + "!" );
+        GreetingResponse response = new GreetingResponse("Hello, " + greetingRequest.getName() + "!"
+        , getServletContext().getServerInfo(),req.getHeader( "User-Agent" ) );
 
         // Serialize the response into the servlet output
         mapper.writeValue( resp.getOutputStream(), response );

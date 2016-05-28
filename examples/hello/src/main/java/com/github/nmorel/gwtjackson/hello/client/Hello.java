@@ -2,6 +2,8 @@ package com.github.nmorel.gwtjackson.hello.client;
 
 import com.github.nmorel.gwtjackson.client.ObjectReader;
 import com.github.nmorel.gwtjackson.client.ObjectWriter;
+import com.github.nmorel.gwtjackson.client.annotation.JsonMixIns;
+import com.github.nmorel.gwtjackson.client.annotation.JsonMixIns.JsonMixIn;
 import com.github.nmorel.gwtjackson.hello.shared.FieldVerifier;
 import com.github.nmorel.gwtjackson.hello.shared.GreetingRequest;
 import com.github.nmorel.gwtjackson.hello.shared.GreetingResponse;
@@ -33,6 +35,9 @@ public class Hello implements EntryPoint {
 
     public static interface GreetingRequestWriter extends ObjectWriter<GreetingRequest> {}
 
+    @JsonMixIns( {
+            @JsonMixIn( target = GreetingResponse.class, mixIn = GreetingResponseMixIn.class )
+    } )
     public static interface GreetingResponseReader extends ObjectReader<GreetingResponse> {}
 
     /**
@@ -50,6 +55,7 @@ public class Hello implements EntryPoint {
      * This is the entry point method.
      */
     public void onModuleLoad() {
+//        new GreetingResponseMixIn().toString();
         final Button sendButton = new Button( "Send" );
         final TextBox nameField = new TextBox();
         nameField.setText( "GWT User" );

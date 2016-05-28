@@ -8,27 +8,24 @@ public class GreetingResponse {
 
     private String userAgent;
 
-    public String getGreeting() {
-        return greeting;
+    public GreetingResponse(){}
+
+    public GreetingResponse( String greeting, String serverInfo, String userAgent ) {
+        this.greeting = greeting;
+        this.serverInfo = serverInfo;
+        this.userAgent = userAgent;
     }
 
-    public void setGreeting( String greeting ) {
-        this.greeting = greeting;
+    public String getGreeting() {
+        return greeting;
     }
 
     public String getServerInfo() {
         return serverInfo;
     }
 
-    public void setServerInfo( String serverInfo ) {
-        this.serverInfo = serverInfo;
-    }
-
     public String getUserAgent() {
         return userAgent;
     }
 
-    public void setUserAgent( String userAgent ) {
-        this.userAgent = userAgent;
-    }
 }

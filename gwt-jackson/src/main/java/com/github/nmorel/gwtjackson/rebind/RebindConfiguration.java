@@ -19,6 +19,7 @@ package com.github.nmorel.gwtjackson.rebind;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -537,6 +538,10 @@ public final class RebindConfiguration {
      */
     public Optional<MapperInstance> getKeyDeserializer( JType type ) {
         return Optional.fromNullable( keyDeserializers.get( type.getQualifiedSourceName() ) );
+    }
+
+    public Collection<JClassType> getAllMixInTypes() {
+        return mixInAnnotations.values();
     }
 
     /**
