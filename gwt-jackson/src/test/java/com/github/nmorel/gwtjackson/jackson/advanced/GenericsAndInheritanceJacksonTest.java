@@ -19,6 +19,7 @@ package com.github.nmorel.gwtjackson.jackson.advanced;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.nmorel.gwtjackson.jackson.AbstractJacksonTest;
 import com.github.nmorel.gwtjackson.shared.advanced.GenericsAndInheritanceTester;
+import com.github.nmorel.gwtjackson.shared.advanced.GenericsAndInheritanceTester.Owner;
 import com.github.nmorel.gwtjackson.shared.advanced.GenericsAndInheritanceTester.Result;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -32,5 +33,10 @@ public class GenericsAndInheritanceJacksonTest extends AbstractJacksonTest {
     @Ignore
     public void test() {
         GenericsAndInheritanceTester.INSTANCE.test( createMapper( new TypeReference<Result<Integer>[]>() {} ) );
+    }
+
+    @Test
+    public void testMap() {
+        GenericsAndInheritanceTester.INSTANCE.testMap( createMapper( Owner.class ) );
     }
 }

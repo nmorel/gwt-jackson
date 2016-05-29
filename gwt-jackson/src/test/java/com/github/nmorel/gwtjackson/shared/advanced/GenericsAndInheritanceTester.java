@@ -16,6 +16,11 @@
 
 package com.github.nmorel.gwtjackson.shared.advanced;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
@@ -78,6 +83,85 @@ public class GenericsAndInheritanceTester extends AbstractTester {
 
     public static class IntegerResult extends Result<Integer> {}
 
+    //##### With Map
+
+    @JsonTypeInfo( use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY )
+    public static class Owner {
+
+        List<Parent<?>> parents = new ArrayList<Parent<?>>();
+
+        public List<Parent<?>> getParents() {
+            return parents;
+        }
+
+        public void setParents( List<Parent<?>> parents ) {
+            this.parents = parents;
+        }
+
+    }
+
+    @JsonTypeInfo( use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY )
+    public static class Parent<T> {
+
+        Child<T> child;
+
+        Map<T, T> typed = new HashMap<T, T>();
+
+        Map untyped = new HashMap();
+
+        public Child<T> getChild() {
+            return child;
+        }
+
+        public void setChild( Child<T> child ) {
+            this.child = child;
+        }
+
+        public Map<T, T> getTyped() {
+            return typed;
+        }
+
+        public void setTyped( Map<T, T> typed ) {
+            this.typed = typed;
+        }
+
+        public Map getUntyped() {
+            return untyped;
+        }
+
+        public void setUntyped( Map untyped ) {
+            this.untyped = untyped;
+        }
+    }
+
+    public static class IntegerParent extends Parent<Integer> {}
+
+    public static class StringParent extends Parent<String> {}
+
+    public static class Child<T> {
+
+        Map<T, T> typed = new HashMap<T, T>();
+
+        Map untyped = new HashMap();
+
+        public Map<T, T> getTyped() {
+            return typed;
+        }
+
+        public void setTyped( Map<T, T> typed ) {
+            this.typed = typed;
+        }
+
+        public Map getUntyped() {
+            return untyped;
+        }
+
+        public void setUntyped( Map untyped ) {
+            this.untyped = untyped;
+        }
+
+    }
+
     public static final GenericsAndInheritanceTester INSTANCE = new GenericsAndInheritanceTester();
 
     private GenericsAndInheritanceTester() {
@@ -137,6 +221,77 @@ public class GenericsAndInheritanceTester extends AbstractTester {
                 "\"exceptionMessage\":null," +
                 "\"payload\":70" +
                 "}]", mapper.write( result ) );
+    }
+
+    public void testMap( ObjectMapperTester<Owner> mapper ) {
+        Owner owner = new Owner();
+
+        StringParent sp = new StringParent();
+        sp.setTyped( createMap( "1", "1" ) );
+        sp.setUntyped( createMap( "1", "1" ) );
+
+        Child<String> sc = new Child<String>();
+        sc.setTyped( createMap( "1", "1" ) );
+        sc.setUntyped( createMap( "1", "1" ) );
+        sp.setChild( sc );
+
+        IntegerParent ip = new IntegerParent();
+        ip.setTyped( createMap( 1, 1 ) );
+        ip.setUntyped( createMap( 1, 1 ) );
+
+        Child<Integer> ic = new Child<Integer>();
+        ic.setTyped( createMap( 1, 1 ) );
+        ic.setUntyped( createMap( 1, 1 ) );
+        ip.setChild( ic );
+
+        owner.getParents().add( sp );
+        owner.getParents().add( ip );
+
+        String json = mapper.write( owner );
+        assertEquals( "{" +
+                "\"@c\":\".GenericsAndInheritanceTester$Owner\"," +
+                "\"parents\":[" +
+                "{" +
+                "\"@c\":\".GenericsAndInheritanceTester$StringParent\"," +
+                "\"child\":{" +
+                "\"typed\":{\"1\":\"1\"},\"untyped\":{\"1\":\"1\"}" +
+                "}," +
+                "\"typed\":{\"1\":\"1\"}," +
+                "\"untyped\":{\"1\":\"1\"}" +
+                "}," +
+                "{" +
+                "\"@c\":\".GenericsAndInheritanceTester$IntegerParent\"," +
+                "\"child\":{" +
+                "\"typed\":{\"1\":1}," +
+                "\"untyped\":{\"1\":1}" +
+                "}," +
+                "\"typed\":{\"1\":1}," +
+                "\"untyped\":{\"1\":1}" +
+                "}" +
+                "]}", json );
+
+        owner = mapper.read( json );
+
+        sp = (StringParent) owner.getParents().get( 0 );
+        ip = (IntegerParent) owner.getParents().get( 1 );
+
+        // Raw map : keys are strings
+        assertEquals( sp.getUntyped().get( "1" ), "1" );
+        assertEquals( sp.getChild().getUntyped().get( "1" ), "1" );
+        assertEquals( ip.getUntyped().get( "1" ), 1 );
+        assertEquals( ip.getChild().getUntyped().get( "1" ), 1 );
+
+        // Typed map : keys are integer or string
+        assertEquals( sp.getTyped().get( "1" ), "1" );
+        assertEquals( sp.getChild().getTyped().get( "1" ), "1" );
+        assertEquals( ip.getTyped().get( 1 ), (Integer) 1 );
+        assertEquals( ip.getChild().getTyped().get( 1 ), (Integer) 1 );
+    }
+
+    private static <T> Map<T, T> createMap( T t1, T t2 ) {
+        Map<T, T> map = new HashMap<T, T>();
+        map.put( t1, t2 );
+        return map;
     }
 
 }

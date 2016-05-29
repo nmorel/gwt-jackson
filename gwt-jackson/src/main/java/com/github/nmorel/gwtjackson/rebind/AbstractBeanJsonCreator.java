@@ -24,8 +24,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import com.github.nmorel.gwtjackson.client.JsonDeserializer;
-import com.github.nmorel.gwtjackson.client.JsonSerializer;
+import com.github.nmorel.gwtjackson.client.Deserializer;
+import com.github.nmorel.gwtjackson.client.Serializer;
 import com.github.nmorel.gwtjackson.client.deser.bean.AbstractBeanJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.bean.AbstractDelegationBeanJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.bean.AbstractObjectBeanJsonDeserializer;
@@ -180,10 +180,10 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
             Class mapperClass;
             String mapperNameFormat;
             if ( isSerializer() ) {
-                mapperClass = JsonSerializer.class;
+                mapperClass = Serializer.class;
                 mapperNameFormat = TYPE_PARAMETER_SERIALIZER_FIELD_NAME;
             } else {
-                mapperClass = JsonDeserializer.class;
+                mapperClass = Deserializer.class;
                 mapperNameFormat = TYPE_PARAMETER_DESERIALIZER_FIELD_NAME;
             }
 

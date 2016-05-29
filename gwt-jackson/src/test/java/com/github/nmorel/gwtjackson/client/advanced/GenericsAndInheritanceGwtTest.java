@@ -20,6 +20,7 @@ import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.github.nmorel.gwtjackson.client.ObjectMapper;
 import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
 import com.github.nmorel.gwtjackson.shared.advanced.GenericsAndInheritanceTester;
+import com.github.nmorel.gwtjackson.shared.advanced.GenericsAndInheritanceTester.Owner;
 import com.github.nmorel.gwtjackson.shared.advanced.GenericsAndInheritanceTester.Result;
 import com.google.gwt.core.client.GWT;
 
@@ -28,14 +29,25 @@ import com.google.gwt.core.client.GWT;
  */
 public class GenericsAndInheritanceGwtTest extends GwtJacksonTestCase {
 
+    private GenericsAndInheritanceTester tester = GenericsAndInheritanceTester.INSTANCE;
+
     public static interface ListResultMapper extends ObjectMapper<Result<Integer>[]>, ObjectMapperTester<Result<Integer>[]> {
 
         static ListResultMapper INSTANCE = GWT.create( ListResultMapper.class );
     }
 
-    private GenericsAndInheritanceTester tester = GenericsAndInheritanceTester.INSTANCE;
-
     public void test() {
         tester.test( ListResultMapper.INSTANCE );
+    }
+
+    //#######
+
+    public static interface OwnerMapper extends ObjectMapper<Owner>, ObjectMapperTester<Owner> {
+
+        static OwnerMapper INSTANCE = GWT.create( OwnerMapper.class );
+    }
+
+    public void testMap() {
+        tester.testMap( OwnerMapper.INSTANCE );
     }
 }
