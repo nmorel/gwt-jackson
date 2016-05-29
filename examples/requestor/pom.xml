@@ -15,7 +15,7 @@
 
   <properties>
     <gwt.module>com.github.nmorel.gwtjackson.hello.HelloRequestor</gwt.module>
-    <requestor.version>0.1.0</requestor.version>
+    <requestor.version>0.2.0</requestor.version>
     <gdeferred.version>0.9.0</gdeferred.version>
   </properties>
 

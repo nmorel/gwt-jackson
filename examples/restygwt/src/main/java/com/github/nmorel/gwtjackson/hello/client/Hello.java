@@ -18,9 +18,9 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import io.reinert.gdeferred.DoneCallback;
-import io.reinert.requestor.Requestor;
-import io.reinert.requestor.gdeferred.FailCallback;
+import org.fusesource.restygwt.client.Defaults;
+import org.fusesource.restygwt.client.Method;
+import org.fusesource.restygwt.client.MethodCallback;
 
 /**
  * @author Nicolas Morel
@@ -34,7 +34,11 @@ public class Hello implements EntryPoint {
     private static final String SERVER_ERROR = "An error occurred while " + "attempting to contact the server. Please check your network " +
             "" + "connection and try again.";
 
-    private static final Requestor requestor = GWT.create( Requestor.class );
+    private static final HelloRestService helloRestService = GWT.create( HelloRestService.class );
+
+    static {
+        Defaults.setServiceRoot( "api" );
+    }
 
     /**
      * This is the entry point method.
@@ -122,26 +126,32 @@ public class Hello implements EntryPoint {
                 textToServerLabel.setText( textToServer );
                 serverResponseLabel.setText( "" );
 
-                requestor.req( "api/hello" ).payload( new GreetingRequest( textToServer ) ).post( GreetingResponse.class )
-                        .done( new DoneCallback<GreetingResponse>() {
-                            @Override
-                            public void onDone( GreetingResponse result ) {
-                                dialogBox.setText( "Remote Procedure Call" );
-                                serverResponseLabel.removeStyleName( "serverResponseLabelError" );
-                                serverResponseLabel.setHTML( new SafeHtmlBuilder().appendEscaped( result.getGreeting() )
-                                        .appendHtmlConstant( "<br><br>I am running " ).appendEscaped( result.getServerInfo() )
-                                        .appendHtmlConstant( ".<br><br>It looks like you are using:<br>" ).appendEscaped( result
-                                                .getUserAgent() ).toSafeHtml() );
-                                dialogBox.center();
-                                closeButton.setFocus( true );
-                            }
-                        } ).fail( new FailCallback() {
+                helloRestService.greet( new GreetingRequest( textToServer ), new MethodCallback<GreetingResponse>() {
+
                     @Override
-                    public void onFail( Throwable throwable ) {
+                    public void onFailure( Method method, Throwable caught ) {
                         // Show the RPC error message to the user
                         dialogBox.setText( "Remote Procedure Call - Failure" );
                         serverResponseLabel.addStyleName( "serverResponseLabelError" );
-                        serverResponseLabel.setHTML( SERVER_ERROR );
+                        if ( null == method.getResponse() ) {
+                            serverResponseLabel.setHTML( SERVER_ERROR );
+                        } else {
+                            serverResponseLabel.setHTML( new SafeHtmlBuilder().appendEscaped( Integer
+                                    .toString( method.getResponse().getStatusCode() ) )
+                                    .appendEscaped( " : " ).appendEscaped( method.getResponse().getStatusText() ).toSafeHtml() );
+                        }
+                        dialogBox.center();
+                        closeButton.setFocus( true );
+                    }
+
+                    @Override
+                    public void onSuccess( Method method, GreetingResponse result ) {
+                        dialogBox.setText( "Remote Procedure Call" );
+                        serverResponseLabel.removeStyleName( "serverResponseLabelError" );
+                        serverResponseLabel.setHTML( new SafeHtmlBuilder().appendEscaped( result.getGreeting() )
+                                .appendHtmlConstant( "<br><br>I am running " ).appendEscaped( result.getServerInfo() )
+                                .appendHtmlConstant( ".<br><br>It looks like you are using:<br>" ).appendEscaped( result.getUserAgent() )
+                                .toSafeHtml() );
                         dialogBox.center();
                         closeButton.setFocus( true );
                     }

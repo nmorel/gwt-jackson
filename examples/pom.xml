@@ -35,6 +35,7 @@
     <module>benchmark</module>
     <module>gwtp</module>
     <module>requestor</module>
+    <module>restygwt</module>
   </modules>
 
   <properties>
