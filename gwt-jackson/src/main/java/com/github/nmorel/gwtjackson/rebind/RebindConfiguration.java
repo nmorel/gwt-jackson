@@ -241,7 +241,7 @@ public final class RebindConfiguration {
     /**
      * @return the list of default configuration + user configurations
      */
-    private List<AbstractConfiguration> getAllConfigurations() {
+    private List<AbstractConfiguration> getAllConfigurations() throws UnableToCompleteException {
         ImmutableList.Builder<AbstractConfiguration> builder = ImmutableList.builder();
         builder.add( new DefaultConfiguration() );
 
@@ -257,7 +257,8 @@ public final class RebindConfiguration {
                 try {
                     builder.add( (AbstractConfiguration) Class.forName( value ).newInstance() );
                 } catch ( Exception e ) {
-                    logger.log( Type.WARN, "Cannot instantiate the configuration class " + value );
+                    logger.log( Type.ERROR, "Cannot instantiate the configuration class " + value );
+                    throw new UnableToCompleteException();
                 }
             }
         }
@@ -274,7 +275,8 @@ public final class RebindConfiguration {
      * @param allSupportedDeserializationClassBuilder builder aggregating all the types that have a deserializer
      */
     private void addMappers( final AbstractConfiguration configuration, final MapperType mapperType, Builder<JClassType>
-            allSupportedSerializationClassBuilder, Builder<JClassType> allSupportedDeserializationClassBuilder ) {
+            allSupportedSerializationClassBuilder, Builder<JClassType> allSupportedDeserializationClassBuilder ) throws
+            UnableToCompleteException {
         Map<Class, Class> configuredMapper = mapperType.getMapperTypeConfiguration( configuration );
 
         for ( Entry<Class, Class> entry : configuredMapper.entrySet() ) {
@@ -357,7 +359,7 @@ public final class RebindConfiguration {
     /**
      * Search a static method or constructor to instantiate the mapper and return a {@link String} calling it.
      */
-    private MapperInstance getInstance( JType mappedType, JClassType classType, boolean isSerializers ) {
+    private MapperInstance getInstance( JType mappedType, JClassType classType, boolean isSerializers ) throws UnableToCompleteException {
         int nbParam = 0;
         if ( null != mappedType.isGenericType() && (!isSerializers || !typeOracle.isEnumSupertype( mappedType )) ) {
             nbParam = mappedType.isGenericType().getTypeParameters().length;
@@ -390,9 +392,9 @@ public final class RebindConfiguration {
             }
         }
 
-        logger.log( Type.WARN, "Cannot instantiate the custom serializer/deserializer " + classType
-                .getQualifiedSourceName() + ". It will be ignored" );
-        return null;
+        logger.log( Type.ERROR, "Cannot instantiate the custom serializer/deserializer " + classType.getQualifiedSourceName() + ". "
+                + "Check the page https://github.com/nmorel/gwt-jackson/wiki/Custom-serializers-and-deserializers for more details." );
+        throw new UnableToCompleteException();
     }
 
     private MapperType[] getParameters( JType mappedType, JAbstractMethod method, boolean isSerializers ) {
