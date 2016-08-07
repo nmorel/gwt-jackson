@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.ser.bean;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -94,7 +93,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
     public abstract Class getSerializedType();
 
     @Override
-    public void doSerialize( JsonWriter writer, @Nonnull T value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
+    public void doSerialize( JsonWriter writer, T value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         getSerializer( writer, value, ctx ).serializeInternally( writer, value, ctx, params, defaultIdentityInfo, defaultTypeInfo );
     }
 

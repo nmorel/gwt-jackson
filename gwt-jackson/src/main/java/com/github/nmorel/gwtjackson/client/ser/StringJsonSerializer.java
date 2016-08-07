@@ -16,9 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.ser;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.JsonSerializerParameters;
@@ -43,12 +40,12 @@ public class StringJsonSerializer extends JsonSerializer<String> {
     private StringJsonSerializer() { }
 
     @Override
-    protected boolean isEmpty( @Nullable String value ) {
+    protected boolean isEmpty( String value ) {
         return null == value || value.length() == 0;
     }
 
     @Override
-    public void doSerialize( JsonWriter writer, @Nonnull String value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
+    public void doSerialize( JsonWriter writer, String value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         writer.value( value );
     }
 }

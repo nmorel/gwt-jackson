@@ -16,8 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.ser;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -50,7 +48,7 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         private BigDecimalJsonSerializer() { }
 
         @Override
-        protected boolean isDefault( @Nullable BigDecimal value ) {
+        protected boolean isDefault( BigDecimal value ) {
             return null == value || BigDecimal.ZERO.compareTo( value ) == 0;
         }
     }
@@ -72,7 +70,7 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         private BigIntegerJsonSerializer() { }
 
         @Override
-        protected boolean isDefault( @Nullable BigInteger value ) {
+        protected boolean isDefault( BigInteger value ) {
             return null == value || BigInteger.ZERO.compareTo( value ) == 0;
         }
     }
@@ -96,7 +94,7 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         private ByteJsonSerializer() { }
 
         @Override
-        protected boolean isDefault( @Nullable Byte value ) {
+        protected boolean isDefault( Byte value ) {
             return null == value || defaultValue == value;
         }
     }
@@ -118,12 +116,12 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         private DoubleJsonSerializer() { }
 
         @Override
-        protected boolean isDefault( @Nullable Double value ) {
+        protected boolean isDefault( Double value ) {
             return null == value || value == 0d;
         }
 
         @Override
-        public void doSerialize( JsonWriter writer, @Nonnull Double value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
+        public void doSerialize( JsonWriter writer, Double value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
             // writer has a special method to write double, let's use instead of default Number method.
             writer.value( value.doubleValue() );
         }
@@ -146,7 +144,7 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         private FloatJsonSerializer() { }
 
         @Override
-        protected boolean isDefault( @Nullable Float value ) {
+        protected boolean isDefault( Float value ) {
             return null == value || value == 0f;
         }
     }
@@ -168,7 +166,7 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         private IntegerJsonSerializer() { }
 
         @Override
-        protected boolean isDefault( @Nullable Integer value ) {
+        protected boolean isDefault( Integer value ) {
             return null == value || value == 0;
         }
     }
@@ -190,12 +188,12 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         private LongJsonSerializer() { }
 
         @Override
-        protected boolean isDefault( @Nullable Long value ) {
+        protected boolean isDefault( Long value ) {
             return null == value || value == 0l;
         }
 
         @Override
-        public void doSerialize( JsonWriter writer, @Nonnull Long value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
+        public void doSerialize( JsonWriter writer, Long value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
             // writer has a special method to write long, let's use instead of default Number method.
             writer.value( value.longValue() );
         }
@@ -220,7 +218,7 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         private ShortJsonSerializer() { }
 
         @Override
-        protected boolean isDefault( @Nullable Short value ) {
+        protected boolean isDefault( Short value ) {
             return null == value || defaultValue == value;
         }
     }
@@ -242,13 +240,13 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         private NumberJsonSerializer() { }
 
         @Override
-        protected boolean isDefault( @Nullable Number value ) {
+        protected boolean isDefault( Number value ) {
             return null == value || value.intValue() == 0;
         }
     }
 
     @Override
-    public void doSerialize( JsonWriter writer, @Nonnull N value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
+    public void doSerialize( JsonWriter writer, N value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         writer.value( value );
     }
 }

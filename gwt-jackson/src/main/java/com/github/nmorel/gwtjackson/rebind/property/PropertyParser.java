@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.rebind.property;
 
-import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -71,7 +70,7 @@ public final class PropertyParser {
         return ImmutableMap.copyOf( Maps.transformValues( propertyAccessors, new Function<PropertyAccessorsBuilder, PropertyAccessors>() {
 
             @Override
-            public PropertyAccessors apply( @Nullable PropertyAccessorsBuilder propertyAccessorsBuilder ) {
+            public PropertyAccessors apply( PropertyAccessorsBuilder propertyAccessorsBuilder ) {
                 return null == propertyAccessorsBuilder ? null : propertyAccessorsBuilder.build();
             }
         } ) );

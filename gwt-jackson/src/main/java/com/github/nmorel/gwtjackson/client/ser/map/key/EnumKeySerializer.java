@@ -16,8 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.ser.map.key;
 
-import javax.annotation.Nonnull;
-
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 
 /**
@@ -45,7 +43,7 @@ public final class EnumKeySerializer<E extends Enum<E>> extends KeySerializer<E>
     }
 
     @Override
-    protected String doSerialize( @Nonnull E value, JsonSerializationContext ctx ) {
+    protected String doSerialize( E value, JsonSerializationContext ctx ) {
         return value.name();
     }
 }

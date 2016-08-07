@@ -16,8 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.ser;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
@@ -57,12 +55,12 @@ public class CollectionJsonSerializer<C extends Collection<T>, T> extends JsonSe
     }
 
     @Override
-    protected boolean isEmpty( @Nullable C value ) {
+    protected boolean isEmpty( C value ) {
         return null == value || value.isEmpty();
     }
 
     @Override
-    public void doSerialize( JsonWriter writer, @Nonnull C values, JsonSerializationContext ctx, JsonSerializerParameters params ) {
+    public void doSerialize( JsonWriter writer, C values, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         if ( values.isEmpty() ) {
             if ( ctx.isWriteEmptyJsonArrays() ) {
                 writer.beginArray();

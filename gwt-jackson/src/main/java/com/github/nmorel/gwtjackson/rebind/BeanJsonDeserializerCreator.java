@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.rebind;
 
-import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -304,7 +303,6 @@ public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
         if ( !requiredProperties.isEmpty() ) {
             CodeBlock code = CodeBlock.builder()
                     .add( Joiner.on( ", " ).join( Collections2.transform( requiredProperties, new Function<String, Object>() {
-                        @Nullable
                         @Override
                         public Object apply( String s ) {
                             return "$S";

@@ -16,8 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.ser.map.key;
 
-import javax.annotation.Nonnull;
-
 import java.util.UUID;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
@@ -47,7 +45,7 @@ public final class UUIDKeySerializer extends KeySerializer<UUID> {
     }
 
     @Override
-    protected String doSerialize( @Nonnull UUID value, JsonSerializationContext ctx ) {
+    protected String doSerialize( UUID value, JsonSerializationContext ctx ) {
         return value.toString();
     }
 }

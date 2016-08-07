@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.rebind.property;
 
-import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -157,7 +156,7 @@ public final class PropertyProcessor {
             // sorting entries alphabetically on their key
             Lists.sort( entries, Ordering.natural().onResultOf( new Function<Entry<String, PropertyInfo>, String>() {
                 @Override
-                public String apply( @Nullable Entry<String, PropertyInfo> entry ) {
+                public String apply( Entry<String, PropertyInfo> entry ) {
                     return null == entry ? null : entry.getKey();
                 }
             } ) );

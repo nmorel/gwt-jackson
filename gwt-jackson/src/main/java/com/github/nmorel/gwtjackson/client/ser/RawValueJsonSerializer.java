@@ -16,8 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.ser;
 
-import javax.annotation.Nonnull;
-
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.JsonSerializerParameters;
@@ -43,7 +41,7 @@ public class RawValueJsonSerializer<T> extends JsonSerializer<T> {
     private RawValueJsonSerializer() { }
 
     @Override
-    protected void doSerialize( JsonWriter writer, @Nonnull Object value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
+    protected void doSerialize( JsonWriter writer, Object value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         writer.rawValue( value );
     }
 }

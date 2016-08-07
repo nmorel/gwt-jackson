@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.rebind;
 
-import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -826,9 +825,8 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         CodeBlock.Builder builder = initMethodCallCode( instance );
         return methodCallParametersCode( builder, Lists.transform( parameters, new Function<JType, CodeBlock>() {
 
-            @Nullable
             @Override
-            public CodeBlock apply( @Nullable JType jType ) {
+            public CodeBlock apply( JType jType ) {
                 return CodeBlock.builder().add( "$T.class", typeName( jType ) ).build();
             }
         } ) );
@@ -859,7 +857,6 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
     ) {
         return methodCallParametersCode( builder, Lists.transform( parameters, new Function<JMapperType, CodeBlock>() {
 
-            @Nullable
             @Override
             public CodeBlock apply( JMapperType jMapperType ) {
                 return jMapperType.getInstance();
@@ -880,7 +877,6 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
     ) {
         return methodCallParametersCode( builder, Lists.transform( parameters, new Function<JParameterizedMapper, CodeBlock>() {
 
-            @Nullable
             @Override
             public CodeBlock apply( JParameterizedMapper jMapperType ) {
                 return jMapperType.getInstance();

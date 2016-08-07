@@ -16,9 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.github.nmorel.gwtjackson.client.exception.JsonSerializationException;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
@@ -118,14 +115,14 @@ public abstract class JsonSerializer<T> {
     /**
      * @return true if the value corresponds to the default one
      */
-    protected boolean isDefault( @Nullable T value ) {
+    protected boolean isDefault( T value ) {
         return isEmpty( value );
     }
 
     /**
      * @return true if the value is empty
      */
-    protected boolean isEmpty( @Nullable T value ) {
+    protected boolean isEmpty( T value ) {
         return null == value;
     }
 
@@ -137,6 +134,6 @@ public abstract class JsonSerializer<T> {
      * @param ctx Context for the full serialization process
      * @param params Parameters for this serialization
      */
-    protected abstract void doSerialize( JsonWriter writer, @Nonnull T value, JsonSerializationContext ctx, JsonSerializerParameters
+    protected abstract void doSerialize( JsonWriter writer, T value, JsonSerializationContext ctx, JsonSerializerParameters
             params );
 }

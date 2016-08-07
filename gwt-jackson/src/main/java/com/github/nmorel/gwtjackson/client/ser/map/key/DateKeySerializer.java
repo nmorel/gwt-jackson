@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.ser.map.key;
 
-import javax.annotation.Nonnull;
 import java.util.Date;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
@@ -46,7 +45,7 @@ public class DateKeySerializer<D extends Date> extends KeySerializer<D> {
     }
 
     @Override
-    protected String doSerialize( @Nonnull Date value, JsonSerializationContext ctx ) {
+    protected String doSerialize( Date value, JsonSerializationContext ctx ) {
         if ( ctx.isWriteDateKeysAsTimestamps() ) {
             return Long.toString( value.getTime() );
         } else {

@@ -20,9 +20,6 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
@@ -54,7 +51,7 @@ public abstract class BaseDateJsonSerializer<D extends Date> extends JsonSeriali
         private DateJsonSerializer() { }
 
         @Override
-        protected void doSerialize( JsonWriter writer, @Nonnull Date value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
+        protected void doSerialize( JsonWriter writer, Date value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
             if ( (ctx.isWriteDatesAsTimestamps() || params.getShape().isNumeric()) && params.getShape() != Shape.STRING ) {
                 writer.value( value.getTime() );
             } else {
@@ -85,7 +82,7 @@ public abstract class BaseDateJsonSerializer<D extends Date> extends JsonSeriali
         private SqlDateJsonSerializer() { }
 
         @Override
-        protected void doSerialize( JsonWriter writer, @Nonnull java.sql.Date value, JsonSerializationContext ctx,
+        protected void doSerialize( JsonWriter writer, java.sql.Date value, JsonSerializationContext ctx,
                                     JsonSerializerParameters params ) {
             writer.unescapeValue( value.toString() );
         }
@@ -108,7 +105,7 @@ public abstract class BaseDateJsonSerializer<D extends Date> extends JsonSeriali
         private SqlTimeJsonSerializer() { }
 
         @Override
-        protected void doSerialize( JsonWriter writer, @Nonnull Time value, JsonSerializationContext ctx, JsonSerializerParameters params
+        protected void doSerialize( JsonWriter writer, Time value, JsonSerializationContext ctx, JsonSerializerParameters params
         ) {
             writer.unescapeValue( value.toString() );
         }
@@ -131,7 +128,7 @@ public abstract class BaseDateJsonSerializer<D extends Date> extends JsonSeriali
         private SqlTimestampJsonSerializer() { }
 
         @Override
-        protected void doSerialize( JsonWriter writer, @Nonnull Timestamp value, JsonSerializationContext ctx, JsonSerializerParameters
+        protected void doSerialize( JsonWriter writer, Timestamp value, JsonSerializationContext ctx, JsonSerializerParameters
                 params ) {
             if ( ctx.isWriteDatesAsTimestamps() || params.getShape().isNumeric() ) {
                 writer.value( value.getTime() );
@@ -147,7 +144,7 @@ public abstract class BaseDateJsonSerializer<D extends Date> extends JsonSeriali
     }
 
     @Override
-    protected boolean isEmpty( @Nullable D value ) {
+    protected boolean isEmpty( D value ) {
         return null == value || value.getTime() == 0l;
     }
 }

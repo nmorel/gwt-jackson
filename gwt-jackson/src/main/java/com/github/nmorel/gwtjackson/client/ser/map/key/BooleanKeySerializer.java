@@ -16,8 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.ser.map.key;
 
-import javax.annotation.Nonnull;
-
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 
 /**
@@ -45,7 +43,7 @@ public final class BooleanKeySerializer extends KeySerializer<Boolean> {
     }
 
     @Override
-    protected String doSerialize( @Nonnull Boolean value, JsonSerializationContext ctx ) {
+    protected String doSerialize( Boolean value, JsonSerializationContext ctx ) {
         return value.toString();
     }
 }

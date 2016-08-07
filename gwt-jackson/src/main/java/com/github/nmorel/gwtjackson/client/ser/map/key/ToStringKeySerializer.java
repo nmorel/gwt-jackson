@@ -16,8 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.ser.map.key;
 
-import javax.annotation.Nonnull;
-
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 
 /**
@@ -39,7 +37,7 @@ public final class ToStringKeySerializer extends KeySerializer<Object> {
     private ToStringKeySerializer() { }
 
     @Override
-    protected String doSerialize( @Nonnull Object value, JsonSerializationContext ctx ) {
+    protected String doSerialize( Object value, JsonSerializationContext ctx ) {
         return value.toString();
     }
 }

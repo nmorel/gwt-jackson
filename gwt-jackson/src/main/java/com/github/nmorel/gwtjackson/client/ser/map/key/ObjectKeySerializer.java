@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.ser.map.key;
 
-import javax.annotation.Nonnull;
 import java.util.Date;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
@@ -40,7 +39,7 @@ public final class ObjectKeySerializer extends KeySerializer<Object> {
     private ObjectKeySerializer() { }
 
     @Override
-    protected String doSerialize( @Nonnull Object value, JsonSerializationContext ctx ) {
+    protected String doSerialize( Object value, JsonSerializationContext ctx ) {
         if ( value instanceof Date ) {
             return DateKeySerializer.getInstance().doSerialize( (Date) value, ctx );
         } else {

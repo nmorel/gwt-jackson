@@ -16,7 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.ser.map.key;
 
-import javax.annotation.Nonnull;
 import java.util.Map;
 
 import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
@@ -62,5 +61,5 @@ public abstract class KeySerializer<T> {
      *
      * @return the key
      */
-    protected abstract String doSerialize( @Nonnull T value, JsonSerializationContext ctx );
+    protected abstract String doSerialize( T value, JsonSerializationContext ctx );
 }
