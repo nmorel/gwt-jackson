@@ -67,6 +67,7 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
                 "\"sqlTime\":\"15:45:56\"," +
                 "\"sqlTimestamp\":1345304756546," +
                 "\"stringArray\":[\"Hello\",null,\"World\",\"!\"]," +
+                "\"enumArray\":[\"A\",null,\"C\",\"D\"]," +
                 "\"booleanPrimitiveArray\":[true, null, false, 1, 0]," +
                 "\"bytePrimitiveArray\":\"SGVsbG8=\"," +
                 "\"characterPrimitiveArray\":\"çou\"," +
@@ -76,6 +77,7 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
                 "\"longPrimitiveArray\":[9223372036854775807,null,-9223372036854775808]," +
                 "\"shortPrimitiveArray\":[9,null,7,8,15]," +
                 "\"stringArray2d\":[[\"Jean\",\"Dujardin\"],[\"Omar\",\"Sy\"],[\"toto\",null]]," +
+                "\"enumArray2d\":[[\"A\",\"B\"],[\"C\",\"D\"],[\"B\",null]]," +
                 "\"booleanPrimitiveArray2d\":[[true,false],[false,false]]," +
                 "\"bytePrimitiveArray2d\":[\"SGVsbG8=\",\"V29ybGQ=\"]," +
                 "\"characterPrimitiveArray2d\":[\"ço\",\"ab\"]," +
@@ -119,6 +121,7 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
 
         // Arrays
         assertTrue( Arrays.deepEquals( new String[]{"Hello", null, "World", "!"}, bean.getStringArray() ) );
+        assertTrue( Arrays.deepEquals( new AnEnum[]{AnEnum.A, null, AnEnum.C, AnEnum.D}, bean.getEnumArray() ) );
         assertTrue( Arrays.equals( new boolean[]{true, false, false, true, false}, bean.getBooleanPrimitiveArray() ) );
         assertTrue( Arrays.equals( "Hello".getBytes(), bean.getBytePrimitiveArray() ) );
         assertTrue( Arrays.equals( new char[]{'\u00e7', 'o', 'u'}, bean.getCharacterPrimitiveArray() ) );
@@ -132,6 +135,9 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
         assertTrue( isArray2dEquals( newArray2d( new String[]{"Jean", "Dujardin"}, new String[]{"Omar", "Sy"}, new String[]{"toto",
                 null} ), bean
                 .getStringArray2d() ) );
+        assertTrue( isArray2dEquals( newArray2d(new AnEnum[]{AnEnum.A, AnEnum.B},
+                new AnEnum[]{AnEnum.C, AnEnum.D}, new AnEnum[]{AnEnum.B, null} ),
+                bean.getEnumArray2d() ) );
         assertTrue( isArray2dEquals( newArray2d( new boolean[]{true, false}, new boolean[]{false, false} ), bean
                 .getBooleanPrimitiveArray2d() ) );
         assertTrue( isArray2dEquals( newArray2d( "Hello".getBytes(), "World".getBytes() ), bean.getBytePrimitiveArray2d() ) );
@@ -179,6 +185,7 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
 
         // Arrays
         bean.setStringArray( new String[]{"Hello", "World", "!"} );
+        bean.setEnumArray( new AnEnum[]{AnEnum.A, null, AnEnum.C, AnEnum.D} );
         bean.setBooleanPrimitiveArray( new boolean[]{true, false, true, false} );
         bean.setBytePrimitiveArray( "Hello".getBytes() );
         bean.setCharacterPrimitiveArray( new char[]{'\u00e7', 'o', 'u'} );
@@ -190,6 +197,7 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
 
         // 2D Arrays
         bean.setStringArray2d( newArray2d( new String[]{"Jean", "Dujardin"}, new String[]{"Omar", "Sy"}, new String[]{"toto", null} ) );
+        bean.setEnumArray2d( newArray2d(new AnEnum[]{AnEnum.A, AnEnum.B}, new AnEnum[]{AnEnum.C, AnEnum.D}, new AnEnum[]{AnEnum.B, null} ));
         bean.setBooleanPrimitiveArray2d( newArray2d( new boolean[]{true, false}, new boolean[]{false, false} ) );
         bean.setBytePrimitiveArray2d( newArray2d( "Hello".getBytes(), "World".getBytes() ) );
         bean.setCharacterPrimitiveArray2d( newArray2d( new char[]{'\u00e7', 'o'}, new char[]{'a', 'b'} ) );
@@ -228,6 +236,7 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
                 "\"sqlTime\":\"" + bean.getSqlTime().toString() + "\"," +
                 "\"sqlTimestamp\":1345304756546," +
                 "\"stringArray\":[\"Hello\",\"World\",\"!\"]," +
+                "\"enumArray\":[\"A\",null,\"C\",\"D\"]," +
                 "\"booleanPrimitiveArray\":[true,false,true,false]," +
                 "\"bytePrimitiveArray\":\"SGVsbG8=\"," +
                 "\"characterPrimitiveArray\":\"çou\"," +
@@ -237,6 +246,7 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
                 "\"longPrimitiveArray\":[9223372036854775807,-9223372036854775808]," +
                 "\"shortPrimitiveArray\":[9,7,8,15]," +
                 "\"stringArray2d\":[[\"Jean\",\"Dujardin\"],[\"Omar\",\"Sy\"],[\"toto\",null]]," +
+                "\"enumArray2d\":[[\"A\",\"B\"],[\"C\",\"D\"],[\"B\",null]]," +
                 "\"booleanPrimitiveArray2d\":[[true,false],[false,false]]," +
                 "\"bytePrimitiveArray2d\":[\"SGVsbG8=\",\"V29ybGQ=\"]," +
                 "\"characterPrimitiveArray2d\":[\"ço\",\"ab\"]," +

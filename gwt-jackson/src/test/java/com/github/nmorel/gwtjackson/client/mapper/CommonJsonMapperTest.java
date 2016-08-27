@@ -16,8 +16,6 @@
 
 package com.github.nmorel.gwtjackson.client.mapper;
 
-import javax.annotation.Nonnull;
-
 import com.github.nmorel.gwtjackson.client.AbstractObjectReader;
 import com.github.nmorel.gwtjackson.client.AbstractObjectWriter;
 import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
@@ -112,7 +110,7 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
             protected JsonSerializer<String> newSerializer() {
                 return new JsonSerializer<String>() {
                     @Override
-                    protected void doSerialize( JsonWriter writer, @Nonnull String value, JsonSerializationContext ctx,
+                    protected void doSerialize( JsonWriter writer, String value, JsonSerializationContext ctx,
                                                 JsonSerializerParameters params ) {
                         throw exception;
                     }
@@ -134,7 +132,7 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
             protected JsonSerializer<String> newSerializer() {
                 return new JsonSerializer<String>() {
                     @Override
-                    protected void doSerialize( JsonWriter writer, @Nonnull String value, JsonSerializationContext ctx,
+                    protected void doSerialize( JsonWriter writer, String value, JsonSerializationContext ctx,
                                                 JsonSerializerParameters params ) {
                         throw exception;
                     }
@@ -156,7 +154,7 @@ public class CommonJsonMapperTest extends GwtJacksonTestCase {
             protected JsonSerializer<String> newSerializer() {
                 return new JsonSerializer<String>() {
                     @Override
-                    protected void doSerialize( JsonWriter writer, @Nonnull String value, JsonSerializationContext ctx,
+                    protected void doSerialize( JsonWriter writer, String value, JsonSerializationContext ctx,
                                                 JsonSerializerParameters params ) {
                         throw jsonSerializationException;
                     }

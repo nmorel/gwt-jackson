@@ -74,6 +74,8 @@ public class SimpleBean {
 
     private String[] stringArray;
 
+    private AnEnum[] enumArray;
+
     private boolean[] booleanPrimitiveArray;
 
     private byte[] bytePrimitiveArray;
@@ -91,6 +93,8 @@ public class SimpleBean {
     private short[] shortPrimitiveArray;
 
     private String[][] stringArray2d;
+
+    private AnEnum[][] enumArray2d;
 
     private boolean[][] booleanPrimitiveArray2d;
 
@@ -310,6 +314,14 @@ public class SimpleBean {
         this.stringArray = stringArray;
     }
 
+    public AnEnum[] getEnumArray() {
+        return enumArray;
+    }
+
+    public void setEnumArray( AnEnum[] enumArray ) {
+        this.enumArray = enumArray;
+    }
+
     public boolean[] getBooleanPrimitiveArray() {
         return booleanPrimitiveArray;
     }
@@ -380,6 +392,14 @@ public class SimpleBean {
 
     public void setStringArray2d( String[][] stringArray2d ) {
         this.stringArray2d = stringArray2d;
+    }
+
+    public AnEnum[][] getEnumArray2d() {
+        return enumArray2d;
+    }
+
+    public void setEnumArray2d( AnEnum[][] enumArray2d ) {
+        this.enumArray2d = enumArray2d;
     }
 
     public boolean[][] getBooleanPrimitiveArray2d() {
