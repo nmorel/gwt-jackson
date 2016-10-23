@@ -25,6 +25,7 @@ import com.github.nmorel.gwtjackson.shared.annotations.JsonIncludeTester;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonIncludeTester.BeanJsonInclude;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonIncludeTester.BeanJsonIncludeOnProperties;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonIncludeTester.MixInIncludeAlways;
+import com.github.nmorel.gwtjackson.shared.annotations.JsonIncludeTester.MixInIncludeNonAbsent;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonIncludeTester.MixInIncludeNonDefault;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonIncludeTester.MixInIncludeNonEmpty;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonIncludeTester.MixInIncludeNonNull;
@@ -37,6 +38,17 @@ import com.google.gwt.core.client.GWT;
 public class JsonIncludeGwtTest extends GwtJacksonTestCase {
 
     private JsonIncludeTester tester = JsonIncludeTester.INSTANCE;
+
+    /* ################################ */
+
+    public interface BeanJsonIncludeDefaultMapper extends ObjectWriter<BeanJsonInclude>, ObjectWriterTester<BeanJsonInclude> {
+
+        static BeanJsonIncludeDefaultMapper INSTANCE = GWT.create( BeanJsonIncludeDefaultMapper.class );
+    }
+
+    public void testSerializeDefault() {
+        tester.testSerializeDefault( createWriter( BeanJsonIncludeDefaultMapper.INSTANCE ) );
+    }
 
     /* ################################ */
 
@@ -85,6 +97,18 @@ public class JsonIncludeGwtTest extends GwtJacksonTestCase {
 
     public void testSerializeNonNull() {
         tester.testSerializeNonNull( BeanJsonIncludeNonNullMapper.INSTANCE );
+    }
+
+    /* ################################ */
+
+    @JsonMixIns( value = {@JsonMixIn( target = BeanJsonInclude.class, mixIn = MixInIncludeNonAbsent.class )} )
+    public interface BeanJsonIncludeNonAbsentMapper extends ObjectWriter<BeanJsonInclude>, ObjectWriterTester<BeanJsonInclude> {
+
+        static BeanJsonIncludeNonAbsentMapper INSTANCE = GWT.create( BeanJsonIncludeNonAbsentMapper.class );
+    }
+
+    public void testSerializeNonAbsent() {
+        tester.testSerializeNonAbsent( BeanJsonIncludeNonAbsentMapper.INSTANCE );
     }
 
     /* ################################ */

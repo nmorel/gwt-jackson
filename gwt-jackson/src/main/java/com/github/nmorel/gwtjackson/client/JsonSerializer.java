@@ -81,14 +81,13 @@ public abstract class JsonSerializer<T> {
                         doSerialize( writer, value, ctx, params );
                     }
                     return;
-                // TODO Add support for this value added in jackson 2.6. It also came with USE_DEFAULTS but don't know what it means
-                // case NON_ABSENT:
-                // if ( isAbsent( value ) ) {
-                // writer.cancelName();
-                // } else {
-                // doSerialize( writer, value, ctx, params );
-                // }
-                // break;
+                case NON_ABSENT:
+                    if ( isAbsent( value ) ) {
+                        writer.cancelName();
+                    } else {
+                        doSerialize( writer, value, ctx, params );
+                    }
+                    return;
             }
         }
 
@@ -125,6 +124,13 @@ public abstract class JsonSerializer<T> {
      * @return true if the value is empty
      */
     protected boolean isEmpty( T value ) {
+        return null == value;
+    }
+
+    /**
+     * @return true if the value is absent
+     */
+    protected boolean isAbsent( T value ) {
         return null == value;
     }
 

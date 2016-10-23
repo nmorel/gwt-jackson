@@ -47,6 +47,9 @@ public final class JsonIncludeTester extends AbstractTester {
     @JsonInclude( value = Include.NON_NULL )
     public static interface MixInIncludeNonNull {}
 
+    @JsonInclude( value = Include.NON_ABSENT )
+    public static interface MixInIncludeNonAbsent {}
+
     @JsonInclude( value = Include.USE_DEFAULTS )
     public static interface MixInIncludeUseDefaults {}
 
@@ -112,6 +115,34 @@ public final class JsonIncludeTester extends AbstractTester {
     public static final JsonIncludeTester INSTANCE = new JsonIncludeTester();
 
     private JsonIncludeTester() {
+    }
+
+    public void testSerializeDefault( ObjectWriterTester<BeanJsonInclude> writer ) {
+
+        String expected = "{" +
+                "\"stringNull\":null," +
+                "\"stringEmpty\":\"\"," +
+                "\"integerNull\":null," +
+                "\"integerZero\":0," +
+                "\"intDefault\":0," +
+                "\"bigIntegerNull\":null," +
+                "\"bigIntegerZero\":0," +
+                "\"bigDecimalNull\":null," +
+                "\"bigDecimalZero\":0," +
+                "\"listNull\":null," +
+                "\"listEmpty\":[]," +
+                "\"arrayNull\":null," +
+                "\"arrayEmpty\":[]," +
+                "\"mapNull\":null," +
+                "\"mapEmpty\":{}," +
+                "\"dateNull\":null," +
+                "\"dateEpoch\":0," +
+                "\"timestampNull\":null," +
+                "\"timestampEpoch\":0" +
+                "}";
+        String result = writer.write( new BeanJsonInclude() );
+
+        assertEquals( expected, result );
     }
 
     public void testSerializeAlways( ObjectWriterTester<BeanJsonInclude> writer ) {
@@ -182,10 +213,20 @@ public final class JsonIncludeTester extends AbstractTester {
         assertEquals( expected, result );
     }
 
-    public void testSerializeProperties( ObjectWriterTester<BeanJsonIncludeOnProperties> writer ) {
-
-        String expected = "{\"mapNull\":null}";
-        String result = writer.write( new BeanJsonIncludeOnProperties() );
+    public void testSerializeNonAbsent( ObjectWriterTester<BeanJsonInclude> writer ) {
+        String expected = "{" +
+                "\"stringEmpty\":\"\"," +
+                "\"integerZero\":0," +
+                "\"intDefault\":0," +
+                "\"bigIntegerZero\":0," +
+                "\"bigDecimalZero\":0," +
+                "\"listEmpty\":[]," +
+                "\"arrayEmpty\":[]," +
+                "\"mapEmpty\":{}," +
+                "\"dateEpoch\":0," +
+                "\"timestampEpoch\":0" +
+                "}";
+        String result = writer.write( new BeanJsonInclude() );
 
         assertEquals( expected, result );
     }
@@ -213,6 +254,14 @@ public final class JsonIncludeTester extends AbstractTester {
                 "\"timestampEpoch\":0" +
                 "}";
         String result = writer.write( new BeanJsonInclude() );
+
+        assertEquals( expected, result );
+    }
+
+    public void testSerializeProperties( ObjectWriterTester<BeanJsonIncludeOnProperties> writer ) {
+
+        String expected = "{\"mapNull\":null}";
+        String result = writer.write( new BeanJsonIncludeOnProperties() );
 
         assertEquals( expected, result );
     }

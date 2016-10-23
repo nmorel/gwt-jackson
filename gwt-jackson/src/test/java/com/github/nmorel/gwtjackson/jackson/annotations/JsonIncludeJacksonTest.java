@@ -21,6 +21,7 @@ import com.github.nmorel.gwtjackson.shared.annotations.JsonIncludeTester;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonIncludeTester.BeanJsonInclude;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonIncludeTester.BeanJsonIncludeOnProperties;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonIncludeTester.MixInIncludeAlways;
+import com.github.nmorel.gwtjackson.shared.annotations.JsonIncludeTester.MixInIncludeNonAbsent;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonIncludeTester.MixInIncludeNonDefault;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonIncludeTester.MixInIncludeNonEmpty;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonIncludeTester.MixInIncludeNonNull;
@@ -31,6 +32,11 @@ import org.junit.Test;
  * @author Nicolas Morel
  */
 public class JsonIncludeJacksonTest extends AbstractJacksonTest {
+
+    @Test
+    public void testSerializeDefault() {
+        JsonIncludeTester.INSTANCE.testSerializeDefault( createWriter( BeanJsonInclude.class ) );
+    }
 
     @Test
     public void testSerializeAlways() {
@@ -54,6 +60,12 @@ public class JsonIncludeJacksonTest extends AbstractJacksonTest {
     public void testSerializeNonNull() {
         objectMapper.addMixIn( BeanJsonInclude.class, MixInIncludeNonNull.class );
         JsonIncludeTester.INSTANCE.testSerializeNonNull( createWriter( BeanJsonInclude.class ) );
+    }
+
+    @Test
+    public void testSerializeNonAbsent() {
+        objectMapper.addMixIn( BeanJsonInclude.class, MixInIncludeNonAbsent.class );
+        JsonIncludeTester.INSTANCE.testSerializeNonAbsent( createWriter( BeanJsonInclude.class ) );
     }
 
     @Test

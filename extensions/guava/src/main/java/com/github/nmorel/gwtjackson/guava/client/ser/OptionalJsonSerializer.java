@@ -54,6 +54,11 @@ public final class OptionalJsonSerializer<T> extends JsonSerializer<Optional<T>>
     }
 
     @Override
+    protected boolean isAbsent( Optional<T> value ) {
+        return null == value || !value.isPresent();
+    }
+
+    @Override
     protected void doSerialize( JsonWriter writer, Optional<T> value, JsonSerializationContext ctx,
                                 JsonSerializerParameters params ) {
         if ( value.isPresent() ) {
