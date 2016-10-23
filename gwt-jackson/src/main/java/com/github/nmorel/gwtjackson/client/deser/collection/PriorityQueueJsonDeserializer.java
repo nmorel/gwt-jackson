@@ -24,15 +24,16 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializer;
  * Default {@link JsonDeserializer} implementation for {@link PriorityQueue}.
  *
  * @param <T> Type of the elements inside the {@link PriorityQueue}
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class PriorityQueueJsonDeserializer<T> extends BaseQueueJsonDeserializer<PriorityQueue<T>, T> {
 
     /**
+     * <p>newInstance</p>
+     *
      * @param deserializer {@link JsonDeserializer} used to deserialize the objects inside the {@link PriorityQueue}.
      * @param <T> Type of the elements inside the {@link PriorityQueue}
-     *
      * @return a new instance of {@link PriorityQueueJsonDeserializer}
      */
     public static <T> PriorityQueueJsonDeserializer<T> newInstance( JsonDeserializer<T> deserializer ) {
@@ -46,6 +47,7 @@ public class PriorityQueueJsonDeserializer<T> extends BaseQueueJsonDeserializer<
         super( deserializer );
     }
 
+    /** {@inheritDoc} */
     @Override
     protected PriorityQueue<T> newCollection() {
         return new PriorityQueue<T>();

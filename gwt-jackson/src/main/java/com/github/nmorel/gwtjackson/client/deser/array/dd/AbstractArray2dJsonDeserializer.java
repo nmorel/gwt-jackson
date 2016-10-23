@@ -30,6 +30,7 @@ import com.github.nmorel.gwtjackson.client.stream.JsonToken;
  * Base implementation of {@link JsonDeserializer} for array.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class AbstractArray2dJsonDeserializer<T> extends JsonDeserializer<T> {
 
@@ -41,7 +42,6 @@ public abstract class AbstractArray2dJsonDeserializer<T> extends JsonDeserialize
      * @param deserializer deserializer for element inside the array
      * @param params Parameters for the deserializer
      * @param <C> type of the element inside the array
-     *
      * @return a list containing all the elements of the array
      */
     protected <C> List<List<C>> deserializeIntoList( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializer<C> deserializer,
@@ -66,6 +66,17 @@ public abstract class AbstractArray2dJsonDeserializer<T> extends JsonDeserialize
         return list;
     }
 
+    /**
+     * <p>doDeserializeIntoList</p>
+     *
+     * @param reader a {@link com.github.nmorel.gwtjackson.client.stream.JsonReader} object.
+     * @param ctx a {@link com.github.nmorel.gwtjackson.client.JsonDeserializationContext} object.
+     * @param deserializer a {@link com.github.nmorel.gwtjackson.client.JsonDeserializer} object.
+     * @param params a {@link com.github.nmorel.gwtjackson.client.JsonDeserializerParameters} object.
+     * @param token a {@link com.github.nmorel.gwtjackson.client.stream.JsonToken} object.
+     * @param <C> a C object.
+     * @return a {@link java.util.List} object.
+     */
     protected <C> List<List<C>> doDeserializeIntoList( JsonReader reader, JsonDeserializationContext ctx,
                                                        JsonDeserializer<C> deserializer, JsonDeserializerParameters params,
                                                        JsonToken token ) {

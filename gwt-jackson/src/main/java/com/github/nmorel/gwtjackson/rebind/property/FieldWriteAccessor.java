@@ -46,6 +46,7 @@ final class FieldWriteAccessor extends FieldAccessor {
         super( propertyName, samePackage, fieldAutoDetect, field, setterAutoDetect, setter );
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Accessor getAccessor( final String beanName, final boolean useMethod, final boolean useJsni, Object... obj ) {
         final JType[] fieldsType;

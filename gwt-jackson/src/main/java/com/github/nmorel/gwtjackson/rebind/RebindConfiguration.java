@@ -60,6 +60,7 @@ import com.google.gwt.util.tools.shared.Md5Utils;
  * </pre>
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class RebindConfiguration {
 
@@ -192,6 +193,15 @@ public final class RebindConfiguration {
 
     private final JsonAutoDetect.Visibility defaultCreatorVisibility;
 
+    /**
+     * <p>Constructor for RebindConfiguration.</p>
+     *
+     * @param logger a {@link com.google.gwt.core.ext.TreeLogger} object.
+     * @param context a {@link com.google.gwt.core.ext.GeneratorContext} object.
+     * @param typeOracle a {@link com.github.nmorel.gwtjackson.rebind.JacksonTypeOracle} object.
+     * @param rootMapperClass a {@link com.google.gwt.core.ext.typeinfo.JClassType} object.
+     * @throws com.google.gwt.core.ext.UnableToCompleteException if any.
+     */
     public RebindConfiguration( TreeLogger logger, GeneratorContext context, JacksonTypeOracle typeOracle, JClassType rootMapperClass )
             throws UnableToCompleteException {
         this.logger = logger;
@@ -515,6 +525,9 @@ public final class RebindConfiguration {
 
     /**
      * Return a {@link MapperInstance} instantiating the serializer for the given type
+     *
+     * @param type a {@link com.google.gwt.core.ext.typeinfo.JType} object.
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
      */
     public Optional<MapperInstance> getSerializer( JType type ) {
         return Optional.fromNullable( serializers.get( type.getQualifiedSourceName() ) );
@@ -522,6 +535,9 @@ public final class RebindConfiguration {
 
     /**
      * Return a {@link MapperInstance} instantiating the deserializer for the given type
+     *
+     * @param type a {@link com.google.gwt.core.ext.typeinfo.JType} object.
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
      */
     public Optional<MapperInstance> getDeserializer( JType type ) {
         return Optional.fromNullable( deserializers.get( type.getQualifiedSourceName() ) );
@@ -529,6 +545,9 @@ public final class RebindConfiguration {
 
     /**
      * Return a {@link MapperInstance} instantiating the key serializer for the given type
+     *
+     * @param type a {@link com.google.gwt.core.ext.typeinfo.JType} object.
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
      */
     public Optional<MapperInstance> getKeySerializer( JType type ) {
         return Optional.fromNullable( keySerializers.get( type.getQualifiedSourceName() ) );
@@ -536,6 +555,9 @@ public final class RebindConfiguration {
 
     /**
      * Return a {@link MapperInstance} instantiating the key deserializer for the given type
+     *
+     * @param type a {@link com.google.gwt.core.ext.typeinfo.JType} object.
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
      */
     public Optional<MapperInstance> getKeyDeserializer( JType type ) {
         return Optional.fromNullable( keyDeserializers.get( type.getQualifiedSourceName() ) );
@@ -543,57 +565,107 @@ public final class RebindConfiguration {
 
     /**
      * Return the mixin type for the given type
+     *
+     * @param type a {@link com.google.gwt.core.ext.typeinfo.JType} object.
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
      */
     public Optional<JClassType> getMixInAnnotations( JType type ) {
         return Optional.fromNullable( mixInAnnotations.get( type.getQualifiedSourceName() ) );
     }
 
     /**
+     * <p>Getter for the field <code>rootMapperClass</code>.</p>
+     *
      * @return the root mapper class that is currently generated
      */
     public JClassType getRootMapperClass() {
         return rootMapperClass;
     }
 
+    /**
+     * <p>Getter for the field <code>rootMapperHash</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getRootMapperHash() {
         return rootMapperHash;
     }
 
     /**
-     * @param beanType type
+     * <p>isSpecificToMapper</p>
      *
+     * @param beanType type
      * @return true if beanType is specific to the mapper
      */
     public boolean isSpecificToMapper( JClassType beanType ) {
         return specificTypes.contains( beanType );
     }
 
+    /**
+     * <p>isTypeSupportedForSerialization</p>
+     *
+     * @param logger a {@link com.google.gwt.core.ext.TreeLogger} object.
+     * @param classType a {@link com.google.gwt.core.ext.typeinfo.JClassType} object.
+     * @return a boolean.
+     */
     public boolean isTypeSupportedForSerialization( TreeLogger logger, JClassType classType ) {
         return allSupportedSerializationClass.contains( classType )
                 || additionalSupportedTypes.isIncluded( logger, classType.getQualifiedSourceName() );
     }
 
+    /**
+     * <p>isTypeSupportedForDeserialization</p>
+     *
+     * @param logger a {@link com.google.gwt.core.ext.TreeLogger} object.
+     * @param classType a {@link com.google.gwt.core.ext.typeinfo.JClassType} object.
+     * @return a boolean.
+     */
     public boolean isTypeSupportedForDeserialization( TreeLogger logger, JClassType classType ) {
         return allSupportedDeserializationClass.contains( classType )
                 || additionalSupportedTypes.isIncluded( logger, classType.getQualifiedSourceName() );
     }
 
+    /**
+     * <p>Getter for the field <code>defaultFieldVisibility</code>.</p>
+     *
+     * @return a {@link com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility} object.
+     */
     public Visibility getDefaultFieldVisibility() {
         return defaultFieldVisibility;
     }
 
+    /**
+     * <p>Getter for the field <code>defaultGetterVisibility</code>.</p>
+     *
+     * @return a {@link com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility} object.
+     */
     public Visibility getDefaultGetterVisibility() {
         return defaultGetterVisibility;
     }
 
+    /**
+     * <p>Getter for the field <code>defaultIsGetterVisibility</code>.</p>
+     *
+     * @return a {@link com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility} object.
+     */
     public Visibility getDefaultIsGetterVisibility() {
         return defaultIsGetterVisibility;
     }
 
+    /**
+     * <p>Getter for the field <code>defaultSetterVisibility</code>.</p>
+     *
+     * @return a {@link com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility} object.
+     */
     public Visibility getDefaultSetterVisibility() {
         return defaultSetterVisibility;
     }
 
+    /**
+     * <p>Getter for the field <code>defaultCreatorVisibility</code>.</p>
+     *
+     * @return a {@link com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility} object.
+     */
     public Visibility getDefaultCreatorVisibility() {
         return defaultCreatorVisibility;
     }

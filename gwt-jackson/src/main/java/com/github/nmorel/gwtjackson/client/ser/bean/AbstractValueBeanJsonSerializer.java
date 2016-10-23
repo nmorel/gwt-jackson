@@ -22,19 +22,31 @@ import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 
 /**
+ * <p>Abstract AbstractValueBeanJsonSerializer class.</p>
+ *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class AbstractValueBeanJsonSerializer<T> extends AbstractBeanJsonSerializer<T> {
 
     private final BeanPropertySerializer<T, ?> serializer;
 
+    /**
+     * <p>Constructor for AbstractValueBeanJsonSerializer.</p>
+     */
     protected AbstractValueBeanJsonSerializer() {
         super();
         this.serializer = initValueSerializer();
     }
 
+    /**
+     * <p>initValueSerializer</p>
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.ser.bean.BeanPropertySerializer} object.
+     */
     protected abstract BeanPropertySerializer<T, ?> initValueSerializer();
 
+    /** {@inheritDoc} */
     @Override
     protected void serializeObject( JsonWriter writer, T value, JsonSerializationContext ctx, Set<String> ignoredProperties,
                                     IdentitySerializationInfo identityInfo, ObjectIdSerializer<?> idWriter, String typeName, String

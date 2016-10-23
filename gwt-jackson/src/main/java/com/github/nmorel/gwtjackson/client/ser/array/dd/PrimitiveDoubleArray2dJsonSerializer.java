@@ -25,12 +25,15 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * Default {@link JsonSerializer} implementation for 2D array of double.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class PrimitiveDoubleArray2dJsonSerializer extends JsonSerializer<double[][]> {
 
     private static final PrimitiveDoubleArray2dJsonSerializer INSTANCE = new PrimitiveDoubleArray2dJsonSerializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link PrimitiveDoubleArray2dJsonSerializer}
      */
     public static PrimitiveDoubleArray2dJsonSerializer getInstance() {
@@ -39,11 +42,13 @@ public class PrimitiveDoubleArray2dJsonSerializer extends JsonSerializer<double[
 
     private PrimitiveDoubleArray2dJsonSerializer() { }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean isEmpty( double[][] value ) {
         return null == value || value.length == 0;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void doSerialize( JsonWriter writer, double[][] values, JsonSerializationContext ctx,
                              JsonSerializerParameters params ) {

@@ -30,12 +30,15 @@ import com.google.gwt.core.client.JsArrayString;
  * <p>Not working in production mode, cast problem. Can maybe work with disableCastChecking</p>
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class StringArrayJsonDeserializer extends AbstractArrayJsonDeserializer<String[]> {
 
     private static final StringArrayJsonDeserializer INSTANCE = new StringArrayJsonDeserializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link StringArrayJsonDeserializer}
      */
     public static StringArrayJsonDeserializer getInstance() {
@@ -48,6 +51,7 @@ public class StringArrayJsonDeserializer extends AbstractArrayJsonDeserializer<S
 
     private StringArrayJsonDeserializer() { }
 
+    /** {@inheritDoc} */
     @Override
     public String[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         JsArrayString jsArray = JsArrayString.createArray().cast();
@@ -74,6 +78,7 @@ public class StringArrayJsonDeserializer extends AbstractArrayJsonDeserializer<S
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         return new String[]{reader.nextString()};

@@ -22,12 +22,15 @@ import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
  * Default {@link KeySerializer} implementation for {@link Number}.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class NumberKeySerializer extends KeySerializer<Number> {
 
     private static final NumberKeySerializer INSTANCE = new NumberKeySerializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link NumberKeySerializer}
      */
     @SuppressWarnings( "unchecked" )
@@ -37,11 +40,13 @@ public final class NumberKeySerializer extends KeySerializer<Number> {
 
     private NumberKeySerializer() { }
 
+    /** {@inheritDoc} */
     @Override
     public boolean mustBeEscaped( JsonSerializationContext ctx ) {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String doSerialize( Number value, JsonSerializationContext ctx ) {
         return value.toString();

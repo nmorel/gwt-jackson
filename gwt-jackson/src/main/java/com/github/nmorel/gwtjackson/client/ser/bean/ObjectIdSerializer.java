@@ -24,6 +24,7 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * Contains the id of a bean and a serializer to facilitate the serialization of the next instances of the object.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class ObjectIdSerializer<I> {
 
@@ -31,11 +32,23 @@ public class ObjectIdSerializer<I> {
 
     private final JsonSerializer<I> serializer;
 
+    /**
+     * <p>Constructor for ObjectIdSerializer.</p>
+     *
+     * @param id a I object.
+     * @param serializer a {@link com.github.nmorel.gwtjackson.client.JsonSerializer} object.
+     */
     public ObjectIdSerializer( I id, JsonSerializer<I> serializer ) {
         this.id = id;
         this.serializer = serializer;
     }
 
+    /**
+     * <p>serializeId</p>
+     *
+     * @param writer a {@link com.github.nmorel.gwtjackson.client.stream.JsonWriter} object.
+     * @param ctx a {@link com.github.nmorel.gwtjackson.client.JsonSerializationContext} object.
+     */
     public void serializeId( JsonWriter writer, JsonSerializationContext ctx ) {
         serializer.serialize( writer, id, ctx );
     }

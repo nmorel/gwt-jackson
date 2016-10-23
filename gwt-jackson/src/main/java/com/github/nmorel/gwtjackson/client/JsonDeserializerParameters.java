@@ -33,9 +33,11 @@ import com.github.nmorel.gwtjackson.client.deser.collection.ListJsonDeserializer
  * </p>
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class JsonDeserializerParameters {
 
+    /** Constant <code>DEFAULT</code> */
     public static final JsonDeserializerParameters DEFAULT = new JsonDeserializerParameters();
 
     /**
@@ -85,37 +87,81 @@ public final class JsonDeserializerParameters {
      */
     private TypeDeserializationInfo typeInfo;
 
+    /**
+     * <p>Getter for the field <code>pattern</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPattern() {
         return pattern;
     }
 
+    /**
+     * <p>Setter for the field <code>pattern</code>.</p>
+     *
+     * @param pattern a {@link java.lang.String} object.
+     * @return a {@link com.github.nmorel.gwtjackson.client.JsonDeserializerParameters} object.
+     */
     public JsonDeserializerParameters setPattern( String pattern ) {
         this.pattern = pattern;
         return this;
     }
 
+    /**
+     * <p>Getter for the field <code>shape</code>.</p>
+     *
+     * @return a {@link com.fasterxml.jackson.annotation.JsonFormat.Shape} object.
+     */
     public Shape getShape() {
         return shape;
     }
 
+    /**
+     * <p>Setter for the field <code>shape</code>.</p>
+     *
+     * @param shape a {@link com.fasterxml.jackson.annotation.JsonFormat.Shape} object.
+     * @return a {@link com.github.nmorel.gwtjackson.client.JsonDeserializerParameters} object.
+     */
     public JsonDeserializerParameters setShape( Shape shape ) {
         this.shape = shape;
         return this;
     }
 
+    /**
+     * <p>Getter for the field <code>locale</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLocale() {
         return locale;
     }
 
+    /**
+     * <p>Setter for the field <code>locale</code>.</p>
+     *
+     * @param locale a {@link java.lang.String} object.
+     * @return a {@link com.github.nmorel.gwtjackson.client.JsonDeserializerParameters} object.
+     */
     public JsonDeserializerParameters setLocale( String locale ) {
         this.locale = locale;
         return this;
     }
 
+    /**
+     * <p>Getter for the field <code>ignoredProperties</code>.</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     public Set<String> getIgnoredProperties() {
         return ignoredProperties;
     }
 
+    /**
+     * <p>addIgnoredProperty</p>
+     *
+     * @param ignoredProperty a {@link java.lang.String} object.
+     * @return a {@link com.github.nmorel.gwtjackson.client.JsonDeserializerParameters} object.
+     */
     public JsonDeserializerParameters addIgnoredProperty( String ignoredProperty ) {
         if ( null == ignoredProperties ) {
             ignoredProperties = new HashSet<String>();
@@ -124,28 +170,61 @@ public final class JsonDeserializerParameters {
         return this;
     }
 
+    /**
+     * <p>isIgnoreUnknown</p>
+     *
+     * @return a boolean.
+     */
     public boolean isIgnoreUnknown() {
         return ignoreUnknown;
     }
 
+    /**
+     * <p>Setter for the field <code>ignoreUnknown</code>.</p>
+     *
+     * @param ignoreUnknown a boolean.
+     * @return a {@link com.github.nmorel.gwtjackson.client.JsonDeserializerParameters} object.
+     */
     public JsonDeserializerParameters setIgnoreUnknown( boolean ignoreUnknown ) {
         this.ignoreUnknown = ignoreUnknown;
         return this;
     }
 
+    /**
+     * <p>Getter for the field <code>identityInfo</code>.</p>
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.deser.bean.IdentityDeserializationInfo} object.
+     */
     public IdentityDeserializationInfo getIdentityInfo() {
         return identityInfo;
     }
 
+    /**
+     * <p>Setter for the field <code>identityInfo</code>.</p>
+     *
+     * @param identityInfo a {@link com.github.nmorel.gwtjackson.client.deser.bean.IdentityDeserializationInfo} object.
+     * @return a {@link com.github.nmorel.gwtjackson.client.JsonDeserializerParameters} object.
+     */
     public JsonDeserializerParameters setIdentityInfo( IdentityDeserializationInfo identityInfo ) {
         this.identityInfo = identityInfo;
         return this;
     }
 
+    /**
+     * <p>Getter for the field <code>typeInfo</code>.</p>
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.deser.bean.TypeDeserializationInfo} object.
+     */
     public TypeDeserializationInfo getTypeInfo() {
         return typeInfo;
     }
 
+    /**
+     * <p>Setter for the field <code>typeInfo</code>.</p>
+     *
+     * @param typeInfo a {@link com.github.nmorel.gwtjackson.client.deser.bean.TypeDeserializationInfo} object.
+     * @return a {@link com.github.nmorel.gwtjackson.client.JsonDeserializerParameters} object.
+     */
     public JsonDeserializerParameters setTypeInfo( TypeDeserializationInfo typeInfo ) {
         this.typeInfo = typeInfo;
         return this;

@@ -22,11 +22,17 @@ import com.github.nmorel.gwtjackson.client.JsonSerializer;
  * Lazy initialize a {@link JsonSerializer}
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class HasSerializer<V, S extends JsonSerializer<V>> {
 
     private S serializer;
 
+    /**
+     * <p>Getter for the field <code>serializer</code>.</p>
+     *
+     * @return a S object.
+     */
     protected S getSerializer() {
         if ( null == serializer ) {
             serializer = (S) newSerializer();
@@ -34,5 +40,10 @@ public abstract class HasSerializer<V, S extends JsonSerializer<V>> {
         return serializer;
     }
 
+    /**
+     * <p>newSerializer</p>
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.JsonSerializer} object.
+     */
     protected abstract JsonSerializer<?> newSerializer();
 }

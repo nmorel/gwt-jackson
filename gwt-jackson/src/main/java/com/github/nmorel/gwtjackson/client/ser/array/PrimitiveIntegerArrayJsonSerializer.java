@@ -25,12 +25,15 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * Default {@link JsonSerializer} implementation for array of int.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class PrimitiveIntegerArrayJsonSerializer extends JsonSerializer<int[]> {
 
     private static final PrimitiveIntegerArrayJsonSerializer INSTANCE = new PrimitiveIntegerArrayJsonSerializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link PrimitiveIntegerArrayJsonSerializer}
      */
     public static PrimitiveIntegerArrayJsonSerializer getInstance() {
@@ -39,11 +42,13 @@ public class PrimitiveIntegerArrayJsonSerializer extends JsonSerializer<int[]> {
 
     private PrimitiveIntegerArrayJsonSerializer() { }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean isEmpty( int[] value ) {
         return null == value || value.length == 0;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void doSerialize( JsonWriter writer, int[] values, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         if ( !ctx.isWriteEmptyJsonArrays() && values.length == 0 ) {

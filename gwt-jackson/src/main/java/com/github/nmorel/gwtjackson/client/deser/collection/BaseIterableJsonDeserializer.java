@@ -24,14 +24,16 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializer;
  *
  * @param <I> {@link Iterable} type
  * @param <T> Type of the elements inside the {@link Iterable}
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class BaseIterableJsonDeserializer<I extends Iterable<T>, T> extends JsonDeserializer<I> {
 
     protected final JsonDeserializer<T> deserializer;
 
     /**
+     * <p>Constructor for BaseIterableJsonDeserializer.</p>
+     *
      * @param deserializer {@link JsonDeserializer} used to map the objects inside the {@link Iterable}.
      */
     public BaseIterableJsonDeserializer( JsonDeserializer<T> deserializer ) {
@@ -41,6 +43,7 @@ public abstract class BaseIterableJsonDeserializer<I extends Iterable<T>, T> ext
         this.deserializer = deserializer;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setBackReference( String referenceName, Object reference, I value, JsonDeserializationContext ctx ) {
         if ( null != value ) {

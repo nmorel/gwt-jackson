@@ -28,12 +28,15 @@ import com.github.nmorel.gwtjackson.client.stream.JsonReader;
  * Default {@link JsonDeserializer} implementation for 2D array of short.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class PrimitiveShortArray2dJsonDeserializer extends AbstractArray2dJsonDeserializer<short[][]> {
 
     private static final PrimitiveShortArray2dJsonDeserializer INSTANCE = new PrimitiveShortArray2dJsonDeserializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link PrimitiveShortArray2dJsonDeserializer}
      */
     public static PrimitiveShortArray2dJsonDeserializer getInstance() {
@@ -42,6 +45,7 @@ public class PrimitiveShortArray2dJsonDeserializer extends AbstractArray2dJsonDe
 
     private PrimitiveShortArray2dJsonDeserializer() { }
 
+    /** {@inheritDoc} */
     @Override
     public short[][] doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         List<List<Short>> list = deserializeIntoList( reader, ctx, ShortJsonDeserializer.getInstance(), params );

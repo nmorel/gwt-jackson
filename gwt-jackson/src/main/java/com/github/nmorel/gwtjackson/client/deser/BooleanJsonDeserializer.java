@@ -26,12 +26,15 @@ import com.github.nmorel.gwtjackson.client.stream.JsonToken;
  * Default {@link JsonDeserializer} implementation for {@link Boolean}.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class BooleanJsonDeserializer extends JsonDeserializer<Boolean> {
 
     private static final BooleanJsonDeserializer INSTANCE = new BooleanJsonDeserializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link BooleanJsonDeserializer}
      */
     public static BooleanJsonDeserializer getInstance() {
@@ -40,6 +43,7 @@ public class BooleanJsonDeserializer extends JsonDeserializer<Boolean> {
 
     private BooleanJsonDeserializer() { }
 
+    /** {@inheritDoc} */
     @Override
     public Boolean doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         JsonToken token = reader.peek();

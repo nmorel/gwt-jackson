@@ -28,6 +28,7 @@ import com.github.nmorel.gwtjackson.client.stream.JsonReader;
  * Default {@link JsonDeserializer} implementation for 2D array.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class Array2dJsonDeserializer<T> extends AbstractArray2dJsonDeserializer<T[][]> {
 
@@ -37,10 +38,11 @@ public class Array2dJsonDeserializer<T> extends AbstractArray2dJsonDeserializer<
     }
 
     /**
+     * <p>newInstance</p>
+     *
      * @param deserializer {@link JsonDeserializer} used to deserialize the objects inside the array.
      * @param arrayCreator {@link Array2dCreator} used to create a new array
      * @param <T> Type of the elements inside the {@link AbstractCollection}
-     *
      * @return a new instance of {@link Array2dJsonDeserializer}
      */
     public static <T> Array2dJsonDeserializer<T> newInstance( JsonDeserializer<T> deserializer, Array2dCreator<T> arrayCreator ) {
@@ -52,6 +54,8 @@ public class Array2dJsonDeserializer<T> extends AbstractArray2dJsonDeserializer<
     private final Array2dCreator<T> array2dCreator;
 
     /**
+     * <p>Constructor for Array2dJsonDeserializer.</p>
+     *
      * @param deserializer {@link JsonDeserializer} used to deserialize the objects inside the array.
      * @param array2dCreator {@link Array2dCreator} used to create a new array
      */
@@ -66,6 +70,7 @@ public class Array2dJsonDeserializer<T> extends AbstractArray2dJsonDeserializer<
         this.array2dCreator = array2dCreator;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected T[][] doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         List<List<T>> list = deserializeIntoList( reader, ctx, deserializer, params );
@@ -89,6 +94,7 @@ public class Array2dJsonDeserializer<T> extends AbstractArray2dJsonDeserializer<
         return array;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setBackReference( String referenceName, Object reference, T[][] value, JsonDeserializationContext ctx ) {
         if ( null != value && value.length > 0 ) {

@@ -28,6 +28,7 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * Base implementation of {@link JsonSerializer} for {@link Number}.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSerializer<N> {
 
@@ -245,6 +246,7 @@ public abstract class BaseNumberJsonSerializer<N extends Number> extends JsonSer
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void doSerialize( JsonWriter writer, N value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         writer.value( value );

@@ -25,6 +25,7 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * Serializes a bean's property
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class BeanPropertySerializer<T, V> extends HasSerializer<V, JsonSerializer<V>> {
 
@@ -32,10 +33,20 @@ public abstract class BeanPropertySerializer<T, V> extends HasSerializer<V, Json
 
     private JsonSerializerParameters parameters;
 
+    /**
+     * <p>Constructor for BeanPropertySerializer.</p>
+     *
+     * @param propertyName a {@link java.lang.String} object.
+     */
     protected BeanPropertySerializer( String propertyName ) {
         this.propertyName = propertyName;
     }
 
+    /**
+     * <p>Getter for the field <code>parameters</code>.</p>
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.JsonSerializerParameters} object.
+     */
     protected JsonSerializerParameters getParameters() {
         if ( null == parameters ) {
             parameters = newParameters();
@@ -43,10 +54,20 @@ public abstract class BeanPropertySerializer<T, V> extends HasSerializer<V, Json
         return parameters;
     }
 
+    /**
+     * <p>newParameters</p>
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.JsonSerializerParameters} object.
+     */
     protected JsonSerializerParameters newParameters() {
         return JsonSerializerParameters.DEFAULT;
     }
 
+    /**
+     * <p>Getter for the field <code>propertyName</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPropertyName() {
         return propertyName;
     }
@@ -63,9 +84,10 @@ public abstract class BeanPropertySerializer<T, V> extends HasSerializer<V, Json
     }
 
     /**
+     * <p>getValue</p>
+     *
      * @param bean bean containing the property to serialize
      * @param ctx context of the serialization process
-     *
      * @return the property's value
      */
     public abstract V getValue( T bean, JsonSerializationContext ctx );

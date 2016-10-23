@@ -29,15 +29,16 @@ import com.github.nmorel.gwtjackson.client.stream.JsonToken;
  * Default {@link JsonDeserializer} implementation for {@link Iterable}. The deserialization process returns an {@link ArrayList}.
  *
  * @param <T> Type of the elements inside the {@link Iterable}
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class IterableJsonDeserializer<T> extends BaseIterableJsonDeserializer<Iterable<T>, T> {
 
     /**
+     * <p>newInstance</p>
+     *
      * @param deserializer {@link JsonDeserializer} used to deserialize the objects inside the {@link Iterable}.
      * @param <T> Type of the elements inside the {@link Iterable}
-     *
      * @return a new instance of {@link IterableJsonDeserializer}
      */
     public static <T> IterableJsonDeserializer<T> newInstance( JsonDeserializer<T> deserializer ) {
@@ -51,6 +52,7 @@ public class IterableJsonDeserializer<T> extends BaseIterableJsonDeserializer<It
         super( deserializer );
     }
 
+    /** {@inheritDoc} */
     @Override
     public Iterable<T> doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         if ( JsonToken.BEGIN_ARRAY == reader.peek() ) {

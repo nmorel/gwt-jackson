@@ -30,12 +30,15 @@ import com.google.gwt.core.client.JsArrayInteger;
  * Default {@link JsonDeserializer} implementation for array of int.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class PrimitiveIntegerArrayJsonDeserializer extends AbstractArrayJsonDeserializer<int[]> {
 
     private static final PrimitiveIntegerArrayJsonDeserializer INSTANCE = new PrimitiveIntegerArrayJsonDeserializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link PrimitiveIntegerArrayJsonDeserializer}
      */
     public static PrimitiveIntegerArrayJsonDeserializer getInstance() {
@@ -50,6 +53,7 @@ public class PrimitiveIntegerArrayJsonDeserializer extends AbstractArrayJsonDese
 
     private PrimitiveIntegerArrayJsonDeserializer() { }
 
+    /** {@inheritDoc} */
     @Override
     public int[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         JsArrayInteger jsArray = JsArrayInteger.createArray().cast();
@@ -76,6 +80,7 @@ public class PrimitiveIntegerArrayJsonDeserializer extends AbstractArrayJsonDese
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     protected int[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         return new int[]{IntegerJsonDeserializer.getInstance().deserialize( reader, ctx, params )};

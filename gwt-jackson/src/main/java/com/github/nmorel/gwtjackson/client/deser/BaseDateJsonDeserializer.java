@@ -31,6 +31,7 @@ import com.github.nmorel.gwtjackson.client.utils.DateFormat;
  * Base implementation of {@link JsonDeserializer} for dates.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class BaseDateJsonDeserializer<D extends Date> extends JsonDeserializer<D> {
 
@@ -144,6 +145,7 @@ public abstract class BaseDateJsonDeserializer<D extends Date> extends JsonDeser
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public D doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         if ( params.getShape().isNumeric() || JsonToken.NUMBER.equals( reader.peek() ) ) {
@@ -153,7 +155,22 @@ public abstract class BaseDateJsonDeserializer<D extends Date> extends JsonDeser
         }
     }
 
+    /**
+     * <p>deserializeNumber</p>
+     *
+     * @param millis a long.
+     * @param params a {@link com.github.nmorel.gwtjackson.client.JsonDeserializerParameters} object.
+     * @return a D object.
+     */
     protected abstract D deserializeNumber( long millis, JsonDeserializerParameters params );
 
+    /**
+     * <p>deserializeString</p>
+     *
+     * @param date a {@link java.lang.String} object.
+     * @param ctx a {@link com.github.nmorel.gwtjackson.client.JsonDeserializationContext} object.
+     * @param params a {@link com.github.nmorel.gwtjackson.client.JsonDeserializerParameters} object.
+     * @return a D object.
+     */
     protected abstract D deserializeString( String date, JsonDeserializationContext ctx, JsonDeserializerParameters params );
 }

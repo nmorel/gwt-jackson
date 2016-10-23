@@ -21,11 +21,15 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 
 /**
+ * <p>Abstract AbstractDelegationBeanJsonDeserializer class.</p>
+ *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 @SuppressWarnings( "UnusedDeclaration" )
 public abstract class AbstractDelegationBeanJsonDeserializer<T> extends AbstractBeanJsonDeserializer<T> {
 
+    /** {@inheritDoc} */
     @Override
     public T deserializeWrapped( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params,
                                  IdentityDeserializationInfo identityInfo, TypeDeserializationInfo typeInfo, String typeInformation ) {

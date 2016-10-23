@@ -25,12 +25,15 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * Default {@link JsonSerializer} implementation for {@link String}.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class StringJsonSerializer extends JsonSerializer<String> {
 
     private static final StringJsonSerializer INSTANCE = new StringJsonSerializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link StringJsonSerializer}
      */
     public static StringJsonSerializer getInstance() {
@@ -39,11 +42,13 @@ public class StringJsonSerializer extends JsonSerializer<String> {
 
     private StringJsonSerializer() { }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean isEmpty( String value ) {
         return null == value || value.length() == 0;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void doSerialize( JsonWriter writer, String value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         writer.value( value );

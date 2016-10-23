@@ -26,25 +26,33 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * Serializes a bean's property
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class AnyGetterPropertySerializer<T> extends BeanPropertySerializer<T, Map> {
 
+    /**
+     * <p>newSerializer</p>
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.ser.map.MapJsonSerializer} object.
+     */
     protected abstract MapJsonSerializer newSerializer();
 
+    /**
+     * <p>Constructor for AnyGetterPropertySerializer.</p>
+     */
     public AnyGetterPropertySerializer() {
         super( null );
     }
 
+    /** {@inheritDoc} */
     public void serializePropertyName( JsonWriter writer, T bean, JsonSerializationContext ctx ) {
         // no-op
     }
 
     /**
-     * Serializes the property defined for this instance.
+     * {@inheritDoc}
      *
-     * @param writer writer
-     * @param bean bean containing the property to serialize
-     * @param ctx context of the serialization process
+     * Serializes the property defined for this instance.
      */
     public void serialize( JsonWriter writer, T bean, JsonSerializationContext ctx ) {
         Map map = getValue( bean, ctx );

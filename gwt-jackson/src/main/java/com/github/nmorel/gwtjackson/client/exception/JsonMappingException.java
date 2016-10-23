@@ -20,20 +20,40 @@ package com.github.nmorel.gwtjackson.client.exception;
  * Base exception for mapping process
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class JsonMappingException extends RuntimeException {
 
+    /**
+     * <p>Constructor for JsonMappingException.</p>
+     */
     public JsonMappingException() {
     }
 
+    /**
+     * <p>Constructor for JsonMappingException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     */
     public JsonMappingException( String message ) {
         super( message );
     }
 
+    /**
+     * <p>Constructor for JsonMappingException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     * @param cause a {@link java.lang.Throwable} object.
+     */
     public JsonMappingException( String message, Throwable cause ) {
         super( message, cause );
     }
 
+    /**
+     * <p>Constructor for JsonMappingException.</p>
+     *
+     * @param cause a {@link java.lang.Throwable} object.
+     */
     public JsonMappingException( Throwable cause ) {
         super( cause );
     }

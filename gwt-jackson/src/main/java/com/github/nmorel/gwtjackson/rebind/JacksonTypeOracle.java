@@ -40,7 +40,10 @@ import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.thirdparty.guava.common.base.Optional;
 
 /**
+ * <p>JacksonTypeOracle class.</p>
+ *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class JacksonTypeOracle {
 
@@ -72,6 +75,12 @@ public class JacksonTypeOracle {
 
     private final Map<JClassType, BeanJsonMapperInfo> typeToMapperInfo = new HashMap<JClassType, BeanJsonMapperInfo>();
 
+    /**
+     * <p>Constructor for JacksonTypeOracle.</p>
+     *
+     * @param logger a {@link com.google.gwt.core.ext.TreeLogger} object.
+     * @param typeOracle a {@link com.google.gwt.core.ext.typeinfo.TypeOracle} object.
+     */
     public JacksonTypeOracle( TreeLogger logger, TypeOracle typeOracle ) {
         this.logger = logger;
         this.typeOracle = typeOracle;
@@ -89,6 +98,13 @@ public class JacksonTypeOracle {
         this.stringType = typeOracle.findType( String.class.getCanonicalName() );
     }
 
+    /**
+     * <p>getType</p>
+     *
+     * @param type a {@link java.lang.String} object.
+     * @return a {@link com.google.gwt.core.ext.typeinfo.JClassType} object.
+     * @throws com.google.gwt.core.ext.UnableToCompleteException if any.
+     */
     public JClassType getType( String type ) throws UnableToCompleteException {
         try {
             return typeOracle.getType( type );
@@ -98,74 +114,181 @@ public class JacksonTypeOracle {
         }
     }
 
+    /**
+     * <p>isObjectReader</p>
+     *
+     * @param type a {@link com.google.gwt.core.ext.typeinfo.JClassType} object.
+     * @return a boolean.
+     */
     public boolean isObjectReader( JClassType type ) {
         return type.isAssignableTo( objectReaderType );
     }
 
+    /**
+     * <p>isObjectWriter</p>
+     *
+     * @param type a {@link com.google.gwt.core.ext.typeinfo.JClassType} object.
+     * @return a boolean.
+     */
     public boolean isObjectWriter( JClassType type ) {
         return type.isAssignableTo( objectWriterType );
     }
 
+    /**
+     * <p>isMap</p>
+     *
+     * @param parameterizedType a {@link com.google.gwt.core.ext.typeinfo.JClassType} object.
+     * @return a boolean.
+     */
     public boolean isMap( JClassType parameterizedType ) {
         return parameterizedType.isAssignableTo( mapType );
     }
 
+    /**
+     * <p>isIterable</p>
+     *
+     * @param parameterizedType a {@link com.google.gwt.core.ext.typeinfo.JClassType} object.
+     * @return a boolean.
+     */
     public boolean isIterable( JClassType parameterizedType ) {
         return parameterizedType.isAssignableTo( iterableType );
     }
 
+    /**
+     * <p>isKeySerializer</p>
+     *
+     * @param type a {@link com.google.gwt.core.ext.typeinfo.JType} object.
+     * @return a boolean.
+     */
     public boolean isKeySerializer( JType type ) {
         return null != type.isClass() && type.isClass().isAssignableTo( keySerializerType );
     }
 
+    /**
+     * <p>isKeyDeserializer</p>
+     *
+     * @param type a {@link com.google.gwt.core.ext.typeinfo.JType} object.
+     * @return a boolean.
+     */
     public boolean isKeyDeserializer( JType type ) {
         return null != type.isClass() && type.isClass().isAssignableTo( keyDeserializerType );
     }
 
+    /**
+     * <p>isJsonSerializer</p>
+     *
+     * @param type a {@link com.google.gwt.core.ext.typeinfo.JType} object.
+     * @return a boolean.
+     */
     public boolean isJsonSerializer( JType type ) {
         return null != type.isClass() && type.isClass().isAssignableTo( jsonSerializerType );
     }
 
+    /**
+     * <p>isJsonDeserializer</p>
+     *
+     * @param type a {@link com.google.gwt.core.ext.typeinfo.JType} object.
+     * @return a boolean.
+     */
     public boolean isJsonDeserializer( JType type ) {
         return null != type.isClass() && type.isClass().isAssignableTo( jsonDeserializerType );
     }
 
+    /**
+     * <p>isJavaScriptObject</p>
+     *
+     * @param type a {@link com.google.gwt.core.ext.typeinfo.JType} object.
+     * @return a boolean.
+     */
     public boolean isJavaScriptObject( JType type ) {
         return null != type.isClass() && type.isClass().isAssignableTo( jsoType );
     }
 
+    /**
+     * <p>getJavaScriptObject</p>
+     *
+     * @return a {@link com.google.gwt.core.ext.typeinfo.JClassType} object.
+     */
     public JClassType getJavaScriptObject() {
         return jsoType;
     }
 
+    /**
+     * <p>getJavaLangObject</p>
+     *
+     * @return a {@link com.google.gwt.core.ext.typeinfo.JClassType} object.
+     */
     public JClassType getJavaLangObject() {
         return typeOracle.getJavaLangObject();
     }
 
+    /**
+     * <p>getString</p>
+     *
+     * @return a {@link com.google.gwt.core.ext.typeinfo.JClassType} object.
+     */
     public JClassType getString() {
         return stringType;
     }
 
+    /**
+     * <p>isEnumSupertype</p>
+     *
+     * @param type a {@link com.google.gwt.core.ext.typeinfo.JType} object.
+     * @return a boolean.
+     */
     public boolean isEnumSupertype( JType type ) {
         return Enum.class.getName().equals( type.getQualifiedSourceName() );
     }
 
+    /**
+     * <p>isEnum</p>
+     *
+     * @param type a {@link com.google.gwt.core.ext.typeinfo.JType} object.
+     * @return a boolean.
+     */
     public boolean isEnum( JType type ) {
         return null != type.isEnum();
     }
 
+    /**
+     * <p>getEnum</p>
+     *
+     * @return a {@link com.google.gwt.core.ext.typeinfo.JClassType} object.
+     */
     public JClassType getEnum() {
         return enumType;
     }
 
+    /**
+     * <p>getBeanJsonMapperInfo</p>
+     *
+     * @param type a {@link com.google.gwt.core.ext.typeinfo.JClassType} object.
+     * @return a {@link com.github.nmorel.gwtjackson.rebind.BeanJsonMapperInfo} object.
+     */
     public BeanJsonMapperInfo getBeanJsonMapperInfo( JClassType type ) {
         return typeToMapperInfo.get( type );
     }
 
+    /**
+     * <p>addBeanJsonMapperInfo</p>
+     *
+     * @param type a {@link com.google.gwt.core.ext.typeinfo.JClassType} object.
+     * @param info a {@link com.github.nmorel.gwtjackson.rebind.BeanJsonMapperInfo} object.
+     */
     public void addBeanJsonMapperInfo( JClassType type, BeanJsonMapperInfo info ) {
         typeToMapperInfo.put( type, info );
     }
 
+    /**
+     * <p>replaceType</p>
+     *
+     * @param logger a {@link com.google.gwt.core.ext.TreeLogger} object.
+     * @param type a {@link com.google.gwt.core.ext.typeinfo.JType} object.
+     * @param deserializeAs a {@link java.lang.annotation.Annotation} object.
+     * @return a {@link com.google.gwt.core.ext.typeinfo.JType} object.
+     * @throws com.google.gwt.core.ext.UnableToCompleteException if any.
+     */
     public JType replaceType( TreeLogger logger, JType type, Annotation deserializeAs ) throws UnableToCompleteException {
         JClassType classType = type.isClassOrInterface();
         if ( null == classType ) {
@@ -230,6 +353,14 @@ public class JacksonTypeOracle {
         return type;
     }
 
+    /**
+     * <p>getClassFromJsonDeserializeAnnotation</p>
+     *
+     * @param logger a {@link com.google.gwt.core.ext.TreeLogger} object.
+     * @param annotation a {@link java.lang.annotation.Annotation} object.
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<JClassType> getClassFromJsonDeserializeAnnotation( TreeLogger logger, Annotation annotation, String name ) {
         try {
             Class asClass = (Class) annotation.getClass().getDeclaredMethod( name ).invoke( annotation );

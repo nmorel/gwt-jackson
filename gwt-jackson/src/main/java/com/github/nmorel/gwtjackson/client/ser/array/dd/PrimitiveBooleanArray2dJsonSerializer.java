@@ -25,12 +25,15 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * Default {@link JsonSerializer} implementation for 2D array of boolean.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class PrimitiveBooleanArray2dJsonSerializer extends JsonSerializer<boolean[][]> {
 
     private static final PrimitiveBooleanArray2dJsonSerializer INSTANCE = new PrimitiveBooleanArray2dJsonSerializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link PrimitiveBooleanArray2dJsonSerializer}
      */
     public static PrimitiveBooleanArray2dJsonSerializer getInstance() {
@@ -39,11 +42,13 @@ public class PrimitiveBooleanArray2dJsonSerializer extends JsonSerializer<boolea
 
     private PrimitiveBooleanArray2dJsonSerializer() { }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean isEmpty( boolean[][] value ) {
         return null == value || value.length == 0;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void doSerialize( JsonWriter writer, boolean[][] values, JsonSerializationContext ctx,
                              JsonSerializerParameters params ) {

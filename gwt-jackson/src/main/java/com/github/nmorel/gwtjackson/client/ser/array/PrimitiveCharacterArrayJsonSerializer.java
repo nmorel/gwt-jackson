@@ -25,12 +25,15 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * Default {@link JsonSerializer} implementation for array of char.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class PrimitiveCharacterArrayJsonSerializer extends JsonSerializer<char[]> {
 
     private static final PrimitiveCharacterArrayJsonSerializer INSTANCE = new PrimitiveCharacterArrayJsonSerializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link PrimitiveCharacterArrayJsonSerializer}
      */
     public static PrimitiveCharacterArrayJsonSerializer getInstance() {
@@ -39,11 +42,13 @@ public class PrimitiveCharacterArrayJsonSerializer extends JsonSerializer<char[]
 
     private PrimitiveCharacterArrayJsonSerializer() { }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean isEmpty( char[] value ) {
         return null == value || value.length == 0;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void doSerialize( JsonWriter writer, char[] values, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         if ( !ctx.isWriteEmptyJsonArrays() && values.length == 0 ) {

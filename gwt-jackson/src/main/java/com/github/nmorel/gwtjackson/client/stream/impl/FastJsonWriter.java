@@ -27,6 +27,9 @@ import com.google.gwt.core.client.JsonUtils;
 
 /**
  * Same as {@link DefaultJsonWriter} but uses {@link JsonUtils#escapeValue(String)} instead of the REPLACEMENT_CHARS array.
+ *
+ * @author nicolasmorel
+ * @version $Id: $
  */
 public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.stream.JsonWriter {
 
@@ -62,6 +65,8 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
 
   /**
    * Creates a new instance that writes a JSON-encoded stream to {@code out}.
+   *
+   * @param out a {@link java.lang.StringBuilder} object.
    */
   public FastJsonWriter( StringBuilder out ) {
     if (out == null) {
@@ -70,6 +75,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
     this.out = out;
   }
 
+  /** {@inheritDoc} */
   @Override
   public final void setIndent( String indent ) {
     if (indent.length() == 0) {
@@ -81,6 +87,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public final void setLenient( boolean lenient ) {
     this.lenient = lenient;
@@ -88,17 +95,22 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
 
   /**
    * Returns true if this writer has relaxed syntax rules.
+   *
+   * @return a boolean.
    */
   public boolean isLenient() {
     return lenient;
   }
 
+  /** {@inheritDoc} */
   @Override
   public final void setSerializeNulls( boolean serializeNulls ) {
     this.serializeNulls = serializeNulls;
   }
 
   /**
+   * {@inheritDoc}
+   *
    * Returns true if object members are serialized when their value is null.
    * This has no impact on array elements. The default is true.
    */
@@ -107,23 +119,27 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
     return serializeNulls;
   }
 
+  /** {@inheritDoc} */
   @Override
   public FastJsonWriter beginArray() {
     writeDeferredName();
     return open( JsonScope.EMPTY_ARRAY, "[");
   }
 
+  /** {@inheritDoc} */
   @Override
   public FastJsonWriter endArray() {
     return close( JsonScope.EMPTY_ARRAY, JsonScope.NONEMPTY_ARRAY, "]");
   }
 
+  /** {@inheritDoc} */
   @Override
   public FastJsonWriter beginObject() {
     writeDeferredName();
     return open( JsonScope.EMPTY_OBJECT, "{");
   }
 
+  /** {@inheritDoc} */
   @Override
   public FastJsonWriter endObject() {
     return close( JsonScope.EMPTY_OBJECT, JsonScope.NONEMPTY_OBJECT, "}");
@@ -183,6 +199,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
     stack.set(stackSize - 1, topOfStack);
   }
 
+  /** {@inheritDoc} */
   @Override
   public FastJsonWriter name( String name ) {
     checkName(name);
@@ -190,6 +207,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
     return this;
   }
 
+  /** {@inheritDoc} */
   @Override
   public FastJsonWriter unescapeName( String name ) {
     checkName(name);
@@ -221,6 +239,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public FastJsonWriter value( String value ) {
     if (value == null) {
@@ -232,6 +251,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
     return this;
   }
 
+  /** {@inheritDoc} */
   @Override
   public FastJsonWriter unescapeValue( String value ) {
     if (value == null) {
@@ -243,6 +263,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
     return this;
   }
 
+  /** {@inheritDoc} */
   @Override
   public FastJsonWriter nullValue() {
     if (deferredUnescapeName != null || deferredName != null) {
@@ -259,6 +280,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
     return this;
   }
 
+  /** {@inheritDoc} */
   @Override
   public FastJsonWriter cancelName() {
     if (deferredUnescapeName != null) {
@@ -269,6 +291,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
     return this;
   }
 
+  /** {@inheritDoc} */
   @Override
   public FastJsonWriter value( boolean value ) {
     writeDeferredName();
@@ -277,6 +300,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
     return this;
   }
 
+  /** {@inheritDoc} */
   @Override
   public FastJsonWriter value( double value ) {
     if (Double.isNaN(value) || Double.isInfinite(value)) {
@@ -288,6 +312,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
     return this;
   }
 
+  /** {@inheritDoc} */
   @Override
   public FastJsonWriter value( long value ) {
     writeDeferredName();
@@ -296,6 +321,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
     return this;
   }
 
+  /** {@inheritDoc} */
   @Override
   public FastJsonWriter value( Number value ) {
     if (value == null) {
@@ -313,6 +339,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
     return this;
   }
 
+  /** {@inheritDoc} */
   @Override
   public FastJsonWriter value( JavaScriptObject value ) {
     if (value == null) {
@@ -328,6 +355,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
       return JSON.stringify(jso);
   }-*/;
 
+  /** {@inheritDoc} */
   @Override
   public FastJsonWriter rawValue( Object value ) {
     if (value == null) {
@@ -339,6 +367,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
     return this;
   }
 
+  /** {@inheritDoc} */
   @Override
   public void flush() {
     if (stackSize == 0) {
@@ -346,6 +375,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public void close() {
     int size = stackSize;
@@ -431,6 +461,7 @@ public class FastJsonWriter implements com.github.nmorel.gwtjackson.client.strea
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public String getOutput() {
     return out.toString();

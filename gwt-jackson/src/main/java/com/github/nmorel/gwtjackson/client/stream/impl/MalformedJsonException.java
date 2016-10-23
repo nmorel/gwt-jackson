@@ -22,6 +22,9 @@ import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationExceptio
 /**
  * Thrown when a reader encounters malformed JSON. Some syntax errors can be
  * ignored by calling {@link com.github.nmorel.gwtjackson.client.stream.JsonReader#setLenient(boolean)}.
+ *
+ * @author nicolasmorel
+ * @version $Id: $
  */
 public final class MalformedJsonException extends JsonDeserializationException
 {
@@ -29,6 +32,11 @@ public final class MalformedJsonException extends JsonDeserializationException
 
   private MalformedJsonException(){}
 
+  /**
+   * <p>Constructor for MalformedJsonException.</p>
+   *
+   * @param msg a {@link java.lang.String} object.
+   */
   public MalformedJsonException(String msg) {
     super(msg);
   }

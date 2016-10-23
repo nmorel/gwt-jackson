@@ -40,9 +40,18 @@ import com.google.gwt.thirdparty.guava.common.collect.Maps;
  * Utility class used to parse a bean looking for all its properties
  *
  * @author Nicolas Morel.
+ * @version $Id: $
  */
 public final class PropertyParser {
 
+    /**
+     * <p>findPropertyAccessors</p>
+     *
+     * @param configuration a {@link com.github.nmorel.gwtjackson.rebind.RebindConfiguration} object.
+     * @param logger a {@link com.google.gwt.core.ext.TreeLogger} object.
+     * @param beanInfo a {@link com.github.nmorel.gwtjackson.rebind.bean.BeanInfo} object.
+     * @return a {@link com.google.gwt.thirdparty.guava.common.collect.ImmutableMap} object.
+     */
     public static ImmutableMap<String, PropertyAccessors> findPropertyAccessors( final RebindConfiguration configuration,
                                                                                  TreeLogger logger, BeanInfo beanInfo ) {
         Map<String, PropertyAccessorsBuilder> fieldsAndMethodsMap = new LinkedHashMap<String, PropertyAccessorsBuilder>();

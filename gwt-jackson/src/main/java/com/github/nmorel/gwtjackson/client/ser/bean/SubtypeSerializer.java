@@ -25,6 +25,7 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * Delegate the serialization of a subtype to a corresponding {@link JsonSerializer}
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class SubtypeSerializer<T, S extends JsonSerializer<T>> extends HasSerializer<T, S> implements InternalSerializer<T> {
 

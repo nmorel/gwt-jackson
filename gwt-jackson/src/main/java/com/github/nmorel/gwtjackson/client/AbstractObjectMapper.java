@@ -26,6 +26,7 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * Base implementation of {@link ObjectMapper}. It delegates the serialization/deserialization to a serializer/deserializer.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
 
@@ -35,15 +36,22 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
 
     private JsonSerializer<T> serializer;
 
+    /**
+     * <p>Constructor for AbstractObjectMapper.</p>
+     *
+     * @param rootName a {@link java.lang.String} object.
+     */
     protected AbstractObjectMapper( String rootName ) {
         this.rootName = rootName;
     }
 
+    /** {@inheritDoc} */
     @Override
     public T read( String in ) throws JsonDeserializationException {
         return read( in, JsonDeserializationContext.builder().build() );
     }
 
+    /** {@inheritDoc} */
     @Override
     public T read( String in, JsonDeserializationContext ctx ) throws JsonDeserializationException {
         JsonReader reader = ctx.newJsonReader( in );
@@ -83,6 +91,8 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
     }
 
     /**
+     * <p>Getter for the field <code>deserializer</code>.</p>
+     *
      * @return the {@link JsonDeserializer} used by this mapper
      */
     public JsonDeserializer<T> getDeserializer() {
@@ -99,11 +109,13 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
      */
     protected abstract JsonDeserializer<T> newDeserializer();
 
+    /** {@inheritDoc} */
     @Override
     public String write( T value ) throws JsonSerializationException {
         return write( value, JsonSerializationContext.builder().build() );
     }
 
+    /** {@inheritDoc} */
     @Override
     public String write( T value, JsonSerializationContext ctx ) throws JsonSerializationException {
         JsonWriter writer = ctx.newJsonWriter();
@@ -126,6 +138,8 @@ public abstract class AbstractObjectMapper<T> implements ObjectMapper<T> {
     }
 
     /**
+     * <p>Getter for the field <code>serializer</code>.</p>
+     *
      * @return the {@link JsonSerializer} used by this mapper
      */
     public JsonSerializer<T> getSerializer() {

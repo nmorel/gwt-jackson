@@ -125,6 +125,11 @@ final class BeanInfoBuilder {
         this.creatorMethod = creatorMethod;
     }
 
+    /**
+     * <p>Getter for the field <code>creatorParameters</code>.</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String, JParameter> getCreatorParameters() {
         return creatorParameters;
     }

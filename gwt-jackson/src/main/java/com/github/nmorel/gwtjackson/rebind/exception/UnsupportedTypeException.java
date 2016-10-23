@@ -17,10 +17,18 @@
 package com.github.nmorel.gwtjackson.rebind.exception;
 
 /**
+ * <p>UnsupportedTypeException class.</p>
+ *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class UnsupportedTypeException extends Exception {
 
+    /**
+     * <p>Constructor for UnsupportedTypeException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     */
     public UnsupportedTypeException( String message ) {
         super( message );
     }

@@ -30,12 +30,15 @@ import com.github.nmorel.gwtjackson.client.utils.Base64Utils;
  * Default {@link JsonDeserializer} implementation for array of byte.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class PrimitiveByteArrayJsonDeserializer extends AbstractArrayJsonDeserializer<byte[]> {
 
     private static final PrimitiveByteArrayJsonDeserializer INSTANCE = new PrimitiveByteArrayJsonDeserializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link PrimitiveByteArrayJsonDeserializer}
      */
     public static PrimitiveByteArrayJsonDeserializer getInstance() {
@@ -44,6 +47,7 @@ public class PrimitiveByteArrayJsonDeserializer extends AbstractArrayJsonDeseria
 
     private PrimitiveByteArrayJsonDeserializer() { }
 
+    /** {@inheritDoc} */
     @Override
     public byte[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         List<Byte> list = deserializeIntoList( reader, ctx, ByteJsonDeserializer.getInstance(), params );
@@ -59,6 +63,7 @@ public class PrimitiveByteArrayJsonDeserializer extends AbstractArrayJsonDeseria
         return result;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected byte[] doDeserializeNonArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         if ( JsonToken.STRING == reader.peek() ) {
@@ -70,6 +75,7 @@ public class PrimitiveByteArrayJsonDeserializer extends AbstractArrayJsonDeseria
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     protected byte[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         return new byte[]{ByteJsonDeserializer.getInstance().deserialize( reader, ctx, params )};

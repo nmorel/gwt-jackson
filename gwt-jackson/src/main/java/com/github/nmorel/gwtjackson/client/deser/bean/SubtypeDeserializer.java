@@ -27,6 +27,7 @@ import com.github.nmorel.gwtjackson.client.stream.JsonReader;
  * Delegate the deserialization of a subtype to a corresponding {@link AbstractBeanJsonDeserializer}
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class SubtypeDeserializer<T, D extends JsonDeserializer<T>> extends HasDeserializer<T,
         D> implements InternalDeserializer<T, D> {

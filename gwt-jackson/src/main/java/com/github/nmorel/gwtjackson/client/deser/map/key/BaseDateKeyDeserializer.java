@@ -30,6 +30,7 @@ import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
  * for number-based key.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class BaseDateKeyDeserializer<D extends Date> extends KeyDeserializer<D> {
 
@@ -145,6 +146,7 @@ public abstract class BaseDateKeyDeserializer<D extends Date> extends KeyDeseria
 
     private static final DateTimeFormat RFC_2822_FORMAT = DateTimeFormat.getFormat( PredefinedFormat.RFC_2822 );
 
+    /** {@inheritDoc} */
     @Override
     protected D doDeserialize( String key, JsonDeserializationContext ctx ) {
         // TODO could probably find a better way to handle the parsing without try/catch
@@ -175,7 +177,19 @@ public abstract class BaseDateKeyDeserializer<D extends Date> extends KeyDeseria
         throw new JsonDeserializationException( "Cannot parse the key '" + key + "' as a date" );
     }
 
+    /**
+     * <p>deserializeMillis</p>
+     *
+     * @param millis a long.
+     * @return a D object.
+     */
     protected abstract D deserializeMillis( long millis );
 
+    /**
+     * <p>deserializeDate</p>
+     *
+     * @param date a {@link java.util.Date} object.
+     * @return a D object.
+     */
     protected abstract D deserializeDate( Date date );
 }

@@ -27,12 +27,15 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * Default {@link JsonSerializer} implementation for {@link UUID}.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class UUIDJsonSerializer extends JsonSerializer<UUID> {
 
     private static final UUIDJsonSerializer INSTANCE = new UUIDJsonSerializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link UUIDJsonSerializer}
      */
     public static UUIDJsonSerializer getInstance() {
@@ -41,6 +44,7 @@ public class UUIDJsonSerializer extends JsonSerializer<UUID> {
 
     private UUIDJsonSerializer() { }
 
+    /** {@inheritDoc} */
     @Override
     public void doSerialize( JsonWriter writer, UUID value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         writer.unescapeValue( value.toString() );

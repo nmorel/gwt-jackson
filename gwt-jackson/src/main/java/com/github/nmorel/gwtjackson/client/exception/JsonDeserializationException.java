@@ -20,20 +20,40 @@ package com.github.nmorel.gwtjackson.client.exception;
  * Base exception for deserialization process
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class JsonDeserializationException extends JsonMappingException {
 
+    /**
+     * <p>Constructor for JsonDeserializationException.</p>
+     */
     public JsonDeserializationException() {
     }
 
+    /**
+     * <p>Constructor for JsonDeserializationException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     */
     public JsonDeserializationException( String message ) {
         super( message );
     }
 
+    /**
+     * <p>Constructor for JsonDeserializationException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     * @param cause a {@link java.lang.Throwable} object.
+     */
     public JsonDeserializationException( String message, Throwable cause ) {
         super( message, cause );
     }
 
+    /**
+     * <p>Constructor for JsonDeserializationException.</p>
+     *
+     * @param cause a {@link java.lang.Throwable} object.
+     */
     public JsonDeserializationException( Throwable cause ) {
         super( cause );
     }

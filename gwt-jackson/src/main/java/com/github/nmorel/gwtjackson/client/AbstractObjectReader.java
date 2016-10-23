@@ -21,13 +21,20 @@ package com.github.nmorel.gwtjackson.client;
  * reader will result in an {@link UnsupportedOperationException}.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class AbstractObjectReader<T> extends AbstractObjectMapper<T> implements ObjectReader<T> {
 
+    /**
+     * <p>Constructor for AbstractObjectReader.</p>
+     *
+     * @param rootName a {@link java.lang.String} object.
+     */
     public AbstractObjectReader( String rootName ) {
         super( rootName );
     }
 
+    /** {@inheritDoc} */
     @Override
     protected final JsonSerializer<?> newSerializer() {
         throw new UnsupportedOperationException( "ObjectReader doesn't support serialization" );

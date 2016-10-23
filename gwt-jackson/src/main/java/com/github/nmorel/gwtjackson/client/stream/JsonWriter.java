@@ -18,6 +18,12 @@ package com.github.nmorel.gwtjackson.client.stream;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
+/**
+ * <p>JsonWriter interface.</p>
+ *
+ * @author nicolasmorel
+ * @version $Id: $
+ */
 public interface JsonWriter {
 
     /**
@@ -41,15 +47,24 @@ public interface JsonWriter {
      *   <li>Numbers may be {@link Double#isNaN() NaNs} or {@link
      *       Double#isInfinite() infinities}.
      * </ul>
+     *
+     * @param lenient a boolean.
      */
     void setLenient( boolean lenient );
 
     /**
      * Sets whether object members are serialized when their value is null.
      * This has no impact on array elements. The default is true.
+     *
+     * @param serializeNulls a boolean.
      */
     void setSerializeNulls( boolean serializeNulls );
 
+    /**
+     * <p>getSerializeNulls</p>
+     *
+     * @return a boolean.
+     */
     boolean getSerializeNulls();
 
     /**
@@ -121,12 +136,18 @@ public interface JsonWriter {
      */
     JsonWriter nullValue();
 
+    /**
+     * <p>cancelName</p>
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.stream.JsonWriter} object.
+     */
     JsonWriter cancelName();
 
     /**
      * Encodes {@code value}.
      *
      * @return this writer.
+     * @param value a boolean.
      */
     JsonWriter value( boolean value );
 
@@ -143,6 +164,7 @@ public interface JsonWriter {
      * Encodes {@code value}.
      *
      * @return this writer.
+     * @param value a long.
      */
     JsonWriter value( long value );
 
@@ -183,6 +205,8 @@ public interface JsonWriter {
     void close();
 
     /**
+     * <p>getOutput</p>
+     *
      * @return the output when the serialization is over
      */
     String getOutput();

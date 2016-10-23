@@ -29,12 +29,15 @@ import com.github.nmorel.gwtjackson.client.stream.JsonToken;
  * Default {@link JsonDeserializer} implementation for array of char.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class PrimitiveCharacterArrayJsonDeserializer extends AbstractArrayJsonDeserializer<char[]> {
 
     private static final PrimitiveCharacterArrayJsonDeserializer INSTANCE = new PrimitiveCharacterArrayJsonDeserializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link PrimitiveCharacterArrayJsonDeserializer}
      */
     public static PrimitiveCharacterArrayJsonDeserializer getInstance() {
@@ -43,6 +46,7 @@ public class PrimitiveCharacterArrayJsonDeserializer extends AbstractArrayJsonDe
 
     private PrimitiveCharacterArrayJsonDeserializer() { }
 
+    /** {@inheritDoc} */
     @Override
     public char[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         List<Character> list = deserializeIntoList( reader, ctx, CharacterJsonDeserializer.getInstance(), params );
@@ -58,6 +62,7 @@ public class PrimitiveCharacterArrayJsonDeserializer extends AbstractArrayJsonDe
         return result;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected char[] doDeserializeNonArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         if ( JsonToken.STRING == reader.peek() ) {
@@ -69,6 +74,7 @@ public class PrimitiveCharacterArrayJsonDeserializer extends AbstractArrayJsonDe
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     protected char[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         return new char[]{CharacterJsonDeserializer.getInstance().deserialize( reader, ctx, params )};

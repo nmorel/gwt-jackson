@@ -24,15 +24,16 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializer;
  * Default {@link JsonDeserializer} implementation for {@link LinkedList}.
  *
  * @param <T> Type of the elements inside the {@link LinkedList}
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class LinkedListJsonDeserializer<T> extends BaseListJsonDeserializer<LinkedList<T>, T> {
 
     /**
+     * <p>newInstance</p>
+     *
      * @param deserializer {@link JsonDeserializer} used to deserialize the objects inside the {@link LinkedList}.
      * @param <T> Type of the elements inside the {@link LinkedList}
-     *
      * @return a new instance of {@link LinkedListJsonDeserializer}
      */
     public static <T> LinkedListJsonDeserializer<T> newInstance( JsonDeserializer<T> deserializer ) {
@@ -46,6 +47,7 @@ public class LinkedListJsonDeserializer<T> extends BaseListJsonDeserializer<Link
         super( deserializer );
     }
 
+    /** {@inheritDoc} */
     @Override
     protected LinkedList<T> newCollection() {
         return new LinkedList<T>();

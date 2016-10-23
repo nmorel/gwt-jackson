@@ -22,23 +22,35 @@ import com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer;
 
 /**
  * Class used to handle the generation of {@link Deserializer}
+ *
+ * @author nicolasmorel
+ * @version $Id: $
  */
 public class JParameterizedDeserializer extends JParameterizedMapper<JDeserializerType> {
 
+    /**
+     * <p>Constructor for JParameterizedDeserializer.</p>
+     *
+     * @param key a {@link com.github.nmorel.gwtjackson.rebind.type.JDeserializerType} object.
+     * @param json a {@link com.github.nmorel.gwtjackson.rebind.type.JDeserializerType} object.
+     */
     public JParameterizedDeserializer( JDeserializerType key, JDeserializerType json ) {
         super( key, json );
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Class getMainClass() {
         return Deserializer.class;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Class getKeyClass() {
         return KeyDeserializer.class;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Class getJsonClass() {
         return JsonDeserializer.class;

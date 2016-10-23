@@ -28,12 +28,15 @@ import com.github.nmorel.gwtjackson.client.stream.JsonReader;
  * Default {@link JsonDeserializer} implementation for 2D array of float.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class PrimitiveFloatArray2dJsonDeserializer extends AbstractArray2dJsonDeserializer<float[][]> {
 
     private static final PrimitiveFloatArray2dJsonDeserializer INSTANCE = new PrimitiveFloatArray2dJsonDeserializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link PrimitiveFloatArray2dJsonDeserializer}
      */
     public static PrimitiveFloatArray2dJsonDeserializer getInstance() {
@@ -42,6 +45,7 @@ public class PrimitiveFloatArray2dJsonDeserializer extends AbstractArray2dJsonDe
 
     private PrimitiveFloatArray2dJsonDeserializer() { }
 
+    /** {@inheritDoc} */
     @Override
     public float[][] doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         List<List<Float>> list = deserializeIntoList( reader, ctx, FloatJsonDeserializer.getInstance(), params );

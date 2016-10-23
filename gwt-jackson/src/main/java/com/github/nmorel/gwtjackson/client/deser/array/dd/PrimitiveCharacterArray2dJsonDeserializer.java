@@ -30,12 +30,15 @@ import com.github.nmorel.gwtjackson.client.stream.JsonToken;
  * Default {@link JsonDeserializer} implementation for 2D array of char.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class PrimitiveCharacterArray2dJsonDeserializer extends AbstractArray2dJsonDeserializer<char[][]> {
 
     private static final PrimitiveCharacterArray2dJsonDeserializer INSTANCE = new PrimitiveCharacterArray2dJsonDeserializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link PrimitiveCharacterArray2dJsonDeserializer}
      */
     public static PrimitiveCharacterArray2dJsonDeserializer getInstance() {
@@ -44,6 +47,7 @@ public class PrimitiveCharacterArray2dJsonDeserializer extends AbstractArray2dJs
 
     private PrimitiveCharacterArray2dJsonDeserializer() { }
 
+    /** {@inheritDoc} */
     @Override
     public char[][] doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
 

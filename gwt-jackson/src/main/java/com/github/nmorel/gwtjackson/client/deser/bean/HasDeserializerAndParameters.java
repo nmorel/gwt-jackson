@@ -25,11 +25,17 @@ import com.github.nmorel.gwtjackson.client.stream.JsonReader;
  * Lazy initialize a {@link JsonDeserializer}
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class HasDeserializerAndParameters<V, S extends JsonDeserializer<V>> extends HasDeserializer<V, S> {
 
     private JsonDeserializerParameters parameters;
 
+    /**
+     * <p>Getter for the field <code>parameters</code>.</p>
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.JsonDeserializerParameters} object.
+     */
     protected JsonDeserializerParameters getParameters() {
         if ( null == parameters ) {
             parameters = newParameters();
@@ -37,6 +43,11 @@ public abstract class HasDeserializerAndParameters<V, S extends JsonDeserializer
         return parameters;
     }
 
+    /**
+     * <p>newParameters</p>
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.JsonDeserializerParameters} object.
+     */
     protected JsonDeserializerParameters newParameters() {
         return JsonDeserializerParameters.DEFAULT;
     }
@@ -46,6 +57,7 @@ public abstract class HasDeserializerAndParameters<V, S extends JsonDeserializer
      *
      * @param reader reader
      * @param ctx context of the deserialization process
+     * @return a V object.
      */
     public V deserialize( JsonReader reader, JsonDeserializationContext ctx ) {
         return getDeserializer().deserialize( reader, ctx, getParameters() );

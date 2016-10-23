@@ -121,6 +121,7 @@ import com.google.gwt.core.client.JsArrayInteger;
  *
  * @author Jesse Wilson
  * @since 1.6
+ * @version $Id: $
  */
 public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.stream.JsonWriter {
 
@@ -188,6 +189,8 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
 
   /**
    * Creates a new instance that writes a JSON-encoded stream to {@code out}.
+   *
+   * @param out a {@link java.lang.StringBuilder} object.
    */
   public DefaultJsonWriter( StringBuilder out ) {
     if (out == null) {
@@ -196,6 +199,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
     this.out = out;
   }
 
+  /** {@inheritDoc} */
   @Override
   public final void setIndent( String indent ) {
     if (indent.length() == 0) {
@@ -207,6 +211,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public final void setLenient( boolean lenient ) {
     this.lenient = lenient;
@@ -214,17 +219,22 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
 
   /**
    * Returns true if this writer has relaxed syntax rules.
+   *
+   * @return a boolean.
    */
   public boolean isLenient() {
     return lenient;
   }
 
+  /** {@inheritDoc} */
   @Override
   public final void setSerializeNulls( boolean serializeNulls ) {
     this.serializeNulls = serializeNulls;
   }
 
   /**
+   * {@inheritDoc}
+   *
    * Returns true if object members are serialized when their value is null.
    * This has no impact on array elements. The default is true.
    */
@@ -233,23 +243,27 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
     return serializeNulls;
   }
 
+  /** {@inheritDoc} */
   @Override
   public DefaultJsonWriter beginArray() {
     writeDeferredName();
     return open( JsonScope.EMPTY_ARRAY, "[");
   }
 
+  /** {@inheritDoc} */
   @Override
   public DefaultJsonWriter endArray() {
     return close( JsonScope.EMPTY_ARRAY, JsonScope.NONEMPTY_ARRAY, "]");
   }
 
+  /** {@inheritDoc} */
   @Override
   public DefaultJsonWriter beginObject() {
     writeDeferredName();
     return open( JsonScope.EMPTY_OBJECT, "{");
   }
 
+  /** {@inheritDoc} */
   @Override
   public DefaultJsonWriter endObject() {
     return close( JsonScope.EMPTY_OBJECT, JsonScope.NONEMPTY_OBJECT, "}");
@@ -309,6 +323,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
     stack.set(stackSize - 1, topOfStack);
   }
 
+  /** {@inheritDoc} */
   @Override
   public DefaultJsonWriter name( String name ) {
     checkName(name);
@@ -316,6 +331,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
     return this;
   }
 
+  /** {@inheritDoc} */
   @Override
   public DefaultJsonWriter unescapeName( String name ) {
     checkName(name);
@@ -347,6 +363,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public DefaultJsonWriter value( String value ) {
     if (value == null) {
@@ -358,6 +375,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
     return this;
   }
 
+  /** {@inheritDoc} */
   @Override
   public DefaultJsonWriter unescapeValue( String value ) {
     if (value == null) {
@@ -369,6 +387,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
     return this;
   }
 
+  /** {@inheritDoc} */
   @Override
   public DefaultJsonWriter nullValue() {
     if (deferredUnescapeName != null || deferredName != null) {
@@ -385,6 +404,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
     return this;
   }
 
+  /** {@inheritDoc} */
   @Override
   public DefaultJsonWriter cancelName() {
     if (deferredUnescapeName != null) {
@@ -395,6 +415,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
     return this;
   }
 
+  /** {@inheritDoc} */
   @Override
   public DefaultJsonWriter value( boolean value ) {
     writeDeferredName();
@@ -403,6 +424,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
     return this;
   }
 
+  /** {@inheritDoc} */
   @Override
   public DefaultJsonWriter value( double value ) {
     if (Double.isNaN(value) || Double.isInfinite(value)) {
@@ -414,6 +436,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
     return this;
   }
 
+  /** {@inheritDoc} */
   @Override
   public DefaultJsonWriter value( long value ) {
     writeDeferredName();
@@ -422,6 +445,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
     return this;
   }
 
+  /** {@inheritDoc} */
   @Override
   public DefaultJsonWriter value( Number value ) {
     if (value == null) {
@@ -439,6 +463,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
     return this;
   }
 
+  /** {@inheritDoc} */
   @Override
   public DefaultJsonWriter value( JavaScriptObject value ) {
     if (value == null) {
@@ -454,6 +479,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
       return JSON.stringify(jso);
   }-*/;
 
+  /** {@inheritDoc} */
   @Override
   public DefaultJsonWriter rawValue( Object value ) {
     if (value == null) {
@@ -465,6 +491,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
     return this;
   }
 
+  /** {@inheritDoc} */
   @Override
   public void flush() {
     if (stackSize == 0) {
@@ -472,6 +499,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public void close() {
     int size = stackSize;
@@ -518,6 +546,12 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
     }
   }
 
+  /**
+   * <p>encodeString</p>
+   *
+   * @param value a {@link java.lang.String} object.
+   * @return a {@link java.lang.String} object.
+   */
   public static String encodeString(final String value) {
     StringBuilder out = new StringBuilder();
     encodeString( value, out );
@@ -595,6 +629,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public String getOutput() {
     return out.toString();

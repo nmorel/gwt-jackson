@@ -24,15 +24,16 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializer;
  * Default {@link JsonDeserializer} implementation for {@link Stack}.
  *
  * @param <T> Type of the elements inside the {@link Stack}
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class StackJsonDeserializer<T> extends BaseListJsonDeserializer<Stack<T>, T> {
 
     /**
+     * <p>newInstance</p>
+     *
      * @param deserializer {@link JsonDeserializer} used to deserialize the objects inside the {@link Stack}.
      * @param <T> Type of the elements inside the {@link Stack}
-     *
      * @return a new instance of {@link StackJsonDeserializer}
      */
     public static <T> StackJsonDeserializer<T> newInstance( JsonDeserializer<T> deserializer ) {
@@ -46,6 +47,7 @@ public class StackJsonDeserializer<T> extends BaseListJsonDeserializer<Stack<T>,
         super( deserializer );
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Stack<T> newCollection() {
         return new Stack<T>();

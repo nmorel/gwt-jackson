@@ -25,7 +25,10 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.TimeZone;
 
 /**
+ * <p>DateFormat class.</p>
+ *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class DateFormat {
 
@@ -89,7 +92,6 @@ public final class DateFormat {
      * Format a date using {@link #DATE_FORMAT_STR_ISO8601} and {@link #UTC_TIMEZONE}
      *
      * @param date date to format
-     *
      * @return the formatted date
      */
     public static String format( Date date ) {
@@ -100,8 +102,8 @@ public final class DateFormat {
      * Format a date using {@link JsonSerializerParameters} or default values : {@link #DATE_FORMAT_STR_ISO8601} and {@link #UTC_TIMEZONE}
      *
      * @param date date to format
-     *
      * @return the formatted date
+     * @param params a {@link com.github.nmorel.gwtjackson.client.JsonSerializerParameters} object.
      */
     public static String format( JsonSerializerParameters params, Date date ) {
         DateTimeFormat format;
@@ -126,7 +128,6 @@ public final class DateFormat {
      *
      * @param format format to use
      * @param date date to format
-     *
      * @return the formatted date
      */
     public static String format( DateTimeFormat format, Date date ) {
@@ -138,7 +139,6 @@ public final class DateFormat {
      *
      * @param timeZone timezone to use
      * @param date date to format
-     *
      * @return the formatted date
      */
     public static String format( TimeZone timeZone, Date date ) {
@@ -152,7 +152,6 @@ public final class DateFormat {
      * @param format format to use
      * @param timeZone timezone to use
      * @param date date to format
-     *
      * @return the formatted date
      */
     public static String format( DateTimeFormat format, TimeZone timeZone, Date date ) {
@@ -163,7 +162,6 @@ public final class DateFormat {
      * Parse a date using {@link #DATE_FORMAT_STR_ISO8601} and the browser timezone.
      *
      * @param date date to parse
-     *
      * @return the parsed date
      */
     public static Date parse( String date ) {
@@ -177,7 +175,6 @@ public final class DateFormat {
      * @param pattern pattern to use. If null, {@link #DATE_FORMAT_STR_ISO8601} will be used.
      * @param hasTz whether the pattern includes timezone information. when null the pattern will be parsed to search it.
      * @param date date to parse
-     *
      * @return the parsed date
      */
     public static Date parse( boolean useBrowserTimezone, String pattern, Boolean hasTz, String date ) {
@@ -250,7 +247,6 @@ public final class DateFormat {
      *
      * @param format format to use
      * @param date date to parse
-     *
      * @return the parsed date
      */
     public static Date parse( DateTimeFormat format, String date ) {

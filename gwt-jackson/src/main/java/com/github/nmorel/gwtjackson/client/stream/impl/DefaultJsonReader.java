@@ -191,6 +191,7 @@ import com.google.gwt.core.client.JsonUtils;
  *
  * @author Jesse Wilson
  * @since 1.6
+ * @version $Id: $
  */
 public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.stream.JsonReader
 {
@@ -288,6 +289,8 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
 
   /**
    * Creates a new instance that reads a JSON-encoded stream from {@code in}.
+   *
+   * @param in a {@link com.github.nmorel.gwtjackson.client.stream.impl.StringReader} object.
    */
   public DefaultJsonReader( StringReader in ) {
     if (in == null) {
@@ -296,6 +299,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     this.in = in;
   }
 
+  /** {@inheritDoc} */
   @Override
   public final void setLenient( boolean lenient ) {
     this.lenient = lenient;
@@ -303,11 +307,14 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
 
   /**
    * Returns true if this parser is liberal in what it accepts.
+   *
+   * @return a boolean.
    */
   public final boolean isLenient() {
     return lenient;
   }
 
+  /** {@inheritDoc} */
   @Override
   public void beginArray()
   {
@@ -324,6 +331,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public void endArray()
   {
@@ -340,6 +348,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public void beginObject()
   {
@@ -356,6 +365,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public void endObject()
   {
@@ -372,6 +382,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public boolean hasNext()
   {
@@ -382,6 +393,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     return p != PEEKED_END_OBJECT && p != PEEKED_END_ARRAY;
   }
 
+  /** {@inheritDoc} */
   @Override
   public JsonToken peek()
   {
@@ -742,6 +754,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public String nextName()
   {
@@ -764,6 +777,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     return result;
   }
 
+  /** {@inheritDoc} */
   @Override
   public String nextString()
   {
@@ -794,6 +808,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     return result;
   }
 
+  /** {@inheritDoc} */
   @Override
   public boolean nextBoolean()
   {
@@ -812,6 +827,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
         + " at line " + getLineNumber() + " column " + getColumnNumber());
   }
 
+  /** {@inheritDoc} */
   @Override
   public void nextNull()
   {
@@ -827,6 +843,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public double nextDouble()
   {
@@ -862,6 +879,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     return result;
   }
 
+  /** {@inheritDoc} */
   @Override
   public long nextLong()
   {
@@ -1077,6 +1095,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     } while (fillBuffer(1));
   }
 
+  /** {@inheritDoc} */
   @Override
   public int nextInt()
   {
@@ -1125,6 +1144,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     return result;
   }
 
+  /** {@inheritDoc} */
   @Override
   public void close()
   {
@@ -1133,6 +1153,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     stackSize = 1;
   }
 
+  /** {@inheritDoc} */
   @Override
   public void skipValue()
   {
@@ -1207,11 +1228,13 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     return false;
   }
 
+  /** {@inheritDoc} */
   @Override
   public int getLineNumber() {
     return lineNumber + 1;
   }
 
+  /** {@inheritDoc} */
   @Override
   public int getColumnNumber() {
     return pos - lineStart + 1;
@@ -1363,6 +1386,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     return false;
   }
 
+  /** {@inheritDoc} */
   @Override
   public String toString() {
     return "JsonReader at line " + getLineNumber() + " column " + getColumnNumber();
@@ -1469,11 +1493,13 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     pos += NON_EXECUTE_PREFIX.length;
   }
 
+  /** {@inheritDoc} */
   @Override
   public String getInput(){
     return in.getInput();
   }
 
+  /** {@inheritDoc} */
   @Override
   public String nextValue()
   {
@@ -1544,6 +1570,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     return writer.getOutput();
   }
 
+  /** {@inheritDoc} */
   @Override
   public Number nextNumber()
   {
@@ -1646,6 +1673,7 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
     return result;
   }
 
+  /** {@inheritDoc} */
   @Override
   public JavaScriptObject nextJavaScriptObject( boolean useSafeEval ) {
     int p = peeked;

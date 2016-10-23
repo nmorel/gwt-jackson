@@ -33,6 +33,7 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * Base implementation of {@link JsonSerializer} for beans.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> implements InternalSerializer<T> {
 
@@ -46,6 +47,9 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
 
     private final AnyGetterPropertySerializer<T> anyGetterPropertySerializer;
 
+    /**
+     * <p>Constructor for AbstractBeanJsonSerializer.</p>
+     */
     protected AbstractBeanJsonSerializer() {
         this.serializers = initSerializers();
         this.defaultIdentityInfo = initIdentityInfo();
@@ -57,6 +61,8 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
     /**
      * Initialize the {@link Map} containing the property serializers. Returns an empty map if there are no properties to
      * serialize.
+     *
+     * @return an array of {@link com.github.nmorel.gwtjackson.client.ser.bean.BeanPropertySerializer} objects.
      */
     protected BeanPropertySerializer[] initSerializers() {
         return new BeanPropertySerializer[0];
@@ -64,6 +70,8 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
 
     /**
      * Initialize the {@link IdentitySerializationInfo}. Returns null if there is no {@link JsonIdentityInfo} annotation on bean.
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.ser.bean.IdentitySerializationInfo} object.
      */
     protected IdentitySerializationInfo<T> initIdentityInfo() {
         return null;
@@ -71,6 +79,8 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
 
     /**
      * Initialize the {@link TypeSerializationInfo}. Returns null if there is no {@link JsonTypeInfo} annotation on bean.
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.ser.bean.TypeSerializationInfo} object.
      */
     protected TypeSerializationInfo<T> initTypeInfo() {
         return null;
@@ -78,6 +88,8 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
 
     /**
      * Initialize the {@link Map} containing the {@link SubtypeSerializer}. Returns an empty map if the bean has no subtypes.
+     *
+     * @return a {@link java.util.Map} object.
      */
     protected Map<Class, SubtypeSerializer> initMapSubtypeClassToSerializer() {
         return Collections.emptyMap();
@@ -85,13 +97,21 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
 
     /**
      * Initialize the {@link AnyGetterPropertySerializer}. Returns null if there is no method annoted with {@link JsonAnyGetter} on bean.
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.ser.bean.AnyGetterPropertySerializer} object.
      */
     protected AnyGetterPropertySerializer<T> initAnyGetterPropertySerializer() {
         return null;
     }
 
+    /**
+     * <p>getSerializedType</p>
+     *
+     * @return a {@link java.lang.Class} object.
+     */
     public abstract Class getSerializedType();
 
+    /** {@inheritDoc} */
     @Override
     public void doSerialize( JsonWriter writer, T value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         getSerializer( writer, value, ctx ).serializeInternally( writer, value, ctx, params, defaultIdentityInfo, defaultTypeInfo );
@@ -112,6 +132,7 @@ public abstract class AbstractBeanJsonSerializer<T> extends JsonSerializer<T> im
         return subtypeSerializer;
     }
 
+    /** {@inheritDoc} */
     public void serializeInternally( JsonWriter writer, T value, JsonSerializationContext ctx, JsonSerializerParameters params,
                                      IdentitySerializationInfo<T> defaultIdentityInfo, TypeSerializationInfo<T> defaultTypeInfo ) {
 

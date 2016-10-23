@@ -25,15 +25,16 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializer;
  * Default {@link JsonDeserializer} implementation for {@link List}. The deserialization process returns an {@link ArrayList}.
  *
  * @param <T> Type of the elements inside the {@link List}
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class ListJsonDeserializer<T> extends BaseListJsonDeserializer<List<T>, T> {
 
     /**
+     * <p>newInstance</p>
+     *
      * @param deserializer {@link JsonDeserializer} used to deserialize the objects inside the {@link List}.
      * @param <T> Type of the elements inside the {@link List}
-     *
      * @return a new instance of {@link ListJsonDeserializer}
      */
     public static <T> ListJsonDeserializer<T> newInstance( JsonDeserializer<T> deserializer ) {
@@ -47,6 +48,7 @@ public final class ListJsonDeserializer<T> extends BaseListJsonDeserializer<List
         super( deserializer );
     }
 
+    /** {@inheritDoc} */
     @Override
     protected List<T> newCollection() {
         return new ArrayList<T>();

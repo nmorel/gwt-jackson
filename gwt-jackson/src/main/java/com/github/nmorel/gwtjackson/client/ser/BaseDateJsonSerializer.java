@@ -31,6 +31,7 @@ import com.github.nmorel.gwtjackson.client.utils.DateFormat;
  * Base implementation of {@link JsonSerializer} for dates.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class BaseDateJsonSerializer<D extends Date> extends JsonSerializer<D> {
 
@@ -143,6 +144,7 @@ public abstract class BaseDateJsonSerializer<D extends Date> extends JsonSeriali
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean isEmpty( D value ) {
         return null == value || value.getTime() == 0l;

@@ -67,10 +67,23 @@ import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.isAnnotationPrese
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.isObjectOrSerializable;
 
 /**
+ * <p>BeanProcessor class.</p>
+ *
  * @author Nicolas Morel.
+ * @version $Id: $
  */
 public final class BeanProcessor {
 
+    /**
+     * <p>processBean</p>
+     *
+     * @param logger a {@link com.google.gwt.core.ext.TreeLogger} object.
+     * @param typeOracle a {@link com.github.nmorel.gwtjackson.rebind.JacksonTypeOracle} object.
+     * @param configuration a {@link com.github.nmorel.gwtjackson.rebind.RebindConfiguration} object.
+     * @param beanType a {@link com.google.gwt.core.ext.typeinfo.JClassType} object.
+     * @return a {@link com.github.nmorel.gwtjackson.rebind.bean.BeanInfo} object.
+     * @throws com.google.gwt.core.ext.UnableToCompleteException if any.
+     */
     public static BeanInfo processBean( TreeLogger logger, JacksonTypeOracle typeOracle, RebindConfiguration configuration, JClassType
             beanType ) throws UnableToCompleteException {
         BeanInfoBuilder builder = new BeanInfoBuilder();
@@ -284,6 +297,19 @@ public final class BeanProcessor {
                 .<JsonIdentityReference>absent() );
     }
 
+    /**
+     * <p>processIdentity</p>
+     *
+     * @param logger a {@link com.google.gwt.core.ext.TreeLogger} object.
+     * @param typeOracle a {@link com.github.nmorel.gwtjackson.rebind.JacksonTypeOracle} object.
+     * @param configuration a {@link com.github.nmorel.gwtjackson.rebind.RebindConfiguration} object.
+     * @param typeOracle a {@link com.github.nmorel.gwtjackson.rebind.JacksonTypeOracle} object.
+     * @param type a {@link com.google.gwt.core.ext.typeinfo.JClassType} object.
+     * @param jsonIdentityInfo a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     * @param jsonIdentityReference a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     * @throws com.google.gwt.core.ext.UnableToCompleteException if any.
+     */
     public static Optional<BeanIdentityInfo> processIdentity( TreeLogger logger, JacksonTypeOracle typeOracle, RebindConfiguration
             configuration, JClassType type, Optional<JsonIdentityInfo> jsonIdentityInfo, Optional<JsonIdentityReference>
                                                                       jsonIdentityReference ) throws UnableToCompleteException {
@@ -336,6 +362,19 @@ public final class BeanProcessor {
         return processType( logger, typeOracle, configuration, type, Optional.<JsonTypeInfo>absent(), Optional.<JsonSubTypes>absent() );
     }
 
+    /**
+     * <p>processType</p>
+     *
+     * @param logger a {@link com.google.gwt.core.ext.TreeLogger} object.
+     * @param typeOracle a {@link com.github.nmorel.gwtjackson.rebind.JacksonTypeOracle} object.
+     * @param configuration a {@link com.github.nmorel.gwtjackson.rebind.RebindConfiguration} object.
+     * @param typeOracle a {@link com.github.nmorel.gwtjackson.rebind.JacksonTypeOracle} object.
+     * @param type a {@link com.google.gwt.core.ext.typeinfo.JClassType} object.
+     * @param jsonTypeInfo a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     * @param propertySubTypes a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     * @throws com.google.gwt.core.ext.UnableToCompleteException if any.
+     */
     public static Optional<BeanTypeInfo> processType( TreeLogger logger, JacksonTypeOracle typeOracle, RebindConfiguration configuration,
                                                       JClassType type, Optional<JsonTypeInfo> jsonTypeInfo, Optional<JsonSubTypes>
             propertySubTypes ) throws UnableToCompleteException {
@@ -476,7 +515,6 @@ public final class BeanProcessor {
      * @param typeOracle the oracle
      * @param beanInfo the previous bean information
      * @param properties the properties of the bean
-     *
      * @return the new informations about the bean and its properties
      */
     public static BeanInfo processProperties( RebindConfiguration configuration, TreeLogger logger, JacksonTypeOracle typeOracle,

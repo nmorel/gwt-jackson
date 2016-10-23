@@ -40,6 +40,7 @@ import com.squareup.javapoet.WildcardTypeName;
  * Helper class to convert {@link JType} into {@link TypeName}
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class JTypeName {
 
@@ -240,8 +241,9 @@ public final class JTypeName {
     }
 
     /**
-     * @param type the type
+     * <p>typeName</p>
      *
+     * @param type the type
      * @return the {@link TypeName}
      */
     public static TypeName typeName( JType type ) {
@@ -249,9 +251,10 @@ public final class JTypeName {
     }
 
     /**
+     * <p>typeName</p>
+     *
      * @param boxed true if the primitive should be boxed. Useful when use in a parameterized type.
      * @param type the type
-     *
      * @return the {@link TypeName}
      */
     public static TypeName typeName( boolean boxed, JType type ) {
@@ -259,9 +262,10 @@ public final class JTypeName {
     }
 
     /**
+     * <p>parameterizedName</p>
+     *
      * @param clazz the raw type
      * @param types the parameters
-     *
      * @return the {@link ParameterizedTypeName}
      */
     public static ParameterizedTypeName parameterizedName( Class clazz, JType... types ) {
@@ -269,8 +273,9 @@ public final class JTypeName {
     }
 
     /**
-     * @param type type to convert
+     * <p>rawName</p>
      *
+     * @param type type to convert
      * @return the raw {@link TypeName} without parameter
      */
     public static TypeName rawName( JType type ) {
@@ -278,9 +283,10 @@ public final class JTypeName {
     }
 
     /**
+     * <p>rawName</p>
+     *
      * @param boxed true if the primitive should be boxed. Useful when use in a parameterized type.
      * @param type type to convert
-     *
      * @return the raw {@link TypeName} without parameter
      */
     public static TypeName rawName( boolean boxed, JType type ) {
@@ -288,8 +294,9 @@ public final class JTypeName {
     }
 
     /**
-     * @param type type to convert
+     * <p>typeVariableName</p>
      *
+     * @param type type to convert
      * @return the {@link TypeVariableName}
      */
     public static TypeVariableName typeVariableName( JTypeParameter type ) {

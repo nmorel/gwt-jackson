@@ -17,7 +17,10 @@
 package com.github.nmorel.gwtjackson.client.stream.impl;
 
 /**
+ * <p>StringReader class.</p>
+ *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class StringReader {
 
@@ -27,6 +30,11 @@ public class StringReader {
 
     private int next;
 
+    /**
+     * <p>Constructor for StringReader.</p>
+     *
+     * @param in a {@link java.lang.String} object.
+     */
     public StringReader( String in ) {
         if ( in == null ) {
             throw new NullPointerException( "in == null" );
@@ -36,6 +44,11 @@ public class StringReader {
         this.next = 0;
     }
 
+    /**
+     * <p>getInput</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getInput() {
         return in;
     }
@@ -46,7 +59,6 @@ public class StringReader {
      * @param cbuf Destination buffer
      * @param off Offset at which to start writing characters
      * @param len Maximum number of characters to read
-     *
      * @return The number of characters read, or -1 if the end of the
      * stream has been reached
      */

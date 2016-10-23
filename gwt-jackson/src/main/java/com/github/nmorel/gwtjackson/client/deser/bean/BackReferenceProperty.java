@@ -19,9 +19,19 @@ package com.github.nmorel.gwtjackson.client.deser.bean;
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 
 /**
+ * <p>BackReferenceProperty interface.</p>
+ *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public interface BackReferenceProperty<T, R> {
 
+    /**
+     * <p>setBackReference</p>
+     *
+     * @param value a T object.
+     * @param reference a R object.
+     * @param ctx a {@link com.github.nmorel.gwtjackson.client.JsonDeserializationContext} object.
+     */
     void setBackReference( T value, R reference, JsonDeserializationContext ctx );
 }

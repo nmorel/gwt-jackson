@@ -27,6 +27,16 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  */
 interface InternalSerializer<T> {
 
+    /**
+     * <p>serializeInternally</p>
+     *
+     * @param writer a {@link com.github.nmorel.gwtjackson.client.stream.JsonWriter} object.
+     * @param value a T object.
+     * @param ctx a {@link com.github.nmorel.gwtjackson.client.JsonSerializationContext} object.
+     * @param params a {@link com.github.nmorel.gwtjackson.client.JsonSerializerParameters} object.
+     * @param defaultIdentityInfo a {@link com.github.nmorel.gwtjackson.client.ser.bean.IdentitySerializationInfo} object.
+     * @param defaultTypeInfo a {@link com.github.nmorel.gwtjackson.client.ser.bean.TypeSerializationInfo} object.
+     */
     void serializeInternally( JsonWriter writer, T value, JsonSerializationContext ctx, JsonSerializerParameters params,
                               IdentitySerializationInfo<T> defaultIdentityInfo, TypeSerializationInfo<T> defaultTypeInfo );
 

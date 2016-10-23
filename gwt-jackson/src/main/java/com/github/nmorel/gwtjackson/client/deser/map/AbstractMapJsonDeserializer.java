@@ -28,17 +28,18 @@ import com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer;
  *
  * @param <K> Type of the keys inside the {@link AbstractMap}
  * @param <V> Type of the values inside the {@link AbstractMap}
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class AbstractMapJsonDeserializer<K, V> extends BaseMapJsonDeserializer<AbstractMap<K, V>, K, V> {
 
     /**
+     * <p>newInstance</p>
+     *
      * @param keyDeserializer {@link KeyDeserializer} used to deserialize the keys.
      * @param valueDeserializer {@link JsonDeserializer} used to deserialize the values.
      * @param <K> Type of the keys inside the {@link AbstractMap}
      * @param <V> Type of the values inside the {@link AbstractMap}
-     *
      * @return a new instance of {@link AbstractMapJsonDeserializer}
      */
     public static <K, V> AbstractMapJsonDeserializer<K, V> newInstance( KeyDeserializer<K> keyDeserializer,
@@ -54,6 +55,7 @@ public final class AbstractMapJsonDeserializer<K, V> extends BaseMapJsonDeserial
         super( keyDeserializer, valueDeserializer );
     }
 
+    /** {@inheritDoc} */
     @Override
     protected AbstractMap<K, V> newMap() {
         return new LinkedHashMap<K, V>();

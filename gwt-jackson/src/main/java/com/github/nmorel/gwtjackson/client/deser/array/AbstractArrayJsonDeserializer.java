@@ -30,9 +30,11 @@ import com.github.nmorel.gwtjackson.client.stream.JsonToken;
  * Base implementation of {@link JsonDeserializer} for array.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class AbstractArrayJsonDeserializer<T> extends JsonDeserializer<T> {
 
+    /** {@inheritDoc} */
     @Override
     public T doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         if ( JsonToken.BEGIN_ARRAY == reader.peek() ) {
@@ -42,8 +44,24 @@ public abstract class AbstractArrayJsonDeserializer<T> extends JsonDeserializer<
         }
     }
 
+    /**
+     * <p>doDeserializeArray</p>
+     *
+     * @param reader a {@link com.github.nmorel.gwtjackson.client.stream.JsonReader} object.
+     * @param ctx a {@link com.github.nmorel.gwtjackson.client.JsonDeserializationContext} object.
+     * @param params a {@link com.github.nmorel.gwtjackson.client.JsonDeserializerParameters} object.
+     * @return a T object.
+     */
     protected abstract T doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params );
 
+    /**
+     * <p>doDeserializeNonArray</p>
+     *
+     * @param reader a {@link com.github.nmorel.gwtjackson.client.stream.JsonReader} object.
+     * @param ctx a {@link com.github.nmorel.gwtjackson.client.JsonDeserializationContext} object.
+     * @param params a {@link com.github.nmorel.gwtjackson.client.JsonDeserializerParameters} object.
+     * @return a T object.
+     */
     protected T doDeserializeNonArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         if ( ctx.isAcceptSingleValueAsArray() ) {
             return doDeserializeSingleArray( reader, ctx, params );
@@ -52,6 +70,14 @@ public abstract class AbstractArrayJsonDeserializer<T> extends JsonDeserializer<
         }
     }
 
+    /**
+     * <p>doDeserializeSingleArray</p>
+     *
+     * @param reader a {@link com.github.nmorel.gwtjackson.client.stream.JsonReader} object.
+     * @param ctx a {@link com.github.nmorel.gwtjackson.client.JsonDeserializationContext} object.
+     * @param params a {@link com.github.nmorel.gwtjackson.client.JsonDeserializerParameters} object.
+     * @return a T object.
+     */
     protected abstract T doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params );
 
     /**
@@ -62,7 +88,6 @@ public abstract class AbstractArrayJsonDeserializer<T> extends JsonDeserializer<
      * @param deserializer deserializer for element inside the array
      * @param params Parameters for the deserializer
      * @param <C> type of the element inside the array
-     *
      * @return a list containing all the elements of the array
      */
     protected <C> List<C> deserializeIntoList( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializer<C> deserializer,

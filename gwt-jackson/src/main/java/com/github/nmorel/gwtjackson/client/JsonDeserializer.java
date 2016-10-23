@@ -24,6 +24,7 @@ import com.github.nmorel.gwtjackson.client.stream.JsonToken;
  * Base class for all the deserializer. It handles null values and exceptions. The rest is delegated to implementations.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class JsonDeserializer<T> {
 
@@ -32,9 +33,8 @@ public abstract class JsonDeserializer<T> {
      *
      * @param reader {@link JsonReader} used to read the JSON input
      * @param ctx Context for the full deserialization process
-     *
      * @return the deserialized object
-     * @throws JsonDeserializationException if an error occurs during the deserialization
+     * @throws com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException if an error occurs during the deserialization
      */
     public T deserialize( JsonReader reader, JsonDeserializationContext ctx ) throws JsonDeserializationException {
         return deserialize( reader, ctx, JsonDeserializerParameters.DEFAULT );
@@ -46,9 +46,8 @@ public abstract class JsonDeserializer<T> {
      * @param reader {@link JsonReader} used to read the JSON input
      * @param ctx Context for the full deserialization process
      * @param params Parameters for this deserialization
-     *
      * @return the deserialized object
-     * @throws JsonDeserializationException if an error occurs during the deserialization
+     * @throws com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException if an error occurs during the deserialization
      */
     public T deserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) throws
             JsonDeserializationException {
@@ -64,7 +63,6 @@ public abstract class JsonDeserializer<T> {
      * @param reader {@link JsonReader} used to read the JSON input
      * @param ctx Context for the full deserialization process
      * @param params Parameters for this deserialization
-     *
      * @return the deserialized object
      */
     protected T deserializeNullValue( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
@@ -78,7 +76,6 @@ public abstract class JsonDeserializer<T> {
      * @param reader {@link JsonReader} used to read the JSON input
      * @param ctx Context for the full deserialization process
      * @param params Parameters for this deserialization
-     *
      * @return the deserialized object
      */
     protected abstract T doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params );
@@ -87,10 +84,14 @@ public abstract class JsonDeserializer<T> {
      * Set the back reference.
      *
      * @param referenceName name of the reference
+     * @param referenceName name of the reference
+     * @param referenceName name of the reference
+     * @param referenceName name of the reference
+     * @param referenceName name of the reference
+     * @param referenceName name of the reference
      * @param reference reference to set
      * @param value value to set the reference to.
      * @param ctx Context for the full deserialization process
-     *
      * @see com.fasterxml.jackson.annotation.JsonBackReference
      */
     public void setBackReference( String referenceName, Object reference, T value, JsonDeserializationContext ctx ) {

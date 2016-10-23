@@ -25,6 +25,7 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
  * Base implementation of {@link KeyDeserializer} for {@link Number}s.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class BaseNumberKeyDeserializer<N extends Number> extends KeyDeserializer<N> {
 

@@ -185,9 +185,11 @@ import com.google.gwt.core.client.JavaScriptObject;
  * {@link AbstractConfiguration} implementation containing all the default serializers and deserializers.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class DefaultConfiguration extends AbstractConfiguration {
 
+    /** {@inheritDoc} */
     @Override
     protected void configure() {
         // Primitive mappers

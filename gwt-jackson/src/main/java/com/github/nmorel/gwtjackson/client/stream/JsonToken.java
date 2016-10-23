@@ -22,6 +22,7 @@ package com.github.nmorel.gwtjackson.client.stream;
  *
  * @author Jesse Wilson
  * @since 1.6
+ * @version $Id: $
  */
 public enum JsonToken {
 

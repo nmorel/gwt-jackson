@@ -29,6 +29,7 @@ import com.github.nmorel.gwtjackson.client.stream.JsonToken;
  * Base implementation of {@link JsonDeserializer} for {@link Number}.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class BaseNumberJsonDeserializer<N extends Number> extends JsonDeserializer<N> {
 

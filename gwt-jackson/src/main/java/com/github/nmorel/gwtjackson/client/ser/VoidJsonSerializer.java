@@ -25,12 +25,15 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * Default {@link JsonSerializer} implementation for {@link Void}.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class VoidJsonSerializer extends JsonSerializer<Void> {
 
     private static final VoidJsonSerializer INSTANCE = new VoidJsonSerializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link VoidJsonSerializer}
      */
     public static VoidJsonSerializer getInstance() {
@@ -39,6 +42,7 @@ public class VoidJsonSerializer extends JsonSerializer<Void> {
 
     private VoidJsonSerializer() { }
 
+    /** {@inheritDoc} */
     @Override
     protected void serializeNullValue( JsonWriter writer, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         if ( writer.getSerializeNulls() ) {
@@ -50,6 +54,7 @@ public class VoidJsonSerializer extends JsonSerializer<Void> {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void doSerialize( JsonWriter writer, Void value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         // we should never be here, the null value is already handled and it's the only possible value for Void

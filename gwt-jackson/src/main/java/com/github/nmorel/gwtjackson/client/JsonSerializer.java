@@ -114,6 +114,7 @@ public abstract class JsonSerializer<T> {
     }
 
     /**
+     * @param value the value
      * @return true if the value corresponds to the default one
      */
     protected boolean isDefault( T value ) {
@@ -121,6 +122,7 @@ public abstract class JsonSerializer<T> {
     }
 
     /**
+     * @param value the value
      * @return true if the value is empty
      */
     protected boolean isEmpty( T value ) {
@@ -128,6 +130,7 @@ public abstract class JsonSerializer<T> {
     }
 
     /**
+     * @param value the value
      * @return true if the value is absent
      */
     protected boolean isAbsent( T value ) {

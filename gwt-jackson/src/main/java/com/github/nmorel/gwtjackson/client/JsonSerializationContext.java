@@ -36,6 +36,7 @@ import com.google.gwt.core.client.GWT;
  * Context for the serialization process.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class JsonSerializationContext extends JsonMappingContext {
 
@@ -93,6 +94,10 @@ public class JsonSerializationContext extends JsonMappingContext {
          * Option is disabled by default; meaning that strict identity is used, not
          * <code>equals()</code>
          * </p>
+         *
+         * @param useEqualityForObjectId true if should useEqualityForObjectId
+         *
+         * @return the builder
          */
         public Builder useEqualityForObjectId( boolean useEqualityForObjectId ) {
             this.useEqualityForObjectId = useEqualityForObjectId;
@@ -102,6 +107,10 @@ public class JsonSerializationContext extends JsonMappingContext {
         /**
          * Sets whether object members are serialized when their value is null.
          * This has no impact on array elements. The default is true.
+         *
+         * @param serializeNulls true if should serializeNulls
+         *
+         * @return the builder
          */
         public Builder serializeNulls( boolean serializeNulls ) {
             this.serializeNulls = serializeNulls;
@@ -114,6 +123,10 @@ public class JsonSerializationContext extends JsonMappingContext {
          * <p>If textual representation is used, the actual format is
          * {@link com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat#ISO_8601}</p>
          * Option is enabled by default.
+         *
+         * @param writeDatesAsTimestamps true if should writeDatesAsTimestamps
+         *
+         * @return the builder
          */
         public Builder writeDatesAsTimestamps( boolean writeDatesAsTimestamps ) {
             this.writeDatesAsTimestamps = writeDatesAsTimestamps;
@@ -126,6 +139,10 @@ public class JsonSerializationContext extends JsonMappingContext {
          * <p>If textual representation is used, the actual format is
          * {@link com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat#ISO_8601}</p>
          * Option is disabled by default.
+         *
+         * @param writeDateKeysAsTimestamps true if should writeDateKeysAsTimestamps
+         *
+         * @return the builder
          */
         public Builder writeDateKeysAsTimestamps( boolean writeDateKeysAsTimestamps ) {
             this.writeDateKeysAsTimestamps = writeDateKeysAsTimestamps;
@@ -136,6 +153,10 @@ public class JsonSerializationContext extends JsonMappingContext {
          * Feature that allows enabling (or disabling) indentation
          * for the underlying writer.
          * <p>Feature is disabled by default.</p>
+         *
+         * @param indent true if should indent
+         *
+         * @return the builder
          */
         public Builder indent( boolean indent ) {
             this.indent = indent;
@@ -149,6 +170,10 @@ public class JsonSerializationContext extends JsonMappingContext {
          * annotation introspector or fallback (non-qualified
          * class name).
          * <p>Feature is disabled by default.</p>
+         *
+         * @param wrapRootValue true if should wrapRootValue
+         *
+         * @return the builder
          */
         public Builder wrapRootValue( boolean wrapRootValue ) {
             this.wrapRootValue = wrapRootValue;
@@ -163,6 +188,10 @@ public class JsonSerializationContext extends JsonMappingContext {
          * <p>
          * Feature is disabled by default.
          * </p>
+         *
+         * @param writeCharArraysAsJsonArrays true if should writeCharArraysAsJsonArrays
+         *
+         * @return the builder
          */
         public Builder writeCharArraysAsJsonArrays( boolean writeCharArraysAsJsonArrays ) {
             this.writeCharArraysAsJsonArrays = writeCharArraysAsJsonArrays;
@@ -175,6 +204,10 @@ public class JsonSerializationContext extends JsonMappingContext {
          * <p>
          * Feature is enabled by default.
          * </p>
+         *
+         * @param writeNullMapValues true if should writeNullMapValues
+         *
+         * @return the builder
          */
         public Builder writeNullMapValues( boolean writeNullMapValues ) {
             this.writeNullMapValues = writeNullMapValues;
@@ -193,6 +226,10 @@ public class JsonSerializationContext extends JsonMappingContext {
          * <p>
          * Feature is enabled by default.
          * </p>
+         *
+         * @param writeEmptyJsonArrays true if should writeEmptyJsonArrays
+         *
+         * @return the builder
          */
         public Builder writeEmptyJsonArrays( boolean writeEmptyJsonArrays ) {
             this.writeEmptyJsonArrays = writeEmptyJsonArrays;
@@ -207,6 +244,10 @@ public class JsonSerializationContext extends JsonMappingContext {
          * <p>
          * Feature is disabled by default.
          * </p>
+         *
+         * @param orderMapEntriesByKeys true if should orderMapEntriesByKeys
+         *
+         * @return the builder
          */
         public Builder orderMapEntriesByKeys( boolean orderMapEntriesByKeys ) {
             this.orderMapEntriesByKeys = orderMapEntriesByKeys;
@@ -234,6 +275,10 @@ public class JsonSerializationContext extends JsonMappingContext {
          * (that is, usually both are enabled, or neither is).
          * </p>
          * Feature is disabled by default, so that no special handling is done.
+         *
+         * @param writeSingleElemArraysUnwrapped true if should writeSingleElemArraysUnwrapped
+         *
+         * @return the builder
          */
         public Builder writeSingleElemArraysUnwrapped( boolean writeSingleElemArraysUnwrapped ) {
             this.writeSingleElemArraysUnwrapped = writeSingleElemArraysUnwrapped;
@@ -253,6 +298,10 @@ public class JsonSerializationContext extends JsonMappingContext {
          * <br>
          * <br>
          * Feature is enabled by default.
+         *
+         * @param wrapExceptions true if should wrapExceptions
+         *
+         * @return the builder
          */
         public Builder wrapExceptions( boolean wrapExceptions ) {
             this.wrapExceptions = wrapExceptions;
@@ -272,6 +321,11 @@ public class JsonSerializationContext extends JsonMappingContext {
 
     }
 
+    /**
+     * <p>builder</p>
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.JsonSerializationContext.Builder} object.
+     */
     public static Builder builder() {
         return GWT.create( Builder.class );
     }
@@ -311,7 +365,8 @@ public class JsonSerializationContext extends JsonMappingContext {
 
     private JsonSerializationContext( boolean useEqualityForObjectId, boolean serializeNulls, boolean writeDatesAsTimestamps, boolean
             writeDateKeysAsTimestamps, boolean indent, boolean wrapRootValue, boolean writeCharArraysAsJsonArrays, boolean
-            writeNullMapValues, boolean writeEmptyJsonArrays, boolean orderMapEntriesByKeys, boolean writeSingleElemArraysUnwrapped,
+                                              writeNullMapValues, boolean writeEmptyJsonArrays, boolean orderMapEntriesByKeys, boolean
+            writeSingleElemArraysUnwrapped,
                                       boolean wrapExceptions ) {
         this.useEqualityForObjectId = useEqualityForObjectId;
         this.serializeNulls = serializeNulls;
@@ -327,12 +382,18 @@ public class JsonSerializationContext extends JsonMappingContext {
         this.wrapExceptions = wrapExceptions;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Logger getLogger() {
         return logger;
     }
 
     /**
+     * <p>isSerializeNulls</p>
+     *
+     * @return a boolean.
      * @see Builder#serializeNulls(boolean)
      */
     public boolean isSerializeNulls() {
@@ -340,6 +401,9 @@ public class JsonSerializationContext extends JsonMappingContext {
     }
 
     /**
+     * <p>isWriteDatesAsTimestamps</p>
+     *
+     * @return a boolean.
      * @see Builder#writeDatesAsTimestamps(boolean)
      */
     public boolean isWriteDatesAsTimestamps() {
@@ -347,6 +411,9 @@ public class JsonSerializationContext extends JsonMappingContext {
     }
 
     /**
+     * <p>isWriteDateKeysAsTimestamps</p>
+     *
+     * @return a boolean.
      * @see Builder#writeDateKeysAsTimestamps(boolean)
      */
     public boolean isWriteDateKeysAsTimestamps() {
@@ -354,6 +421,9 @@ public class JsonSerializationContext extends JsonMappingContext {
     }
 
     /**
+     * <p>isWrapRootValue</p>
+     *
+     * @return a boolean.
      * @see Builder#wrapRootValue(boolean)
      */
     public boolean isWrapRootValue() {
@@ -361,6 +431,9 @@ public class JsonSerializationContext extends JsonMappingContext {
     }
 
     /**
+     * <p>isWriteCharArraysAsJsonArrays</p>
+     *
+     * @return a boolean.
      * @see Builder#writeCharArraysAsJsonArrays(boolean)
      */
     public boolean isWriteCharArraysAsJsonArrays() {
@@ -368,6 +441,9 @@ public class JsonSerializationContext extends JsonMappingContext {
     }
 
     /**
+     * <p>isWriteNullMapValues</p>
+     *
+     * @return a boolean.
      * @see Builder#writeNullMapValues(boolean)
      */
     public boolean isWriteNullMapValues() {
@@ -375,6 +451,9 @@ public class JsonSerializationContext extends JsonMappingContext {
     }
 
     /**
+     * <p>isWriteEmptyJsonArrays</p>
+     *
+     * @return a boolean.
      * @see Builder#writeEmptyJsonArrays(boolean)
      */
     public boolean isWriteEmptyJsonArrays() {
@@ -382,6 +461,9 @@ public class JsonSerializationContext extends JsonMappingContext {
     }
 
     /**
+     * <p>isOrderMapEntriesByKeys</p>
+     *
+     * @return a boolean.
      * @see Builder#orderMapEntriesByKeys(boolean)
      */
     public boolean isOrderMapEntriesByKeys() {
@@ -389,12 +471,20 @@ public class JsonSerializationContext extends JsonMappingContext {
     }
 
     /**
+     * <p>isWriteSingleElemArraysUnwrapped</p>
+     *
+     * @return a boolean.
      * @see Builder#writeSingleElemArraysUnwrapped(boolean)
      */
     public boolean isWriteSingleElemArraysUnwrapped() {
         return writeSingleElemArraysUnwrapped;
     }
 
+    /**
+     * <p>newJsonWriter</p>
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.stream.JsonWriter} object.
+     */
     public JsonWriter newJsonWriter() {
         JsonWriter writer = new FastJsonWriter( new StringBuilder() );
         writer.setLenient( true );
@@ -475,6 +565,12 @@ public class JsonSerializationContext extends JsonMappingContext {
         }
     }
 
+    /**
+     * <p>addObjectId</p>
+     *
+     * @param object a {@link java.lang.Object} object.
+     * @param id a {@link com.github.nmorel.gwtjackson.client.ser.bean.ObjectIdSerializer} object.
+     */
     public void addObjectId( Object object, ObjectIdSerializer<?> id ) {
         if ( null == mapObjectId ) {
             if ( useEqualityForObjectId ) {
@@ -486,6 +582,13 @@ public class JsonSerializationContext extends JsonMappingContext {
         mapObjectId.put( object, id );
     }
 
+    /**
+     * <p>getObjectId</p>
+     *
+     * @param object a {@link java.lang.Object} object.
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.ser.bean.ObjectIdSerializer} object.
+     */
     public ObjectIdSerializer<?> getObjectId( Object object ) {
         if ( null != mapObjectId ) {
             return mapObjectId.get( object );
@@ -510,6 +613,9 @@ public class JsonSerializationContext extends JsonMappingContext {
      * Used by generated {@link AbstractBeanJsonSerializer}
      *
      * @param gen generator used to find equivalent generator
+     * @param <T> a T object.
+     *
+     * @return a {@link com.fasterxml.jackson.annotation.ObjectIdGenerator} object.
      */
     @SuppressWarnings( {"UnusedDeclaration", "unchecked"} )
     public <T> ObjectIdGenerator<T> findObjectIdGenerator( ObjectIdGenerator<T> gen ) {

@@ -31,8 +31,8 @@ import com.github.nmorel.gwtjackson.client.stream.JsonToken;
  * @param <M> Type of the {@link Map}
  * @param <K> Type of the keys inside the {@link Map}
  * @param <V> Type of the values inside the {@link Map}
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class BaseMapJsonDeserializer<M extends Map<K, V>, K, V> extends JsonDeserializer<M> {
 
@@ -47,6 +47,8 @@ public abstract class BaseMapJsonDeserializer<M extends Map<K, V>, K, V> extends
     protected final JsonDeserializer<V> valueDeserializer;
 
     /**
+     * <p>Constructor for BaseMapJsonDeserializer.</p>
+     *
      * @param keyDeserializer {@link KeyDeserializer} used to deserialize the keys.
      * @param valueDeserializer {@link JsonDeserializer} used to deserialize the values.
      */
@@ -61,6 +63,7 @@ public abstract class BaseMapJsonDeserializer<M extends Map<K, V>, K, V> extends
         this.valueDeserializer = valueDeserializer;
     }
 
+    /** {@inheritDoc} */
     @Override
     public M doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         M result = newMap();
@@ -84,6 +87,7 @@ public abstract class BaseMapJsonDeserializer<M extends Map<K, V>, K, V> extends
      */
     protected abstract M newMap();
 
+    /** {@inheritDoc} */
     @Override
     public void setBackReference( String referenceName, Object reference, M value, JsonDeserializationContext ctx ) {
         if ( null != value ) {

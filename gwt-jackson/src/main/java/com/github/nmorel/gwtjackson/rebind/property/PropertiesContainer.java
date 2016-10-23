@@ -20,7 +20,10 @@ import com.google.gwt.thirdparty.guava.common.base.Optional;
 import com.google.gwt.thirdparty.guava.common.collect.ImmutableMap;
 
 /**
+ * <p>PropertiesContainer class.</p>
+ *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class PropertiesContainer {
 
@@ -32,6 +35,14 @@ public class PropertiesContainer {
 
     private final Optional<PropertyInfo> anySetterPropertyInfo;
 
+    /**
+     * <p>Constructor for PropertiesContainer.</p>
+     *
+     * @param properties a {@link com.google.gwt.thirdparty.guava.common.collect.ImmutableMap} object.
+     * @param valuePropertyInfo a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     * @param anyGetterPropertyInfo a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     * @param anySetterPropertyInfo a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public PropertiesContainer( ImmutableMap<String, PropertyInfo> properties, Optional<PropertyInfo> valuePropertyInfo,
                                 Optional<PropertyInfo> anyGetterPropertyInfo, Optional<PropertyInfo> anySetterPropertyInfo ) {
         this.properties = properties;
@@ -40,18 +51,38 @@ public class PropertiesContainer {
         this.anySetterPropertyInfo = anySetterPropertyInfo;
     }
 
+    /**
+     * <p>Getter for the field <code>properties</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.collect.ImmutableMap} object.
+     */
     public ImmutableMap<String, PropertyInfo> getProperties() {
         return properties;
     }
 
+    /**
+     * <p>Getter for the field <code>valuePropertyInfo</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<PropertyInfo> getValuePropertyInfo() {
         return valuePropertyInfo;
     }
 
+    /**
+     * <p>Getter for the field <code>anyGetterPropertyInfo</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<PropertyInfo> getAnyGetterPropertyInfo() {
         return anyGetterPropertyInfo;
     }
 
+    /**
+     * <p>Getter for the field <code>anySetterPropertyInfo</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<PropertyInfo> getAnySetterPropertyInfo() {
         return anySetterPropertyInfo;
     }

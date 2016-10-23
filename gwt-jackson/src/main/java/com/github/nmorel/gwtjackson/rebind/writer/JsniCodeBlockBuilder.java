@@ -22,9 +22,15 @@ import com.squareup.javapoet.CodeBlock;
  * Helper class to build {@link CodeBlock} containing JSNI code.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class JsniCodeBlockBuilder {
 
+    /**
+     * <p>builder</p>
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.rebind.writer.JsniCodeBlockBuilder} object.
+     */
     public static JsniCodeBlockBuilder builder() {
         return new JsniCodeBlockBuilder();
     }
@@ -35,16 +41,35 @@ public final class JsniCodeBlockBuilder {
         builder = CodeBlock.builder().add( " /*-{\n" ).indent();
     }
 
+    /**
+     * <p>add</p>
+     *
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     * @return a {@link com.github.nmorel.gwtjackson.rebind.writer.JsniCodeBlockBuilder} object.
+     */
     public JsniCodeBlockBuilder add( String format, Object... args ) {
         builder.add( format, args );
         return this;
     }
 
+    /**
+     * <p>addStatement</p>
+     *
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     * @return a {@link com.github.nmorel.gwtjackson.rebind.writer.JsniCodeBlockBuilder} object.
+     */
     public JsniCodeBlockBuilder addStatement( String format, Object... args ) {
         builder.addStatement( format, args );
         return this;
     }
 
+    /**
+     * <p>build</p>
+     *
+     * @return a {@link com.squareup.javapoet.CodeBlock} object.
+     */
     public CodeBlock build() {
         return builder.unindent().add( "}-*/" ).build();
     }

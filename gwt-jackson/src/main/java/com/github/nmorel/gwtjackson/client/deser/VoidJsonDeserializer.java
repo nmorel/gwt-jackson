@@ -25,12 +25,15 @@ import com.github.nmorel.gwtjackson.client.stream.JsonReader;
  * Default {@link JsonDeserializer} implementation for {@link Void}.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class VoidJsonDeserializer extends JsonDeserializer<Void> {
 
     private static final VoidJsonDeserializer INSTANCE = new VoidJsonDeserializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link VoidJsonDeserializer}
      */
     public static VoidJsonDeserializer getInstance() {
@@ -39,6 +42,7 @@ public class VoidJsonDeserializer extends JsonDeserializer<Void> {
 
     private VoidJsonDeserializer() { }
 
+    /** {@inheritDoc} */
     @Override
     public Void doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         // we should never be here, the null value is already handled and it's the only possible value for Void

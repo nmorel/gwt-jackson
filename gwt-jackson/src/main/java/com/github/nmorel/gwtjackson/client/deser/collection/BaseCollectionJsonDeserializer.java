@@ -29,18 +29,21 @@ import com.github.nmorel.gwtjackson.client.stream.JsonToken;
  *
  * @param <C> {@link Collection} type
  * @param <T> Type of the elements inside the {@link Collection}
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class BaseCollectionJsonDeserializer<C extends Collection<T>, T> extends BaseIterableJsonDeserializer<C, T> {
 
     /**
+     * <p>Constructor for BaseCollectionJsonDeserializer.</p>
+     *
      * @param deserializer {@link JsonDeserializer} used to map the objects inside the {@link Collection}.
      */
     public BaseCollectionJsonDeserializer( JsonDeserializer<T> deserializer ) {
         super( deserializer );
     }
 
+    /** {@inheritDoc} */
     @Override
     public C doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         if ( JsonToken.BEGIN_ARRAY == reader.peek() ) {
@@ -77,12 +80,15 @@ public abstract class BaseCollectionJsonDeserializer<C extends Collection<T>, T>
     protected abstract C newCollection();
 
     /**
+     * <p>isNullValueAllowed</p>
+     *
      * @return true if the collection accepts null value
      */
     protected boolean isNullValueAllowed() {
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setBackReference( String referenceName, Object reference, C value, JsonDeserializationContext ctx ) {
         if ( null != value && !value.isEmpty() ) {

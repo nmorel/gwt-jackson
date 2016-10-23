@@ -19,31 +19,73 @@ package com.github.nmorel.gwtjackson.rebind.type;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 
+/**
+ * <p>Abstract JParameterizedMapper class.</p>
+ *
+ * @author nicolasmorel
+ * @version $Id: $
+ */
 public abstract class JParameterizedMapper<T extends JMapperType> {
 
     private final T key;
 
     private final T json;
 
+    /**
+     * <p>Constructor for JParameterizedMapper.</p>
+     *
+     * @param key a T object.
+     * @param json a T object.
+     */
     public JParameterizedMapper( T key, T json ) {
         this.key = key;
         this.json = json;
     }
 
+    /**
+     * <p>Getter for the field <code>key</code>.</p>
+     *
+     * @return a T object.
+     */
     public T getKey() {
         return key;
     }
 
+    /**
+     * <p>Getter for the field <code>json</code>.</p>
+     *
+     * @return a T object.
+     */
     public T getJson() {
         return json;
     }
 
+    /**
+     * <p>getMainClass</p>
+     *
+     * @return a {@link java.lang.Class} object.
+     */
     protected abstract Class getMainClass();
 
+    /**
+     * <p>getKeyClass</p>
+     *
+     * @return a {@link java.lang.Class} object.
+     */
     protected abstract Class getKeyClass();
 
+    /**
+     * <p>getJsonClass</p>
+     *
+     * @return a {@link java.lang.Class} object.
+     */
     protected abstract Class getJsonClass();
 
+    /**
+     * <p>getInstance</p>
+     *
+     * @return a {@link com.squareup.javapoet.CodeBlock} object.
+     */
     public CodeBlock getInstance() {
         return CodeBlock.builder()
                 .add( "new $T() {\n", ClassName.get( getMainClass() ) )

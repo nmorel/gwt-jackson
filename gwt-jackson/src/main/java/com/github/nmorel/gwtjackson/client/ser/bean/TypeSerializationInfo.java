@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
  * Contains type serialization informations
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class TypeSerializationInfo<T> {
 
@@ -40,25 +41,55 @@ public class TypeSerializationInfo<T> {
 
     private final Map<Class<? extends T>, String> typeClassToInfo;
 
+    /**
+     * <p>Constructor for TypeSerializationInfo.</p>
+     *
+     * @param include a {@link com.fasterxml.jackson.annotation.JsonTypeInfo.As} object.
+     * @param propertyName a {@link java.lang.String} object.
+     */
     public TypeSerializationInfo( As include, String propertyName ) {
         this.include = include;
         this.propertyName = propertyName;
         this.typeClassToInfo = new HashMap<Class<? extends T>, String>();
     }
 
+    /**
+     * <p>addTypeInfo</p>
+     *
+     * @param clazz a {@link java.lang.Class} object.
+     * @param typeInfo a {@link java.lang.String} object.
+     * @param <S> the type
+     * @return a {@link com.github.nmorel.gwtjackson.client.ser.bean.TypeSerializationInfo} object.
+     */
     public <S extends T> TypeSerializationInfo<T> addTypeInfo( Class<S> clazz, String typeInfo ) {
         typeClassToInfo.put( clazz, typeInfo );
         return this;
     }
 
+    /**
+     * <p>Getter for the field <code>include</code>.</p>
+     *
+     * @return a {@link com.fasterxml.jackson.annotation.JsonTypeInfo.As} object.
+     */
     public As getInclude() {
         return include;
     }
 
+    /**
+     * <p>Getter for the field <code>propertyName</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPropertyName() {
         return propertyName;
     }
 
+    /**
+     * <p>getTypeInfo</p>
+     *
+     * @param aClass a {@link java.lang.Class} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getTypeInfo( Class aClass ) {
         return typeClassToInfo.get( aClass );
     }

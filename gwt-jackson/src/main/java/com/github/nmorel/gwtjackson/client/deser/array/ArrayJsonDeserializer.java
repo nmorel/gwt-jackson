@@ -28,6 +28,7 @@ import com.github.nmorel.gwtjackson.client.stream.JsonReader;
  * Default {@link JsonDeserializer} implementation for array.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class ArrayJsonDeserializer<T> extends AbstractArrayJsonDeserializer<T[]> {
 
@@ -37,10 +38,11 @@ public class ArrayJsonDeserializer<T> extends AbstractArrayJsonDeserializer<T[]>
     }
 
     /**
+     * <p>newInstance</p>
+     *
      * @param deserializer {@link JsonDeserializer} used to deserialize the objects inside the array.
      * @param arrayCreator {@link ArrayCreator} used to create a new array
      * @param <T> Type of the elements inside the {@link AbstractCollection}
-     *
      * @return a new instance of {@link ArrayJsonDeserializer}
      */
     public static <T> ArrayJsonDeserializer<T> newInstance( JsonDeserializer<T> deserializer, ArrayCreator<T> arrayCreator ) {
@@ -52,6 +54,8 @@ public class ArrayJsonDeserializer<T> extends AbstractArrayJsonDeserializer<T[]>
     private final ArrayCreator<T> arrayCreator;
 
     /**
+     * <p>Constructor for ArrayJsonDeserializer.</p>
+     *
      * @param deserializer {@link JsonDeserializer} used to deserialize the objects inside the array.
      * @param arrayCreator {@link ArrayCreator} used to create a new array
      */
@@ -66,12 +70,14 @@ public class ArrayJsonDeserializer<T> extends AbstractArrayJsonDeserializer<T[]>
         this.arrayCreator = arrayCreator;
     }
 
+    /** {@inheritDoc} */
     @Override
     public T[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         List<T> list = deserializeIntoList( reader, ctx, deserializer, params );
         return list.toArray( arrayCreator.create( list.size() ) );
     }
 
+    /** {@inheritDoc} */
     @Override
     protected T[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         T[] result = arrayCreator.create( 1 );
@@ -79,6 +85,7 @@ public class ArrayJsonDeserializer<T> extends AbstractArrayJsonDeserializer<T[]>
         return result;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setBackReference( String referenceName, Object reference, T[] value, JsonDeserializationContext ctx ) {
         if ( null != value && value.length > 0 ) {

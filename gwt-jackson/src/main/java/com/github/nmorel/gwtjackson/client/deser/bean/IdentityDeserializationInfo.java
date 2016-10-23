@@ -24,22 +24,28 @@ import com.github.nmorel.gwtjackson.client.stream.JsonReader;
  * Contains identity informations for deserialization process.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public interface IdentityDeserializationInfo<T> {
 
     /**
+     * <p>getPropertyName</p>
+     *
      * @return name of the identifier property
      */
     String getPropertyName();
 
     /**
+     * <p>isProperty</p>
+     *
      * @return true if the identifier is also a property of the bean
      */
     boolean isProperty();
 
     /**
-     * @param id Identifier
+     * <p>newIdKey</p>
      *
+     * @param id Identifier
      * @return a new {@link IdKey}
      */
     IdKey newIdKey( Object id );
@@ -49,7 +55,6 @@ public interface IdentityDeserializationInfo<T> {
      *
      * @param reader reader
      * @param ctx context of the deserialization process
-     *
      * @return the identifier
      */
     Object readId( JsonReader reader, JsonDeserializationContext ctx );

@@ -25,15 +25,16 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializer;
  * Default {@link JsonDeserializer} implementation for {@link AbstractList}. The deserialization process returns an {@link ArrayList}.
  *
  * @param <T> Type of the elements inside the {@link AbstractList}
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class AbstractListJsonDeserializer<T> extends BaseListJsonDeserializer<AbstractList<T>, T> {
 
     /**
+     * <p>newInstance</p>
+     *
      * @param deserializer {@link JsonDeserializer} used to deserialize the objects inside the {@link AbstractList}.
      * @param <T> Type of the elements inside the {@link AbstractList}
-     *
      * @return a new instance of {@link AbstractListJsonDeserializer}
      */
     public static <T> AbstractListJsonDeserializer<T> newInstance( JsonDeserializer<T> deserializer ) {
@@ -47,6 +48,7 @@ public class AbstractListJsonDeserializer<T> extends BaseListJsonDeserializer<Ab
         super( deserializer );
     }
 
+    /** {@inheritDoc} */
     @Override
     protected AbstractList<T> newCollection() {
         return new ArrayList<T>();

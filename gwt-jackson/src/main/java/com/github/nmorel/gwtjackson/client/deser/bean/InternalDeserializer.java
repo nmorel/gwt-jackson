@@ -30,12 +30,40 @@ import com.github.nmorel.gwtjackson.client.stream.JsonReader;
  */
 interface InternalDeserializer<T, S extends JsonDeserializer<T>> {
 
+    /**
+     * <p>getDeserializer</p>
+     *
+     * @return a S object.
+     */
     S getDeserializer();
 
+    /**
+     * <p>deserializeInline</p>
+     *
+     * @param reader a {@link com.github.nmorel.gwtjackson.client.stream.JsonReader} object.
+     * @param ctx a {@link com.github.nmorel.gwtjackson.client.JsonDeserializationContext} object.
+     * @param params a {@link com.github.nmorel.gwtjackson.client.JsonDeserializerParameters} object.
+     * @param identityInfo a {@link com.github.nmorel.gwtjackson.client.deser.bean.IdentityDeserializationInfo} object.
+     * @param typeInfo a {@link com.github.nmorel.gwtjackson.client.deser.bean.TypeDeserializationInfo} object.
+     * @param typeInformation a {@link java.lang.String} object.
+     * @param bufferedProperties a {@link java.util.Map} object.
+     * @return a T object.
+     */
     T deserializeInline( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params,
                          IdentityDeserializationInfo identityInfo, TypeDeserializationInfo typeInfo, String typeInformation, Map<String,
             String> bufferedProperties );
 
+    /**
+     * <p>deserializeWrapped</p>
+     *
+     * @param reader a {@link com.github.nmorel.gwtjackson.client.stream.JsonReader} object.
+     * @param ctx a {@link com.github.nmorel.gwtjackson.client.JsonDeserializationContext} object.
+     * @param params a {@link com.github.nmorel.gwtjackson.client.JsonDeserializerParameters} object.
+     * @param identityInfo a {@link com.github.nmorel.gwtjackson.client.deser.bean.IdentityDeserializationInfo} object.
+     * @param typeInfo a {@link com.github.nmorel.gwtjackson.client.deser.bean.TypeDeserializationInfo} object.
+     * @param typeInformation a {@link java.lang.String} object.
+     * @return a T object.
+     */
     T deserializeWrapped( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params,
                           IdentityDeserializationInfo identityInfo, TypeDeserializationInfo typeInfo, String typeInformation );
 

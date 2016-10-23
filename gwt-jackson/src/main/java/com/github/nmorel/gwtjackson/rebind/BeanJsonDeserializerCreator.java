@@ -86,26 +86,42 @@ import static com.github.nmorel.gwtjackson.rebind.writer.JTypeName.rawName;
 import static com.github.nmorel.gwtjackson.rebind.writer.JTypeName.typeName;
 
 /**
+ * <p>BeanJsonDeserializerCreator class.</p>
+ *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class BeanJsonDeserializerCreator extends AbstractBeanJsonCreator {
 
     private static final String INSTANCE_BUILDER_VARIABLE_FORMAT = "property_%d";
 
+    /** Constant <code>DELEGATION_PARAM_NAME="delegation"</code> */
     public static final String DELEGATION_PARAM_NAME = "delegation";
 
     private static final String INSTANCE_BUILDER_DESERIALIZER_PREFIX = "deserializer_";
 
+    /**
+     * <p>Constructor for BeanJsonDeserializerCreator.</p>
+     *
+     * @param logger a {@link com.google.gwt.core.ext.TreeLogger} object.
+     * @param context a {@link com.google.gwt.core.ext.GeneratorContext} object.
+     * @param configuration a {@link com.github.nmorel.gwtjackson.rebind.RebindConfiguration} object.
+     * @param typeOracle a {@link com.github.nmorel.gwtjackson.rebind.JacksonTypeOracle} object.
+     * @param beanType a {@link com.google.gwt.core.ext.typeinfo.JClassType} object.
+     * @throws com.google.gwt.core.ext.UnableToCompleteException if any.
+     */
     public BeanJsonDeserializerCreator( TreeLogger logger, GeneratorContext context, RebindConfiguration configuration, JacksonTypeOracle
             typeOracle, JClassType beanType ) throws UnableToCompleteException {
         super( logger, context, configuration, typeOracle, beanType );
     }
 
+    /** {@inheritDoc} */
     @Override
     protected final boolean isSerializer() {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected final void buildSpecific( TypeSpec.Builder typeBuilder ) throws UnableToCompleteException, UnsupportedTypeException {
 

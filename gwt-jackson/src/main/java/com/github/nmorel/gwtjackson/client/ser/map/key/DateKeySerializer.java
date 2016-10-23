@@ -25,12 +25,15 @@ import com.github.nmorel.gwtjackson.client.utils.DateFormat;
  * Default implementation of {@link KeySerializer} for dates.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class DateKeySerializer<D extends Date> extends KeySerializer<D> {
 
     private static final DateKeySerializer INSTANCE = new DateKeySerializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link DateKeySerializer}
      */
     public static DateKeySerializer getInstance() {
@@ -39,11 +42,13 @@ public class DateKeySerializer<D extends Date> extends KeySerializer<D> {
 
     private DateKeySerializer() { }
 
+    /** {@inheritDoc} */
     @Override
     public boolean mustBeEscaped( JsonSerializationContext ctx ) {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String doSerialize( Date value, JsonSerializationContext ctx ) {
         if ( ctx.isWriteDateKeysAsTimestamps() ) {

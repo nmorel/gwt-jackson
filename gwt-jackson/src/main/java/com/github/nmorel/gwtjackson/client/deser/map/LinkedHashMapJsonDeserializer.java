@@ -27,17 +27,18 @@ import com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer;
  *
  * @param <K> Type of the keys inside the {@link LinkedHashMap}
  * @param <V> Type of the values inside the {@link LinkedHashMap}
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class LinkedHashMapJsonDeserializer<K, V> extends BaseMapJsonDeserializer<LinkedHashMap<K, V>, K, V> {
 
     /**
+     * <p>newInstance</p>
+     *
      * @param keyDeserializer {@link KeyDeserializer} used to deserialize the keys.
      * @param valueDeserializer {@link JsonDeserializer} used to deserialize the values.
      * @param <K> Type of the keys inside the {@link LinkedHashMap}
      * @param <V> Type of the values inside the {@link LinkedHashMap}
-     *
      * @return a new instance of {@link LinkedHashMapJsonDeserializer}
      */
     public static <K, V> LinkedHashMapJsonDeserializer<K, V> newInstance( KeyDeserializer<K> keyDeserializer,
@@ -53,6 +54,7 @@ public final class LinkedHashMapJsonDeserializer<K, V> extends BaseMapJsonDeseri
         super( keyDeserializer, valueDeserializer );
     }
 
+    /** {@inheritDoc} */
     @Override
     protected LinkedHashMap<K, V> newMap() {
         return new LinkedHashMap<K, V>();

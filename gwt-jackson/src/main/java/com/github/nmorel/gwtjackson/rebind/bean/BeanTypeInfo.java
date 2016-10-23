@@ -22,7 +22,10 @@ import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.thirdparty.guava.common.collect.ImmutableMap;
 
 /**
+ * <p>BeanTypeInfo class.</p>
+ *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class BeanTypeInfo {
 
@@ -45,22 +48,47 @@ public final class BeanTypeInfo {
         this.mapTypeToDeserializationMetadata = mapTypeToDeserializationMetadata;
     }
 
+    /**
+     * <p>Getter for the field <code>use</code>.</p>
+     *
+     * @return a {@link com.fasterxml.jackson.annotation.JsonTypeInfo.Id} object.
+     */
     public Id getUse() {
         return use;
     }
 
+    /**
+     * <p>Getter for the field <code>include</code>.</p>
+     *
+     * @return a {@link com.fasterxml.jackson.annotation.JsonTypeInfo.As} object.
+     */
     public As getInclude() {
         return include;
     }
 
+    /**
+     * <p>Getter for the field <code>propertyName</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPropertyName() {
         return propertyName;
     }
 
+    /**
+     * <p>Getter for the field <code>mapTypeToSerializationMetadata</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.collect.ImmutableMap} object.
+     */
     public ImmutableMap<JClassType, String> getMapTypeToSerializationMetadata() {
         return mapTypeToSerializationMetadata;
     }
 
+    /**
+     * <p>Getter for the field <code>mapTypeToDeserializationMetadata</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.collect.ImmutableMap} object.
+     */
     public ImmutableMap<JClassType, String> getMapTypeToDeserializationMetadata() {
         return mapTypeToDeserializationMetadata;
     }

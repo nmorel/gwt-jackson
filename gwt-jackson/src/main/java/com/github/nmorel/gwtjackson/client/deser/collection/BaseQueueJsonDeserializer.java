@@ -25,18 +25,21 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializer;
  *
  * @param <Q> {@link Queue} type
  * @param <T> Type of the elements inside the {@link Queue}
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class BaseQueueJsonDeserializer<Q extends Queue<T>, T> extends BaseCollectionJsonDeserializer<Q, T> {
 
     /**
+     * <p>Constructor for BaseQueueJsonDeserializer.</p>
+     *
      * @param deserializer {@link JsonDeserializer} used to map the objects inside the {@link Queue}.
      */
     public BaseQueueJsonDeserializer( JsonDeserializer<T> deserializer ) {
         super( deserializer );
     }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean isNullValueAllowed() {
         return false;

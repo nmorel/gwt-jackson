@@ -28,12 +28,15 @@ import com.github.nmorel.gwtjackson.client.stream.JsonReader;
  * Default {@link JsonDeserializer} implementation for 2D array of double.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class PrimitiveDoubleArray2dJsonDeserializer extends AbstractArray2dJsonDeserializer<double[][]> {
 
     private static final PrimitiveDoubleArray2dJsonDeserializer INSTANCE = new PrimitiveDoubleArray2dJsonDeserializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link PrimitiveDoubleArray2dJsonDeserializer}
      */
     public static PrimitiveDoubleArray2dJsonDeserializer getInstance() {
@@ -42,6 +45,7 @@ public class PrimitiveDoubleArray2dJsonDeserializer extends AbstractArray2dJsonD
 
     private PrimitiveDoubleArray2dJsonDeserializer() { }
 
+    /** {@inheritDoc} */
     @Override
     public double[][] doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         List<List<Double>> list = deserializeIntoList( reader, ctx, DoubleJsonDeserializer.getInstance(), params );

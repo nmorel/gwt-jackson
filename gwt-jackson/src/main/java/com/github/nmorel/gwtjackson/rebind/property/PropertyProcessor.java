@@ -65,7 +65,10 @@ import com.google.gwt.thirdparty.guava.common.collect.Ordering;
 import static com.github.nmorel.gwtjackson.rebind.CreatorUtils.findFirstEncounteredAnnotationsOnAllHierarchy;
 
 /**
+ * <p>PropertyProcessor class.</p>
+ *
  * @author Nicolas Morel.
+ * @version $Id: $
  */
 public final class PropertyProcessor {
 
@@ -73,6 +76,17 @@ public final class PropertyProcessor {
             .asList( JsonProperty.class, JsonManagedReference.class, JsonBackReference.class, JsonValue.class, JsonAnySetter.class,
                     JsonAnyGetter.class );
 
+    /**
+     * <p>findAllProperties</p>
+     *
+     * @param configuration a {@link com.github.nmorel.gwtjackson.rebind.RebindConfiguration} object.
+     * @param logger a {@link com.google.gwt.core.ext.TreeLogger} object.
+     * @param typeOracle a {@link com.github.nmorel.gwtjackson.rebind.JacksonTypeOracle} object.
+     * @param beanInfo a {@link com.github.nmorel.gwtjackson.rebind.bean.BeanInfo} object.
+     * @param mapperInSamePackageAsType a boolean.
+     * @return a {@link com.github.nmorel.gwtjackson.rebind.property.PropertiesContainer} object.
+     * @throws com.google.gwt.core.ext.UnableToCompleteException if any.
+     */
     public static PropertiesContainer findAllProperties( RebindConfiguration configuration, TreeLogger logger, JacksonTypeOracle
             typeOracle, BeanInfo beanInfo, boolean mapperInSamePackageAsType ) throws UnableToCompleteException {
 

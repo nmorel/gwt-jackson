@@ -25,16 +25,17 @@ import com.github.nmorel.gwtjackson.client.deser.EnumJsonDeserializer;
  * Default {@link JsonDeserializer} implementation for {@link EnumSet}.
  *
  * @param <E> Type of the enumeration inside the {@link EnumSet}
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class EnumSetJsonDeserializer<E extends Enum<E>> extends BaseSetJsonDeserializer<EnumSet<E>, E> {
 
     /**
-     * @param deserializer {@link EnumJsonDeserializer} used to deserialize the enums inside the {@link EnumSet}.
-     * @param <E> Type of the enumeration inside the {@link EnumSet}
+     * <p>newInstance</p>
      *
+     * @param deserializer {@link EnumJsonDeserializer} used to deserialize the enums inside the {@link EnumSet}.
      * @return a new instance of {@link EnumSetJsonDeserializer}
+     * @param <E> a E object.
      */
     public static <E extends Enum<E>> EnumSetJsonDeserializer<E> newInstance( EnumJsonDeserializer<E> deserializer ) {
         return new EnumSetJsonDeserializer<E>( deserializer );
@@ -50,11 +51,13 @@ public class EnumSetJsonDeserializer<E extends Enum<E>> extends BaseSetJsonDeser
         this.enumClass = deserializer.getEnumClass();
     }
 
+    /** {@inheritDoc} */
     @Override
     protected EnumSet<E> newCollection() {
         return EnumSet.noneOf( enumClass );
     }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean isNullValueAllowed() {
         return false;

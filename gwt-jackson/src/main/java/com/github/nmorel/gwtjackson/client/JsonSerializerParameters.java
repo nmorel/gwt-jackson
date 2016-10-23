@@ -35,9 +35,11 @@ import com.google.gwt.i18n.client.TimeZone;
  * </p>
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class JsonSerializerParameters {
 
+    /** Constant <code>DEFAULT</code> */
     public static final JsonSerializerParameters DEFAULT = new JsonSerializerParameters();
 
     /**
@@ -91,46 +93,101 @@ public final class JsonSerializerParameters {
      */
     private boolean unwrapped = false;
 
+    /**
+     * <p>Getter for the field <code>pattern</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPattern() {
         return pattern;
     }
 
+    /**
+     * <p>Setter for the field <code>pattern</code>.</p>
+     *
+     * @param pattern a {@link java.lang.String} object.
+     * @return a {@link com.github.nmorel.gwtjackson.client.JsonSerializerParameters} object.
+     */
     public JsonSerializerParameters setPattern( String pattern ) {
         this.pattern = pattern;
         return this;
     }
 
+    /**
+     * <p>Getter for the field <code>shape</code>.</p>
+     *
+     * @return a {@link com.fasterxml.jackson.annotation.JsonFormat.Shape} object.
+     */
     public Shape getShape() {
         return shape;
     }
 
+    /**
+     * <p>Setter for the field <code>shape</code>.</p>
+     *
+     * @param shape a {@link com.fasterxml.jackson.annotation.JsonFormat.Shape} object.
+     * @return a {@link com.github.nmorel.gwtjackson.client.JsonSerializerParameters} object.
+     */
     public JsonSerializerParameters setShape( Shape shape ) {
         this.shape = shape;
         return this;
     }
 
+    /**
+     * <p>Getter for the field <code>locale</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLocale() {
         return locale;
     }
 
+    /**
+     * <p>Setter for the field <code>locale</code>.</p>
+     *
+     * @param locale a {@link java.lang.String} object.
+     * @return a {@link com.github.nmorel.gwtjackson.client.JsonSerializerParameters} object.
+     */
     public JsonSerializerParameters setLocale( String locale ) {
         this.locale = locale;
         return this;
     }
 
+    /**
+     * <p>Getter for the field <code>timezone</code>.</p>
+     *
+     * @return a {@link com.google.gwt.i18n.client.TimeZone} object.
+     */
     public TimeZone getTimezone() {
         return timezone;
     }
 
+    /**
+     * <p>Setter for the field <code>timezone</code>.</p>
+     *
+     * @param timezone a {@link com.google.gwt.i18n.client.TimeZone} object.
+     * @return a {@link com.github.nmorel.gwtjackson.client.JsonSerializerParameters} object.
+     */
     public JsonSerializerParameters setTimezone( TimeZone timezone ) {
         this.timezone = timezone;
         return this;
     }
 
+    /**
+     * <p>Getter for the field <code>ignoredProperties</code>.</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     public Set<String> getIgnoredProperties() {
         return ignoredProperties;
     }
 
+    /**
+     * <p>addIgnoredProperty</p>
+     *
+     * @param ignoredProperty a {@link java.lang.String} object.
+     * @return a {@link com.github.nmorel.gwtjackson.client.JsonSerializerParameters} object.
+     */
     public JsonSerializerParameters addIgnoredProperty( String ignoredProperty ) {
         if ( null == ignoredProperties ) {
             ignoredProperties = new HashSet<String>();
@@ -139,37 +196,81 @@ public final class JsonSerializerParameters {
         return this;
     }
 
+    /**
+     * <p>Getter for the field <code>include</code>.</p>
+     *
+     * @return a {@link com.fasterxml.jackson.annotation.JsonInclude.Include} object.
+     */
     public Include getInclude() {
         return include;
     }
 
+    /**
+     * <p>Setter for the field <code>include</code>.</p>
+     *
+     * @param include a {@link com.fasterxml.jackson.annotation.JsonInclude.Include} object.
+     * @return a {@link com.github.nmorel.gwtjackson.client.JsonSerializerParameters} object.
+     */
     public JsonSerializerParameters setInclude( Include include ) {
         this.include = include;
         return this;
     }
 
+    /**
+     * <p>Getter for the field <code>identityInfo</code>.</p>
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.ser.bean.IdentitySerializationInfo} object.
+     */
     public IdentitySerializationInfo getIdentityInfo() {
         return identityInfo;
     }
 
+    /**
+     * <p>Setter for the field <code>identityInfo</code>.</p>
+     *
+     * @param identityInfo a {@link com.github.nmorel.gwtjackson.client.ser.bean.IdentitySerializationInfo} object.
+     * @return a {@link com.github.nmorel.gwtjackson.client.JsonSerializerParameters} object.
+     */
     public JsonSerializerParameters setIdentityInfo( IdentitySerializationInfo identityInfo ) {
         this.identityInfo = identityInfo;
         return this;
     }
 
+    /**
+     * <p>Getter for the field <code>typeInfo</code>.</p>
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.ser.bean.TypeSerializationInfo} object.
+     */
     public TypeSerializationInfo getTypeInfo() {
         return typeInfo;
     }
 
+    /**
+     * <p>Setter for the field <code>typeInfo</code>.</p>
+     *
+     * @param typeInfo a {@link com.github.nmorel.gwtjackson.client.ser.bean.TypeSerializationInfo} object.
+     * @return a {@link com.github.nmorel.gwtjackson.client.JsonSerializerParameters} object.
+     */
     public JsonSerializerParameters setTypeInfo( TypeSerializationInfo typeInfo ) {
         this.typeInfo = typeInfo;
         return this;
     }
 
+    /**
+     * <p>isUnwrapped</p>
+     *
+     * @return a boolean.
+     */
     public boolean isUnwrapped() {
         return unwrapped;
     }
 
+    /**
+     * <p>Setter for the field <code>unwrapped</code>.</p>
+     *
+     * @param unwrapped a boolean.
+     * @return a {@link com.github.nmorel.gwtjackson.client.JsonSerializerParameters} object.
+     */
     public JsonSerializerParameters setUnwrapped( boolean unwrapped ) {
         this.unwrapped = unwrapped;
         return this;

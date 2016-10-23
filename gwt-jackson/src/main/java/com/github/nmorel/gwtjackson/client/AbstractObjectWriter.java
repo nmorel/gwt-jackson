@@ -21,13 +21,20 @@ package com.github.nmorel.gwtjackson.client;
  * writer will result in an {@link UnsupportedOperationException}.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class AbstractObjectWriter<T> extends AbstractObjectMapper<T> implements ObjectWriter<T> {
 
+    /**
+     * <p>Constructor for AbstractObjectWriter.</p>
+     *
+     * @param rootName a {@link java.lang.String} object.
+     */
     public AbstractObjectWriter( String rootName ) {
         super( rootName );
     }
 
+    /** {@inheritDoc} */
     @Override
     protected final JsonDeserializer<T> newDeserializer() {
         throw new UnsupportedOperationException( "ObjectWriter doesn't support deserialization" );

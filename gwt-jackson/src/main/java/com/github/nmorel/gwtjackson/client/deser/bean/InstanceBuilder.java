@@ -23,13 +23,32 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 
 /**
+ * <p>InstanceBuilder interface.</p>
+ *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public interface InstanceBuilder<T> {
 
+    /**
+     * <p>newInstance</p>
+     *
+     * @param reader a {@link com.github.nmorel.gwtjackson.client.stream.JsonReader} object.
+     * @param ctx a {@link com.github.nmorel.gwtjackson.client.JsonDeserializationContext} object.
+     * @param params a {@link com.github.nmorel.gwtjackson.client.JsonDeserializerParameters} object.
+     * @param bufferedProperties a {@link java.util.Map} object.
+     * @param bufferedPropertiesValues a {@link java.util.Map} object.
+     * @param bufferedPropertiesValues a {@link java.util.Map} object.
+     * @return a {@link com.github.nmorel.gwtjackson.client.deser.bean.Instance} object.
+     */
     Instance<T> newInstance( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params, Map<String, String> bufferedProperties,
                              Map<String, Object> bufferedPropertiesValues );
 
+    /**
+     * <p>getParametersDeserializer</p>
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.deser.bean.SimpleStringMap} object.
+     */
     SimpleStringMap<HasDeserializerAndParameters> getParametersDeserializer();
 
 }

@@ -25,12 +25,15 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * Default {@link JsonSerializer} implementation for {@link Enum}.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class EnumJsonSerializer<E extends Enum<E>> extends JsonSerializer<E> {
 
     private static final EnumJsonSerializer<?> INSTANCE = new EnumJsonSerializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link EnumJsonSerializer}
      */
     @SuppressWarnings("unchecked")
@@ -40,6 +43,7 @@ public class EnumJsonSerializer<E extends Enum<E>> extends JsonSerializer<E> {
 
     private EnumJsonSerializer() { }
 
+    /** {@inheritDoc} */
     @Override
     public void doSerialize( JsonWriter writer, E value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         writer.unescapeValue( value.name() );

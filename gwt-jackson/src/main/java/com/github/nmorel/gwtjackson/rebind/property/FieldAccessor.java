@@ -24,7 +24,10 @@ import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 
 /**
+ * <p>Abstract FieldAccessor class.</p>
+ *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class FieldAccessor {
 
@@ -67,6 +70,18 @@ public abstract class FieldAccessor {
 
     private final boolean useMethod;
 
+    /**
+     * <p>Constructor for FieldAccessor.</p>
+     *
+     * @param propertyName a {@link java.lang.String} object.
+     * @param samePackage a boolean.
+     * @param fieldAutoDetect a boolean.
+     * @param fieldAutoDetect a boolean.
+     * @param field a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     * @param methodAutoDetect a boolean.
+     * @param methodAutoDetect a boolean.
+     * @param method a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     protected FieldAccessor( String propertyName, boolean samePackage, boolean fieldAutoDetect, Optional<JField> field,
                              boolean methodAutoDetect, Optional<JMethod> method ) {
         Preconditions.checkNotNull( propertyName );
@@ -87,14 +102,31 @@ public abstract class FieldAccessor {
         }
     }
 
+    /**
+     * <p>Getter for the field <code>field</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<JField> getField() {
         return field;
     }
 
+    /**
+     * <p>Getter for the field <code>method</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<JMethod> getMethod() {
         return method;
     }
 
+    /**
+     * <p>getAccessor</p>
+     *
+     * @param beanName a {@link java.lang.String} object.
+     * @param params a {@link java.lang.Object} object.
+     * @return a {@link com.github.nmorel.gwtjackson.rebind.property.FieldAccessor.Accessor} object.
+     */
     public Accessor getAccessor( final String beanName, Object... params ) {
         final boolean useJsni;
         if ( useMethod ) {
@@ -107,5 +139,14 @@ public abstract class FieldAccessor {
         return getAccessor( beanName, useMethod, useJsni, params );
     }
 
+    /**
+     * <p>getAccessor</p>
+     *
+     * @param beanName a {@link java.lang.String} object.
+     * @param useMethod a boolean.
+     * @param useJsni a boolean.
+     * @param params a {@link java.lang.Object} object.
+     * @return a {@link com.github.nmorel.gwtjackson.rebind.property.FieldAccessor.Accessor} object.
+     */
     protected abstract Accessor getAccessor( final String beanName, final boolean useMethod, final boolean useJsni, Object... params );
 }

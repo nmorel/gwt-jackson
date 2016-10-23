@@ -23,10 +23,14 @@ import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 
 /**
+ * <p>ObjectMapperGenerator class.</p>
+ *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class ObjectMapperGenerator extends Generator {
 
+    /** {@inheritDoc} */
     @Override
     public final String generate( TreeLogger logger, GeneratorContext context, String typeName ) throws UnableToCompleteException {
         JacksonTypeOracle typeOracle = new JacksonTypeOracle( logger, context.getTypeOracle() );

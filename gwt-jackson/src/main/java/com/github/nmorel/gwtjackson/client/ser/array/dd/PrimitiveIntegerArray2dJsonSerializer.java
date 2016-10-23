@@ -25,12 +25,15 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * Default {@link JsonSerializer} implementation for 2D array of int.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class PrimitiveIntegerArray2dJsonSerializer extends JsonSerializer<int[][]> {
 
     private static final PrimitiveIntegerArray2dJsonSerializer INSTANCE = new PrimitiveIntegerArray2dJsonSerializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link PrimitiveIntegerArray2dJsonSerializer}
      */
     public static PrimitiveIntegerArray2dJsonSerializer getInstance() {
@@ -39,11 +42,13 @@ public class PrimitiveIntegerArray2dJsonSerializer extends JsonSerializer<int[][
 
     private PrimitiveIntegerArray2dJsonSerializer() { }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean isEmpty( int[][] value ) {
         return null == value || value.length == 0;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void doSerialize( JsonWriter writer, int[][] values, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         if ( !ctx.isWriteEmptyJsonArrays() && values.length == 0 ) {

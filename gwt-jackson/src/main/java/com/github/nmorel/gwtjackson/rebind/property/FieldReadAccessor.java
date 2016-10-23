@@ -40,6 +40,7 @@ final class FieldReadAccessor extends FieldAccessor {
         super( propertyName, samePackage, fieldAutoDetect, field, getterAutoDetect, getter );
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Accessor getAccessor( final String beanName, final boolean useMethod, final boolean useJsni, Object... params ) {
         if ( !useJsni ) {

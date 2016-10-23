@@ -22,16 +22,17 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
  * Default {@link KeyDeserializer} implementation for {@link Enum}.
  *
  * @param <E> Type of the enum
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class EnumKeyDeserializer<E extends Enum<E>> extends KeyDeserializer<E> {
 
     /**
-     * @param enumClass class of the enumeration
-     * @param <E> Type of the enum
+     * <p>newInstance</p>
      *
+     * @param enumClass class of the enumeration
      * @return a new instance of {@link EnumKeyDeserializer}
+     * @param <E> a E object.
      */
     public static <E extends Enum<E>> EnumKeyDeserializer<E> newInstance( Class<E> enumClass ) {
         return new EnumKeyDeserializer<E>( enumClass );
@@ -49,6 +50,7 @@ public final class EnumKeyDeserializer<E extends Enum<E>> extends KeyDeserialize
         this.enumClass = enumClass;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected E doDeserialize( String key, JsonDeserializationContext ctx ) {
         try {
@@ -61,6 +63,11 @@ public final class EnumKeyDeserializer<E extends Enum<E>> extends KeyDeserialize
         }
     }
 
+    /**
+     * <p>Getter for the field <code>enumClass</code>.</p>
+     *
+     * @return a {@link java.lang.Class} object.
+     */
     public Class<E> getEnumClass() {
         return enumClass;
     }

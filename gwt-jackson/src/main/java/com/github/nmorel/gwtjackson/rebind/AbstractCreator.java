@@ -72,12 +72,17 @@ import static com.github.nmorel.gwtjackson.rebind.writer.JTypeName.rawName;
 import static com.github.nmorel.gwtjackson.rebind.writer.JTypeName.typeName;
 
 /**
+ * <p>Abstract AbstractCreator class.</p>
+ *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class AbstractCreator extends AbstractSourceCreator {
 
+    /** Constant <code>TYPE_PARAMETER_DESERIALIZER_FIELD_NAME="deserializer%d"</code> */
     protected static final String TYPE_PARAMETER_DESERIALIZER_FIELD_NAME = "deserializer%d";
 
+    /** Constant <code>TYPE_PARAMETER_SERIALIZER_FIELD_NAME="serializer%d"</code> */
     protected static final String TYPE_PARAMETER_SERIALIZER_FIELD_NAME = "serializer%d";
 
     protected final TreeLogger logger;
@@ -88,6 +93,14 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
     protected final JacksonTypeOracle typeOracle;
 
+    /**
+     * <p>Constructor for AbstractCreator.</p>
+     *
+     * @param logger a {@link com.google.gwt.core.ext.TreeLogger} object.
+     * @param context a {@link com.google.gwt.core.ext.GeneratorContext} object.
+     * @param configuration a {@link com.github.nmorel.gwtjackson.rebind.RebindConfiguration} object.
+     * @param typeOracle a {@link com.github.nmorel.gwtjackson.rebind.JacksonTypeOracle} object.
+     */
     protected AbstractCreator( TreeLogger logger, GeneratorContext context, RebindConfiguration configuration, JacksonTypeOracle
             typeOracle ) {
         this.logger = logger;
@@ -101,7 +114,6 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      *
      * @param packageName the package
      * @param className the name of the class
-     *
      * @return the {@link PrintWriter} or null if the class already exists.
      */
     protected final PrintWriter getPrintWriter( String packageName, String className ) {
@@ -114,8 +126,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      * @param packageName the package for the type
      * @param type the type
      * @param printWriter the writer
-     *
-     * @throws UnableToCompleteException if an exception is thrown by the writer
+     * @throws com.google.gwt.core.ext.UnableToCompleteException if an exception is thrown by the writer
      */
     protected final void write( String packageName, TypeSpec type, PrintWriter printWriter ) throws UnableToCompleteException {
         try {
@@ -133,9 +144,8 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      * Returns the mapper information for the given type. The result is cached.
      *
      * @param beanType the type
-     *
      * @return the mapper information
-     * @throws UnableToCompleteException if an exception occured while processing the type
+     * @throws com.google.gwt.core.ext.UnableToCompleteException if an exception occured while processing the type
      */
     protected final BeanJsonMapperInfo getMapperInfo( JClassType beanType ) throws UnableToCompleteException {
         BeanJsonMapperInfo mapperInfo = typeOracle.getBeanJsonMapperInfo( beanType );
@@ -185,6 +195,11 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
         return mapperInfo;
     }
 
+    /**
+     * <p>getMapperInfo</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     protected abstract Optional<BeanJsonMapperInfo> getMapperInfo();
 
     /**
@@ -192,12 +207,13 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      * the implementation of {@link AbstractBeanJsonSerializer} will be created.
      *
      * @param type type
-     *
      * @return the {@link JSerializerType}. Examples:
      * <ul>
      * <li>ctx.getIntegerSerializer()</li>
      * <li>new org.PersonBeanJsonSerializer()</li>
      * </ul>
+     * @throws com.google.gwt.core.ext.UnableToCompleteException if any.
+     * @throws com.github.nmorel.gwtjackson.rebind.exception.UnsupportedTypeException if any.
      */
     protected final JSerializerType getJsonSerializerFromType( JType type ) throws UnableToCompleteException, UnsupportedTypeException {
         return getJsonSerializerFromType( type, false );
@@ -209,12 +225,13 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      *
      * @param type type
      * @param subtype true if the serializer is for a subtype
-     *
      * @return the {@link JSerializerType}. Examples:
      * <ul>
      * <li>ctx.getIntegerSerializer()</li>
      * <li>new org.PersonBeanJsonSerializer()</li>
      * </ul>
+     * @throws com.google.gwt.core.ext.UnableToCompleteException if any.
+     * @throws com.github.nmorel.gwtjackson.rebind.exception.UnsupportedTypeException if any.
      */
     protected final JSerializerType getJsonSerializerFromType( JType type, boolean subtype )
             throws UnableToCompleteException, UnsupportedTypeException {
@@ -365,8 +382,8 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      * Build the {@link JSerializerType} that instantiate a {@link KeySerializer} for the given type.
      *
      * @param type type
-     *
      * @return the {@link JSerializerType}.
+     * @throws com.github.nmorel.gwtjackson.rebind.exception.UnsupportedTypeException if any.
      */
     protected final JSerializerType getKeySerializerFromType( JType type ) throws UnsupportedTypeException {
         return getKeySerializerFromType( type, false, false );
@@ -378,8 +395,8 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      * @param type type
      * @param subtype true if the serializer is for a subtype
      * @param useDefault true if it should return {@link ObjectKeySerializer} if the type is not supported
-     *
      * @return the {@link JSerializerType}.
+     * @throws com.github.nmorel.gwtjackson.rebind.exception.UnsupportedTypeException if any.
      */
     protected final JSerializerType getKeySerializerFromType( JType type, boolean subtype, boolean useDefault ) throws
             UnsupportedTypeException {
@@ -439,12 +456,13 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      * the implementation of {@link AbstractBeanJsonSerializer} will be created.
      *
      * @param type type
-     *
      * @return the {@link JDeserializerType}. Examples:
      * <ul>
      * <li>ctx.getIntegerDeserializer()</li>
      * <li>new org .PersonBeanJsonDeserializer()</li>
      * </ul>
+     * @throws com.google.gwt.core.ext.UnableToCompleteException if any.
+     * @throws com.github.nmorel.gwtjackson.rebind.exception.UnsupportedTypeException if any.
      */
     protected final JDeserializerType getJsonDeserializerFromType( JType type ) throws UnableToCompleteException, UnsupportedTypeException {
         return getJsonDeserializerFromType( type, false );
@@ -456,12 +474,13 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      *
      * @param type type
      * @param subtype true if the deserializer is for a subtype
-     *
      * @return the {@link JDeserializerType}. Examples:
      * <ul>
      * <li>ctx.getIntegerDeserializer()</li>
      * <li>new org .PersonBeanJsonDeserializer()</li>
      * </ul>
+     * @throws com.google.gwt.core.ext.UnableToCompleteException if any.
+     * @throws com.github.nmorel.gwtjackson.rebind.exception.UnsupportedTypeException if any.
      */
     protected final JDeserializerType getJsonDeserializerFromType( JType type, boolean subtype ) throws UnableToCompleteException,
             UnsupportedTypeException {
@@ -640,8 +659,8 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      * Build the {@link JDeserializerType} that instantiate a {@link KeyDeserializer} for the given type.
      *
      * @param type type
-     *
      * @return the {@link JDeserializerType}.
+     * @throws com.github.nmorel.gwtjackson.rebind.exception.UnsupportedTypeException if any.
      */
     protected final JDeserializerType getKeyDeserializerFromType( JType type ) throws UnsupportedTypeException {
         return getKeyDeserializerFromType( type, false, false );
@@ -653,8 +672,8 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      * @param type type
      * @param subtype true if the deserializer is for a subtype
      * @param useDefault true if it should return a default deserializer in case the type is not supported
-     *
      * @return the {@link JDeserializerType}.
+     * @throws com.github.nmorel.gwtjackson.rebind.exception.UnsupportedTypeException if any.
      */
     protected final JDeserializerType getKeyDeserializerFromType( JType type, boolean subtype, boolean useDefault ) throws
             UnsupportedTypeException {

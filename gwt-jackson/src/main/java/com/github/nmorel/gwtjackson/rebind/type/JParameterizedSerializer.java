@@ -22,23 +22,35 @@ import com.github.nmorel.gwtjackson.client.ser.map.key.KeySerializer;
 
 /**
  * Class used to handle the generation of {@link Serializer}
+ *
+ * @author nicolasmorel
+ * @version $Id: $
  */
 public class JParameterizedSerializer extends JParameterizedMapper<JSerializerType> {
 
+    /**
+     * <p>Constructor for JParameterizedSerializer.</p>
+     *
+     * @param key a {@link com.github.nmorel.gwtjackson.rebind.type.JSerializerType} object.
+     * @param json a {@link com.github.nmorel.gwtjackson.rebind.type.JSerializerType} object.
+     */
     public JParameterizedSerializer( JSerializerType key, JSerializerType json ) {
         super( key, json );
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Class getMainClass() {
         return Serializer.class;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Class getKeyClass() {
         return KeySerializer.class;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Class getJsonClass() {
         return JsonSerializer.class;

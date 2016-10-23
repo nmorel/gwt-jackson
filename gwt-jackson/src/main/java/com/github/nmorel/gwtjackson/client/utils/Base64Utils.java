@@ -24,6 +24,9 @@ package com.github.nmorel.gwtjackson.client.utils;
  * Modify to use MIME-Base64 encoding like the default Base64 encoding in
  * <a href="https://github.com/FasterXML/jackson-core/blob/master/src/main/java/com/fasterxml/jackson/core/Base64Variants.java">jackson</a>.
  * </p>
+ *
+ * @author nicolasmorel
+ * @version $Id: $
  */
 public class Base64Utils {
 
@@ -60,7 +63,7 @@ public class Base64Utils {
 
   /**
    * Decode a base64 string into a byte array.
-   * 
+   *
    * @param data the encoded data.
    * @return a byte array.
    * @see #fromBase64(String)
@@ -115,6 +118,9 @@ public class Base64Utils {
 
   /**
    * Decode a base64 string into a long value.
+   *
+   * @param value a {@link java.lang.String} object.
+   * @return a long.
    */
   public static long longFromBase64(String value) {
     int pos = 0;
@@ -134,7 +140,7 @@ public class Base64Utils {
    * with zeros. Each 24-bit chunk is encoded as 4 characters from the sequence
    * [A-Za-z0-9$_]. If one of the source positions consists entirely of padding
    * zeros, an '=' character is used instead.
-   * 
+   *
    * @param data a byte array, which may be null or empty
    * @return a String
    */
@@ -179,6 +185,9 @@ public class Base64Utils {
   /**
    * Return a string containing a base-64 encoded version of the given long
    * value.  Leading groups of all zero bits are omitted.
+   *
+   * @param value a long.
+   * @return a {@link java.lang.String} object.
    */
   public static String toBase64(long value) {
     // Convert to ints early to avoid need for long ops

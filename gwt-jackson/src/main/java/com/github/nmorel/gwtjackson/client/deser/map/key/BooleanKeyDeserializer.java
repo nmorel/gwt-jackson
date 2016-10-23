@@ -22,12 +22,15 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
  * Default {@link KeyDeserializer} implementation for {@link Boolean}.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class BooleanKeyDeserializer extends KeyDeserializer<Boolean> {
 
     private static final BooleanKeyDeserializer INSTANCE = new BooleanKeyDeserializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link BooleanKeyDeserializer}
      */
     public static BooleanKeyDeserializer getInstance() {
@@ -36,6 +39,7 @@ public final class BooleanKeyDeserializer extends KeyDeserializer<Boolean> {
 
     private BooleanKeyDeserializer() { }
 
+    /** {@inheritDoc} */
     @Override
     protected Boolean doDeserialize( String key, JsonDeserializationContext ctx ) {
         return Boolean.valueOf( key );

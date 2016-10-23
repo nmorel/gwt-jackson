@@ -25,15 +25,16 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializer;
  * Default {@link JsonDeserializer} implementation for {@link Set}. The deserialization process returns a {@link LinkedHashSet}.
  *
  * @param <T> Type of the elements inside the {@link Set}
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class SetJsonDeserializer<T> extends BaseSetJsonDeserializer<Set<T>, T> {
 
     /**
+     * <p>newInstance</p>
+     *
      * @param deserializer {@link JsonDeserializer} used to deserialize the objects inside the {@link Set}.
      * @param <T> Type of the elements inside the {@link Set}
-     *
      * @return a new instance of {@link SetJsonDeserializer}
      */
     public static <T> SetJsonDeserializer<T> newInstance( JsonDeserializer<T> deserializer ) {
@@ -47,6 +48,7 @@ public final class SetJsonDeserializer<T> extends BaseSetJsonDeserializer<Set<T>
         super( deserializer );
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Set<T> newCollection() {
         return new LinkedHashSet<T>();

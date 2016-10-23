@@ -25,12 +25,15 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * Default {@link JsonSerializer} implementation for array of short.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class PrimitiveShortArrayJsonSerializer extends JsonSerializer<short[]> {
 
     private static final PrimitiveShortArrayJsonSerializer INSTANCE = new PrimitiveShortArrayJsonSerializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link PrimitiveShortArrayJsonSerializer}
      */
     public static PrimitiveShortArrayJsonSerializer getInstance() {
@@ -39,11 +42,13 @@ public class PrimitiveShortArrayJsonSerializer extends JsonSerializer<short[]> {
 
     private PrimitiveShortArrayJsonSerializer() { }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean isEmpty( short[] value ) {
         return null == value || value.length == 0;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void doSerialize( JsonWriter writer, short[] values, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         if ( !ctx.isWriteEmptyJsonArrays() && values.length == 0 ) {

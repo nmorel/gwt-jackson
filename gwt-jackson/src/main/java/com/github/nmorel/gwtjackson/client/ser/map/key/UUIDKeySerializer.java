@@ -24,12 +24,15 @@ import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
  * Default {@link KeySerializer} implementation for {@link UUID}.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class UUIDKeySerializer extends KeySerializer<UUID> {
 
     private static final UUIDKeySerializer INSTANCE = new UUIDKeySerializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link UUIDKeySerializer}
      */
     @SuppressWarnings( "unchecked" )
@@ -39,11 +42,13 @@ public final class UUIDKeySerializer extends KeySerializer<UUID> {
 
     private UUIDKeySerializer() { }
 
+    /** {@inheritDoc} */
     @Override
     public boolean mustBeEscaped( JsonSerializationContext ctx ) {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String doSerialize( UUID value, JsonSerializationContext ctx ) {
         return value.toString();

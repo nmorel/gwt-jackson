@@ -25,12 +25,14 @@ import com.github.nmorel.gwtjackson.client.exception.JsonSerializationException;
  * Base class for all the {@link Map} key serializer. It handles null values and exceptions. The rest is delegated to implementations.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class KeySerializer<T> {
 
     /**
-     * @param ctx Context for the full serialization process
+     * <p>mustBeEscaped</p>
      *
+     * @param ctx Context for the full serialization process
      * @return true if the serialized key must be escaped
      */
     public boolean mustBeEscaped( JsonSerializationContext ctx ) {
@@ -42,9 +44,8 @@ public abstract class KeySerializer<T> {
      *
      * @param value Object to serialize
      * @param ctx Context for the full serialization process
-     *
      * @return the key
-     * @throws JsonSerializationException if an error occurs during the serialization
+     * @throws com.github.nmorel.gwtjackson.client.exception.JsonSerializationException if an error occurs during the serialization
      */
     public String serialize( T value, JsonSerializationContext ctx ) throws JsonSerializationException {
         if ( null == value ) {
@@ -58,7 +59,6 @@ public abstract class KeySerializer<T> {
      *
      * @param value Object to serialize
      * @param ctx Context for the full serialization process
-     *
      * @return the key
      */
     protected abstract String doSerialize( T value, JsonSerializationContext ctx );

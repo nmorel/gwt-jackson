@@ -24,6 +24,7 @@ import com.squareup.javapoet.CodeBlock;
  * Contains informations about serializer or deserializer like its type or the code to instantiate it.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class JMapperType {
 
@@ -66,6 +67,14 @@ public abstract class JMapperType {
 
     protected final ImmutableList<? extends JMapperType> parameters;
 
+    /**
+     * <p>Constructor for JMapperType.</p>
+     *
+     * @param beanMapper a boolean.
+     * @param type a {@link com.google.gwt.core.ext.typeinfo.JType} object.
+     * @param instance a {@link com.squareup.javapoet.CodeBlock} object.
+     * @param parameters a {@link com.google.gwt.thirdparty.guava.common.collect.ImmutableList} object.
+     */
     protected JMapperType( boolean beanMapper, JType type, CodeBlock instance, ImmutableList<? extends JMapperType> parameters ) {
         this.beanMapper = beanMapper;
         this.type = type;
@@ -73,18 +82,38 @@ public abstract class JMapperType {
         this.parameters = parameters;
     }
 
+    /**
+     * <p>isBeanMapper</p>
+     *
+     * @return a boolean.
+     */
     public final boolean isBeanMapper() {
         return beanMapper;
     }
 
+    /**
+     * <p>Getter for the field <code>type</code>.</p>
+     *
+     * @return a {@link com.google.gwt.core.ext.typeinfo.JType} object.
+     */
     public final JType getType() {
         return type;
     }
 
+    /**
+     * <p>Getter for the field <code>instance</code>.</p>
+     *
+     * @return a {@link com.squareup.javapoet.CodeBlock} object.
+     */
     public final CodeBlock getInstance() {
         return instance;
     }
 
+    /**
+     * <p>Getter for the field <code>parameters</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.collect.ImmutableList} object.
+     */
     public final ImmutableList<? extends JMapperType> getParameters() {
         return parameters;
     }

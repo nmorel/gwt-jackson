@@ -19,10 +19,17 @@ package com.github.nmorel.gwtjackson.client.deser.bean;
 import com.google.gwt.core.client.JavaScriptObject;
 
 /**
+ * <p>SimpleStringMap class.</p>
+ *
  * @param <V> the type of values stored in the Map
+ * @author nicolasmorel
+ * @version $Id: $
  */
 public class SimpleStringMap<V> extends JavaScriptObject {
 
+    /**
+     * <p>Constructor for SimpleStringMap.</p>
+     */
     protected SimpleStringMap() {
     }
 
@@ -30,7 +37,6 @@ public class SimpleStringMap<V> extends JavaScriptObject {
      * Get a value indexed by a key.
      *
      * @param key index to use for retrieval
-     *
      * @return value associated to the key or {@code null} otherwise
      */
     public final native V get( String key )  /*-{

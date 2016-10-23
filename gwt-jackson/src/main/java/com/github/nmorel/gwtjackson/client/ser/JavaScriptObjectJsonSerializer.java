@@ -26,12 +26,15 @@ import com.google.gwt.core.client.JavaScriptObject;
  * Default {@link JsonSerializer} implementation for {@link JavaScriptObject}.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class JavaScriptObjectJsonSerializer<T extends JavaScriptObject> extends JsonSerializer<T> {
 
     private static final JavaScriptObjectJsonSerializer INSTANCE = new JavaScriptObjectJsonSerializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link JavaScriptObjectJsonSerializer}
      */
     public static JavaScriptObjectJsonSerializer getInstance() {
@@ -40,6 +43,7 @@ public class JavaScriptObjectJsonSerializer<T extends JavaScriptObject> extends 
 
     private JavaScriptObjectJsonSerializer() { }
 
+    /** {@inheritDoc} */
     @Override
     public void doSerialize( JsonWriter writer, T value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         writer.value( value );

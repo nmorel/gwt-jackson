@@ -20,6 +20,9 @@ import com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer;
 
 /**
  * Wrapper to access both key and json deserializer for a type.
+ *
+ * @author nicolasmorel
+ * @version $Id: $
  */
 public abstract class Deserializer<T> {
 
@@ -27,6 +30,11 @@ public abstract class Deserializer<T> {
 
     private JsonDeserializer<T> json;
 
+    /**
+     * <p>key</p>
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer} object.
+     */
     public KeyDeserializer<T> key() {
         if ( null == key ) {
             key = createKeyDeserializer();
@@ -34,8 +42,18 @@ public abstract class Deserializer<T> {
         return key;
     }
 
+    /**
+     * <p>createKeyDeserializer</p>
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer} object.
+     */
     protected abstract KeyDeserializer<T> createKeyDeserializer();
 
+    /**
+     * <p>json</p>
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.JsonDeserializer} object.
+     */
     public JsonDeserializer<T> json() {
         if ( null == json ) {
             json = createJsonDeserializer();
@@ -43,6 +61,11 @@ public abstract class Deserializer<T> {
         return json;
     }
 
+    /**
+     * <p>createJsonDeserializer</p>
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.JsonDeserializer} object.
+     */
     protected abstract JsonDeserializer<T> createJsonDeserializer();
 
 }

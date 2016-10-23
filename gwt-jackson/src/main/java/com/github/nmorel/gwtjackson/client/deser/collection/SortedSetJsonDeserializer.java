@@ -25,15 +25,16 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializer;
  * Default {@link JsonDeserializer} implementation for {@link SortedSet}. The deserialization process returns a {@link TreeSet}.
  *
  * @param <T> Type of the elements inside the {@link SortedSet}
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class SortedSetJsonDeserializer<T> extends BaseSortedSetJsonDeserializer<SortedSet<T>, T> {
 
     /**
+     * <p>newInstance</p>
+     *
      * @param deserializer {@link JsonDeserializer} used to deserialize the objects inside the {@link SortedSet}.
      * @param <T> Type of the elements inside the {@link SortedSet}
-     *
      * @return a new instance of {@link SortedSetJsonDeserializer}
      */
     public static <T> SortedSetJsonDeserializer<T> newInstance( JsonDeserializer<T> deserializer ) {
@@ -47,6 +48,7 @@ public final class SortedSetJsonDeserializer<T> extends BaseSortedSetJsonDeseria
         super( deserializer );
     }
 
+    /** {@inheritDoc} */
     @Override
     protected SortedSet<T> newCollection() {
         return new TreeSet<T>();

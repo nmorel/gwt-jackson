@@ -37,6 +37,7 @@ import com.github.nmorel.gwtjackson.client.stream.JsonToken;
  * Base implementation of {@link JsonDeserializer} for beans.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T> implements InternalDeserializer<T,
         AbstractBeanJsonDeserializer<T>> {
@@ -59,6 +60,9 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
 
     private final AnySetterDeserializer<T, ?> anySetterDeserializer;
 
+    /**
+     * <p>Constructor for AbstractBeanJsonDeserializer.</p>
+     */
     protected AbstractBeanJsonDeserializer() {
         this.instanceBuilder = initInstanceBuilder();
         this.deserializers = initDeserializers();
@@ -73,6 +77,8 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
 
     /**
      * Initialize the {@link InstanceBuilder}. Returns null if the class isn't instantiable.
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.deser.bean.InstanceBuilder} object.
      */
     protected InstanceBuilder<T> initInstanceBuilder() {
         return null;
@@ -81,6 +87,8 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
     /**
      * Initialize the {@link SimpleStringMap} containing the property deserializers. Returns an empty map if there are no properties to
      * deserialize.
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.deser.bean.SimpleStringMap} object.
      */
     protected SimpleStringMap<BeanPropertyDeserializer<T, ?>> initDeserializers() {
         return SimpleStringMap.createObject().cast();
@@ -89,6 +97,8 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
     /**
      * Initialize the {@link SimpleStringMap} containing the back reference deserializers. Returns an empty map if there are no back
      * reference on the bean.
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.deser.bean.SimpleStringMap} object.
      */
     protected SimpleStringMap<BackReferenceProperty<T, ?>> initBackReferenceDeserializers() {
         return SimpleStringMap.createObject().cast();
@@ -96,6 +106,8 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
 
     /**
      * Initialize the {@link Set} containing the ignored property names. Returns an empty set if there are no ignored properties.
+     *
+     * @return a {@link java.util.Set} object.
      */
     protected Set<String> initIgnoredProperties() {
         return Collections.emptySet();
@@ -103,6 +115,8 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
 
     /**
      * Initialize the {@link Set} containing the required property names. Returns an empty set if there are no required properties.
+     *
+     * @return a {@link java.util.Set} object.
      */
     protected Set<String> initRequiredProperties() {
         return Collections.emptySet();
@@ -110,6 +124,8 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
 
     /**
      * Initialize the {@link IdentityDeserializationInfo}. Returns null if there is no {@link JsonIdentityInfo} annotation on bean.
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.deser.bean.IdentityDeserializationInfo} object.
      */
     protected IdentityDeserializationInfo<T> initIdentityInfo() {
         return null;
@@ -117,6 +133,8 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
 
     /**
      * Initialize the {@link TypeDeserializationInfo}. Returns null if there is no {@link JsonTypeInfo} annotation on bean.
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.deser.bean.TypeDeserializationInfo} object.
      */
     protected TypeDeserializationInfo<T> initTypeInfo() {
         return null;
@@ -124,6 +142,8 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
 
     /**
      * Initialize the {@link Map} containing the {@link SubtypeDeserializer}. Returns an empty map if the bean has no subtypes.
+     *
+     * @return a {@link java.util.Map} object.
      */
     protected Map<Class, SubtypeDeserializer> initMapSubtypeClassToDeserializer() {
         return Collections.emptyMap();
@@ -131,6 +151,8 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
 
     /**
      * Initialize the {@link AnySetterDeserializer}. Returns null if there is no method annoted with {@link JsonAnySetter} on bean.
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.deser.bean.AnySetterDeserializer} object.
      */
     protected AnySetterDeserializer<T, ?> initAnySetterDeserializer() {
         return null;
@@ -140,13 +162,21 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
      * Whether encountering of unknown
      * properties should result in a failure (by throwing a
      * {@link com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException}) or not.
+     *
+     * @return a boolean.
      */
     protected boolean isDefaultIgnoreUnknown() {
         return false;
     }
 
+    /**
+     * <p>getDeserializedType</p>
+     *
+     * @return a {@link java.lang.Class} object.
+     */
     public abstract Class getDeserializedType();
 
+    /** {@inheritDoc} */
     @Override
     public T doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
 
@@ -247,10 +277,16 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
         return result;
     }
 
+    /**
+     * <p>canDeserialize</p>
+     *
+     * @return a boolean.
+     */
     protected boolean canDeserialize() {
         return null != instanceBuilder;
     }
 
+    /** {@inheritDoc} */
     @Override
     public T deserializeWrapped( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params,
                                  IdentityDeserializationInfo identityInfo, TypeDeserializationInfo typeInfo, String typeInformation ) {
@@ -261,12 +297,9 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
     }
 
     /**
-     * Deserializes all the properties of the bean. The {@link JsonReader} must be in a json object.
+     * {@inheritDoc}
      *
-     * @param reader reader
-     * @param ctx context of the deserialization process
-     * @param type in case of a subtype, it's the corresponding type value
-     * @param bufferedProperties Buffered properties in case the type info property was not in 1st position
+     * Deserializes all the properties of the bean. The {@link JsonReader} must be in a json object.
      */
     @Override
     public final T deserializeInline( final JsonReader reader, final JsonDeserializationContext ctx, JsonDeserializerParameters params,
@@ -453,11 +486,13 @@ public abstract class AbstractBeanJsonDeserializer<T> extends JsonDeserializer<T
         return deserializer;
     }
 
+    /** {@inheritDoc} */
     @Override
     public AbstractBeanJsonDeserializer<T> getDeserializer() {
         return this;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setBackReference( String referenceName, Object reference, T value, JsonDeserializationContext ctx ) {
         if ( null == value ) {

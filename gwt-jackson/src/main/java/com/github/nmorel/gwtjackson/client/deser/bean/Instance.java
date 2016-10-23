@@ -19,7 +19,10 @@ package com.github.nmorel.gwtjackson.client.deser.bean;
 import java.util.Map;
 
 /**
+ * <p>Instance class.</p>
+ *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class Instance<T> {
 
@@ -27,15 +30,31 @@ public class Instance<T> {
 
     private final Map<String, String> bufferedProperties;
 
+    /**
+     * <p>Constructor for Instance.</p>
+     *
+     * @param instance a T object.
+     * @param bufferedProperties a {@link java.util.Map} object.
+     */
     public Instance( T instance, Map<String, String> bufferedProperties ) {
         this.instance = instance;
         this.bufferedProperties = bufferedProperties;
     }
 
+    /**
+     * <p>Getter for the field <code>instance</code>.</p>
+     *
+     * @return a T object.
+     */
     public T getInstance() {
         return instance;
     }
 
+    /**
+     * <p>Getter for the field <code>bufferedProperties</code>.</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String, String> getBufferedProperties() {
         return bufferedProperties;
     }

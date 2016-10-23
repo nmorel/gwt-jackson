@@ -25,6 +25,7 @@ import com.squareup.javapoet.CodeBlock;
  * Contains informations about serializer like its type or the code to instantiate it.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class JSerializerType extends JMapperType {
 

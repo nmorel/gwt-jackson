@@ -23,6 +23,7 @@ import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationExceptio
  * Base class for all the key deserializer. It handles null values and exceptions. The rest is delegated to implementations.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class KeyDeserializer<T> {
 
@@ -31,9 +32,8 @@ public abstract class KeyDeserializer<T> {
      *
      * @param key key to deserialize
      * @param ctx Context for the full deserialization process
-     *
      * @return the deserialized object
-     * @throws JsonDeserializationException if an error occurs during the deserialization
+     * @throws com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException if an error occurs during the deserialization
      */
     public T deserialize( String key, JsonDeserializationContext ctx ) throws JsonDeserializationException {
         if ( null == key ) {
@@ -47,7 +47,6 @@ public abstract class KeyDeserializer<T> {
      *
      * @param key key to deserialize
      * @param ctx Context for the full deserialization process
-     *
      * @return the deserialized object
      */
     protected abstract T doDeserialize( String key, JsonDeserializationContext ctx );

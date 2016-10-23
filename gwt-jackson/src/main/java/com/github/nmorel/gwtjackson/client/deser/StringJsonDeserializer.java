@@ -25,12 +25,15 @@ import com.github.nmorel.gwtjackson.client.stream.JsonReader;
  * Default {@link JsonDeserializer} implementation for {@link String}.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class StringJsonDeserializer extends JsonDeserializer<String> {
 
     private static final StringJsonDeserializer INSTANCE = new StringJsonDeserializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link StringJsonDeserializer}
      */
     public static StringJsonDeserializer getInstance() {
@@ -39,6 +42,7 @@ public class StringJsonDeserializer extends JsonDeserializer<String> {
 
     private StringJsonDeserializer() { }
 
+    /** {@inheritDoc} */
     @Override
     public String doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         return reader.nextString();

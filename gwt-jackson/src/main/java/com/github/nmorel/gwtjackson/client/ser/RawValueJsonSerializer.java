@@ -25,13 +25,17 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * Dummy {@link JsonSerializer} that will just output raw values by calling toString() on value to serialize.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class RawValueJsonSerializer<T> extends JsonSerializer<T> {
 
     private static final RawValueJsonSerializer<?> INSTANCE = new RawValueJsonSerializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link RawValueJsonSerializer}
+     * @param <T> a T object.
      */
     @SuppressWarnings("unchecked")
     public static <T> RawValueJsonSerializer<T> getInstance() {
@@ -40,6 +44,7 @@ public class RawValueJsonSerializer<T> extends JsonSerializer<T> {
 
     private RawValueJsonSerializer() { }
 
+    /** {@inheritDoc} */
     @Override
     protected void doSerialize( JsonWriter writer, Object value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         writer.rawValue( value );

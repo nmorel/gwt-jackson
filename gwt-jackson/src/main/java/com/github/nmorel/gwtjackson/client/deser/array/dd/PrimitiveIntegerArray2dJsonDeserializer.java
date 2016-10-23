@@ -28,12 +28,15 @@ import com.github.nmorel.gwtjackson.client.stream.JsonReader;
  * Default {@link JsonDeserializer} implementation for 2D array of int.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class PrimitiveIntegerArray2dJsonDeserializer extends AbstractArray2dJsonDeserializer<int[][]> {
 
     private static final PrimitiveIntegerArray2dJsonDeserializer INSTANCE = new PrimitiveIntegerArray2dJsonDeserializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link PrimitiveIntegerArray2dJsonDeserializer}
      */
     public static PrimitiveIntegerArray2dJsonDeserializer getInstance() {
@@ -42,6 +45,7 @@ public class PrimitiveIntegerArray2dJsonDeserializer extends AbstractArray2dJson
 
     private PrimitiveIntegerArray2dJsonDeserializer() { }
 
+    /** {@inheritDoc} */
     @Override
     public int[][] doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         List<List<Integer>> list = deserializeIntoList( reader, ctx, IntegerJsonDeserializer.getInstance(), params );

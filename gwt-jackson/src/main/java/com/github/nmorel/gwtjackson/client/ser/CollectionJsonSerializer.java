@@ -27,16 +27,17 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * Default {@link JsonSerializer} implementation for {@link Collection}.
  *
  * @param <T> Type of the elements inside the {@link Collection}
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class CollectionJsonSerializer<C extends Collection<T>, T> extends JsonSerializer<C> {
 
     /**
-     * @param serializer {@link JsonSerializer} used to serialize the objects inside the {@link Collection}.
-     * @param <C> Type of the {@link Collection}
+     * <p>newInstance</p>
      *
+     * @param serializer {@link JsonSerializer} used to serialize the objects inside the {@link Collection}.
      * @return a new instance of {@link CollectionJsonSerializer}
+     * @param <C> a C object.
      */
     public static <C extends Collection<?>> CollectionJsonSerializer<C, ?> newInstance( JsonSerializer<?> serializer ) {
         return new CollectionJsonSerializer( serializer );
@@ -45,6 +46,8 @@ public class CollectionJsonSerializer<C extends Collection<T>, T> extends JsonSe
     protected final JsonSerializer<T> serializer;
 
     /**
+     * <p>Constructor for CollectionJsonSerializer.</p>
+     *
      * @param serializer {@link JsonSerializer} used to serialize the objects inside the {@link Collection}.
      */
     protected CollectionJsonSerializer( JsonSerializer<T> serializer ) {
@@ -54,11 +57,13 @@ public class CollectionJsonSerializer<C extends Collection<T>, T> extends JsonSe
         this.serializer = serializer;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean isEmpty( C value ) {
         return null == value || value.isEmpty();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void doSerialize( JsonWriter writer, C values, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         if ( values.isEmpty() ) {

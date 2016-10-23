@@ -24,7 +24,10 @@ import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.thirdparty.guava.common.base.Optional;
 
 /**
+ * <p>PropertyInfo class.</p>
+ *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class PropertyInfo {
 
@@ -94,78 +97,173 @@ public final class PropertyInfo {
         this.ignoredProperties = ignoredProperties;
     }
 
+    /**
+     * <p>Getter for the field <code>propertyName</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPropertyName() {
         return propertyName;
     }
 
+    /**
+     * <p>Getter for the field <code>type</code>.</p>
+     *
+     * @return a {@link com.google.gwt.core.ext.typeinfo.JType} object.
+     */
     public JType getType() {
         return type;
     }
 
+    /**
+     * <p>isIgnored</p>
+     *
+     * @return a boolean.
+     */
     public boolean isIgnored() {
         return ignored;
     }
 
+    /**
+     * <p>isRequired</p>
+     *
+     * @return a boolean.
+     */
     public boolean isRequired() {
         return required;
     }
 
+    /**
+     * <p>isRawValue</p>
+     *
+     * @return a boolean.
+     */
     public boolean isRawValue() {
         return rawValue;
     }
 
+    /**
+     * <p>isValue</p>
+     *
+     * @return a boolean.
+     */
     public boolean isValue() {
         return value;
     }
 
+    /**
+     * <p>isAnyGetter</p>
+     *
+     * @return a boolean.
+     */
     public boolean isAnyGetter() {
         return anyGetter;
     }
 
+    /**
+     * <p>isAnySetter</p>
+     *
+     * @return a boolean.
+     */
     public boolean isAnySetter() {
         return anySetter;
     }
 
+    /**
+     * <p>isUnwrapped</p>
+     *
+     * @return a boolean.
+     */
     public boolean isUnwrapped() {
         return unwrapped;
     }
 
+    /**
+     * <p>Getter for the field <code>managedReference</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<String> getManagedReference() {
         return managedReference;
     }
 
+    /**
+     * <p>Getter for the field <code>backReference</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<String> getBackReference() {
         return backReference;
     }
 
+    /**
+     * <p>Getter for the field <code>getterAccessor</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<? extends FieldAccessor> getGetterAccessor() {
         return getterAccessor;
     }
 
+    /**
+     * <p>Getter for the field <code>setterAccessor</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<? extends FieldAccessor> getSetterAccessor() {
         return setterAccessor;
     }
 
+    /**
+     * <p>Getter for the field <code>identityInfo</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<BeanIdentityInfo> getIdentityInfo() {
         return identityInfo;
     }
 
+    /**
+     * <p>Getter for the field <code>typeInfo</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<BeanTypeInfo> getTypeInfo() {
         return typeInfo;
     }
 
+    /**
+     * <p>Getter for the field <code>format</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<JsonFormat> getFormat() {
         return format;
     }
 
+    /**
+     * <p>Getter for the field <code>include</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<Include> getInclude() {
         return include;
     }
 
+    /**
+     * <p>Getter for the field <code>ignoreUnknown</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<Boolean> getIgnoreUnknown() {
         return ignoreUnknown;
     }
 
+    /**
+     * <p>Getter for the field <code>ignoredProperties</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<String[]> getIgnoredProperties() {
         return ignoredProperties;
     }

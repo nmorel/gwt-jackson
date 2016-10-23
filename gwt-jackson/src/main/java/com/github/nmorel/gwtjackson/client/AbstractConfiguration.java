@@ -28,7 +28,10 @@ import com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer;
 import com.github.nmorel.gwtjackson.client.ser.map.key.KeySerializer;
 
 /**
+ * <p>Abstract AbstractConfiguration class.</p>
+ *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class AbstractConfiguration {
 
@@ -111,12 +114,18 @@ public abstract class AbstractConfiguration {
 
     private JsonAutoDetect.Visibility creatorVisibility = JsonAutoDetect.Visibility.DEFAULT;
 
+    /**
+     * <p>Constructor for AbstractConfiguration.</p>
+     */
     protected AbstractConfiguration() {
         configure();
     }
 
     /**
-     * Return a {@link PrimitiveTypeConfiguration} to configure serializer and/or deserializer for the given primitive type.
+     * <p>primitiveType</p>
+     *
+     * @param type Type
+     * @return a {@link PrimitiveTypeConfiguration} to configure serializer and/or deserializer for the given primitive type.
      */
     protected PrimitiveTypeConfiguration primitiveType( Class type ) {
         if ( !type.isPrimitive() ) {
@@ -126,7 +135,11 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * Return a {@link TypeConfiguration} to configure serializer and/or deserializer for the given type.
+     * <p>type</p>
+     *
+     * @param type Type
+     * @return a {@link TypeConfiguration} to configure serializer and/or deserializer for the given type.
+     * @param <T> a T object.
      */
     protected <T> TypeConfiguration<T> type( Class<T> type ) {
         if ( type.isPrimitive() ) {
@@ -137,6 +150,10 @@ public abstract class AbstractConfiguration {
 
     /**
      * Return a {@link KeyTypeConfiguration} to configure key serializer and/or deserializer for the given type.
+     *
+     * @param type a {@link java.lang.Class} object.
+     * @param <T> Type
+     * @return a {@link com.github.nmorel.gwtjackson.client.AbstractConfiguration.KeyTypeConfiguration} object.
      */
     protected <T> KeyTypeConfiguration<T> key( Class<T> type ) {
         if ( type.isPrimitive() ) {
@@ -154,6 +171,7 @@ public abstract class AbstractConfiguration {
      * @param target Class (or interface) whose annotations to effectively override
      * @param mixinSource Class (or interface) whose annotations are to
      * be "added" to target's annotations, overriding as necessary
+     * @return a {@link com.github.nmorel.gwtjackson.client.AbstractConfiguration} object.
      */
     protected AbstractConfiguration addMixInAnnotations( Class<?> target, Class<?> mixinSource ) {
         mapMixInAnnotations.put( target, mixinSource );
@@ -168,6 +186,7 @@ public abstract class AbstractConfiguration {
      * </p>
      *
      * @param regex the regex to add
+     * @return a {@link com.github.nmorel.gwtjackson.client.AbstractConfiguration} object.
      */
     protected AbstractConfiguration whitelist( String regex ) {
         whitelist.add( regex );
@@ -178,6 +197,7 @@ public abstract class AbstractConfiguration {
      * Override the default behaviour of {@link JsonAutoDetect.Visibility#DEFAULT} for fields.
      *
      * @param visibility the new default behaviour
+     * @return a {@link com.github.nmorel.gwtjackson.client.AbstractConfiguration} object.
      */
     protected AbstractConfiguration fieldVisibility( JsonAutoDetect.Visibility visibility ) {
         this.fieldVisibility = visibility;
@@ -188,6 +208,7 @@ public abstract class AbstractConfiguration {
      * Override the default behaviour of {@link JsonAutoDetect.Visibility#DEFAULT} for getters.
      *
      * @param visibility the new default behaviour
+     * @return a {@link com.github.nmorel.gwtjackson.client.AbstractConfiguration} object.
      */
     protected AbstractConfiguration getterVisibility( JsonAutoDetect.Visibility visibility ) {
         this.getterVisibility = visibility;
@@ -198,6 +219,7 @@ public abstract class AbstractConfiguration {
      * Override the default behaviour of {@link JsonAutoDetect.Visibility#DEFAULT} for boolean getters.
      *
      * @param visibility the new default behaviour
+     * @return a {@link com.github.nmorel.gwtjackson.client.AbstractConfiguration} object.
      */
     protected AbstractConfiguration isGetterVisibility( JsonAutoDetect.Visibility visibility ) {
         this.isGetterVisibility = visibility;
@@ -208,6 +230,7 @@ public abstract class AbstractConfiguration {
      * Override the default behaviour of {@link JsonAutoDetect.Visibility#DEFAULT} for setters.
      *
      * @param visibility the new default behaviour
+     * @return a {@link com.github.nmorel.gwtjackson.client.AbstractConfiguration} object.
      */
     protected AbstractConfiguration setterVisibility( JsonAutoDetect.Visibility visibility ) {
         this.setterVisibility = visibility;
@@ -218,54 +241,113 @@ public abstract class AbstractConfiguration {
      * Override the default behaviour of {@link JsonAutoDetect.Visibility#DEFAULT} for creators.
      *
      * @param visibility the new default behaviour
+     * @return a {@link com.github.nmorel.gwtjackson.client.AbstractConfiguration} object.
      */
     protected AbstractConfiguration creatorVisibility( JsonAutoDetect.Visibility visibility ) {
         this.creatorVisibility = visibility;
         return this;
     }
 
+    /**
+     * <p>configure</p>
+     */
     protected abstract void configure();
 
+    /**
+     * <p>Getter for the field <code>mapTypeToSerializer</code>.</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<Class, Class> getMapTypeToSerializer() {
         return mapTypeToSerializer;
     }
 
+    /**
+     * <p>Getter for the field <code>mapTypeToDeserializer</code>.</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<Class, Class> getMapTypeToDeserializer() {
         return mapTypeToDeserializer;
     }
 
+    /**
+     * <p>Getter for the field <code>mapTypeToKeySerializer</code>.</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<Class, Class> getMapTypeToKeySerializer() {
         return mapTypeToKeySerializer;
     }
 
+    /**
+     * <p>Getter for the field <code>mapTypeToKeyDeserializer</code>.</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<Class, Class> getMapTypeToKeyDeserializer() {
         return mapTypeToKeyDeserializer;
     }
 
+    /**
+     * <p>Getter for the field <code>mapMixInAnnotations</code>.</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<Class, Class> getMapMixInAnnotations() {
         return mapMixInAnnotations;
     }
 
+    /**
+     * <p>Getter for the field <code>whitelist</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getWhitelist() {
         return whitelist;
     }
 
+    /**
+     * <p>Getter for the field <code>fieldVisibility</code>.</p>
+     *
+     * @return a {@link com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility} object.
+     */
     public Visibility getFieldVisibility() {
         return fieldVisibility;
     }
 
+    /**
+     * <p>Getter for the field <code>getterVisibility</code>.</p>
+     *
+     * @return a {@link com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility} object.
+     */
     public Visibility getGetterVisibility() {
         return getterVisibility;
     }
 
+    /**
+     * <p>Getter for the field <code>isGetterVisibility</code>.</p>
+     *
+     * @return a {@link com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility} object.
+     */
     public Visibility getIsGetterVisibility() {
         return isGetterVisibility;
     }
 
+    /**
+     * <p>Getter for the field <code>setterVisibility</code>.</p>
+     *
+     * @return a {@link com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility} object.
+     */
     public Visibility getSetterVisibility() {
         return setterVisibility;
     }
 
+    /**
+     * <p>Getter for the field <code>creatorVisibility</code>.</p>
+     *
+     * @return a {@link com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility} object.
+     */
     public Visibility getCreatorVisibility() {
         return creatorVisibility;
     }

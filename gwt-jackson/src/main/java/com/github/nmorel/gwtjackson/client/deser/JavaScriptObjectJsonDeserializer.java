@@ -26,12 +26,15 @@ import com.google.gwt.core.client.JavaScriptObject;
  * Default {@link JsonDeserializer} implementation for {@link JavaScriptObject}.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class JavaScriptObjectJsonDeserializer<T extends JavaScriptObject> extends JsonDeserializer<T> {
 
     private static final JavaScriptObjectJsonDeserializer INSTANCE = new JavaScriptObjectJsonDeserializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link JavaScriptObjectJsonDeserializer}
      */
     public static JavaScriptObjectJsonDeserializer getInstance() {
@@ -40,6 +43,7 @@ public class JavaScriptObjectJsonDeserializer<T extends JavaScriptObject> extend
 
     private JavaScriptObjectJsonDeserializer() { }
 
+    /** {@inheritDoc} */
     @Override
     public T doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         return reader.nextJavaScriptObject( ctx.isUseSafeEval() ).cast();

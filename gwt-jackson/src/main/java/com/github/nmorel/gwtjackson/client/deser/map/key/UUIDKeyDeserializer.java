@@ -24,12 +24,15 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
  * Default {@link KeyDeserializer} implementation for {@link UUID}.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class UUIDKeyDeserializer extends KeyDeserializer<UUID> {
 
     private static final UUIDKeyDeserializer INSTANCE = new UUIDKeyDeserializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link UUIDKeyDeserializer}
      */
     public static UUIDKeyDeserializer getInstance() {
@@ -38,6 +41,7 @@ public final class UUIDKeyDeserializer extends KeyDeserializer<UUID> {
 
     private UUIDKeyDeserializer() { }
 
+    /** {@inheritDoc} */
     @Override
     protected UUID doDeserialize( String key, JsonDeserializationContext ctx ) {
         return UUID.fromString( key );

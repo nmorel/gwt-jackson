@@ -22,12 +22,15 @@ import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
  * {@link KeySerializer} implementation that uses {@link Object#toString()} method.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class ToStringKeySerializer extends KeySerializer<Object> {
 
     private static final ToStringKeySerializer INSTANCE = new ToStringKeySerializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link ToStringKeySerializer}
      */
     public static ToStringKeySerializer getInstance() {
@@ -36,6 +39,7 @@ public final class ToStringKeySerializer extends KeySerializer<Object> {
 
     private ToStringKeySerializer() { }
 
+    /** {@inheritDoc} */
     @Override
     protected String doSerialize( Object value, JsonSerializationContext ctx ) {
         return value.toString();

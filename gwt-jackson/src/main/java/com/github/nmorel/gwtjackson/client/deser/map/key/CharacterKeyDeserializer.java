@@ -22,12 +22,15 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
  * Default {@link KeyDeserializer} implementation for {@link Character}.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class CharacterKeyDeserializer extends KeyDeserializer<Character> {
 
     private static final CharacterKeyDeserializer INSTANCE = new CharacterKeyDeserializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link CharacterKeyDeserializer}
      */
     public static CharacterKeyDeserializer getInstance() {
@@ -36,6 +39,7 @@ public final class CharacterKeyDeserializer extends KeyDeserializer<Character> {
 
     private CharacterKeyDeserializer() { }
 
+    /** {@inheritDoc} */
     @Override
     protected Character doDeserialize( String key, JsonDeserializationContext ctx ) {
         return key.charAt( 0 );

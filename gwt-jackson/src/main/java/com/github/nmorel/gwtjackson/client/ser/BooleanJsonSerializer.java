@@ -25,12 +25,15 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * Default {@link JsonSerializer} implementation for {@link Boolean}.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class BooleanJsonSerializer extends JsonSerializer<Boolean> {
 
     private static final BooleanJsonSerializer INSTANCE = new BooleanJsonSerializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link BooleanJsonSerializer}
      */
     public static BooleanJsonSerializer getInstance() {
@@ -39,11 +42,13 @@ public class BooleanJsonSerializer extends JsonSerializer<Boolean> {
 
     private BooleanJsonSerializer() { }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean isDefault( Boolean value ) {
         return null == value || !value;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void doSerialize( JsonWriter writer, Boolean value, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         writer.value( value );

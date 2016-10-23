@@ -22,13 +22,17 @@ import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
  * Default {@link KeySerializer} implementation for {@link Enum}.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class EnumKeySerializer<E extends Enum<E>> extends KeySerializer<E> {
 
     private static final EnumKeySerializer<?> INSTANCE = new EnumKeySerializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link EnumKeySerializer}
+     * @param <S> a S object.
      */
     @SuppressWarnings( "unchecked" )
     public static <S extends EnumKeySerializer<?>> S getInstance() {
@@ -37,11 +41,13 @@ public final class EnumKeySerializer<E extends Enum<E>> extends KeySerializer<E>
 
     private EnumKeySerializer() { }
 
+    /** {@inheritDoc} */
     @Override
     public boolean mustBeEscaped( JsonSerializationContext ctx ) {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String doSerialize( E value, JsonSerializationContext ctx ) {
         return value.name();

@@ -26,12 +26,15 @@ import com.github.nmorel.gwtjackson.client.utils.Base64Utils;
  * Default {@link JsonSerializer} implementation for 2D array of byte.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class PrimitiveByteArray2dJsonSerializer extends JsonSerializer<byte[][]> {
 
     private static final PrimitiveByteArray2dJsonSerializer INSTANCE = new PrimitiveByteArray2dJsonSerializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link PrimitiveByteArray2dJsonSerializer}
      */
     public static PrimitiveByteArray2dJsonSerializer getInstance() {
@@ -40,11 +43,13 @@ public class PrimitiveByteArray2dJsonSerializer extends JsonSerializer<byte[][]>
 
     private PrimitiveByteArray2dJsonSerializer() { }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean isEmpty( byte[][] value ) {
         return null == value || value.length == 0;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void doSerialize( JsonWriter writer, byte[][] values, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         if ( !ctx.isWriteEmptyJsonArrays() && values.length == 0 ) {

@@ -25,15 +25,16 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializer;
  * Default {@link JsonDeserializer} implementation for {@link AbstractQueue}. The deserialization process returns a {@link PriorityQueue}.
  *
  * @param <T> Type of the elements inside the {@link AbstractQueue}
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class AbstractQueueJsonDeserializer<T> extends BaseQueueJsonDeserializer<AbstractQueue<T>, T> {
 
     /**
+     * <p>newInstance</p>
+     *
      * @param deserializer {@link JsonDeserializer} used to deserialize the objects inside the {@link AbstractQueue}.
      * @param <T> Type of the elements inside the {@link AbstractQueue}
-     *
      * @return a new instance of {@link AbstractQueueJsonDeserializer}
      */
     public static <T> AbstractQueueJsonDeserializer<T> newInstance( JsonDeserializer<T> deserializer ) {
@@ -47,6 +48,7 @@ public final class AbstractQueueJsonDeserializer<T> extends BaseQueueJsonDeseria
         super( deserializer );
     }
 
+    /** {@inheritDoc} */
     @Override
     protected AbstractQueue<T> newCollection() {
         return new PriorityQueue<T>();

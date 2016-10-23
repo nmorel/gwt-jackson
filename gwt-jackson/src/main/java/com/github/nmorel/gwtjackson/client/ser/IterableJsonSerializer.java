@@ -27,15 +27,16 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * Default {@link JsonSerializer} implementation for {@link Iterable}.
  *
  * @param <T> Type of the elements inside the {@link Iterable}
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class IterableJsonSerializer<I extends Iterable<T>, T> extends JsonSerializer<I> {
 
     /**
-     * @param serializer {@link JsonSerializer} used to serialize the objects inside the {@link Iterable}.
-     * @param <I> Type of the {@link Iterable}
+     * <p>newInstance</p>
      *
+     * @param serializer {@link JsonSerializer} used to serialize the objects inside the {@link Iterable}.
+     * @param <I> the type
      * @return a new instance of {@link IterableJsonSerializer}
      */
     public static <I extends Iterable<?>> IterableJsonSerializer<I, ?> newInstance( JsonSerializer<?> serializer ) {
@@ -45,6 +46,8 @@ public class IterableJsonSerializer<I extends Iterable<T>, T> extends JsonSerial
     protected final JsonSerializer<T> serializer;
 
     /**
+     * <p>Constructor for IterableJsonSerializer.</p>
+     *
      * @param serializer {@link JsonSerializer} used to serialize the objects inside the {@link Iterable}.
      */
     protected IterableJsonSerializer( JsonSerializer<T> serializer ) {
@@ -54,11 +57,13 @@ public class IterableJsonSerializer<I extends Iterable<T>, T> extends JsonSerial
         this.serializer = serializer;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean isEmpty( I value ) {
         return null == value || !value.iterator().hasNext();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void doSerialize( JsonWriter writer, I values, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         Iterator<T> iterator = values.iterator();

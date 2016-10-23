@@ -25,15 +25,16 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializer;
  * Default {@link JsonDeserializer} implementation for {@link Queue}. The deserialization process returns a {@link LinkedList}.
  *
  * @param <T> Type of the elements inside the {@link Queue}
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class QueueJsonDeserializer<T> extends BaseQueueJsonDeserializer<Queue<T>, T> {
 
     /**
+     * <p>newInstance</p>
+     *
      * @param deserializer {@link JsonDeserializer} used to deserialize the objects inside the {@link Queue}.
      * @param <T> Type of the elements inside the {@link Queue}
-     *
      * @return a new instance of {@link QueueJsonDeserializer}
      */
     public static <T> QueueJsonDeserializer<T> newInstance( JsonDeserializer<T> deserializer ) {
@@ -47,6 +48,7 @@ public final class QueueJsonDeserializer<T> extends BaseQueueJsonDeserializer<Qu
         super( deserializer );
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Queue<T> newCollection() {
         return new LinkedList<T>();

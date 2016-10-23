@@ -25,12 +25,15 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * Default {@link JsonSerializer} implementation for 2D array of long.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class PrimitiveLongArray2dJsonSerializer extends JsonSerializer<long[][]> {
 
     private static final PrimitiveLongArray2dJsonSerializer INSTANCE = new PrimitiveLongArray2dJsonSerializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link PrimitiveLongArray2dJsonSerializer}
      */
     public static PrimitiveLongArray2dJsonSerializer getInstance() {
@@ -39,11 +42,13 @@ public class PrimitiveLongArray2dJsonSerializer extends JsonSerializer<long[][]>
 
     private PrimitiveLongArray2dJsonSerializer() { }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean isEmpty( long[][] value ) {
         return null == value || value.length == 0;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void doSerialize( JsonWriter writer, long[][] values, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         if ( !ctx.isWriteEmptyJsonArrays() && values.length == 0 ) {

@@ -25,16 +25,17 @@ import com.github.nmorel.gwtjackson.client.stream.JsonReader;
  * Default {@link JsonDeserializer} implementation for {@link Enum}.
  *
  * @param <E> Type of the enum
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class EnumJsonDeserializer<E extends Enum<E>> extends JsonDeserializer<E> {
 
     /**
-     * @param enumClass class of the enumeration
-     * @param <E> Type of the enum
+     * <p>newInstance</p>
      *
+     * @param enumClass class of the enumeration
      * @return a new instance of {@link EnumJsonDeserializer}
+     * @param <E> a E object.
      */
     public static <E extends Enum<E>> EnumJsonDeserializer<E> newInstance( Class<E> enumClass ) {
         return new EnumJsonDeserializer<E>( enumClass );
@@ -43,6 +44,8 @@ public class EnumJsonDeserializer<E extends Enum<E>> extends JsonDeserializer<E>
     private final Class<E> enumClass;
 
     /**
+     * <p>Constructor for EnumJsonDeserializer.</p>
+     *
      * @param enumClass class of the enumeration
      */
     protected EnumJsonDeserializer( Class<E> enumClass ) {
@@ -52,6 +55,7 @@ public class EnumJsonDeserializer<E extends Enum<E>> extends JsonDeserializer<E>
         this.enumClass = enumClass;
     }
 
+    /** {@inheritDoc} */
     @Override
     public E doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         try {
@@ -64,6 +68,11 @@ public class EnumJsonDeserializer<E extends Enum<E>> extends JsonDeserializer<E>
         }
     }
 
+    /**
+     * <p>Getter for the field <code>enumClass</code>.</p>
+     *
+     * @return a {@link java.lang.Class} object.
+     */
     public Class<E> getEnumClass() {
         return enumClass;
     }

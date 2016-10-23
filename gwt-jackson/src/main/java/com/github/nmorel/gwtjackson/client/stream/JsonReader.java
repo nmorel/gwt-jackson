@@ -21,6 +21,12 @@ import java.math.BigInteger;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsonUtils;
 
+/**
+ * <p>JsonReader interface.</p>
+ *
+ * @author nicolasmorel
+ * @version $Id: $
+ */
 public interface JsonReader
 {
 
@@ -52,6 +58,8 @@ public interface JsonReader
      *       {@code :}.
      *   <li>Name/value pairs separated by {@code ;} instead of {@code ,}.
      * </ul>
+     *
+     * @param lenient a boolean.
      */
     void setLenient( boolean lenient );
 
@@ -81,17 +89,23 @@ public interface JsonReader
 
     /**
      * Returns true if the current array or object has another element.
+     *
+     * @return a boolean.
      */
     boolean hasNext();
 
     /**
      * Returns the type of the next token without consuming it.
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.stream.JsonToken} object.
      */
     JsonToken peek();
 
     /**
      * Returns the next token, a {@link JsonToken#NAME property name}, and
      * consumes it.
+     *
+     * @return a {@link java.lang.String} object.
      */
     String nextName();
 
@@ -100,8 +114,9 @@ public interface JsonReader
      * consuming it. If the next token is a number, this method will return its
      * string form.
      *
-     * @throws IllegalStateException if the next token is not a string or if
+     * @throws java.lang.IllegalStateException if the next token is not a string or if
      *     this reader is closed.
+     * @return a {@link java.lang.String} object.
      */
     String nextString();
 
@@ -109,8 +124,9 @@ public interface JsonReader
      * Returns the {@link JsonToken#BOOLEAN boolean} value of the next token,
      * consuming it.
      *
-     * @throws IllegalStateException if the next token is not a boolean or if
+     * @throws java.lang.IllegalStateException if the next token is not a boolean or if
      *     this reader is closed.
+     * @return a boolean.
      */
     boolean nextBoolean();
 
@@ -118,7 +134,7 @@ public interface JsonReader
      * Consumes the next token from the JSON stream and asserts that it is a
      * literal null.
      *
-     * @throws IllegalStateException if the next token is not null or if this
+     * @throws java.lang.IllegalStateException if the next token is not null or if this
      *     reader is closed.
      */
     void nextNull();
@@ -128,9 +144,10 @@ public interface JsonReader
      * consuming it. If the next token is a string, this method will attempt to
      * parse it as a double using {@link Double#parseDouble(String)}.
      *
-     * @throws IllegalStateException if the next token is not a literal value.
-     * @throws NumberFormatException if the next literal value cannot be parsed
+     * @throws java.lang.IllegalStateException if the next token is not a literal value.
+     * @throws java.lang.NumberFormatException if the next literal value cannot be parsed
      *     as a double, or is non-finite.
+     * @return a double.
      */
     double nextDouble();
 
@@ -140,9 +157,10 @@ public interface JsonReader
      * parse it as a long. If the next token's numeric value cannot be exactly
      * represented by a Java {@code long}, this method throws.
      *
-     * @throws IllegalStateException if the next token is not a literal value.
-     * @throws NumberFormatException if the next literal value cannot be parsed
+     * @throws java.lang.IllegalStateException if the next token is not a literal value.
+     * @throws java.lang.NumberFormatException if the next literal value cannot be parsed
      *     as a number, or exactly represented as a long.
+     * @return a long.
      */
     long nextLong();
 
@@ -152,9 +170,10 @@ public interface JsonReader
      * parse it as an int. If the next token's numeric value cannot be exactly
      * represented by a Java {@code int}, this method throws.
      *
-     * @throws IllegalStateException if the next token is not a literal value.
-     * @throws NumberFormatException if the next literal value cannot be parsed
+     * @throws java.lang.IllegalStateException if the next token is not a literal value.
+     * @throws java.lang.NumberFormatException if the next literal value cannot be parsed
      *     as a number, or exactly represented as an int.
+     * @return a int.
      */
     int nextInt();
 
@@ -173,13 +192,30 @@ public interface JsonReader
     /**
      * Reads the next value recursively and returns it as a String. If it is an object or array, all nested
      * elements are read.
+     *
+     * @return a {@link java.lang.String} object.
      */
     String nextValue();
 
+    /**
+     * <p>getLineNumber</p>
+     *
+     * @return a int.
+     */
     int getLineNumber();
 
+    /**
+     * <p>getColumnNumber</p>
+     *
+     * @return a int.
+     */
     int getColumnNumber();
 
+    /**
+     * <p>getInput</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     String getInput();
 
     /**
@@ -190,8 +226,9 @@ public interface JsonReader
      * For decimal number, a double is returned.
      * If the next token's numeric value cannot be exactly represented by a Java {@link Number}, this method throws.
      *
-     * @throws IllegalStateException if the next token is not a number.
-     * @throws NumberFormatException if the next value cannot be parsed as a number.
+     * @throws java.lang.IllegalStateException if the next token is not a number.
+     * @throws java.lang.NumberFormatException if the next value cannot be parsed as a number.
+     * @return a {@link java.lang.Number} object.
      */
     Number nextNumber();
 
@@ -199,7 +236,6 @@ public interface JsonReader
      * Returns the {@link JavaScriptObject} of the next token, consuming it.
      *
      * @param useSafeEval whether it should use {@link JsonUtils#safeEval(String)} or {@link JsonUtils#unsafeEval(String)}
-     *
      * @return the {@link JavaScriptObject}
      */
     JavaScriptObject nextJavaScriptObject( boolean useSafeEval );

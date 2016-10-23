@@ -21,7 +21,10 @@ import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.thirdparty.guava.common.base.Optional;
 
 /**
+ * <p>BeanIdentityInfo class.</p>
+ *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class BeanIdentityInfo {
 
@@ -56,26 +59,56 @@ public final class BeanIdentityInfo {
         this.type = Optional.of( type );
     }
 
+    /**
+     * <p>isIdABeanProperty</p>
+     *
+     * @return a boolean.
+     */
     public boolean isIdABeanProperty() {
         return idABeanProperty;
     }
 
+    /**
+     * <p>Getter for the field <code>propertyName</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPropertyName() {
         return propertyName;
     }
 
+    /**
+     * <p>isAlwaysAsId</p>
+     *
+     * @return a boolean.
+     */
     public boolean isAlwaysAsId() {
         return alwaysAsId;
     }
 
+    /**
+     * <p>Getter for the field <code>generator</code>.</p>
+     *
+     * @return a {@link java.lang.Class} object.
+     */
     public Class<? extends ObjectIdGenerator<?>> getGenerator() {
         return generator;
     }
 
+    /**
+     * <p>Getter for the field <code>scope</code>.</p>
+     *
+     * @return a {@link java.lang.Class} object.
+     */
     public Class<?> getScope() {
         return scope;
     }
 
+    /**
+     * <p>Getter for the field <code>type</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<JType> getType() {
         return type;
     }

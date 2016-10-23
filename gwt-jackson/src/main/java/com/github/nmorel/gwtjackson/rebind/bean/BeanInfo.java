@@ -33,7 +33,10 @@ import com.google.gwt.thirdparty.guava.common.collect.ImmutableMap;
 import com.google.gwt.thirdparty.guava.common.collect.ImmutableSet;
 
 /**
+ * <p>BeanInfo class.</p>
+ *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class BeanInfo {
 
@@ -115,90 +118,200 @@ public final class BeanInfo {
         this.include = include;
     }
 
+    /**
+     * <p>Getter for the field <code>type</code>.</p>
+     *
+     * @return a {@link com.google.gwt.core.ext.typeinfo.JClassType} object.
+     */
     public JClassType getType() {
         return type;
     }
 
+    /**
+     * <p>Getter for the field <code>parameterizedTypes</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.collect.ImmutableList} object.
+     */
     public ImmutableList<JClassType> getParameterizedTypes() {
         return parameterizedTypes;
     }
 
+    /**
+     * <p>Getter for the field <code>builder</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<JClassType> getBuilder() {
         return builder;
     }
 
+    /**
+     * <p>Getter for the field <code>creatorMethod</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<JAbstractMethod> getCreatorMethod() {
         return creatorMethod;
     }
 
+    /**
+     * <p>Getter for the field <code>creatorParameters</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.collect.ImmutableMap} object.
+     */
     public ImmutableMap<String, JParameter> getCreatorParameters() {
         return creatorParameters;
     }
 
+    /**
+     * <p>isCreatorDefaultConstructor</p>
+     *
+     * @return a boolean.
+     */
     public boolean isCreatorDefaultConstructor() {
         return creatorDefaultConstructor;
     }
 
+    /**
+     * <p>isCreatorDelegation</p>
+     *
+     * @return a boolean.
+     */
     public boolean isCreatorDelegation() {
         return creatorDelegation;
     }
 
+    /**
+     * <p>Getter for the field <code>typeInfo</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<BeanTypeInfo> getTypeInfo() {
         return typeInfo;
     }
 
+    /**
+     * <p>Getter for the field <code>valuePropertyInfo</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<PropertyInfo> getValuePropertyInfo() {
         return valuePropertyInfo;
     }
 
+    /**
+     * <p>Getter for the field <code>anyGetterPropertyInfo</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<PropertyInfo> getAnyGetterPropertyInfo() {
         return anyGetterPropertyInfo;
     }
 
+    /**
+     * <p>Getter for the field <code>anySetterPropertyInfo</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<PropertyInfo> getAnySetterPropertyInfo() {
         return anySetterPropertyInfo;
     }
 
+    /**
+     * <p>Getter for the field <code>ignoredFields</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.collect.ImmutableSet} object.
+     */
     public ImmutableSet<String> getIgnoredFields() {
         return ignoredFields;
     }
 
+    /**
+     * <p>Getter for the field <code>fieldVisibility</code>.</p>
+     *
+     * @return a {@link com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility} object.
+     */
     public Visibility getFieldVisibility() {
         return fieldVisibility;
     }
 
+    /**
+     * <p>Getter for the field <code>getterVisibility</code>.</p>
+     *
+     * @return a {@link com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility} object.
+     */
     public Visibility getGetterVisibility() {
         return getterVisibility;
     }
 
+    /**
+     * <p>Getter for the field <code>isGetterVisibility</code>.</p>
+     *
+     * @return a {@link com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility} object.
+     */
     public Visibility getIsGetterVisibility() {
         return isGetterVisibility;
     }
 
+    /**
+     * <p>Getter for the field <code>setterVisibility</code>.</p>
+     *
+     * @return a {@link com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility} object.
+     */
     public Visibility getSetterVisibility() {
         return setterVisibility;
     }
 
+    /**
+     * <p>Getter for the field <code>creatorVisibility</code>.</p>
+     *
+     * @return a {@link com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility} object.
+     */
     public Visibility getCreatorVisibility() {
         return creatorVisibility;
     }
 
+    /**
+     * <p>isIgnoreUnknown</p>
+     *
+     * @return a boolean.
+     */
     public boolean isIgnoreUnknown() {
         return ignoreUnknown;
     }
 
+    /**
+     * <p>Getter for the field <code>propertyOrderList</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.collect.ImmutableList} object.
+     */
     public ImmutableList<String> getPropertyOrderList() {
         return propertyOrderList;
     }
 
+    /**
+     * <p>isPropertyOrderAlphabetic</p>
+     *
+     * @return a boolean.
+     */
     public boolean isPropertyOrderAlphabetic() {
         return propertyOrderAlphabetic;
     }
 
+    /**
+     * <p>Getter for the field <code>identityInfo</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<BeanIdentityInfo> getIdentityInfo() {
         return identityInfo;
     }
 
+    /**
+     * <p>Getter for the field <code>include</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<Include> getInclude() {
         return include;
     }

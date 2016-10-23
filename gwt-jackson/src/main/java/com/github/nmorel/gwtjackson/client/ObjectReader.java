@@ -38,8 +38,8 @@ import com.google.gwt.core.client.GWT;
  * </pre>
  *
  * @param <T> Type of the read object
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public interface ObjectReader<T> {
 
@@ -47,9 +47,8 @@ public interface ObjectReader<T> {
      * Reads a JSON input into an object.
      *
      * @param input JSON input to read
-     *
      * @return the read object
-     * @throws JsonDeserializationException if an exception occurs while reading the input
+     * @throws com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException if an exception occurs while reading the input
      */
     T read( String input ) throws JsonDeserializationException;
 
@@ -58,9 +57,8 @@ public interface ObjectReader<T> {
      *
      * @param input JSON input to read
      * @param ctx Context for the full reading process
-     *
      * @return the read object
-     * @throws JsonDeserializationException if an exception occurs while reading the input
+     * @throws com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException if an exception occurs while reading the input
      */
     T read( String input, JsonDeserializationContext ctx ) throws JsonDeserializationException;
 }

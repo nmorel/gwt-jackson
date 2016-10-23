@@ -30,12 +30,15 @@ import com.google.gwt.core.client.JsArrayNumber;
  * Default {@link JsonDeserializer} implementation for array of double.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class PrimitiveDoubleArrayJsonDeserializer extends AbstractArrayJsonDeserializer<double[]> {
 
     private static final PrimitiveDoubleArrayJsonDeserializer INSTANCE = new PrimitiveDoubleArrayJsonDeserializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link PrimitiveDoubleArrayJsonDeserializer}
      */
     public static PrimitiveDoubleArrayJsonDeserializer getInstance() {
@@ -50,6 +53,7 @@ public class PrimitiveDoubleArrayJsonDeserializer extends AbstractArrayJsonDeser
 
     private PrimitiveDoubleArrayJsonDeserializer() { }
 
+    /** {@inheritDoc} */
     @Override
     public double[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         JsArrayNumber jsArray = JsArrayNumber.createArray().cast();
@@ -76,6 +80,7 @@ public class PrimitiveDoubleArrayJsonDeserializer extends AbstractArrayJsonDeser
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     protected double[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         return new double[]{DoubleJsonDeserializer.getInstance().deserialize( reader, ctx, params )};

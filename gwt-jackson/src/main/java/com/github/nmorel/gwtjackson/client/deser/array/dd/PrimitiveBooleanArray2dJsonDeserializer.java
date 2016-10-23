@@ -28,12 +28,15 @@ import com.github.nmorel.gwtjackson.client.stream.JsonReader;
  * Default {@link JsonDeserializer} implementation for 2D array of boolean.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class PrimitiveBooleanArray2dJsonDeserializer extends AbstractArray2dJsonDeserializer<boolean[][]> {
 
     private static final PrimitiveBooleanArray2dJsonDeserializer INSTANCE = new PrimitiveBooleanArray2dJsonDeserializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link PrimitiveBooleanArray2dJsonDeserializer}
      */
     public static PrimitiveBooleanArray2dJsonDeserializer getInstance() {
@@ -42,6 +45,7 @@ public class PrimitiveBooleanArray2dJsonDeserializer extends AbstractArray2dJson
 
     private PrimitiveBooleanArray2dJsonDeserializer() { }
 
+    /** {@inheritDoc} */
     @Override
     public boolean[][] doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         List<List<Boolean>> list = deserializeIntoList( reader, ctx, BooleanJsonDeserializer.getInstance(), params );

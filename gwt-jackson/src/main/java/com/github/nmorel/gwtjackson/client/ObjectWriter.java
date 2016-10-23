@@ -41,8 +41,8 @@ import com.google.gwt.core.client.GWT;
  * </pre>
  *
  * @param <T> Type of the object to write
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public interface ObjectWriter<T> {
 
@@ -50,9 +50,8 @@ public interface ObjectWriter<T> {
      * Writes an object to JSON.
      *
      * @param value Object to write
-     *
      * @return the JSON output
-     * @throws JsonSerializationException if an exception occurs while writing the output
+     * @throws com.github.nmorel.gwtjackson.client.exception.JsonSerializationException if an exception occurs while writing the output
      */
     String write( T value ) throws JsonSerializationException;
 
@@ -61,8 +60,8 @@ public interface ObjectWriter<T> {
      *
      * @param value Object to write
      * @param ctx Context for the full writing process
-     *
-     * @throws JsonSerializationException if an exception occurs while writing the output
+     * @throws com.github.nmorel.gwtjackson.client.exception.JsonSerializationException if an exception occurs while writing the output
+     * @return a {@link java.lang.String} object.
      */
     String write( T value, JsonSerializationContext ctx ) throws JsonSerializationException;
 }

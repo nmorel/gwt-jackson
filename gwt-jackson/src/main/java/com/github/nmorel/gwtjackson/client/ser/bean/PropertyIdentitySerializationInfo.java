@@ -22,6 +22,7 @@ import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
  * Contains identity informations for serialization process.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class PropertyIdentitySerializationInfo<T, V> extends BeanPropertySerializer<T, V> implements IdentitySerializationInfo<T> {
 
@@ -30,21 +31,30 @@ public abstract class PropertyIdentitySerializationInfo<T, V> extends BeanProper
      */
     private final boolean alwaysAsId;
 
+    /**
+     * <p>Constructor for PropertyIdentitySerializationInfo.</p>
+     *
+     * @param alwaysAsId a boolean.
+     * @param propertyName a {@link java.lang.String} object.
+     */
     public PropertyIdentitySerializationInfo( boolean alwaysAsId, String propertyName ) {
         super( propertyName );
         this.alwaysAsId = alwaysAsId;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isAlwaysAsId() {
         return alwaysAsId;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isProperty() {
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
     public ObjectIdSerializer<?> getObjectId( T bean, JsonSerializationContext ctx ) {
         return new ObjectIdSerializer( getValue( bean, ctx ), getSerializer() );

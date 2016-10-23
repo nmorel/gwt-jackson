@@ -31,12 +31,15 @@ import com.github.nmorel.gwtjackson.client.utils.Base64Utils;
  * Default {@link JsonDeserializer} implementation for 2D array of byte.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class PrimitiveByteArray2dJsonDeserializer extends AbstractArray2dJsonDeserializer<byte[][]> {
 
     private static final PrimitiveByteArray2dJsonDeserializer INSTANCE = new PrimitiveByteArray2dJsonDeserializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link PrimitiveByteArray2dJsonDeserializer}
      */
     public static PrimitiveByteArray2dJsonDeserializer getInstance() {
@@ -45,6 +48,7 @@ public class PrimitiveByteArray2dJsonDeserializer extends AbstractArray2dJsonDes
 
     private PrimitiveByteArray2dJsonDeserializer() { }
 
+    /** {@inheritDoc} */
     @Override
     public byte[][] doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
 

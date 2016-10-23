@@ -28,12 +28,15 @@ import com.github.nmorel.gwtjackson.client.stream.JsonReader;
  * Default {@link JsonDeserializer} implementation for array of boolean.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class PrimitiveBooleanArrayJsonDeserializer extends AbstractArrayJsonDeserializer<boolean[]> {
 
     private static final PrimitiveBooleanArrayJsonDeserializer INSTANCE = new PrimitiveBooleanArrayJsonDeserializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link PrimitiveBooleanArrayJsonDeserializer}
      */
     public static PrimitiveBooleanArrayJsonDeserializer getInstance() {
@@ -42,6 +45,7 @@ public class PrimitiveBooleanArrayJsonDeserializer extends AbstractArrayJsonDese
 
     private PrimitiveBooleanArrayJsonDeserializer() { }
 
+    /** {@inheritDoc} */
     @Override
     public boolean[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         List<Boolean> list = deserializeIntoList( reader, ctx, BooleanJsonDeserializer.getInstance(), params );
@@ -57,6 +61,7 @@ public class PrimitiveBooleanArrayJsonDeserializer extends AbstractArrayJsonDese
         return result;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean[] doDeserializeSingleArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         return new boolean[]{BooleanJsonDeserializer.getInstance().deserialize( reader, ctx, params )};

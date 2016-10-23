@@ -27,7 +27,10 @@ import com.google.gwt.thirdparty.guava.common.base.Optional;
 import com.google.gwt.thirdparty.guava.common.collect.ImmutableList;
 
 /**
+ * <p>PropertyAccessors class.</p>
+ *
  * @author Nicolas Morel.
+ * @version $Id: $
  */
 public final class PropertyAccessors {
 
@@ -64,42 +67,102 @@ public final class PropertyAccessors {
         this.accessors = accessors;
     }
 
+    /**
+     * <p>Getter for the field <code>propertyName</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPropertyName() {
         return propertyName;
     }
 
+    /**
+     * <p>Getter for the field <code>field</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<JField> getField() {
         return field;
     }
 
+    /**
+     * <p>Getter for the field <code>getter</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<JMethod> getGetter() {
         return getter;
     }
 
+    /**
+     * <p>Getter for the field <code>setter</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<JMethod> getSetter() {
         return setter;
     }
 
+    /**
+     * <p>Getter for the field <code>parameter</code>.</p>
+     *
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public Optional<JParameter> getParameter() {
         return parameter;
     }
 
+    /**
+     * <p>isAnnotationPresentOnField</p>
+     *
+     * @param annotation a {@link java.lang.Class} object.
+     * @param <T> the type
+     * @return a boolean.
+     */
     public <T extends Annotation> boolean isAnnotationPresentOnField( Class<T> annotation ) {
         return CreatorUtils.isAnnotationPresent( annotation, fields );
     }
 
+    /**
+     * <p>isAnnotationPresentOnGetter</p>
+     *
+     * @param annotation a {@link java.lang.Class} object.
+     * @param <T> the type
+     * @return a boolean.
+     */
     public <T extends Annotation> boolean isAnnotationPresentOnGetter( Class<T> annotation ) {
         return CreatorUtils.isAnnotationPresent( annotation, getters );
     }
 
+    /**
+     * <p>isAnnotationPresentOnSetter</p>
+     *
+     * @param annotation a {@link java.lang.Class} object.
+     * @param <T> the type
+     * @return a boolean.
+     */
     public <T extends Annotation> boolean isAnnotationPresentOnSetter( Class<T> annotation ) {
         return CreatorUtils.isAnnotationPresent( annotation, setters );
     }
 
+    /**
+     * <p>getAnnotation</p>
+     *
+     * @param annotation a {@link java.lang.String} object.
+     * @param <T> the type
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public <T extends Annotation> Optional<T> getAnnotation( String annotation ) {
         return CreatorUtils.getAnnotation( annotation, accessors );
     }
 
+    /**
+     * <p>getAnnotation</p>
+     *
+     * @param annotation a {@link java.lang.Class} object.
+     * @param <T> the type
+     * @return a {@link com.google.gwt.thirdparty.guava.common.base.Optional} object.
+     */
     public <T extends Annotation> Optional<T> getAnnotation( Class<T> annotation ) {
         return CreatorUtils.getAnnotation( annotation, accessors );
     }

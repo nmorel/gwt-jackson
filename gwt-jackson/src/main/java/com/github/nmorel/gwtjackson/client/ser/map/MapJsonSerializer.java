@@ -33,17 +33,18 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * @param <M> Type of the {@link Map}
  * @param <K> Type of the keys inside the {@link Map}
  * @param <V> Type of the values inside the {@link Map}
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class MapJsonSerializer<M extends Map<K, V>, K, V> extends JsonSerializer<M> {
 
     /**
+     * <p>newInstance</p>
+     *
      * @param keySerializer {@link KeySerializer} used to serialize the keys.
      * @param valueSerializer {@link JsonSerializer} used to serialize the values.
-     * @param <M> Type of the {@link Map}
-     *
      * @return a new instance of {@link MapJsonSerializer}
+     * @param <M> a M object.
      */
     public static <M extends Map<?, ?>> MapJsonSerializer<M, ?, ?> newInstance( KeySerializer<?> keySerializer, JsonSerializer<?>
             valueSerializer ) {
@@ -55,6 +56,8 @@ public class MapJsonSerializer<M extends Map<K, V>, K, V> extends JsonSerializer
     protected final JsonSerializer<V> valueSerializer;
 
     /**
+     * <p>Constructor for MapJsonSerializer.</p>
+     *
      * @param keySerializer {@link KeySerializer} used to serialize the keys.
      * @param valueSerializer {@link JsonSerializer} used to serialize the values.
      */
@@ -69,11 +72,13 @@ public class MapJsonSerializer<M extends Map<K, V>, K, V> extends JsonSerializer
         this.valueSerializer = valueSerializer;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean isEmpty( M value ) {
         return null == value || value.isEmpty();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void doSerialize( JsonWriter writer, M values, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         writer.beginObject();
@@ -83,6 +88,14 @@ public class MapJsonSerializer<M extends Map<K, V>, K, V> extends JsonSerializer
         writer.endObject();
     }
 
+    /**
+     * <p>serializeValues</p>
+     *
+     * @param writer a {@link com.github.nmorel.gwtjackson.client.stream.JsonWriter} object.
+     * @param values a M object.
+     * @param ctx a {@link com.github.nmorel.gwtjackson.client.JsonSerializationContext} object.
+     * @param params a {@link com.github.nmorel.gwtjackson.client.JsonSerializerParameters} object.
+     */
     public void serializeValues( JsonWriter writer, M values, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         if ( !values.isEmpty() ) {
             Map<K, V> map = values;

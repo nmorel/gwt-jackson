@@ -63,7 +63,10 @@ import static com.github.nmorel.gwtjackson.rebind.writer.JTypeName.rawName;
 import static com.github.nmorel.gwtjackson.rebind.writer.JTypeName.typeVariableName;
 
 /**
+ * <p>Abstract AbstractBeanJsonCreator class.</p>
+ *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class AbstractBeanJsonCreator extends AbstractCreator {
 
@@ -73,6 +76,16 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
 
     protected final ImmutableMap<String, PropertyInfo> properties;
 
+    /**
+     * <p>Constructor for AbstractBeanJsonCreator.</p>
+     *
+     * @param logger a {@link com.google.gwt.core.ext.TreeLogger} object.
+     * @param context a {@link com.google.gwt.core.ext.GeneratorContext} object.
+     * @param configuration a {@link com.github.nmorel.gwtjackson.rebind.RebindConfiguration} object.
+     * @param typeOracle a {@link com.github.nmorel.gwtjackson.rebind.JacksonTypeOracle} object.
+     * @param beanType a {@link com.google.gwt.core.ext.typeinfo.JClassType} object.
+     * @throws com.google.gwt.core.ext.UnableToCompleteException if any.
+     */
     public AbstractBeanJsonCreator( TreeLogger logger, GeneratorContext context, RebindConfiguration configuration, JacksonTypeOracle
             typeOracle, JClassType beanType ) throws UnableToCompleteException {
         super( logger, context, configuration, typeOracle );
@@ -81,6 +94,7 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
         this.properties = mapperInfo.getProperties();
     }
 
+    /** {@inheritDoc} */
     @Override
     protected final Optional<BeanJsonMapperInfo> getMapperInfo() {
         return Optional.of( mapperInfo );
@@ -91,6 +105,8 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
      * parameter
      *
      * @return the information about the created class
+     * @throws com.google.gwt.core.ext.UnableToCompleteException if any.
+     * @throws com.github.nmorel.gwtjackson.rebind.exception.UnsupportedTypeException if any.
      */
     public final BeanJsonMapperInfo create() throws UnableToCompleteException, UnsupportedTypeException {
 
@@ -114,6 +130,8 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
     }
 
     /**
+     * <p>isSerializer</p>
+     *
      * @return true if we are creating a serializer, false otherwise
      */
     protected abstract boolean isSerializer();
@@ -222,6 +240,8 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
      * Method implemented by childs to add specific methods to the builder.
      *
      * @param typeBuilder the type builder
+     * @throws com.google.gwt.core.ext.UnableToCompleteException if any.
+     * @throws com.github.nmorel.gwtjackson.rebind.exception.UnsupportedTypeException if any.
      */
     protected abstract void buildSpecific( TypeSpec.Builder typeBuilder ) throws UnableToCompleteException, UnsupportedTypeException;
 
@@ -229,7 +249,6 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
      * Build the code to initialize a {@link TypeSerializationInfo} or {@link TypeDeserializationInfo}.
      *
      * @param typeInfo the type information obtained through the {@link JsonTypeInfo} annotation
-     *
      * @return the code built
      */
     protected final CodeBlock generateTypeInfo( BeanTypeInfo typeInfo ) {
@@ -286,6 +305,8 @@ public abstract class AbstractBeanJsonCreator extends AbstractCreator {
     }
 
     /**
+     * <p>filterSubtypes</p>
+     *
      * @return the filtered subtypes of the mapped type
      */
     protected final ImmutableList<JClassType> filterSubtypes() {

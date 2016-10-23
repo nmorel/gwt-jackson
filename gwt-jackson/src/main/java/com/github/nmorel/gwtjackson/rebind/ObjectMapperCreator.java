@@ -48,7 +48,10 @@ import static com.github.nmorel.gwtjackson.rebind.writer.JTypeName.parameterized
 import static com.github.nmorel.gwtjackson.rebind.writer.JTypeName.typeName;
 
 /**
+ * <p>ObjectMapperCreator class.</p>
+ *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class ObjectMapperCreator extends AbstractCreator {
 
@@ -58,11 +61,21 @@ public class ObjectMapperCreator extends AbstractCreator {
 
     private static final String OBJECT_WRITER_CLASS = "com.github.nmorel.gwtjackson.client.ObjectWriter";
 
+    /**
+     * <p>Constructor for ObjectMapperCreator.</p>
+     *
+     * @param logger a {@link com.google.gwt.core.ext.TreeLogger} object.
+     * @param context a {@link com.google.gwt.core.ext.GeneratorContext} object.
+     * @param configuration a {@link com.github.nmorel.gwtjackson.rebind.RebindConfiguration} object.
+     * @param typeOracle a {@link com.github.nmorel.gwtjackson.rebind.JacksonTypeOracle} object.
+     * @throws com.google.gwt.core.ext.UnableToCompleteException if any.
+     */
     public ObjectMapperCreator( TreeLogger logger, GeneratorContext context, RebindConfiguration configuration, JacksonTypeOracle
             typeOracle ) throws UnableToCompleteException {
         super( logger, context, configuration, typeOracle );
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Optional<BeanJsonMapperInfo> getMapperInfo() {
         return Optional.absent();
@@ -72,9 +85,8 @@ public class ObjectMapperCreator extends AbstractCreator {
      * Creates the implementation of the interface denoted by interfaceClass and extending {@link ObjectMapper}
      *
      * @param interfaceClass the interface to generate an implementation
-     *
      * @return the fully qualified name of the created class
-     * @throws UnableToCompleteException
+     * @throws com.google.gwt.core.ext.UnableToCompleteException if any.
      */
     public String create( JClassType interfaceClass ) throws UnableToCompleteException {
         // We concatenate the name of all the enclosing class.

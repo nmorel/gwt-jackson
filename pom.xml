@@ -85,7 +85,7 @@
     <maven-surefire-plugin.version>2.17</maven-surefire-plugin.version>
     <maven-deploy-plugin.version>2.8.1</maven-deploy-plugin.version>
     <maven-jar-plugin.version>2.4</maven-jar-plugin.version>
-    <maven-javadoc-plugin.version>2.7</maven-javadoc-plugin.version>
+    <maven-javadoc-plugin.version>2.10.4</maven-javadoc-plugin.version>
     <gwt-maven-plugin.version>2.7.0</gwt-maven-plugin.version>
 
     <!-- Dependencies version -->
@@ -182,9 +182,6 @@
         <plugin>
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>${maven-javadoc-plugin.version}</version>
-          <configuration>
-            <failOnError>false</failOnError>
-          </configuration>
         </plugin>
 
         <plugin>
@@ -250,6 +247,20 @@
         </plugin>
       </plugins>
     </pluginManagement>
+
+    <plugins>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>javadoc</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
 
 </project>

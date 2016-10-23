@@ -24,6 +24,7 @@ import com.github.nmorel.gwtjackson.client.stream.JsonReader;
  * Deserializes a bean's property
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class AnySetterDeserializer<T, V> extends HasDeserializerAndParameters<V, JsonDeserializer<V>> {
 
@@ -39,6 +40,14 @@ public abstract class AnySetterDeserializer<T, V> extends HasDeserializerAndPara
         setValue( bean, propertyName, deserialize( reader, ctx ), ctx );
     }
 
+    /**
+     * <p>setValue</p>
+     *
+     * @param bean a T object.
+     * @param propertyName a {@link java.lang.String} object.
+     * @param value a V object.
+     * @param ctx a {@link com.github.nmorel.gwtjackson.client.JsonDeserializationContext} object.
+     */
     public abstract void setValue( T bean, String propertyName, V value, JsonDeserializationContext ctx );
 }
 

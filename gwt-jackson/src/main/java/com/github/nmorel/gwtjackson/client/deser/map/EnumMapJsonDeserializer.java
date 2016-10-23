@@ -27,18 +27,19 @@ import com.github.nmorel.gwtjackson.client.deser.map.key.EnumKeyDeserializer;
  *
  * @param <E> Type of the enum keys inside the {@link EnumMap}
  * @param <V> Type of the values inside the {@link EnumMap}
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class EnumMapJsonDeserializer<E extends Enum<E>, V> extends BaseMapJsonDeserializer<EnumMap<E, V>, E, V> {
 
     /**
+     * <p>newInstance</p>
+     *
      * @param keyDeserializer {@link EnumKeyDeserializer} used to deserialize the enum keys.
      * @param valueDeserializer {@link JsonDeserializer} used to deserialize the values.
-     * @param <E> Type of the enum keys inside the {@link EnumMap}
      * @param <V> Type of the values inside the {@link EnumMap}
-     *
      * @return a new instance of {@link EnumMapJsonDeserializer}
+     * @param <E> a E object.
      */
     public static <E extends Enum<E>, V> EnumMapJsonDeserializer<E, V> newInstance( EnumKeyDeserializer<E> keyDeserializer,
                                                                                     JsonDeserializer<V> valueDeserializer ) {
@@ -59,6 +60,7 @@ public final class EnumMapJsonDeserializer<E extends Enum<E>, V> extends BaseMap
         this.enumClass = keyDeserializer.getEnumClass();
     }
 
+    /** {@inheritDoc} */
     @Override
     protected EnumMap<E, V> newMap() {
         return new EnumMap<E, V>( enumClass );

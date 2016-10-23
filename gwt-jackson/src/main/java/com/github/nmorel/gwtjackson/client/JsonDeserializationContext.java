@@ -33,6 +33,7 @@ import com.google.gwt.core.client.JsonUtils;
  * Context for the deserialization process.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class JsonDeserializationContext extends JsonMappingContext {
 
@@ -85,6 +86,10 @@ public class JsonDeserializationContext extends JsonMappingContext {
          * {@link JsonDeserializationException} will be thrown if an unknown property
          * is encountered).
          * </p>
+         *
+         * @param failOnUnknownProperties true if should fail on unknown properties
+         *
+         * @return the builder
          */
         public Builder failOnUnknownProperties( boolean failOnUnknownProperties ) {
             this.failOnUnknownProperties = failOnUnknownProperties;
@@ -101,6 +106,10 @@ public class JsonDeserializationContext extends JsonMappingContext {
          * <p>
          * Feature is disabled by default.
          * </p>
+         *
+         * @param unwrapRootValue true if should unwrapRootValue
+         *
+         * @return the builder
          */
         public Builder unwrapRootValue( boolean unwrapRootValue ) {
             this.unwrapRootValue = unwrapRootValue;
@@ -118,6 +127,10 @@ public class JsonDeserializationContext extends JsonMappingContext {
          * <p>
          * Feature is disabled by default.
          * </p>
+         *
+         * @param acceptSingleValueAsArray true if should acceptSingleValueAsArray
+         *
+         * @return the builder
          */
         public Builder acceptSingleValueAsArray( boolean acceptSingleValueAsArray ) {
             this.acceptSingleValueAsArray = acceptSingleValueAsArray;
@@ -137,6 +150,10 @@ public class JsonDeserializationContext extends JsonMappingContext {
          * <br>
          * <br>
          * Feature is enabled by default.
+         *
+         * @param wrapExceptions true if should wrapExceptions
+         *
+         * @return the builder
          */
         public Builder wrapExceptions( boolean wrapExceptions ) {
             this.wrapExceptions = wrapExceptions;
@@ -149,6 +166,10 @@ public class JsonDeserializationContext extends JsonMappingContext {
          * <br>
          * <br>
          * {@link JsonUtils#safeEval(String)} is used by default.
+         *
+         * @param useSafeEval true if should useSafeEval
+         *
+         * @return the builder
          */
         public Builder useSafeEval( boolean useSafeEval ) {
             this.useSafeEval = useSafeEval;
@@ -158,6 +179,10 @@ public class JsonDeserializationContext extends JsonMappingContext {
         /**
          * Feature that determines whether gwt-jackson should return null for unknown enum values.
          * Default is false which will throw {@link IllegalArgumentException} when unknown enum value is found.
+         *
+         * @param readUnknownEnumValuesAsNull true if should readUnknownEnumValuesAsNull
+         *
+         * @return the builder
          */
         public Builder readUnknownEnumValuesAsNull( boolean readUnknownEnumValuesAsNull ) {
             this.readUnknownEnumValuesAsNull = readUnknownEnumValuesAsNull;
@@ -167,8 +192,12 @@ public class JsonDeserializationContext extends JsonMappingContext {
         /**
          * Feature that specifies whether dates that doesn't contain timezone information
          * are interpreted using the browser timezone or being relative to UTC (the default).
+         *
+         * @param useBrowserTimezone true if should use browser timezone
+         *
+         * @return the builder
          */
-        public Builder useBrowserTimezone(boolean useBrowserTimezone) {
+        public Builder useBrowserTimezone( boolean useBrowserTimezone ) {
             this.useBrowserTimezone = useBrowserTimezone;
             return this;
         }
@@ -185,6 +214,11 @@ public class JsonDeserializationContext extends JsonMappingContext {
 
     }
 
+    /**
+     * <p>builder</p>
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.JsonDeserializationContext.Builder} object.
+     */
     public static Builder builder() {
         return GWT.create( Builder.class );
     }
@@ -222,12 +256,18 @@ public class JsonDeserializationContext extends JsonMappingContext {
         this.useBrowserTimezone = useBrowserTimezone;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Logger getLogger() {
         return logger;
     }
 
     /**
+     * <p>isFailOnUnknownProperties</p>
+     *
+     * @return a boolean.
      * @see Builder#failOnUnknownProperties(boolean)
      */
     public boolean isFailOnUnknownProperties() {
@@ -235,6 +275,9 @@ public class JsonDeserializationContext extends JsonMappingContext {
     }
 
     /**
+     * <p>isUnwrapRootValue</p>
+     *
+     * @return a boolean.
      * @see Builder#unwrapRootValue(boolean)
      */
     public boolean isUnwrapRootValue() {
@@ -242,6 +285,9 @@ public class JsonDeserializationContext extends JsonMappingContext {
     }
 
     /**
+     * <p>isAcceptSingleValueAsArray</p>
+     *
+     * @return a boolean.
      * @see Builder#acceptSingleValueAsArray(boolean)
      */
     public boolean isAcceptSingleValueAsArray() {
@@ -249,6 +295,9 @@ public class JsonDeserializationContext extends JsonMappingContext {
     }
 
     /**
+     * <p>isUseSafeEval</p>
+     *
+     * @return a boolean.
      * @see Builder#useSafeEval(boolean)
      */
     public boolean isUseSafeEval() {
@@ -256,6 +305,9 @@ public class JsonDeserializationContext extends JsonMappingContext {
     }
 
     /**
+     * <p>isReadUnknownEnumValuesAsNull</p>
+     *
+     * @return a boolean.
      * @see Builder#readUnknownEnumValuesAsNull(boolean)
      */
     public boolean isReadUnknownEnumValuesAsNull() {
@@ -263,12 +315,22 @@ public class JsonDeserializationContext extends JsonMappingContext {
     }
 
     /**
-     * @see Builder#adjustDatesToContextTimeZone(boolean)
+     * <p>isUseBrowserTimezone</p>
+     *
+     * @return a boolean.
+     * @see Builder#isUseBrowserTimezone()
      */
     public boolean isUseBrowserTimezone() {
         return useBrowserTimezone;
     }
 
+    /**
+     * <p>newJsonReader</p>
+     *
+     * @param input a {@link java.lang.String} object.
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.stream.JsonReader} object.
+     */
     public JsonReader newJsonReader( String input ) {
         JsonReader reader = new NonBufferedJsonReader( input );
         reader.setLenient( true );
@@ -340,6 +402,12 @@ public class JsonDeserializationContext extends JsonMappingContext {
         }
     }
 
+    /**
+     * <p>addObjectId</p>
+     *
+     * @param id a {@link com.fasterxml.jackson.annotation.ObjectIdGenerator.IdKey} object.
+     * @param instance a {@link java.lang.Object} object.
+     */
     public void addObjectId( IdKey id, Object instance ) {
         if ( null == idToObject ) {
             idToObject = new HashMap<IdKey, Object>();
@@ -347,6 +415,13 @@ public class JsonDeserializationContext extends JsonMappingContext {
         idToObject.put( id, instance );
     }
 
+    /**
+     * <p>getObjectWithId</p>
+     *
+     * @param id a {@link com.fasterxml.jackson.annotation.ObjectIdGenerator.IdKey} object.
+     *
+     * @return a {@link java.lang.Object} object.
+     */
     public Object getObjectWithId( IdKey id ) {
         if ( null != idToObject ) {
             return idToObject.get( id );

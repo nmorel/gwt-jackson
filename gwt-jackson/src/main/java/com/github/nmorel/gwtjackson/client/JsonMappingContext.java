@@ -22,9 +22,15 @@ import java.util.logging.Logger;
  * Base class for serialization and deserialization context
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class JsonMappingContext {
 
+    /**
+     * <p>getLogger</p>
+     *
+     * @return a {@link java.util.logging.Logger} object.
+     */
     public abstract Logger getLogger();
 
 }

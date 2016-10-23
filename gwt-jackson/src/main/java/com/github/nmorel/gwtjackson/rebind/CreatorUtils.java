@@ -36,7 +36,10 @@ import com.google.gwt.thirdparty.guava.common.base.Optional;
 import com.google.gwt.thirdparty.guava.common.collect.ImmutableList;
 
 /**
+ * <p>CreatorUtils class.</p>
+ *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class CreatorUtils {
 
@@ -45,9 +48,9 @@ public final class CreatorUtils {
      *
      * @param type type
      * @param annotation annotation to find
-     * @param <T> type of the annotation
-     *
      * @return the annotation if found, null otherwise
+     * @param configuration a {@link com.github.nmorel.gwtjackson.rebind.RebindConfiguration} object.
+     * @param <T> a T object.
      */
     public static <T extends Annotation> Optional<T> findFirstEncounteredAnnotationsOnAllHierarchy( RebindConfiguration configuration,
                                                                                                     JClassType type, Class<T> annotation ) {
@@ -97,9 +100,8 @@ public final class CreatorUtils {
      *
      * @param annotation the annotation
      * @param hasAnnotationsList the types
-     * @param <T> Type of the annotation
-     *
      * @return true if one the type has the annotation
+     * @param <T> a T object.
      */
     public static <T extends Annotation> boolean isAnnotationPresent( Class<T> annotation, List<? extends HasAnnotations>
             hasAnnotationsList ) {
@@ -116,9 +118,8 @@ public final class CreatorUtils {
      *
      * @param annotation the annotation
      * @param hasAnnotationsList the types
-     * @param <T> Type of the annotation
-     *
      * @return the first occurence of the annotation found on the types
+     * @param <T> a T object.
      */
     public static <T extends Annotation> Optional<T> getAnnotation( String annotation, List<? extends HasAnnotations>
             hasAnnotationsList ) {
@@ -135,9 +136,8 @@ public final class CreatorUtils {
      *
      * @param annotation the annotation
      * @param hasAnnotationsList the types
-     * @param <T> Type of the annotation
-     *
      * @return the first occurence of the annotation found on the types
+     * @param <T> a T object.
      */
     public static <T extends Annotation> Optional<T> getAnnotation( Class<T> annotation, List<? extends HasAnnotations>
             hasAnnotationsList ) {
@@ -159,7 +159,6 @@ public final class CreatorUtils {
      * </ul>
      *
      * @param type type to find the default value
-     *
      * @return the default value of the type.
      */
     public static String getDefaultValueForType( JType type ) {
@@ -171,8 +170,9 @@ public final class CreatorUtils {
     }
 
     /**
-     * @param type the type to test
+     * <p>isObject</p>
      *
+     * @param type the type to test
      * @return true if the type is {@link Object}, false otherwise
      */
     public static boolean isObject( JType type ) {
@@ -180,8 +180,9 @@ public final class CreatorUtils {
     }
 
     /**
-     * @param type the type to test
+     * <p>isSerializable</p>
      *
+     * @param type the type to test
      * @return true if the type is {@link Serializable}, false otherwise
      */
     public static boolean isSerializable( JType type ) {
@@ -189,14 +190,23 @@ public final class CreatorUtils {
     }
 
     /**
-     * @param type the type to test
+     * <p>isObjectOrSerializable</p>
      *
+     * @param type the type to test
      * @return true if the type is {@link Object} or {@link Serializable}, false otherwise
      */
     public static boolean isObjectOrSerializable( JType type ) {
         return isObject( type ) || isSerializable( type );
     }
 
+    /**
+     * <p>filterSubtypesForSerialization</p>
+     *
+     * @param logger a {@link com.google.gwt.core.ext.TreeLogger} object.
+     * @param configuration a {@link com.github.nmorel.gwtjackson.rebind.RebindConfiguration} object.
+     * @param type a {@link com.google.gwt.core.ext.typeinfo.JClassType} object.
+     * @return a {@link com.google.gwt.thirdparty.guava.common.collect.ImmutableList} object.
+     */
     public static ImmutableList<JClassType> filterSubtypesForSerialization( TreeLogger logger, RebindConfiguration configuration,
                                                                             JClassType type ) {
         boolean filterOnlySupportedType = isObjectOrSerializable( type );
@@ -215,6 +225,14 @@ public final class CreatorUtils {
         return builder.build();
     }
 
+    /**
+     * <p>filterSubtypesForDeserialization</p>
+     *
+     * @param logger a {@link com.google.gwt.core.ext.TreeLogger} object.
+     * @param configuration a {@link com.github.nmorel.gwtjackson.rebind.RebindConfiguration} object.
+     * @param type a {@link com.google.gwt.core.ext.typeinfo.JClassType} object.
+     * @return a {@link com.google.gwt.thirdparty.guava.common.collect.ImmutableList} object.
+     */
     public static ImmutableList<JClassType> filterSubtypesForDeserialization( TreeLogger logger, RebindConfiguration configuration,
                                                                               JClassType type ) {
         boolean filterOnlySupportedType = isObjectOrSerializable( type );
@@ -242,7 +260,6 @@ public final class CreatorUtils {
      * Escapes the {@link String} given in parameter
      *
      * @param value the {@link String}
-     *
      * @return the escaped {@link String}
      */
     public static String escapeString( String value ) {
@@ -250,8 +267,9 @@ public final class CreatorUtils {
     }
 
     /**
-     * @param mapperType the type to search inside
+     * <p>findFirstTypeToApplyPropertyAnnotation</p>
      *
+     * @param mapperType the type to search inside
      * @return the first bean type encountered
      */
     public static JClassType findFirstTypeToApplyPropertyAnnotation( JMapperType mapperType ) {

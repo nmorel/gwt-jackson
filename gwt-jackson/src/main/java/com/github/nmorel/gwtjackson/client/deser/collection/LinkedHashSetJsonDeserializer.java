@@ -24,15 +24,16 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializer;
  * Default {@link JsonDeserializer} implementation for {@link LinkedHashSet}.
  *
  * @param <T> Type of the elements inside the {@link LinkedHashSet}
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class LinkedHashSetJsonDeserializer<T> extends BaseSetJsonDeserializer<LinkedHashSet<T>, T> {
 
     /**
+     * <p>newInstance</p>
+     *
      * @param deserializer {@link JsonDeserializer} used to deserialize the objects inside the {@link LinkedHashSet}.
      * @param <T> Type of the elements inside the {@link LinkedHashSet}
-     *
      * @return a new instance of {@link LinkedHashSetJsonDeserializer}
      */
     public static <T> LinkedHashSetJsonDeserializer<T> newInstance( JsonDeserializer<T> deserializer ) {
@@ -46,6 +47,7 @@ public class LinkedHashSetJsonDeserializer<T> extends BaseSetJsonDeserializer<Li
         super( deserializer );
     }
 
+    /** {@inheritDoc} */
     @Override
     protected LinkedHashSet<T> newCollection() {
         return new LinkedHashSet<T>();

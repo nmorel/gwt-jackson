@@ -25,15 +25,16 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * Default {@link JsonSerializer} implementation for array.
  *
  * @param <T> Type of the elements inside the array
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class ArrayJsonSerializer<T> extends JsonSerializer<T[]> {
 
     /**
+     * <p>newInstance</p>
+     *
      * @param serializer {@link JsonSerializer} used to serialize the objects inside the array.
      * @param <T> Type of the elements inside the array
-     *
      * @return a new instance of {@link ArrayJsonSerializer}
      */
     public static <T> ArrayJsonSerializer<T> newInstance( JsonSerializer<T> serializer ) {
@@ -43,6 +44,8 @@ public class ArrayJsonSerializer<T> extends JsonSerializer<T[]> {
     private final JsonSerializer<T> serializer;
 
     /**
+     * <p>Constructor for ArrayJsonSerializer.</p>
+     *
      * @param serializer {@link JsonSerializer} used to serialize the objects inside the array.
      */
     protected ArrayJsonSerializer( JsonSerializer<T> serializer ) {
@@ -52,11 +55,13 @@ public class ArrayJsonSerializer<T> extends JsonSerializer<T[]> {
         this.serializer = serializer;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean isEmpty( T[] value ) {
         return null == value || value.length == 0;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void doSerialize( JsonWriter writer, T[] values, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         if ( !ctx.isWriteEmptyJsonArrays() && values.length == 0 ) {

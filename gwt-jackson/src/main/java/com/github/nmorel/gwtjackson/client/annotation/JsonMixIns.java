@@ -36,6 +36,7 @@ import com.github.nmorel.gwtjackson.client.ObjectWriter;
  * annotated mapper. If you can, prefer the definition of your mix-in annotation in an {@link AbstractConfiguration}.</p>
  *
  * @author Nicolas Morel.
+ * @version $Id: $
  */
 @Target( {ElementType.TYPE} )
 @Retention( RetentionPolicy.CLASS )
@@ -44,6 +45,8 @@ public @interface JsonMixIns {
 
     /**
      * List of {@link JsonMixIn} annotations
+     *
+     * @return an array of {@link com.github.nmorel.gwtjackson.client.annotation.JsonMixIns.JsonMixIn} objects.
      */
     public JsonMixIn[] value();
 
@@ -54,11 +57,15 @@ public @interface JsonMixIns {
 
         /**
          * Class targeted by the mix-in annotation
+         *
+         * @return the class
          */
         public Class<?> target();
 
         /**
          * Mix-in class
+         *
+         * @return the class
          */
         public Class<?> mixIn();
     }

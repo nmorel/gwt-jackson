@@ -26,12 +26,15 @@ import com.github.nmorel.gwtjackson.client.stream.JsonToken;
  * Default {@link JsonDeserializer} implementation for {@link Character}.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class CharacterJsonDeserializer extends JsonDeserializer<Character> {
 
     private static final CharacterJsonDeserializer INSTANCE = new CharacterJsonDeserializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link CharacterJsonDeserializer}
      */
     public static CharacterJsonDeserializer getInstance() {
@@ -40,6 +43,7 @@ public class CharacterJsonDeserializer extends JsonDeserializer<Character> {
 
     private CharacterJsonDeserializer() { }
 
+    /** {@inheritDoc} */
     @Override
     public Character doDeserialize( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
         if ( JsonToken.NUMBER.equals( reader.peek() ) ) {

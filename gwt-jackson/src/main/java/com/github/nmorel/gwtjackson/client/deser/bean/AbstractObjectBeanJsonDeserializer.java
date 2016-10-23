@@ -27,7 +27,10 @@ import com.github.nmorel.gwtjackson.client.deser.map.key.StringKeyDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 
 /**
+ * <p>Abstract AbstractObjectBeanJsonDeserializer class.</p>
+ *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 @SuppressWarnings("UnusedDeclaration")
 public abstract class AbstractObjectBeanJsonDeserializer extends AbstractBeanJsonDeserializer<Object> {
@@ -36,11 +39,13 @@ public abstract class AbstractObjectBeanJsonDeserializer extends AbstractBeanJso
 
     private LinkedHashMapJsonDeserializer<String, Object> mapJsonDeserializer;
 
+    /** {@inheritDoc} */
     @Override
     protected boolean canDeserialize() {
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Object deserializeWrapped( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params,
                                       IdentityDeserializationInfo identityInfo, TypeDeserializationInfo typeInfo, String typeInformation ) {

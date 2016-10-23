@@ -27,17 +27,18 @@ import com.github.nmorel.gwtjackson.client.deser.map.key.KeyDeserializer;
  *
  * @param <K> Type of the keys inside the {@link HashMap}
  * @param <V> Type of the values inside the {@link HashMap}
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class HashMapJsonDeserializer<K, V> extends BaseMapJsonDeserializer<HashMap<K, V>, K, V> {
 
     /**
+     * <p>newInstance</p>
+     *
      * @param keyDeserializer {@link KeyDeserializer} used to deserialize the keys.
      * @param valueDeserializer {@link JsonDeserializer} used to deserialize the values.
      * @param <K> Type of the keys inside the {@link HashMap}
      * @param <V> Type of the values inside the {@link HashMap}
-     *
      * @return a new instance of {@link HashMapJsonDeserializer}
      */
     public static <K, V> HashMapJsonDeserializer<K, V> newInstance( KeyDeserializer<K> keyDeserializer,
@@ -53,6 +54,7 @@ public final class HashMapJsonDeserializer<K, V> extends BaseMapJsonDeserializer
         super( keyDeserializer, valueDeserializer );
     }
 
+    /** {@inheritDoc} */
     @Override
     protected HashMap<K, V> newMap() {
         return new HashMap<K, V>();

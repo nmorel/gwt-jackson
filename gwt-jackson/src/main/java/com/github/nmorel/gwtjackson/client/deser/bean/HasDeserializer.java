@@ -22,11 +22,17 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializer;
  * Lazy initialize a {@link JsonDeserializer}
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class HasDeserializer<V, S extends JsonDeserializer<V>> {
 
     private S deserializer;
 
+    /**
+     * <p>Getter for the field <code>deserializer</code>.</p>
+     *
+     * @return a S object.
+     */
     public S getDeserializer() {
         if ( null == deserializer ) {
             deserializer = (S) newDeserializer();
@@ -34,5 +40,10 @@ public abstract class HasDeserializer<V, S extends JsonDeserializer<V>> {
         return deserializer;
     }
 
+    /**
+     * <p>newDeserializer</p>
+     *
+     * @return a {@link com.github.nmorel.gwtjackson.client.JsonDeserializer} object.
+     */
     protected abstract JsonDeserializer<?> newDeserializer();
 }

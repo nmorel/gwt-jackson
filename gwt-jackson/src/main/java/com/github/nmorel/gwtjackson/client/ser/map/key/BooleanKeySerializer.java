@@ -22,12 +22,15 @@ import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
  * Default {@link KeySerializer} implementation for {@link Boolean}.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public final class BooleanKeySerializer extends KeySerializer<Boolean> {
 
     private static final BooleanKeySerializer INSTANCE = new BooleanKeySerializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link BooleanKeySerializer}
      */
     @SuppressWarnings( "unchecked" )
@@ -37,11 +40,13 @@ public final class BooleanKeySerializer extends KeySerializer<Boolean> {
 
     private BooleanKeySerializer() { }
 
+    /** {@inheritDoc} */
     @Override
     public boolean mustBeEscaped( JsonSerializationContext ctx ) {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String doSerialize( Boolean value, JsonSerializationContext ctx ) {
         return value.toString();

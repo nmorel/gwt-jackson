@@ -25,12 +25,15 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * Default {@link JsonSerializer} implementation for array of float.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class PrimitiveFloatArrayJsonSerializer extends JsonSerializer<float[]> {
 
     private static final PrimitiveFloatArrayJsonSerializer INSTANCE = new PrimitiveFloatArrayJsonSerializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link PrimitiveFloatArrayJsonSerializer}
      */
     public static PrimitiveFloatArrayJsonSerializer getInstance() {
@@ -39,11 +42,13 @@ public class PrimitiveFloatArrayJsonSerializer extends JsonSerializer<float[]> {
 
     private PrimitiveFloatArrayJsonSerializer() { }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean isEmpty( float[] value ) {
         return null == value || value.length == 0;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void doSerialize( JsonWriter writer, float[] values, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         if ( !ctx.isWriteEmptyJsonArrays() && values.length == 0 ) {

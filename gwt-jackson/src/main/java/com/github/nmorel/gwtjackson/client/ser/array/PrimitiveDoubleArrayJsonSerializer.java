@@ -25,12 +25,15 @@ import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
  * Default {@link JsonSerializer} implementation for array of double.
  *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public class PrimitiveDoubleArrayJsonSerializer extends JsonSerializer<double[]> {
 
     private static final PrimitiveDoubleArrayJsonSerializer INSTANCE = new PrimitiveDoubleArrayJsonSerializer();
 
     /**
+     * <p>getInstance</p>
+     *
      * @return an instance of {@link PrimitiveDoubleArrayJsonSerializer}
      */
     public static PrimitiveDoubleArrayJsonSerializer getInstance() {
@@ -39,11 +42,13 @@ public class PrimitiveDoubleArrayJsonSerializer extends JsonSerializer<double[]>
 
     private PrimitiveDoubleArrayJsonSerializer() { }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean isEmpty( double[] value ) {
         return null == value || value.length == 0;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void doSerialize( JsonWriter writer, double[] values, JsonSerializationContext ctx, JsonSerializerParameters params ) {
         if ( !ctx.isWriteEmptyJsonArrays() && values.length == 0 ) {

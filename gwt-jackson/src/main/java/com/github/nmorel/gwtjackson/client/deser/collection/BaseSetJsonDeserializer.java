@@ -25,12 +25,14 @@ import com.github.nmorel.gwtjackson.client.JsonDeserializer;
  *
  * @param <S> {@link Set} type
  * @param <T> Type of the elements inside the {@link Set}
- *
  * @author Nicolas Morel
+ * @version $Id: $
  */
 public abstract class BaseSetJsonDeserializer<S extends Set<T>, T> extends BaseCollectionJsonDeserializer<S, T> {
 
     /**
+     * <p>Constructor for BaseSetJsonDeserializer.</p>
+     *
      * @param deserializer {@link JsonDeserializer} used to map the objects inside the {@link Set}.
      */
     public BaseSetJsonDeserializer( JsonDeserializer<T> deserializer ) {
