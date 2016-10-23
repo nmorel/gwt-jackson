@@ -59,28 +59,28 @@ public abstract class JsonSerializer<T> {
                     } else {
                         doSerialize( writer, value, ctx, params );
                     }
-                    break;
+                    return;
                 case NON_DEFAULT:
                     if ( isDefault( value ) ) {
                         writer.cancelName();
                     } else {
                         doSerialize( writer, value, ctx, params );
                     }
-                    break;
+                    return;
                 case NON_EMPTY:
                     if ( isEmpty( value ) ) {
                         writer.cancelName();
                     } else {
                         doSerialize( writer, value, ctx, params );
                     }
-                    break;
+                    return;
                 case NON_NULL:
                     if ( null == value ) {
                         writer.cancelName();
                     } else {
                         doSerialize( writer, value, ctx, params );
                     }
-                    break;
+                    return;
                 // TODO Add support for this value added in jackson 2.6. It also came with USE_DEFAULTS but don't know what it means
                 // case NON_ABSENT:
                 // if ( isAbsent( value ) ) {
@@ -90,7 +90,9 @@ public abstract class JsonSerializer<T> {
                 // }
                 // break;
             }
-        } else if ( null == value ) {
+        }
+
+        if ( null == value ) {
             if ( ctx.isSerializeNulls() ) {
                 serializeNullValue( writer, ctx, params );
             } else {

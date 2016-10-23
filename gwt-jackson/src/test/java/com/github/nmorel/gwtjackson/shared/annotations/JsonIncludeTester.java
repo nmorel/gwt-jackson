@@ -47,6 +47,9 @@ public final class JsonIncludeTester extends AbstractTester {
     @JsonInclude( value = Include.NON_NULL )
     public static interface MixInIncludeNonNull {}
 
+    @JsonInclude( value = Include.USE_DEFAULTS )
+    public static interface MixInIncludeUseDefaults {}
+
     public static class BeanJsonInclude {
 
         public String stringNull = null;
@@ -183,6 +186,33 @@ public final class JsonIncludeTester extends AbstractTester {
 
         String expected = "{\"mapNull\":null}";
         String result = writer.write( new BeanJsonIncludeOnProperties() );
+
+        assertEquals( expected, result );
+    }
+
+    public void testSerializeUseDefaults( ObjectWriterTester<BeanJsonInclude> writer ) {
+        String expected = "{" +
+                "\"stringNull\":null," +
+                "\"stringEmpty\":\"\"," +
+                "\"integerNull\":null," +
+                "\"integerZero\":0," +
+                "\"intDefault\":0," +
+                "\"bigIntegerNull\":null," +
+                "\"bigIntegerZero\":0," +
+                "\"bigDecimalNull\":null," +
+                "\"bigDecimalZero\":0," +
+                "\"listNull\":null," +
+                "\"listEmpty\":[]," +
+                "\"arrayNull\":null," +
+                "\"arrayEmpty\":[]," +
+                "\"mapNull\":null," +
+                "\"mapEmpty\":{}," +
+                "\"dateNull\":null," +
+                "\"dateEpoch\":0," +
+                "\"timestampNull\":null," +
+                "\"timestampEpoch\":0" +
+                "}";
+        String result = writer.write( new BeanJsonInclude() );
 
         assertEquals( expected, result );
     }

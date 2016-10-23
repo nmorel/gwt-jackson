@@ -28,6 +28,7 @@ import com.github.nmorel.gwtjackson.shared.annotations.JsonIncludeTester.MixInIn
 import com.github.nmorel.gwtjackson.shared.annotations.JsonIncludeTester.MixInIncludeNonDefault;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonIncludeTester.MixInIncludeNonEmpty;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonIncludeTester.MixInIncludeNonNull;
+import com.github.nmorel.gwtjackson.shared.annotations.JsonIncludeTester.MixInIncludeUseDefaults;
 import com.google.gwt.core.client.GWT;
 
 /**
@@ -84,6 +85,18 @@ public class JsonIncludeGwtTest extends GwtJacksonTestCase {
 
     public void testSerializeNonNull() {
         tester.testSerializeNonNull( BeanJsonIncludeNonNullMapper.INSTANCE );
+    }
+
+    /* ################################ */
+
+    @JsonMixIns( value = {@JsonMixIn( target = BeanJsonInclude.class, mixIn = MixInIncludeUseDefaults.class )} )
+    public interface BeanJsonIncludeUseDefaultsMapper extends ObjectWriter<BeanJsonInclude>, ObjectWriterTester<BeanJsonInclude> {
+
+        static BeanJsonIncludeUseDefaultsMapper INSTANCE = GWT.create( BeanJsonIncludeUseDefaultsMapper.class );
+    }
+
+    public void testSerializeUseDefaults() {
+        tester.testSerializeUseDefaults( BeanJsonIncludeUseDefaultsMapper.INSTANCE );
     }
 
     /* ################################ */
