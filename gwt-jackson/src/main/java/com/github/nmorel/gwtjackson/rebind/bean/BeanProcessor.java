@@ -273,12 +273,21 @@ public final class BeanProcessor {
                 // we want the property name define in the mixin and the parameter defined in the real creator method
                 ImmutableMap.Builder<String, JParameter> creatorParameters = ImmutableMap.builder();
                 for ( int i = 0; i < creatorMethod.get().getParameters().length; i++ ) {
-                    creatorParameters.put( creators.get( 0 ).getParameters()[i].getAnnotation( JsonProperty.class ).value(), creators
+                    creatorParameters.put( getParameterName( creators.get( 0 ).getParameters()[i] ), creators
                             .get( creators.size() - 1 ).getParameters()[i] );
                 }
                 builder.setCreatorParameters( creatorParameters.build() );
             }
         }
+    }
+
+    private static String getParameterName(JParameter parameter) {
+    	String propertyName = parameter.getAnnotation( JsonProperty.class ).value();
+    	if (propertyName.equals(JsonProperty.USE_DEFAULT_NAME)) {
+    		return parameter.getName();
+    	} else {
+    		return propertyName;
+    	}
     }
 
     private static <T extends Annotation> boolean isAllParametersAnnotatedWith( JAbstractMethod method, Class<T> annotation ) {
