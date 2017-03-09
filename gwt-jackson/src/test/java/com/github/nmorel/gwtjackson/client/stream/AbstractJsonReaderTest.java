@@ -23,6 +23,7 @@ import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException;
 import com.github.nmorel.gwtjackson.client.stream.impl.MalformedJsonException;
 import com.github.nmorel.gwtjackson.client.stream.impl.StringReader;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayMixed;
 import com.google.gwt.core.client.JsArrayString;
 
@@ -1813,6 +1814,19 @@ public abstract class AbstractJsonReaderTest extends GwtJacksonTestCase {
         assertEquals( "name", reader.nextName() );
         assertEquals( "wrapper", reader.nextString() );
 
+        reader.endObject();
+        assertEquals( JsonToken.END_DOCUMENT, reader.peek() );
+    }
+
+    public void testObjectWithInnerObjectWithNullValue() {
+        JsonReader reader = newJsonReader( "{\"a\": \"android\", \"b\": \"banana\", \"c\": {\"a\": 1, \"b\": null, \"c\": \"carrot\"}}" );
+        reader.beginObject();
+        assertEquals( "a", reader.nextName() );
+        assertEquals( "android", reader.nextString() );
+        assertEquals( "b", reader.nextName() );
+        assertEquals( "banana", reader.nextString() );
+        assertEquals( "c", reader.nextName() );
+        JavaScriptObject innerObj = reader.nextJavaScriptObject(true);
         reader.endObject();
         assertEquals( JsonToken.END_DOCUMENT, reader.peek() );
     }
