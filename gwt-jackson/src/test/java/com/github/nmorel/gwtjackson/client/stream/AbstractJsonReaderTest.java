@@ -23,6 +23,7 @@ import com.github.nmorel.gwtjackson.client.GwtJacksonTestCase;
 import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException;
 import com.github.nmorel.gwtjackson.client.stream.impl.MalformedJsonException;
 import com.github.nmorel.gwtjackson.client.stream.impl.StringReader;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayMixed;
 import com.google.gwt.core.client.JsArrayString;
 
@@ -1718,10 +1719,11 @@ public abstract class AbstractJsonReaderTest extends GwtJacksonTestCase {
 
     public void testNextJavaScriptObjectRootObject() {
         // safeEval
-        JsonReader reader = newJsonReader( "{\"firstName\":\"Bob\",\"lastName\":\"Morane\"}" );
+        JsonReader reader = newJsonReader( "{\"firstName\":\"Bob\",\"lastName\":\"Morane\",\"bio\":null}" );
         Person person = reader.nextJavaScriptObject( true ).cast();
         assertEquals( "Bob", person.getFirstName() );
         assertEquals( "Morane", person.getLastName() );
+        assertNull( person.getBio() );
         assertEquals( JsonToken.END_DOCUMENT, reader.peek() );
 
         // unsafeEval
@@ -1766,13 +1768,14 @@ public abstract class AbstractJsonReaderTest extends GwtJacksonTestCase {
         assertEquals( JsonToken.END_DOCUMENT, reader.peek() );
 
         // unsafeEval
-        reader = newJsonReader( "{\"jso\":{\"firstName\":\"Bob\",\"lastName\":\"Morane\"},\"name\":\"wrapper\"}" );
+        reader = newJsonReader( "{\"jso\":{\"firstName\":\"Bob\",\"lastName\":\"Morane\",\"bio\":null},\"name\":\"wrapper\"}" );
         reader.beginObject();
 
         assertEquals( "jso", reader.nextName() );
         person = reader.nextJavaScriptObject( false ).cast();
         assertEquals( "Bob", person.getFirstName() );
         assertEquals( "Morane", person.getLastName() );
+        assertNull( person.getBio() );
 
         assertEquals( "name", reader.nextName() );
         assertEquals( "wrapper", reader.nextString() );
@@ -1782,18 +1785,19 @@ public abstract class AbstractJsonReaderTest extends GwtJacksonTestCase {
 
     public void testNextJavaScriptObjectNoRootArray() {
         // safeEval
-        JsonReader reader = newJsonReader( "   {\"name\":\"wrapper\",\"jso\":    [\"Bob\",\"Morane\", true, 145] } " );
+        JsonReader reader = newJsonReader( "   {\"name\":\"wrapper\",\"jso\":    [\"Bob\",\"Morane\", true, null, 145] } " );
         reader.beginObject();
         assertEquals( "name", reader.nextName() );
         assertEquals( "wrapper", reader.nextString() );
 
         assertEquals( "jso", reader.nextName() );
         JsArrayMixed array = reader.nextJavaScriptObject( true ).cast();
-        assertEquals( 4, array.length() );
+        assertEquals( 5, array.length() );
         assertEquals( "Bob", array.getString( 0 ) );
         assertEquals( "Morane", array.getString( 1 ) );
         assertTrue( array.getBoolean( 2 ) );
-        assertEquals( 145d, array.getNumber( 3 ) );
+        assertNull( array.getObject( 3 ) );
+        assertEquals( 145d, array.getNumber( 4 ) );
 
         reader.endObject();
         assertEquals( JsonToken.END_DOCUMENT, reader.peek() );

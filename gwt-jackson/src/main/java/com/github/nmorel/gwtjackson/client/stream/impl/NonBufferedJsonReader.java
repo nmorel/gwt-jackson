@@ -1482,6 +1482,8 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
         writer.value( peekedLong );
       } else if (p == PEEKED_BUFFERED) {
         writer.value( peekedString );
+      } else if (p == PEEKED_NULL) {
+        writer.nullValue();
       }
       peeked = PEEKED_NONE;
     } while (count != 0);

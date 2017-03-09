@@ -40,4 +40,12 @@ public class Person extends JavaScriptObject {
     public final native void setLastName(String lastName) /*-{
         this.lastName = lastName;
     }-*/;
+
+    public final native String getBio() /*-{
+        return this.bio;
+    }-*/;
+
+    public final native void setBio(String bio) /*-{
+        this.bio = bio;
+    }-*/;
 }

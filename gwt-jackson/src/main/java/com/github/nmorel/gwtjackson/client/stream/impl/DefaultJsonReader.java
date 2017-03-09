@@ -1562,6 +1562,8 @@ public class DefaultJsonReader implements com.github.nmorel.gwtjackson.client.st
         writer.value( peekedLong );
       } else if (p == PEEKED_BUFFERED) {
         writer.value( peekedString );
+      } else if (p == PEEKED_NULL) {
+        writer.nullValue();
       }
       peeked = PEEKED_NONE;
     } while (count != 0);
