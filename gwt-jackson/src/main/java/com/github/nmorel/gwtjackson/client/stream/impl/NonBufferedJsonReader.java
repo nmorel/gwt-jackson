@@ -207,6 +207,9 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
   private final static BigInteger MIN_LONG_BIGINTEGER = new BigInteger("" + Long.MIN_VALUE);
   private final static BigInteger MAX_LONG_BIGINTEGER = new BigInteger("" + Long.MAX_VALUE);
 
+  private final static long MAX_SAFE_INTEGER = 9007199254740991L;
+  private final static long MIN_SAFE_INTEGER = -9007199254740991L;
+
   private static final int PEEKED_NONE = 0;
   private static final int PEEKED_BEGIN_OBJECT = 1;
   private static final int PEEKED_END_OBJECT = 2;
@@ -223,8 +226,6 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
   private static final int PEEKED_SINGLE_QUOTED_NAME = 12;
   private static final int PEEKED_DOUBLE_QUOTED_NAME = 13;
   private static final int PEEKED_UNQUOTED_NAME = 14;
-  /** When this is returned, the integer value is stored in peekedLong. */
-  private static final int PEEKED_LONG = 15;
   private static final int PEEKED_NUMBER = 16;
   private static final int PEEKED_EOF = 17;
 
@@ -251,12 +252,6 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
   private int lineStart = 0;
 
   private int peeked = PEEKED_NONE;
-
-  /**
-   * A peeked value that was composed entirely of digits with an optional
-   * leading dash. Positive values may not have a leading 0.
-   */
-  private long peekedLong;
 
   /**
    * The number of characters in a peeked number literal. Increment 'pos' by
@@ -452,7 +447,6 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
     case PEEKED_UNQUOTED:
     case PEEKED_BUFFERED:
       return JsonToken.STRING;
-    case PEEKED_LONG:
     case PEEKED_NUMBER:
       return JsonToken.NUMBER;
     case PEEKED_EOF:
@@ -652,9 +646,6 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
 
   private int peekNumber()
   {
-    long value = 0; // Negative to accommodate Long.MIN_VALUE more easily.
-    boolean negative = false;
-    boolean fitsInLong = true;
     int last = NUMBER_CHAR_NONE;
 
     int i = 0;
@@ -669,7 +660,6 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
       switch (c) {
       case '-':
         if (last == NUMBER_CHAR_NONE) {
-          negative = true;
           last = NUMBER_CHAR_SIGN;
           continue;
         } else if (last == NUMBER_CHAR_EXP_E) {
@@ -708,16 +698,10 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
           return PEEKED_NONE;
         }
         if (last == NUMBER_CHAR_SIGN || last == NUMBER_CHAR_NONE) {
-          value = -(c - '0');
           last = NUMBER_CHAR_DIGIT;
-        } else if (last == NUMBER_CHAR_DIGIT) {
-          if (value == 0) {
-            return PEEKED_NONE; // Leading '0' prefix is not allowed (since it could be octal).
-          }
-          long newValue = value * 10 - (c - '0');
-          fitsInLong &= value > MIN_INCOMPLETE_INTEGER
-              || (value == MIN_INCOMPLETE_INTEGER && newValue < value);
-          value = newValue;
+        } else if (last == NUMBER_CHAR_NONE && c == '0') {
+          // Leading '0' prefix is not allowed (since it could be octal).
+          return PEEKED_NONE;
         } else if (last == NUMBER_CHAR_DECIMAL) {
           last = NUMBER_CHAR_FRACTION_DIGIT;
         } else if (last == NUMBER_CHAR_EXP_E || last == NUMBER_CHAR_EXP_SIGN) {
@@ -726,12 +710,8 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
       }
     }
 
-    // We've read a complete number. Decide if it's a PEEKED_LONG or a PEEKED_NUMBER.
-    if (last == NUMBER_CHAR_DIGIT && fitsInLong && (value != Long.MIN_VALUE || negative)) {
-      peekedLong = negative ? value : -value;
-      pos += i;
-      return peeked = PEEKED_LONG;
-    } else if (last == NUMBER_CHAR_DIGIT || last == NUMBER_CHAR_FRACTION_DIGIT
+    // It's a number that's all we should care about at this stage
+    if (last == NUMBER_CHAR_DIGIT || last == NUMBER_CHAR_FRACTION_DIGIT
         || last == NUMBER_CHAR_EXP_DIGIT) {
       peekedNumberLength = i;
       return peeked = PEEKED_NUMBER;
@@ -807,8 +787,6 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
     } else if (p == PEEKED_BUFFERED) {
       result = peekedString;
       peekedString = null;
-    } else if (p == PEEKED_LONG) {
-      result = Long.toString( peekedLong );
     } else if (p == PEEKED_NUMBER) {
       result = in.substring( pos, pos + peekedNumberLength);
       pos += peekedNumberLength;
@@ -864,11 +842,6 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
       p = doPeek();
     }
 
-    if (p == PEEKED_LONG) {
-      peeked = PEEKED_NONE;
-      return (double) peekedLong;
-    }
-
     if (p == PEEKED_NUMBER) {
       peekedString = in.substring(pos, pos + peekedNumberLength);
       pos += peekedNumberLength;
@@ -882,13 +855,16 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
     }
 
     peeked = PEEKED_BUFFERED;
-    double result = Double.parseDouble( peekedString ); // don't catch this NumberFormatException.
-    if (!lenient && (Double.isNaN( result ) || Double.isInfinite( result ))) {
-      throw syntaxError( "JSON forbids NaN and infinities: " + result);
+    String oldPeeked = peekedString;
+    Number asNumber = nextNumber();
+    if (asNumber instanceof Long && (asNumber.longValue() > MAX_SAFE_INTEGER || asNumber.longValue() < MIN_SAFE_INTEGER)) {
+      // Do not advance the reader on failure
+      peeked = PEEKED_BUFFERED;
+      peekedString = oldPeeked;
+      throw new NumberFormatException("Integer is too big for a double " + asNumber
+            + " at line " + getLineNumber() + " column " + getColumnNumber());
     }
-    peekedString = null;
-    peeked = PEEKED_NONE;
-    return result;
+    return asNumber.doubleValue();
   }
 
   /** {@inheritDoc} */
@@ -898,11 +874,6 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
     int p = peeked;
     if (p == PEEKED_NONE) {
       p = doPeek();
-    }
-
-    if (p == PEEKED_LONG) {
-      peeked = PEEKED_NONE;
-      return peekedLong;
     }
 
     if (p == PEEKED_NUMBER) {
@@ -917,21 +888,25 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
       } catch (NumberFormatException ignored) {
         // Fall back to parse as a double below.
       }
-    } else {
+    } else if (p != PEEKED_BUFFERED) {
       throw new IllegalStateException("Expected a long but was " + peek()
           + " at line " + getLineNumber() + " column " + getColumnNumber());
     }
 
     peeked = PEEKED_BUFFERED;
-    double asDouble = Double.parseDouble( peekedString ); // don't catch this NumberFormatException.
-    long result = (long) asDouble;
-    if (result != asDouble) { // Make sure no precision was lost casting to 'long'.
-      throw new NumberFormatException("Expected a long but was " + peekedString
-          + " at line " + getLineNumber() + " column " + getColumnNumber());
+    String oldPeeked = peekedString;
+    Number asNumber = nextNumber();
+    boolean isDoubleALong = (asNumber instanceof Double)
+            && Math.rint(asNumber.doubleValue()) == asNumber.doubleValue();
+
+    if (!(asNumber instanceof Long) && !(asNumber instanceof Integer) && !isDoubleALong) {
+      // Do not advance the reader on failure
+      peeked = PEEKED_BUFFERED;
+      peekedString = oldPeeked;
+      throw new NumberFormatException("Expected a long but was " + asNumber
+              + " at line " + getLineNumber() + " column " + getColumnNumber());
     }
-    peekedString = null;
-    peeked = PEEKED_NONE;
-    return result;
+    return asNumber.longValue();
   }
 
   /**
@@ -1072,15 +1047,6 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
     }
 
     int result;
-    if (p == PEEKED_LONG) {
-      result = (int) peekedLong;
-      if (peekedLong != result) { // Make sure no precision was lost casting to 'int'.
-        throw new NumberFormatException("Expected an int but was " + peekedLong
-            + " at line " + getLineNumber() + " column " + getColumnNumber());
-      }
-      peeked = PEEKED_NONE;
-      return result;
-    }
 
     if (p == PEEKED_NUMBER) {
       peekedString = in.substring(pos, pos + peekedNumberLength);
@@ -1094,21 +1060,27 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
       } catch (NumberFormatException ignored) {
         // Fall back to parse as a double below.
       }
-    } else {
+    } else if (p != PEEKED_BUFFERED) {
       throw new IllegalStateException("Expected an int but was " + peek()
           + " at line " + getLineNumber() + " column " + getColumnNumber());
     }
 
     peeked = PEEKED_BUFFERED;
-    double asDouble = Double.parseDouble( peekedString ); // don't catch this NumberFormatException.
-    result = (int) asDouble;
-    if (result != asDouble) { // Make sure no precision was lost casting to 'int'.
-      throw new NumberFormatException("Expected an int but was " + peekedString
-          + " at line " + getLineNumber() + " column " + getColumnNumber());
+    String oldPeeked = peekedString;
+    Number asNumber = nextNumber();
+    boolean isDoubleAnInteger = (asNumber instanceof Double)
+            && Math.rint(asNumber.doubleValue()) == asNumber.doubleValue()
+            && asNumber.doubleValue() <= MAX_INT_L && asNumber.doubleValue() >= MIN_INT_L;
+
+    if (!(asNumber instanceof Integer) && !isDoubleAnInteger) {
+      // Do not advance the reader on failure
+      peeked = PEEKED_BUFFERED;
+      peekedString = oldPeeked;
+      throw new NumberFormatException("Expected an int but was " + asNumber
+              + " at line " + getLineNumber() + " column " + getColumnNumber());
     }
-    peekedString = null;
-    peeked = PEEKED_NONE;
-    return result;
+
+    return asNumber.intValue();
   }
 
   /** {@inheritDoc} */
@@ -1472,14 +1444,14 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
       } else if (p == PEEKED_DOUBLE_QUOTED) {
         writer.value(nextQuotedValue( '"' ));
       } else if (p == PEEKED_NUMBER) {
-        writer.value( in.substring( pos, pos + peekedNumberLength) );
+        // Just leave number as a string - rawValue prevents it from being escaped
+        peekedString = in.substring(pos, pos + peekedNumberLength);
+        writer.rawValue(peekedString);
         pos += peekedNumberLength;
       } else if (p == PEEKED_TRUE) {
         writer.value( true );
       } else if (p == PEEKED_FALSE) {
         writer.value( false );
-      } else if (p == PEEKED_LONG) {
-        writer.value( peekedLong );
       } else if (p == PEEKED_BUFFERED) {
         writer.value( peekedString );
       } else if (p == PEEKED_NULL) {
@@ -1505,32 +1477,11 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
     }
 
     Number result;
-    if (p == PEEKED_LONG) {
-      if (peekedLong < 0l) {
-        if (peekedLong >= MIN_INT_L) {
-           result = (int) peekedLong;
-        } else {
-            result = peekedLong;
-        }
-      } else {
-        if (peekedLong <= MAX_INT_L) {
-          result = (int) peekedLong;
-        } else {
-          result = peekedLong;
-        }
-      }
-      peeked = PEEKED_NONE;
-      return result;
-    }
 
     if (p == PEEKED_NUMBER) {
       peekedString = in.substring(pos, pos + peekedNumberLength);
       pos += peekedNumberLength;
-      peeked = PEEKED_BUFFERED;
-      result = Double.parseDouble( peekedString );
-      peekedString = null;
-      peeked = PEEKED_NONE;
-      return result;
+      p = PEEKED_BUFFERED;
     }
 
     if (p == PEEKED_SINGLE_QUOTED || p == PEEKED_DOUBLE_QUOTED) {
@@ -1543,7 +1494,13 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
     }
 
     peeked = PEEKED_BUFFERED;
-    if (peekedString.contains( "." )) {
+    if (peekedString.equalsIgnoreCase("NAN") || peekedString.equalsIgnoreCase("INFINITY") || peekedString.equalsIgnoreCase("-INFINITY")) {
+      if (lenient) {
+        result = Double.parseDouble(peekedString);
+      } else {
+        throw syntaxError( "JSON forbids NaN and infinities: " + peekedString);
+      }
+    } else if (peekedString.contains( "." )) {
       // decimal
       double resultDouble = Double.parseDouble( peekedString ); // don't catch this NumberFormatException.
       if (!lenient && (Double.isNaN( resultDouble ) || Double.isInfinite( resultDouble ))) {
@@ -1556,20 +1513,8 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
         result = Integer.parseInt( peekedString );
       } else if (length <= 18) { // fits in long and potentially int
         long longResult = Long.parseLong( peekedString );
-        if(length == 10) { // can fits in int
-          if (longResult < 0l) {
-            if (longResult >= MIN_INT_L) {
-             result = (int) longResult;
-            } else {
-             result = longResult;
-            }
-          } else {
-            if (longResult <= MAX_INT_L) {
-              result = (int) longResult;
-            } else {
-              result = longResult;
-            }
-          }
+        if (longResult >= MIN_INT_L && longResult <= MAX_INT_L) {
+          result = (int) longResult;
         } else {
           result = longResult;
         }
