@@ -141,6 +141,12 @@
       <artifactId>gwt-dev</artifactId>
     </dependency>
 
+    <!-- javax.annotations -->
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+    </dependency>
+
     <!-- Jackson annotation dependencies -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>

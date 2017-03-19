@@ -93,6 +93,7 @@
     <jackson.version>2.8.4</jackson.version>
     <javapoet.version>1.0.0</javapoet.version>
     <junit.version>4.12</junit.version>
+    <findbugs.version>3.0.0</findbugs.version>
   </properties>
 
   <dependencyManagement>
@@ -109,6 +110,13 @@
         <artifactId>gwt-dev</artifactId>
         <version>${gwt.version}</version>
         <scope>provided</scope>
+      </dependency>
+
+      <!-- javax.annotations -->
+      <dependency>
+	<groupId>com.google.code.findbugs</groupId>
+	<artifactId>jsr305</artifactId>
+	<version>${findbugs.version}</version>
       </dependency>
 
       <!-- Jackson dependencies -->
