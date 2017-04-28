@@ -360,7 +360,8 @@ public final class RebindConfiguration {
     private JClassType findClassType( Class<?> clazz ) {
         JClassType mapperType = context.getTypeOracle().findType( clazz.getCanonicalName() );
         if ( null == mapperType ) {
-            logger.log( Type.WARN, "Cannot find the type denoted by the class " + clazz.getCanonicalName() );
+            logger.log( Type.WARN, "Cannot find the type denoted by the class " + clazz.getCanonicalName()
+                       + " or GWT compilation of that class failed. In the latter case, compile with -failOnError to discover the real error." );
             return null;
         }
         return mapperType;
