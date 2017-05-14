@@ -16,6 +16,9 @@
 
 package com.github.nmorel.gwtjackson.shared.mapper;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.github.nmorel.gwtjackson.shared.AbstractTester;
 import com.github.nmorel.gwtjackson.shared.ObjectMapperTester;
@@ -27,10 +30,13 @@ import com.github.nmorel.gwtjackson.shared.ObjectWriterTester;
  */
 public final class PropertyNamingTester extends AbstractTester {
 
-    @JsonPropertyOrder(alphabetic = true)
+    @JsonPropertyOrder( alphabetic = true )
     public static class PropertyNamingBean {
+
         private String simpleName;
-        private String HTML;
+
+        private List<String> HTML;
+
         private String HTMLParser;
 
         public String getSimpleName() {
@@ -41,12 +47,16 @@ public final class PropertyNamingTester extends AbstractTester {
             this.simpleName = simpleName;
         }
 
-        public String getHTML() {
+        public List<String> getHTML() {
             return HTML;
         }
 
-        public void setHTML( String HTML ) {
+        public void setHTML( List<String> HTML ) {
             this.HTML = HTML;
+        }
+
+        public List<String> getHTML( String filter ) {
+            return HTML;
         }
 
         public String getHTMLParser() {
@@ -68,15 +78,15 @@ public final class PropertyNamingTester extends AbstractTester {
 
         PropertyNamingBean bean = new PropertyNamingBean();
         bean.setSimpleName( "simple" );
-        bean.setHTML( "html" );
+        bean.setHTML( Arrays.asList("html") );
         bean.setHTMLParser( "htmlparser" );
 
         String json = mapper.write( bean );
-        assertEquals( "{\"html\":\"html\",\"htmlparser\":\"htmlparser\",\"simpleName\":\"simple\"}", json );
+        assertEquals( "{\"html\":[\"html\"],\"htmlparser\":\"htmlparser\",\"simpleName\":\"simple\"}", json );
 
         bean = mapper.read( json );
         assertEquals( "simple", bean.getSimpleName() );
-        assertEquals( "html", bean.getHTML() );
+        assertEquals( Arrays.asList("html"), bean.getHTML() );
         assertEquals( "htmlparser", bean.getHTMLParser() );
     }
 }

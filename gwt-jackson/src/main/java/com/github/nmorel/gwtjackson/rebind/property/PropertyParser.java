@@ -145,7 +145,7 @@ public final class PropertyParser {
 
             if ( method.getParameters().length == 0 ) {
                 // might be a getter
-                String fieldName = extractFieldNameFromGetterSetterMethodName( method.getName() );
+                String fieldName = extractFieldNameFromGetterSetterMethodName( method.getName(), true );
                 PropertyAccessorsBuilder property = propertiesMap.get( fieldName );
                 if ( null == property ) {
                     property = new PropertyAccessorsBuilder( fieldName );
@@ -154,7 +154,7 @@ public final class PropertyParser {
                 property.addGetter( method, mixin );
             } else if ( method.getParameters().length == 1 || (method.getParameters().length == 2 && method.isAnnotationPresent( JsonAnySetter.class )) ) {
                 // might be a setter
-                String fieldName = extractFieldNameFromGetterSetterMethodName( method.getName() );
+                String fieldName = extractFieldNameFromGetterSetterMethodName( method.getName(), false );
                 PropertyAccessorsBuilder property = propertiesMap.get( fieldName );
                 if ( null == property ) {
                     property = new PropertyAccessorsBuilder( fieldName );
@@ -165,11 +165,11 @@ public final class PropertyParser {
         }
     }
 
-    private static String extractFieldNameFromGetterSetterMethodName( String methodName ) {
+    private static String extractFieldNameFromGetterSetterMethodName( String methodName, boolean getter ) {
         String fieldName;
-        if ( methodName.startsWith( "is" ) && methodName.length() > 2 ) {
+        if ( getter && methodName.startsWith( "is" ) && methodName.length() > 2 ) {
             fieldName = methodName.substring( 2 );
-        } else if ( (methodName.startsWith( "get" ) || methodName.startsWith( "set" )) && methodName.length() > 3 ) {
+        } else if ( ((getter && methodName.startsWith( "get" )) || (!getter && methodName.startsWith( "set" ))) && methodName.length() > 3 ) {
             fieldName = methodName.substring( 3 );
         } else {
             fieldName = methodName;
