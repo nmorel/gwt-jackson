@@ -22,4 +22,6 @@
   <extend-configuration-property name="gwtjackson.configuration.extension"
                                  value="com.github.nmorel.gwtjackson.client.TestConfiguration" />
 
+  <super-source path="super" />
+
 </module>

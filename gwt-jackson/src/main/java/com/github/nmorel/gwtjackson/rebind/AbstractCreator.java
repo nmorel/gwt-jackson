@@ -19,6 +19,8 @@ package com.github.nmorel.gwtjackson.rebind;
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.annotation.Annotation;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -263,7 +265,22 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             }
         }
 
-        Optional<MapperInstance> configuredSerializer = configuration.getSerializer( type );
+        Optional<MapperInstance> configuredSerializer = Optional.absent();
+
+        Optional<Annotation> jsonDeserialize = type.isClassOrInterface() == null ? Optional.<Annotation>absent() :
+                CreatorUtils.getAnnotation( "com.fasterxml.jackson.databind.annotation.JsonSerialize",
+                        Arrays.asList( type.isClassOrInterface() ) );
+        if ( jsonDeserialize.isPresent() ) {
+            Optional<JClassType> builderClass = typeOracle.getClassFromJsonDeserializeAnnotation( logger, jsonDeserialize.get(), "using" );
+            if ( builderClass.isPresent() ) {
+                configuredSerializer = Optional.of( configuration.getInstance( type, builderClass.get(), true ) );
+            }
+        }
+
+        if ( !configuredSerializer.isPresent() ) {
+            configuredSerializer = configuration.getSerializer( type );
+        }
+
         if ( configuredSerializer.isPresent() ) {
             // The type is configured in AbstractConfiguration.
             if ( null != type.isParameterized() || null != type.isGenericType() ) {
@@ -517,7 +534,22 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
             throw new UnsupportedTypeException( message );
         }
 
-        Optional<MapperInstance> configuredDeserializer = configuration.getDeserializer( type );
+        Optional<MapperInstance> configuredDeserializer = Optional.absent();
+
+        Optional<Annotation> jsonDeserialize = type.isClassOrInterface() == null ? Optional.<Annotation>absent() :
+                CreatorUtils.getAnnotation( "com.fasterxml.jackson.databind.annotation.JsonDeserialize",
+                        Arrays.asList( type.isClassOrInterface() ) );
+        if ( jsonDeserialize.isPresent() ) {
+            Optional<JClassType> builderClass = typeOracle.getClassFromJsonDeserializeAnnotation( logger, jsonDeserialize.get(), "using" );
+            if ( builderClass.isPresent() ) {
+                configuredDeserializer = Optional.of( configuration.getInstance( type, builderClass.get(), false ) );
+            }
+        }
+
+        if ( !configuredDeserializer.isPresent() ) {
+            configuredDeserializer = configuration.getDeserializer( type );
+        }
+
         if ( configuredDeserializer.isPresent() ) {
             // The type is configured in AbstractConfiguration.
             if ( null != type.isParameterized() || null != type.isGenericType() ) {

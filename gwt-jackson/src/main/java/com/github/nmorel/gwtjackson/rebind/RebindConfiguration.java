@@ -370,7 +370,7 @@ public final class RebindConfiguration {
     /**
      * Search a static method or constructor to instantiate the mapper and return a {@link String} calling it.
      */
-    private MapperInstance getInstance( JType mappedType, JClassType classType, boolean isSerializers ) throws UnableToCompleteException {
+    public MapperInstance getInstance( JType mappedType, JClassType classType, boolean isSerializers ) throws UnableToCompleteException {
         int nbParam = 0;
         if ( null != mappedType.isGenericType() && (!isSerializers || !typeOracle.isEnumSupertype( mappedType )) ) {
             nbParam = mappedType.isGenericType().getTypeParameters().length;

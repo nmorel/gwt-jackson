@@ -45,6 +45,7 @@ import com.github.nmorel.gwtjackson.client.annotation.JsonAnyGetterSetterGwtTest
 import com.github.nmorel.gwtjackson.client.annotation.JsonAutoDetectGwtTest;
 import com.github.nmorel.gwtjackson.client.annotation.JsonCreatorGwtTest;
 import com.github.nmorel.gwtjackson.client.annotation.JsonDeserializeBuilderGwtTest;
+import com.github.nmorel.gwtjackson.client.annotation.JsonDeserializeUsingGwtTest;
 import com.github.nmorel.gwtjackson.client.annotation.JsonFormatGwtTest;
 import com.github.nmorel.gwtjackson.client.annotation.JsonIgnoreGwtTest;
 import com.github.nmorel.gwtjackson.client.annotation.JsonIgnoreTypeGwtTest;
@@ -53,6 +54,7 @@ import com.github.nmorel.gwtjackson.client.annotation.JsonManagedAndBackReferenc
 import com.github.nmorel.gwtjackson.client.annotation.JsonPropertyOrderGwtTest;
 import com.github.nmorel.gwtjackson.client.annotation.JsonRawValueGwtTest;
 import com.github.nmorel.gwtjackson.client.annotation.JsonRootNameGwtTest;
+import com.github.nmorel.gwtjackson.client.annotation.JsonSerializeUsingGwtTest;
 import com.github.nmorel.gwtjackson.client.annotation.JsonUnwrappedGwtTest;
 import com.github.nmorel.gwtjackson.client.deser.BooleanJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.CharacterJsonDeserializerTest;
@@ -301,6 +303,8 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( JsonUnwrappedGwtTest.class );
         suite.addTestSuite( JsonIncludeGwtTest.class );
         suite.addTestSuite( JsonDeserializeBuilderGwtTest.class );
+        suite.addTestSuite( JsonDeserializeUsingGwtTest.class );
+        suite.addTestSuite( JsonSerializeUsingGwtTest.class );
 
         // Advanced use cases
         suite.addTestSuite( ProxyAndAnonymousClassSerializationGwtTest.class );
@@ -333,7 +337,7 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( ObjectIdWithPolymorphicGwtTest.class );
         suite.addTestSuite( ObjectIdWithEqualsGwtTest.class );
         suite.addTestSuite( ObjectIdBackReferenceGwtTest.class);
-        
+
         // Options
         suite.addTestSuite( IndentGwtTest.class );
         suite.addTestSuite( DateOptionsGwtTest.class );

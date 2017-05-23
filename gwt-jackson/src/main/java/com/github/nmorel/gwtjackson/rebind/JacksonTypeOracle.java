@@ -368,7 +368,7 @@ public class JacksonTypeOracle {
                 return Optional.fromNullable( getType( asClass.getCanonicalName() ) );
             }
         } catch ( Exception e ) {
-            logger.log( Type.ERROR, "Cannot find method " + name + " on JsonDeserialize annotation", e );
+            logger.log( Type.INFO, "Cannot find method " + name + " on JsonDeserialize annotation", e );
         }
         return Optional.absent();
     }

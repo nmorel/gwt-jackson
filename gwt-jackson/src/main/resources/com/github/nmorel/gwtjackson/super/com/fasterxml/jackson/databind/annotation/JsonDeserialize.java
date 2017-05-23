@@ -29,9 +29,6 @@ import java.lang.annotation.Target;
 @com.fasterxml.jackson.annotation.JacksonAnnotation
 public @interface JsonDeserialize {
     /**
-     * <b>NOTE: </b>This is not yet used in GwtJackson. It is here
-     * to avoid GWT compilation errors when using annotated shared classes.
-     * <p>
      * Deserializer class to use for deserializing associated value.
      * Depending on what is annotated,
      * value is either an instance of annotated class (used globablly
