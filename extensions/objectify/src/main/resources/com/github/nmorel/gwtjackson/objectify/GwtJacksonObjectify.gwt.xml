@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<module>
+  <inherits name="com.github.nmorel.gwtjackson.GwtJackson" />
+
+  <extend-configuration-property name="gwtjackson.configuration.extension"
+                                 value="com.github.nmorel.gwtjackson.objectify.rebind.ObjectifyConfiguration" />
+
+  <source path="client" />
+  <source path="shared" />
+  <super-source path="super" />
+</module>
