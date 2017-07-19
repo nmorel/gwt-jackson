@@ -57,6 +57,7 @@ import com.github.nmorel.gwtjackson.client.annotation.JsonUnwrappedGwtTest;
 import com.github.nmorel.gwtjackson.client.deser.BooleanJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.CharacterJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.EnumJsonDeserializerTest;
+import com.github.nmorel.gwtjackson.client.deser.EnumWithAnnotationDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.StringJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.UUIDJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.VoidJsonDeserializerTest;
@@ -241,6 +242,7 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( DateJsonDeserializerTest.class );
         suite.addTestSuite( DoubleJsonDeserializerTest.class );
         suite.addTestSuite( EnumJsonDeserializerTest.class );
+        suite.addTestSuite( EnumWithAnnotationDeserializerTest.class );
         suite.addTestSuite( FloatJsonDeserializerTest.class );
         suite.addTestSuite( IntegerJsonDeserializerTest.class );
         suite.addTestSuite( IterableJsonDeserializerTest.class );
