@@ -385,7 +385,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      * @return the {@link JSerializerType}.
      * @throws com.github.nmorel.gwtjackson.rebind.exception.UnsupportedTypeException if any.
      */
-    protected final JSerializerType getKeySerializerFromType( JType type ) throws UnsupportedTypeException {
+    protected final JSerializerType getKeySerializerFromType( JType type ) throws UnsupportedTypeException, UnableToCompleteException {
         return getKeySerializerFromType( type, false, false );
     }
 
@@ -399,7 +399,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      * @throws com.github.nmorel.gwtjackson.rebind.exception.UnsupportedTypeException if any.
      */
     protected final JSerializerType getKeySerializerFromType( JType type, boolean subtype, boolean useDefault ) throws
-            UnsupportedTypeException {
+            UnsupportedTypeException, UnableToCompleteException {
         JSerializerType.Builder builder = new JSerializerType.Builder().type( type );
         if ( null != type.isWildcard() ) {
             // For wildcard type, we use the base type to find the serializer.
@@ -429,7 +429,36 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
         Optional<MapperInstance> keySerializer = configuration.getKeySerializer( type );
         if ( keySerializer.isPresent() ) {
-            builder.instance( methodCallCode( keySerializer.get() ) );
+            // The type is configured in AbstractConfiguration.
+            if ( null != type.isParameterized() || null != type.isGenericType() ) {
+                JClassType[] typeArgs;
+                if ( null != type.isGenericType() ) {
+                    typeArgs = type.isGenericType().asParameterizedByWildcards().getTypeArgs();
+                } else {
+                    typeArgs = type.isParameterized().getTypeArgs();
+                }
+
+                ImmutableList.Builder<JSerializerType> parametersSerializerBuilder = ImmutableList.builder();
+                for ( int i = 0; i < typeArgs.length; i++ ) {
+                    JSerializerType parameterSerializerType;
+                    if ( keySerializer.get().getParameters().length <= i ) {
+                        break;
+                    }
+                    if ( MapperType.KEY_SERIALIZER == keySerializer.get().getParameters()[i] ) {
+                        parameterSerializerType = getKeySerializerFromType( typeArgs[i] );
+                    } else {
+                        parameterSerializerType = getJsonSerializerFromType( typeArgs[i], subtype );
+                    }
+                    parametersSerializerBuilder.add( parameterSerializerType );
+                }
+                ImmutableList<JSerializerType> parametersSerializer = parametersSerializerBuilder.build();
+                builder.parameters( parametersSerializer );
+                builder.instance( methodCallCodeWithJMapperTypeParameters( keySerializer.get(), parametersSerializer ) );
+
+            } else {
+                // The serializer has no parameters.
+                builder.instance( methodCallCode( keySerializer.get() ) );
+            }
             return builder.build();
         }
 
@@ -662,7 +691,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      * @return the {@link JDeserializerType}.
      * @throws com.github.nmorel.gwtjackson.rebind.exception.UnsupportedTypeException if any.
      */
-    protected final JDeserializerType getKeyDeserializerFromType( JType type ) throws UnsupportedTypeException {
+    protected final JDeserializerType getKeyDeserializerFromType( JType type ) throws UnsupportedTypeException, UnableToCompleteException {
         return getKeyDeserializerFromType( type, false, false );
     }
 
@@ -676,7 +705,7 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
      * @throws com.github.nmorel.gwtjackson.rebind.exception.UnsupportedTypeException if any.
      */
     protected final JDeserializerType getKeyDeserializerFromType( JType type, boolean subtype, boolean useDefault ) throws
-            UnsupportedTypeException {
+            UnsupportedTypeException, UnableToCompleteException {
         JDeserializerType.Builder builder = new JDeserializerType.Builder().type( type );
         if ( null != type.isWildcard() ) {
             // For wildcard type, we use the base type to find the deserializer.
@@ -712,7 +741,33 @@ public abstract class AbstractCreator extends AbstractSourceCreator {
 
         Optional<MapperInstance> keyDeserializer = configuration.getKeyDeserializer( type );
         if ( keyDeserializer.isPresent() ) {
-            builder.instance( methodCallCode( keyDeserializer.get() ) );
+            // The type is configured in AbstractConfiguration.
+            if ( null != type.isParameterized() || null != type.isGenericType() ) {
+                JClassType[] typeArgs;
+                if ( null != type.isGenericType() ) {
+                    typeArgs = type.isGenericType().asParameterizedByWildcards().getTypeArgs();
+                } else {
+                    typeArgs = type.isParameterized().getTypeArgs();
+                }
+
+                ImmutableList.Builder<JDeserializerType> parametersDeserializerBuilder = ImmutableList.builder();
+                for ( int i = 0; i < typeArgs.length; i++ ) {
+                    JDeserializerType parameterDeserializerType;
+                    if ( MapperType.KEY_DESERIALIZER == keyDeserializer.get().getParameters()[i] ) {
+                        parameterDeserializerType = getKeyDeserializerFromType( typeArgs[i] );
+                    } else {
+                        parameterDeserializerType = getJsonDeserializerFromType( typeArgs[i], subtype );
+                    }
+                    parametersDeserializerBuilder.add( parameterDeserializerType );
+                }
+                ImmutableList<JDeserializerType> parametersDeserializer = parametersDeserializerBuilder.build();
+                builder.parameters( parametersDeserializer );
+                builder.instance( methodCallCodeWithJMapperTypeParameters( keyDeserializer.get(), parametersDeserializer ) );
+
+            } else {
+                // The deserializer has no parameters.
+                builder.instance( methodCallCode( keyDeserializer.get() ) );
+            }
             return builder.build();
         }
 
