@@ -9,13 +9,7 @@ import com.googlecode.objectify.Ref;
 public class RefKeySerializer<T> extends KeySerializer<Ref<T>> {
 
     public static <T> RefKeySerializer<T> newInstance( JsonSerializer<T> serializer ) {
-        // It never comes here!
         return new RefKeySerializer<>( serializer );
-    }
-
-    public static RefKeySerializer getInstance() {
-        // It comes here but it shouldn't! It should use #newInstance
-        return new RefKeySerializer<>( null );
     }
 
     private final JsonSerializer<T> serializer;
