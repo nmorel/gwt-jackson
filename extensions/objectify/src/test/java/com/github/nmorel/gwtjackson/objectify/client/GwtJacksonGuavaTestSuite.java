@@ -13,6 +13,7 @@ public class GwtJacksonGuavaTestSuite extends TestCase {
         suite.addTestSuite( KeyTestCase.class );
         suite.addTestSuite( KeyKeyTestCase.class );
         suite.addTestSuite( RefTestCase.class );
+        suite.addTestSuite( RefKeyTestCase.class );
         suite.addTestSuite( BeanTestCase.class );
         suite.addTestSuite( BeanRefTestCase.class );
         return suite;

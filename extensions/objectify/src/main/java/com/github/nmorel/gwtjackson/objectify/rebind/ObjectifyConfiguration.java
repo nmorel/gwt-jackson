@@ -11,6 +11,8 @@ import com.github.nmorel.gwtjackson.objectify.client.RawKeyKeyDeserializer;
 import com.github.nmorel.gwtjackson.objectify.client.RawKeyKeySerializer;
 import com.github.nmorel.gwtjackson.objectify.client.RefJsonDeserializer;
 import com.github.nmorel.gwtjackson.objectify.client.RefJsonSerializer;
+import com.github.nmorel.gwtjackson.objectify.client.RefKeyDeserializer;
+import com.github.nmorel.gwtjackson.objectify.client.RefKeySerializer;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Ref;
 
@@ -27,5 +29,7 @@ public class ObjectifyConfiguration extends AbstractConfiguration {
                 .deserializer( RawKeyKeyDeserializer.class );
         key( Key.class ).serializer( KeyKeySerializer.class )
                 .deserializer( KeyKeyDeserializer.class );
+        key( Ref.class ).serializer( RefKeySerializer.class )
+                .deserializer( RefKeyDeserializer.class );
     }
 }
