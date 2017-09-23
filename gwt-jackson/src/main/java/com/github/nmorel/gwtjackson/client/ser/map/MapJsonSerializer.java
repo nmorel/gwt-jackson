@@ -112,7 +112,7 @@ public class MapJsonSerializer<M extends Map<K, V>, K, V> extends JsonSerializer
                     } else {
                         writer.unescapeName( name );
                     }
-                    valueSerializer.serialize( writer, entry.getValue(), ctx, params );
+                    valueSerializer.serialize( writer, entry.getValue(), ctx, params, true );
                 }
 
             } else {
@@ -125,7 +125,7 @@ public class MapJsonSerializer<M extends Map<K, V>, K, V> extends JsonSerializer
                         } else {
                             writer.unescapeName( name );
                         }
-                        valueSerializer.serialize( writer, entry.getValue(), ctx, params );
+                        valueSerializer.serialize( writer, entry.getValue(), ctx, params, true );
                     }
                 }
 

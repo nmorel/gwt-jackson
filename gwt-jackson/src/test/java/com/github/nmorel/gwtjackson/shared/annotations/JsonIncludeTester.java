@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -85,6 +86,8 @@ public final class JsonIncludeTester extends AbstractTester {
 
         public Map<String, String> mapEmpty = new HashMap<String, String>();
 
+        public Map<String, String> mapNullValue = Collections.singletonMap( "key" , null );
+
         public Date dateNull = null;
 
         public Date dateEpoch = new Date( 0l );
@@ -135,6 +138,7 @@ public final class JsonIncludeTester extends AbstractTester {
                 "\"arrayEmpty\":[]," +
                 "\"mapNull\":null," +
                 "\"mapEmpty\":{}," +
+                "\"mapNullValue\":{\"key\":null}," +
                 "\"dateNull\":null," +
                 "\"dateEpoch\":0," +
                 "\"timestampNull\":null," +
@@ -163,6 +167,7 @@ public final class JsonIncludeTester extends AbstractTester {
                 "\"arrayEmpty\":[]," +
                 "\"mapNull\":null," +
                 "\"mapEmpty\":{}," +
+                "\"mapNullValue\":{\"key\":null}," +
                 "\"dateNull\":null," +
                 "\"dateEpoch\":0," +
                 "\"timestampNull\":null," +
@@ -175,7 +180,7 @@ public final class JsonIncludeTester extends AbstractTester {
 
     public void testSerializeNonDefault( ObjectWriterTester<BeanJsonInclude> writer ) {
 
-        String expected = "{}";
+        String expected = "{\"mapNullValue\":{\"key\":null}}";
         String result = writer.write( new BeanJsonInclude() );
 
         assertEquals( expected, result );
@@ -187,7 +192,8 @@ public final class JsonIncludeTester extends AbstractTester {
                 "\"integerZero\":0," +
                 "\"intDefault\":0," +
                 "\"bigIntegerZero\":0," +
-                "\"bigDecimalZero\":0" +
+                "\"bigDecimalZero\":0," +
+                "\"mapNullValue\":{\"key\":null}" +
                 "}";
         String result = writer.write( new BeanJsonInclude() );
 
@@ -205,6 +211,7 @@ public final class JsonIncludeTester extends AbstractTester {
                 "\"listEmpty\":[]," +
                 "\"arrayEmpty\":[]," +
                 "\"mapEmpty\":{}," +
+                "\"mapNullValue\":{\"key\":null}," +
                 "\"dateEpoch\":0," +
                 "\"timestampEpoch\":0" +
                 "}";
@@ -223,6 +230,7 @@ public final class JsonIncludeTester extends AbstractTester {
                 "\"listEmpty\":[]," +
                 "\"arrayEmpty\":[]," +
                 "\"mapEmpty\":{}," +
+                "\"mapNullValue\":{\"key\":null}," +
                 "\"dateEpoch\":0," +
                 "\"timestampEpoch\":0" +
                 "}";
@@ -248,6 +256,7 @@ public final class JsonIncludeTester extends AbstractTester {
                 "\"arrayEmpty\":[]," +
                 "\"mapNull\":null," +
                 "\"mapEmpty\":{}," +
+                "\"mapNullValue\":{\"key\":null}," +
                 "\"dateNull\":null," +
                 "\"dateEpoch\":0," +
                 "\"timestampNull\":null," +
