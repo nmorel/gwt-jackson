@@ -32,6 +32,7 @@
   <modules>
     <module>guava</module>
     <module>objectify</module>
+    <module>remotelogging</module>
   </modules>
 
   <dependencies>
