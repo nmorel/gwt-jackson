@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<module>
+  <inherits name="com.github.nmorel.gwtjackson.GwtJacksonSharedTest" />
+  <inherits name="com.github.nmorel.gwtjackson.remotelogging.GwtJacksonRemoteLogging" />
+
+  <source path="client" />
+  <source path="shared" />
+</module>

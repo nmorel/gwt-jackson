@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2017 Nicolas Morel
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <groupId>com.github.nmorel.gwtjackson</groupId>
+    <artifactId>gwt-jackson-extensions</artifactId>
+    <version>0.14.3-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>gwt-jackson-remotelogging</artifactId>
+
+  <name>gwt-jackson :: Extensions :: Remote Logging</name>
+  <description>Extension to support remote logging of Throwable</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/client/**/*TestCase.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>packaging</id>
+            <goals>
+              <goal>resources</goal>
+            </goals>
+            <configuration>
+              <modules>
+                <module>com.github.nmorel.gwtjackson.remotelogging.GwtJacksonRemoteLogging</module>
+              </modules>
+            </configuration>
+          </execution>
+          <execution>
+            <id>test-dev-mode</id>
+            <phase>test</phase>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <configuration>
+              <module>com.github.nmorel.gwtjackson.remotelogging.GwtJacksonRemoteLoggingTestSuite</module>
+              <out>${project.build.directory}/gwt/test/dev</out>
+            </configuration>
+          </execution>
+          <execution>
+            <id>test-prod</id>
+            <phase>test</phase>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <configuration>
+              <module>com.github.nmorel.gwtjackson.remotelogging.GwtJacksonRemoteLoggingTestSuite</module>
+              <out>${project.build.directory}/gwt/test/prod</out>
+              <productionMode>true</productionMode>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
