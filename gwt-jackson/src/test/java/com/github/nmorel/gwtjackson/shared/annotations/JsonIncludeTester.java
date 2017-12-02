@@ -88,6 +88,10 @@ public final class JsonIncludeTester extends AbstractTester {
 
         public Map<String, String> mapNullValue = Collections.singletonMap( "key" , null );
 
+        public Map<String, String> mapEmptyValue = Collections.singletonMap( "key" , "" );
+
+        public Map<String, String> mapMisc = createMapMisc();
+
         public Date dateNull = null;
 
         public Date dateEpoch = new Date( 0l );
@@ -95,6 +99,14 @@ public final class JsonIncludeTester extends AbstractTester {
         public Timestamp timestampNull = null;
 
         public Timestamp timestampEpoch = new Timestamp( 0l );
+
+        private static Map<String, String> createMapMisc() {
+            Map<String, String> mapMisc = new HashMap<String, String>(  );
+            mapMisc.put( "key1", "value1" );
+            mapMisc.put( "key2", "" );
+            mapMisc.put( "key3", null );
+            return mapMisc;
+        }
     }
 
     public static class BeanJsonIncludeOnProperties {
@@ -139,6 +151,8 @@ public final class JsonIncludeTester extends AbstractTester {
                 "\"mapNull\":null," +
                 "\"mapEmpty\":{}," +
                 "\"mapNullValue\":{\"key\":null}," +
+                "\"mapEmptyValue\":{\"key\":\"\"}," +
+                "\"mapMisc\":{\"key1\":\"value1\",\"key2\":\"\",\"key3\":null}," +
                 "\"dateNull\":null," +
                 "\"dateEpoch\":0," +
                 "\"timestampNull\":null," +
@@ -168,6 +182,8 @@ public final class JsonIncludeTester extends AbstractTester {
                 "\"mapNull\":null," +
                 "\"mapEmpty\":{}," +
                 "\"mapNullValue\":{\"key\":null}," +
+                "\"mapEmptyValue\":{\"key\":\"\"}," +
+                "\"mapMisc\":{\"key1\":\"value1\",\"key2\":\"\",\"key3\":null}," +
                 "\"dateNull\":null," +
                 "\"dateEpoch\":0," +
                 "\"timestampNull\":null," +
@@ -180,7 +196,7 @@ public final class JsonIncludeTester extends AbstractTester {
 
     public void testSerializeNonDefault( ObjectWriterTester<BeanJsonInclude> writer ) {
 
-        String expected = "{\"mapNullValue\":{\"key\":null}}";
+        String expected = "{}";
         String result = writer.write( new BeanJsonInclude() );
 
         assertEquals( expected, result );
@@ -193,7 +209,9 @@ public final class JsonIncludeTester extends AbstractTester {
                 "\"intDefault\":0," +
                 "\"bigIntegerZero\":0," +
                 "\"bigDecimalZero\":0," +
-                "\"mapNullValue\":{\"key\":null}" +
+                "\"mapNullValue\":{\"key\":null}," +
+                "\"mapEmptyValue\":{\"key\":\"\"}," +
+                "\"mapMisc\":{\"key1\":\"value1\",\"key2\":\"\",\"key3\":null}" +
                 "}";
         String result = writer.write( new BeanJsonInclude() );
 
@@ -212,6 +230,8 @@ public final class JsonIncludeTester extends AbstractTester {
                 "\"arrayEmpty\":[]," +
                 "\"mapEmpty\":{}," +
                 "\"mapNullValue\":{\"key\":null}," +
+                "\"mapEmptyValue\":{\"key\":\"\"}," +
+                "\"mapMisc\":{\"key1\":\"value1\",\"key2\":\"\",\"key3\":null}," +
                 "\"dateEpoch\":0," +
                 "\"timestampEpoch\":0" +
                 "}";
@@ -231,6 +251,8 @@ public final class JsonIncludeTester extends AbstractTester {
                 "\"arrayEmpty\":[]," +
                 "\"mapEmpty\":{}," +
                 "\"mapNullValue\":{\"key\":null}," +
+                "\"mapEmptyValue\":{\"key\":\"\"}," +
+                "\"mapMisc\":{\"key1\":\"value1\",\"key2\":\"\",\"key3\":null}," +
                 "\"dateEpoch\":0," +
                 "\"timestampEpoch\":0" +
                 "}";
@@ -257,6 +279,8 @@ public final class JsonIncludeTester extends AbstractTester {
                 "\"mapNull\":null," +
                 "\"mapEmpty\":{}," +
                 "\"mapNullValue\":{\"key\":null}," +
+                "\"mapEmptyValue\":{\"key\":\"\"}," +
+                "\"mapMisc\":{\"key1\":\"value1\",\"key2\":\"\",\"key3\":null}," +
                 "\"dateNull\":null," +
                 "\"dateEpoch\":0," +
                 "\"timestampNull\":null," +

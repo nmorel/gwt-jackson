@@ -66,7 +66,7 @@ public abstract class JsonSerializer<T> {
      */
     public void serialize( JsonWriter writer, T value, JsonSerializationContext ctx, JsonSerializerParameters params, boolean isMapValue ) throws
             JsonSerializationException {
-        if ( null != params.getInclude() && !isMapValue ) {
+        if ( null != params.getInclude() ) {
             switch ( params.getInclude() ) {
                 case ALWAYS:
                     if ( null == value ) {
@@ -76,28 +76,28 @@ public abstract class JsonSerializer<T> {
                     }
                     return;
                 case NON_DEFAULT:
-                    if ( isDefault( value ) ) {
+                    if ( isDefault( value ) && !isMapValue ) {
                         writer.cancelName();
                     } else {
                         doSerialize( writer, value, ctx, params );
                     }
                     return;
                 case NON_EMPTY:
-                    if ( isEmpty( value ) ) {
+                    if ( isEmpty( value ) && !isMapValue ) {
                         writer.cancelName();
                     } else {
                         doSerialize( writer, value, ctx, params );
                     }
                     return;
                 case NON_NULL:
-                    if ( null == value ) {
+                    if ( null == value && !isMapValue) {
                         writer.cancelName();
                     } else {
                         doSerialize( writer, value, ctx, params );
                     }
                     return;
                 case NON_ABSENT:
-                    if ( isAbsent( value ) ) {
+                    if ( isAbsent( value ) && !isMapValue) {
                         writer.cancelName();
                     } else {
                         doSerialize( writer, value, ctx, params );
