@@ -1,4 +1,4 @@
-gwt-jackson [![Build Status](https://travis-ci.org/freddyboucher/gwt-jackson.svg?branch=master)](https://travis-ci.org/freddyboucher/gwt-jackson)
+gwt-jackson [![Build Status](https://travis-ci.org/nmorel/gwt-jackson.svg?branch=master)](https://travis-ci.org/nmorel/gwt-jackson)
 =====
 gwt-jackson is a JSON parser for [GWT](http://www.gwtproject.org/). It uses [Jackson 2.x annotations](https://github.com/FasterXML/jackson-annotations) to customize the serialization/deserialization process.
 
