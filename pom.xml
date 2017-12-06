@@ -167,6 +167,10 @@
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>${maven-surefire-plugin.version}</version>
+          <configuration>
+            <!--Only required due to a GWT DateTimeFormat issue see https://github.com/gwtproject/gwt/issues/8259-->
+            <argLine>-Duser.timezone=UTC</argLine>
+          </configuration>
         </plugin>
 
         <plugin>
@@ -195,6 +199,8 @@
             <mode>htmlunit</mode>
             <userAgents>gecko1_8</userAgents>
             <testTimeOut>1000</testTimeOut>
+            <!--Only required due to a GWT DateTimeFormat issue see https://github.com/gwtproject/gwt/issues/8259-->
+            <extraJvmArgs>-Duser.timezone=UTC</extraJvmArgs>
           </configuration>
           <dependencies>
             <dependency>
