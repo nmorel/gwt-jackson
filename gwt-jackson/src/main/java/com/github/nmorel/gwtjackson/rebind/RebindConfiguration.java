@@ -451,8 +451,8 @@ public final class RebindConfiguration {
      */
     private MapperInstance getKeyInstance( JType mappedType, JClassType classType, boolean isSerializers ) {
         int nbParam = 0;
-        if ( !isSerializers && typeOracle.isEnumSupertype( mappedType ) ) {
-            nbParam = 1;
+        if ( null != mappedType.isGenericType() && (!isSerializers || !typeOracle.isEnumSupertype( mappedType )) ) {
+            nbParam = mappedType.isGenericType().getTypeParameters().length;
         }
 
         // we first look at static method
