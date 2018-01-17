@@ -384,12 +384,12 @@ public final class PropertyProcessor {
     private static JType findType( TreeLogger logger, PropertyAccessors fieldAccessors, JacksonTypeOracle typeOracle ) throws
             UnableToCompleteException {
         JType type;
-        if ( fieldAccessors.getGetter().isPresent() ) {
+        if ( fieldAccessors.getField().isPresent() ) {
+            type = fieldAccessors.getField().get().getType();
+        } else if ( fieldAccessors.getGetter().isPresent() ) {
             type = fieldAccessors.getGetter().get().getReturnType();
         } else if ( fieldAccessors.getSetter().isPresent() ) {
             type = fieldAccessors.getSetter().get().getParameters()[0].getType();
-        } else if ( fieldAccessors.getField().isPresent() ) {
-            type = fieldAccessors.getField().get().getType();
         } else if ( fieldAccessors.getParameter().isPresent() ) {
             type = fieldAccessors.getParameter().get().getType();
         } else {
