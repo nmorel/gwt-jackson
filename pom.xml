@@ -26,7 +26,7 @@
 
   <groupId>com.github.nmorel.gwtjackson</groupId>
   <artifactId>gwt-jackson-parent</artifactId>
-  <version>0.14.3-SNAPSHOT</version>
+  <version>0.15.0</version>
   <packaging>pom</packaging>
 
   <modules>
@@ -48,8 +48,8 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:git://github.com/nmorel/gwt-jackson.git</connection>
-    <developerConnection>scm:git:git@github.com:nmorel/gwt-jackson.git</developerConnection>
+    <connection>scm:git:https://github.com/nmorel/gwt-jackson.git</connection>
+    <developerConnection>scm:git:https://github.com/nmorel/gwt-jackson.git</developerConnection>
     <url>https://github.com/nmorel/gwt-jackson</url>
     <tag>HEAD</tag>
   </scm>
