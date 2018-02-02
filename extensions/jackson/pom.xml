@@ -1,0 +1,101 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.github.nmorel.gwtjackson</groupId>
+    <artifactId>gwt-jackson-extensions</artifactId>
+    <version>0.15.1-SNAPSHOT</version>
+  </parent>
+  <artifactId>gwt-jackson-jackson</artifactId>
+  
+  <properties>
+    <playn.version>2.0</playn.version>
+  </properties>
+  
+  <dependencies>
+   <!-- GWT dependencies -->
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-dev</artifactId>
+    </dependency>
+
+    <!-- Jackson annotation dependencies -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+    
+    <!-- Provides ByteBuffer -->
+     <dependency>
+       <groupId>io.playn</groupId>
+       <artifactId>playn-scene</artifactId>
+       <version>${playn.version}</version>
+       <classifier>sources</classifier>
+     </dependency> 
+    
+     <dependency>
+        <groupId>io.playn</groupId>
+        <artifactId>playn-html</artifactId>
+        <version>${playn.version}</version>
+      </dependency>
+  
+      <dependency>
+       <groupId>io.playn</groupId>
+        <artifactId>playn-html</artifactId>
+        <version>${playn.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+    
+  </dependencies>
+  
+  <build>
+  <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/client/**/*Test.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>packaging</id>
+            <goals>
+              <goal>resources</goal>
+            </goals>
+            <configuration>
+              <modules>
+                <module>com.github.nmorel.gwtjackson.jackson.GwtJacksonJackson</module>
+              </modules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/rebind/*.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+    </build>
+</project>

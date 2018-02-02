@@ -27,7 +27,8 @@ import com.google.gwt.core.client.GWT;
  */
 public class Minimal implements EntryPoint {
 
-    public static interface PersonMapper extends ObjectMapper<Person> {}
+    public static interface PersonMapper extends ObjectMapper<Person> {
+    }
 
     public static class Person {
 
@@ -36,7 +37,7 @@ public class Minimal implements EntryPoint {
         private final String lastName;
 
         @JsonCreator
-        public Person( @JsonProperty( "firstName" ) String firstName, @JsonProperty( "lastName" ) String lastName ) {
+        public Person(@JsonProperty("firstName") String firstName, @JsonProperty("lastName") String lastName) {
             this.firstName = firstName;
             this.lastName = lastName;
         }
@@ -52,12 +53,12 @@ public class Minimal implements EntryPoint {
 
     @Override
     public void onModuleLoad() {
-        PersonMapper mapper = GWT.create( PersonMapper.class );
+        PersonMapper mapper = GWT.create(PersonMapper.class);
 
-        String json = mapper.write( new Person( "John", "Doe" ) );
-        GWT.log( json ); // > {"firstName":"John","lastName":"Doe"}
+        String json = mapper.write(new Person("John", "Doe"));
+        GWT.log(json); // > {"firstName":"John","lastName":"Doe"}
 
-        Person person = mapper.read( json );
-        GWT.log( person.getFirstName() + " " + person.getLastName() ); // > John Doe
+        Person person = mapper.read(json);
+        GWT.log(person.getFirstName() + " " + person.getLastName()); // > John Doe
     }
 }

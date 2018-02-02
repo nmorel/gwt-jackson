@@ -49,6 +49,7 @@
     <module>gwtp</module>
     <module>requestor</module>
     <module>restygwt</module>
+    <module>jackson</module>
   </modules>
 
   <properties>

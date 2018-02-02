@@ -1,0 +1,395 @@
+package com.fasterxml.jackson.databind.cfg;
+
+import java.util.Locale;
+
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.core.Base64Variant;
+import com.fasterxml.jackson.core.SerializableString;
+import com.fasterxml.jackson.core.io.SerializedString;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+
+/**
+ * Interface that defines functionality accessible through both
+ * serialization and deserialization configuration objects;
+ * accessors to mode-independent configuration settings
+ * and such.
+ * In addition, shared features are defined
+ * in {@link MapperFeature}.
+ *<p>
+ * Small part of implementation is included here by aggregating
+ * {@link BaseSettings} instance that contains configuration
+ * that is shared between different types of instances.
+ */
+public abstract class MapperConfig<T extends MapperConfig<T>>
+        implements
+        java.io.Serializable {
+
+    private static final long serialVersionUID = 1L; // since 2.5
+
+    /**
+     * @since 2.7
+     */
+    protected final static JsonInclude.Value EMPTY_INCLUDE = JsonInclude.Value.empty();
+
+    /**
+     * @since 2.7
+     */
+    protected final static JsonFormat.Value EMPTY_FORMAT = JsonFormat.Value.empty();
+
+    /**
+     * Set of shared mapper features enabled.
+     */
+    protected final int _mapperFeatures;
+
+    /**
+     * Immutable container object for simple configuration settings.
+     */
+    protected final BaseSettings _base;
+
+    /*
+    /**********************************************************
+    /* Life-cycle: constructors
+    /**********************************************************
+     */
+
+    protected MapperConfig(BaseSettings base, int mapperFeatures) {
+        _base = base;
+        _mapperFeatures = mapperFeatures;
+    }
+
+    protected MapperConfig(MapperConfig<T> src, int mapperFeatures) {
+        _base = src._base;
+        _mapperFeatures = mapperFeatures;
+    }
+
+    protected MapperConfig(MapperConfig<T> src, BaseSettings base) {
+        _base = base;
+        _mapperFeatures = src._mapperFeatures;
+    }
+
+    protected MapperConfig(MapperConfig<T> src) {
+        _base = src._base;
+        _mapperFeatures = src._mapperFeatures;
+    }
+
+    /**
+     * Method that calculates bit set (flags) of all features that
+     * are enabled by default.
+     */
+    public static <F extends Enum<F> & ConfigFeature> int collectFeatureDefaults(Class<F> enumClass) {
+        int flags = 0;
+        for (F value : enumClass.getEnumConstants()) {
+            if (value.enabledByDefault()) {
+                flags |= value.getMask();
+            }
+        }
+        return flags;
+    }
+
+    /*
+    /**********************************************************
+    /* Life-cycle: factory methods
+    /**********************************************************
+     */
+
+    /**
+     * Method for constructing and returning a new instance with specified
+     * mapper features enabled.
+     */
+    public abstract T with(MapperFeature... features);
+
+    /**
+     * Method for constructing and returning a new instance with specified
+     * mapper features disabled.
+     */
+    public abstract T without(MapperFeature... features);
+
+    /**
+     * @since 2.3
+     */
+    public abstract T with(MapperFeature feature, boolean state);
+
+    /*
+    /**********************************************************
+    /* Configuration: simple features
+    /**********************************************************
+     */
+
+    /**
+     * Accessor for simple mapper features (which are shared for
+     * serialization, deserialization)
+     */
+    public final boolean isEnabled(MapperFeature f) {
+        return (_mapperFeatures & f.getMask()) != 0;
+    }
+
+    /**
+     * "Bulk" access method for checking that all features specified by
+     * mask are enabled.
+     * 
+     * @since 2.3
+     */
+    public final boolean hasMapperFeatures(int featureMask) {
+        return (_mapperFeatures & featureMask) == featureMask;
+    }
+
+    /**
+     * Method for determining whether annotation processing is enabled or not
+     * (default settings are typically that it is enabled; must explicitly disable).
+     * 
+     * @return True if annotation processing is enabled; false if not
+     */
+    public final boolean isAnnotationProcessingEnabled() {
+        return isEnabled(MapperFeature.USE_ANNOTATIONS);
+    }
+
+    /**
+     * Accessor for determining whether it is ok to try to force override of access
+     * modifiers to be able to get or set values of non-public Methods, Fields;
+     * to invoke non-public Constructors, Methods; or to instantiate non-public
+     * Classes. By default this is enabled, but on some platforms it needs to be
+     * prevented since if this would violate security constraints and cause failures.
+     * 
+     * @return True if access modifier overriding is allowed (and may be done for
+     *   any Field, Method, Constructor or Class); false to prevent any attempts
+     *   to override.
+     */
+    public final boolean canOverrideAccessModifiers() {
+        return isEnabled(MapperFeature.CAN_OVERRIDE_ACCESS_MODIFIERS);
+    }
+
+    /**
+     * Accessor for checking whether default settings for property handling
+     * indicate that properties should be alphabetically ordered or not.
+     */
+    public final boolean shouldSortPropertiesAlphabetically() {
+        return isEnabled(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY);
+    }
+
+    /**
+     * Accessor for checking whether configuration indicates that
+     * "root wrapping" (use of an extra property/name pair at root level)
+     * is expected or not.
+     */
+    public abstract boolean useRootWrapping();
+
+    /*
+    /**********************************************************
+    /* Configuration: factory methods
+    /**********************************************************
+     */
+
+    /**
+     * Method for constructing a specialized textual object that can typically
+     * be serialized faster than basic {@link java.lang.String} (depending
+     * on escaping needed if any, char-to-byte encoding if needed).
+     * 
+     * @param src Text to represent
+     * 
+     * @return Optimized text object constructed
+     * 
+     * @since 2.4
+     */
+    public SerializableString compileString(String src) {
+        /* 20-Jan-2014, tatu: For now we will just construct it directly, but
+         *    for 2.4 need to allow overriding to support non-standard extensions
+         *    to be used by extensions like Afterburner.
+         */
+        return new SerializedString(src);
+    }
+
+    /*
+    /**********************************************************
+    /* Configuration: introspectors, mix-ins
+    /**********************************************************
+     */
+
+    public final PropertyNamingStrategy getPropertyNamingStrategy() {
+        return _base.getPropertyNamingStrategy();
+    }
+
+    /*
+    /**********************************************************
+    /* Configuration: type and subtype handling
+    /**********************************************************
+     */
+
+    public final TypeFactory getTypeFactory() {
+        return _base.getTypeFactory();
+    }
+
+    /**
+     * Helper method that will construct {@link JavaType} for given
+     * raw class.
+     * This is a simple short-cut for:
+     *<pre>
+     *    getTypeFactory().constructType(cls);
+     *</pre>
+     */
+    public final JavaType constructType(Class<?> cls) {
+        return getTypeFactory().constructType(cls);
+    }
+
+    /**
+     * Helper method that will construct {@link JavaType} for given
+     * type reference
+     * This is a simple short-cut for:
+     *<pre>
+     *    getTypeFactory().constructType(valueTypeRef);
+     *</pre>
+     */
+    public final JavaType constructType(TypeReference<?> valueTypeRef) {
+        return getTypeFactory().constructType(valueTypeRef.getType());
+    }
+
+    public JavaType constructSpecializedType(JavaType baseType, Class<?> subclass) {
+        return getTypeFactory().constructSpecializedType(baseType, subclass);
+    }
+
+    /*
+    /**********************************************************
+    /* Configuration: introspection support
+    /**********************************************************
+     */
+
+    /**
+     * Accessor for getting bean description that only contains class
+     * annotations: useful if no getter/setter/creator information is needed.
+     */
+    public BeanDescription introspectClassAnnotations(Class<?> cls) {
+        return introspectClassAnnotations(constructType(cls));
+    }
+
+    /**
+     * Accessor for getting bean description that only contains class
+     * annotations: useful if no getter/setter/creator information is needed.
+     */
+    public abstract BeanDescription introspectClassAnnotations(JavaType type);
+
+    /**
+     * Accessor for getting bean description that only contains immediate class
+     * annotations: ones from the class, and its direct mix-in, if any, but
+     * not from super types.
+     */
+    public BeanDescription introspectDirectClassAnnotations(Class<?> cls) {
+        return introspectDirectClassAnnotations(constructType(cls));
+    }
+
+    /**
+     * Accessor for getting bean description that only contains immediate class
+     * annotations: ones from the class, and its direct mix-in, if any, but
+     * not from super types.
+     */
+    public abstract BeanDescription introspectDirectClassAnnotations(JavaType type);
+
+    /*
+    /**********************************************************
+    /* Configuration: default settings with per-type overrides
+    /**********************************************************
+     */
+
+    /**
+     * Accessor for default property inclusion to use for serialization,
+     * used unless overridden by per-type or per-property overrides.
+     *
+     * @since 2.7
+     */
+    public abstract JsonInclude.Value getDefaultPropertyInclusion();
+
+    /**
+     * Accessor for default property inclusion to use for serialization,
+     * considering possible per-type override for given base type.<br>
+     * NOTE: if no override found, defaults to value returned by
+     * {@link #getDefaultPropertyInclusion()}.
+     *
+     * @since 2.7
+     */
+    public abstract JsonInclude.Value getDefaultPropertyInclusion(Class<?> baseType);
+
+    /**
+     * Accessor for default property inclusion to use for serialization,
+     * considering possible per-type override for given base type; but
+     * if none found, returning given <code>defaultIncl</code>
+     *
+     * @param defaultIncl Inclusion setting to return if no overrides found.
+     * 
+     * @since 2.8.2
+     */
+    public abstract JsonInclude.Value getDefaultPropertyInclusion(Class<?> baseType,
+            JsonInclude.Value defaultIncl);
+
+    /**
+     * Accessor for default format settings to use for serialization (and, to a degree
+     * deserialization), considering baseline settings and per-type defaults
+     * for given base type (if any).
+     *
+     * @since 2.7
+     */
+    public abstract JsonFormat.Value getDefaultPropertyFormat(Class<?> baseType);
+
+    /**
+     * Accessor for default property ignorals to use, if any, for given base type,
+     * based on config overrides settings (see {@link #findConfigOverride(Class)}).
+     *
+     * @since 2.8
+     */
+    public abstract JsonIgnoreProperties.Value getDefaultPropertyIgnorals(Class<?> baseType);
+
+    /*
+    /**********************************************************
+    /* Configuration: other
+    /**********************************************************
+     */
+
+    /**
+     * Method for accessing the default {@link java.util.Locale} to use
+     * for formatting, unless overridden by local annotations.
+     * Initially set to {@link Locale#getDefault()}.
+     */
+    public final Locale getLocale() {
+        return _base.getLocale();
+    }
+
+    /**
+     * Accessor for finding currently active view, if any (null if none)
+     */
+    public abstract Class<?> getActiveView();
+
+    /**
+     * Method called during deserialization if Base64 encoded content
+     * needs to be decoded. Default version just returns default Jackson
+     * uses, which is modified-mime which does not add linefeeds (because
+     * those would have to be escaped in JSON strings); but this can
+     * be configured on {@link ObjectWriter}.
+     */
+    public Base64Variant getBase64Variant() {
+        return _base.getBase64Variant();
+    }
+
+    /**
+     * Method for accessing per-instance shared (baseline/default)
+     * attribute values; these are used as the basis for per-call
+     * attributes.
+     * 
+     * @since 2.3
+     */
+    public abstract ContextAttributes getAttributes();
+
+    /**
+     * @since 2.6
+     */
+    public abstract PropertyName findRootName(JavaType rootType);
+
+    /**
+     * @since 2.6
+     */
+    public abstract PropertyName findRootName(Class<?> rawRootType);
+
+    /*
+    /**********************************************************
+    /* Methods for instantiating handlers
+    /**********************************************************
+     */
+}
