@@ -32,6 +32,6 @@ public class SqlDateJsonSerializerTest extends AbstractJsonSerializerTest<java.s
     }
 
     public void testSerializeValue() {
-        assertSerialization( "\"2012-08-18\"", new Date( getUTCTime( 2012, 8, 18, 12, 45, 56, 543 ) ) );
+        assertSerialization( "1345293956543", new Date( getUTCTime( 2012, 8, 18, 12, 45, 56, 543 ) ) );
     }
 }
