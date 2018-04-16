@@ -232,7 +232,7 @@ public final class SimpleBeanJsonMapperTester extends AbstractTester {
                 "\"bigDecimal\":12345678987654.456789," +
                 "\"enumProperty\":\"A\"," +
                 "\"date\":1345304756543," +
-                "\"sqlDate\":\"2012-08-18\"," +
+                "\"sqlDate\":" + bean.getSqlDate().getTime() + "," +
                 "\"sqlTime\":\"" + bean.getSqlTime().toString() + "\"," +
                 "\"sqlTimestamp\":1345304756546," +
                 "\"stringArray\":[\"Hello\",\"World\",\"!\"]," +

@@ -211,7 +211,8 @@ public final class JsonIncludeTester extends AbstractTester {
                 "\"bigDecimalZero\":0," +
                 "\"mapNullValue\":{\"key\":null}," +
                 "\"mapEmptyValue\":{\"key\":\"\"}," +
-                "\"mapMisc\":{\"key1\":\"value1\",\"key2\":\"\",\"key3\":null}" +
+                "\"mapMisc\":{\"key1\":\"value1\",\"key2\":\"\",\"key3\":null}," +
+                "\"dateEpoch\":0,\"timestampEpoch\":0" +
                 "}";
         String result = writer.write( new BeanJsonInclude() );
 

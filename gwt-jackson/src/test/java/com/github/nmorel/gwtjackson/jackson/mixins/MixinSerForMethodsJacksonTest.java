@@ -30,6 +30,7 @@ import com.github.nmorel.gwtjackson.shared.mixins.MixinSerForMethodsTester.MixIn
 import com.github.nmorel.gwtjackson.shared.mixins.MixinSerForMethodsTester.MixInForSimple;
 import com.github.nmorel.gwtjackson.shared.mixins.MixinSerForMethodsTester.ObjectMixIn;
 import com.github.nmorel.gwtjackson.shared.mixins.MixinSerForMethodsTester.SimpleBean;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -61,6 +62,7 @@ public class MixinSerForMethodsJacksonTest extends AbstractJacksonTest {
     }
 
     @Test
+    @Ignore( "See https://github.com/FasterXML/jackson-databind/issues/1990" )
     public void testObjectMixin() {
         objectMapper.addMixIn( Object.class, ObjectMixIn.class );
         MixinSerForMethodsTester.INSTANCE.testObjectMixin( createWriter( BaseClass.class ) );
