@@ -7,4 +7,5 @@
                                  value="com.github.nmorel.gwtjackson.remotelogging.rebind.RemoteLoggingConfiguration" />
 
   <source path="client" />
+  <source path="shared" />
 </module>

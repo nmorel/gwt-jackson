@@ -17,7 +17,6 @@
 package com.github.nmorel.gwtjackson.remotelogging.server;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
@@ -32,13 +31,8 @@ public class RemoteLoggingJacksonModule extends SimpleModule {
     @Override
     public void setupModule( SetupContext context ) {
         super.setupModule( context );
-        context.setMixInAnnotations( Throwable.class, ThrowableMixIn.class );
         context.setMixInAnnotations( StackTraceElement.class, StackTraceElementMixIn.class );
     }
-
-    @JsonTypeInfo( use = JsonTypeInfo.Id.CLASS )
-    @JsonIgnoreProperties( "suppressed" )
-    public abstract static class ThrowableMixIn {}
 
     @JsonIgnoreProperties( "nativeMethod" )
     public abstract static class StackTraceElementMixIn {}
