@@ -20,12 +20,11 @@ import com.github.nmorel.gwtjackson.client.JsonSerializationContext;
 import com.github.nmorel.gwtjackson.client.JsonSerializer;
 import com.github.nmorel.gwtjackson.client.JsonSerializerParameters;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
+import com.github.nmorel.gwtjackson.remotelogging.shared.RemoteThrowable;
 
-public class ThrowableJsonSerializer extends JsonSerializer<Throwable> {
+public class RemoteThrowableJsonSerializer extends JsonSerializer<RemoteThrowable> {
 
-    private static final ThrowableJsonSerializer INSTANCE = new ThrowableJsonSerializer();
-
-    private static final String JSON_TYPE_INFO = "@class";
+    private static final RemoteThrowableJsonSerializer INSTANCE = new RemoteThrowableJsonSerializer();
 
     private static final String CAUSE = "cause";
 
@@ -33,19 +32,21 @@ public class ThrowableJsonSerializer extends JsonSerializer<Throwable> {
 
     private static final String MESSAGE = "message";
 
-    private static final String LOCALIZED_MESSAGE = "localizedMessage";
+    private static final String REMOTE_CLASS_NAME = "remoteClassName";
 
-    public static ThrowableJsonSerializer getInstance() {
+    public static RemoteThrowableJsonSerializer getInstance() {
         return INSTANCE;
     }
 
-    private ThrowableJsonSerializer() { }
+    private RemoteThrowableJsonSerializer() { }
 
     @Override
-    protected void doSerialize( JsonWriter writer, Throwable throwable, JsonSerializationContext ctx, JsonSerializerParameters params ) {
+    protected void doSerialize( JsonWriter writer, RemoteThrowable throwable, JsonSerializationContext ctx, JsonSerializerParameters
+            params ) {
         writer.beginObject();
-        writer.name( JSON_TYPE_INFO );
-        writer.value( throwable.getClass().getName() );
+
+        writer.name( MESSAGE );
+        writer.value( throwable.getMessage() );
 
         writer.name( CAUSE );
         if ( throwable.getCause() != null ) {
@@ -54,18 +55,15 @@ public class ThrowableJsonSerializer extends JsonSerializer<Throwable> {
             writer.nullValue();
         }
 
+        writer.name( REMOTE_CLASS_NAME );
+        writer.value( throwable.getRemoteClassName() );
+
         writer.name( STACK_TRACE );
         writer.beginArray();
         for ( StackTraceElement stackTraceElement : throwable.getStackTrace() ) {
             StackTraceElementJsonSerializer.getInstance().doSerialize( writer, stackTraceElement, ctx, params );
         }
         writer.endArray();
-
-        writer.name( MESSAGE );
-        writer.value( throwable.getMessage() );
-
-        writer.name( LOCALIZED_MESSAGE );
-        writer.value( throwable.getLocalizedMessage() );
 
         writer.endObject();
     }

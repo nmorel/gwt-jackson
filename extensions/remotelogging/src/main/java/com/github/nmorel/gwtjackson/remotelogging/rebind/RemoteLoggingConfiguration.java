@@ -17,15 +17,16 @@
 package com.github.nmorel.gwtjackson.remotelogging.rebind;
 
 import com.github.nmorel.gwtjackson.client.AbstractConfiguration;
+import com.github.nmorel.gwtjackson.remotelogging.client.RemoteThrowableJsonSerializer;
 import com.github.nmorel.gwtjackson.remotelogging.client.StackTraceElementJsonSerializer;
-import com.github.nmorel.gwtjackson.remotelogging.client.ThrowableJsonSerializer;
+import com.github.nmorel.gwtjackson.remotelogging.shared.RemoteThrowable;
 
 public class RemoteLoggingConfiguration extends AbstractConfiguration {
 
     @Override
     protected void configure() {
         type( StackTraceElement.class ).serializer( StackTraceElementJsonSerializer.class );
-        type( Throwable.class ).serializer( ThrowableJsonSerializer.class );
+        type( RemoteThrowable.class ).serializer( RemoteThrowableJsonSerializer.class );
     }
 
 }
