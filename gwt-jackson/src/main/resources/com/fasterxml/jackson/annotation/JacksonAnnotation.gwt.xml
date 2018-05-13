@@ -16,8 +16,12 @@
   -->
 
 <module>
-  <source path="" />
+  <source path="">
+    <!--Only nested static class 'Value' should be excluded but syntax 'JacksonInject$Value.*' is not supported by GWT-->
+    <exclude name="JacksonInject.*" />
+    <exclude name="JsonSetter.*" />
+  </source>
   <!-- ObjectIdGenerators.Base implements Serializable but is not. We blacklist Jackson classes from RPC -->
   <inherits name="com.google.gwt.user.RemoteService" />
-  <extend-configuration-property name="rpc.blacklist" value="com.fasterxml.jackson.annotation.*"/>
+  <extend-configuration-property name="rpc.blacklist" value="com.fasterxml.jackson.annotation.*" />
 </module>
