@@ -37,6 +37,7 @@ import com.github.nmorel.gwtjackson.client.advanced.jsontype.JsonTypeWithEnumGwt
 import com.github.nmorel.gwtjackson.client.advanced.jsontype.JsonTypeWithGenericsGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.jsontype.PolymorphismIdClassAsPropertyGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.jsontype.PolymorphismIdMinimalClassAsWrapperArrayGwtTest;
+import com.github.nmorel.gwtjackson.client.advanced.jsontype.JsonCreatorDelegationGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.jsontype.PolymorphismIdNameAsWrapperObjectGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.jsontype.PolymorphismNoTypeInfoGwtTest;
 import com.github.nmorel.gwtjackson.client.advanced.jsontype.TypeNamesGwtTest;
@@ -292,6 +293,7 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( JsonPropertyOrderGwtTest.class );
         suite.addTestSuite( JsonIgnoreGwtTest.class );
         suite.addTestSuite( JsonCreatorGwtTest.class );
+        suite.addTestSuite( JsonCreatorDelegationGwtTest.class );
         suite.addTestSuite( JsonIgnoreTypeGwtTest.class );
         suite.addTestSuite( JsonManagedAndBackReferenceGwtTest.class );
         suite.addTestSuite( JsonRootNameGwtTest.class );
