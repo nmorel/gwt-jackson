@@ -19,11 +19,10 @@ package com.github.nmorel.gwtjackson.client.deser.array.cast;
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
+import com.github.nmorel.gwtjackson.client.arrays.FastArrayString;
 import com.github.nmorel.gwtjackson.client.deser.array.AbstractArrayJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JsArrayString;
 
 /**
  * Default {@link JsonDeserializer} implementation for array of {@link String}.
@@ -45,16 +44,12 @@ public class StringArrayJsonDeserializer extends AbstractArrayJsonDeserializer<S
         return INSTANCE;
     }
 
-    private static native String[] reinterpretCast( JsArrayString value ) /*-{
-        return value;
-    }-*/;
-
     private StringArrayJsonDeserializer() { }
 
     /** {@inheritDoc} */
     @Override
     public String[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
-        JsArrayString jsArray = JsArrayString.createArray().cast();
+        FastArrayString jsArray = new FastArrayString();
         reader.beginArray();
         while ( JsonToken.END_ARRAY != reader.peek() ) {
             if ( JsonToken.NULL == reader.peek() ) {
@@ -66,16 +61,7 @@ public class StringArrayJsonDeserializer extends AbstractArrayJsonDeserializer<S
         }
         reader.endArray();
 
-        if ( GWT.isScript() ) {
-            return reinterpretCast( jsArray );
-        } else {
-            int length = jsArray.length();
-            String[] ret = new String[length];
-            for ( int i = 0; i < length; i++ ) {
-                ret[i] = jsArray.get( i );
-            }
-            return ret;
-        }
+        return jsArray.reinterpretCast();
     }
 
     /** {@inheritDoc} */
