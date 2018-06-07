@@ -54,6 +54,7 @@ import com.github.nmorel.gwtjackson.client.annotation.JsonPropertyOrderGwtTest;
 import com.github.nmorel.gwtjackson.client.annotation.JsonRawValueGwtTest;
 import com.github.nmorel.gwtjackson.client.annotation.JsonRootNameGwtTest;
 import com.github.nmorel.gwtjackson.client.annotation.JsonUnwrappedGwtTest;
+import com.github.nmorel.gwtjackson.client.arrays.JsListTest;
 import com.github.nmorel.gwtjackson.client.deser.BooleanJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.CharacterJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.EnumJsonDeserializerTest;
@@ -348,6 +349,9 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( MixinInheritanceGwtTest.class );
         suite.addTestSuite( MixinSerForFieldsGwtTest.class );
         suite.addTestSuite( MixinSerForMethodsGwtTest.class );
+
+        // Arrays
+        suite.addTestSuite( JsListTest.class );
 
         return suite;
     }
