@@ -19,12 +19,12 @@ package com.github.nmorel.gwtjackson.client.deser.array.cast;
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
+import com.github.nmorel.gwtjackson.client.arrays.FastArrayInteger;
+import com.github.nmorel.gwtjackson.client.arrays.FastArrayShort;
 import com.github.nmorel.gwtjackson.client.deser.BaseNumberJsonDeserializer.ShortJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.array.AbstractArrayJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JsArrayInteger;
 
 /**
  * Default {@link JsonDeserializer} implementation for array of short.
@@ -45,10 +45,6 @@ public class PrimitiveShortArrayJsonDeserializer extends AbstractArrayJsonDeseri
         return INSTANCE;
     }
 
-    private static native short[] reinterpretCast( JsArrayInteger value ) /*-{
-        return value;
-    }-*/;
-
     private static short DEFAULT;
 
     private PrimitiveShortArrayJsonDeserializer() { }
@@ -56,28 +52,19 @@ public class PrimitiveShortArrayJsonDeserializer extends AbstractArrayJsonDeseri
     /** {@inheritDoc} */
     @Override
     public short[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
-        JsArrayInteger jsArray = JsArrayInteger.createArray().cast();
+        FastArrayShort jsArray = new FastArrayShort();
         reader.beginArray();
         while ( JsonToken.END_ARRAY != reader.peek() ) {
             if ( JsonToken.NULL == reader.peek() ) {
                 reader.skipValue();
                 jsArray.push( DEFAULT );
             } else {
-                jsArray.push( reader.nextInt() );
+                jsArray.push( (short) reader.nextInt() );
             }
         }
         reader.endArray();
 
-        if ( GWT.isScript() ) {
-            return reinterpretCast( jsArray );
-        } else {
-            int length = jsArray.length();
-            short[] ret = new short[length];
-            for ( int i = 0; i < length; i++ ) {
-                ret[i] = (short) jsArray.get( i );
-            }
-            return ret;
-        }
+        return jsArray.reinterpretCast();
     }
 
     /** {@inheritDoc} */

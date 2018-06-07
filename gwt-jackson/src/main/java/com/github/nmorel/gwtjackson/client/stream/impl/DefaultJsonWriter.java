@@ -20,9 +20,9 @@ package com.github.nmorel.gwtjackson.client.stream.impl;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.github.nmorel.gwtjackson.client.arrays.FastArrayInteger;
 import com.github.nmorel.gwtjackson.client.exception.JsonSerializationException;
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.JsArrayInteger;
 
 /**
  * Writes a JSON (<a href="http://www.ietf.org/rfc/rfc4627.txt">RFC 4627</a>)
@@ -162,7 +162,7 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
   /** The output data, containing at most one top-level array or object. */
   private final StringBuilder out;
 
-  private JsArrayInteger stack = JsArrayInteger.createArray().cast();
+  private FastArrayInteger stack = new FastArrayInteger();
   private int stackSize = 0;
   {
     push( JsonScope.EMPTY_DOCUMENT);
