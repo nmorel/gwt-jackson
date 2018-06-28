@@ -18,7 +18,6 @@ package com.github.nmorel.gwtjackson.jackson.annotations;
 
 import com.github.nmorel.gwtjackson.jackson.AbstractJacksonTest;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonCreatorTester;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -69,7 +68,6 @@ public class JsonCreatorJacksonTest extends AbstractJacksonTest {
     }
 
     @Test
-    @Ignore( "jackson doesn't support it yet" )
     public void testDeserializeBeanWithMissingRequiredPropertyInCreator() {
         JsonCreatorTester.INSTANCE
                 .testDeserializeBeanWithMissingRequiredPropertyInCreator( createReader( JsonCreatorTester
@@ -153,7 +151,6 @@ public class JsonCreatorJacksonTest extends AbstractJacksonTest {
     }
 
     @Test
-    @Ignore( "jackson put LinkedHashMap as type information ?!?" )
     public void testBeanWithMapConstructorDelegationAndTypeInfo() {
         JsonCreatorTester.INSTANCE
                 .testBeanWithMapConstructorDelegationAndTypeInfo( createMapper( JsonCreatorTester

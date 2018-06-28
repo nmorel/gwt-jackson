@@ -21,7 +21,6 @@ import com.github.nmorel.gwtjackson.jackson.AbstractJacksonTest;
 import com.github.nmorel.gwtjackson.shared.advanced.GenericsAndInheritanceTester;
 import com.github.nmorel.gwtjackson.shared.advanced.GenericsAndInheritanceTester.Owner;
 import com.github.nmorel.gwtjackson.shared.advanced.GenericsAndInheritanceTester.Result;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -30,7 +29,6 @@ import org.junit.Test;
 public class GenericsAndInheritanceJacksonTest extends AbstractJacksonTest {
 
     @Test
-    @Ignore
     public void test() {
         GenericsAndInheritanceTester.INSTANCE.test( createMapper( new TypeReference<Result<Integer>[]>() {} ) );
     }
