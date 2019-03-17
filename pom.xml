@@ -91,7 +91,7 @@
     <!-- Dependencies version -->
     <gwt.version>2.7.0</gwt.version>
     <jackson.version>2.9.6</jackson.version>
-    <javapoet.version>1.0.0</javapoet.version>
+    <javapoet.version>1.11.1</javapoet.version>
     <junit.version>4.12</junit.version>
   </properties>
 
