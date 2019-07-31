@@ -85,7 +85,11 @@ public abstract class BaseDateJsonSerializer<D extends Date> extends JsonSeriali
         @Override
         protected void doSerialize( JsonWriter writer, java.sql.Date value, JsonSerializationContext ctx,
                                     JsonSerializerParameters params ) {
-            writer.unescapeValue( value.toString() );
+            if ( ctx.isWriteDatesAsTimestamps() ) {
+                writer.value( value.getTime() );
+            } else {
+                writer.value( value.toString() );
+            }
         }
     }
 
@@ -142,11 +146,5 @@ public abstract class BaseDateJsonSerializer<D extends Date> extends JsonSeriali
                 }
             }
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected boolean isEmpty( D value ) {
-        return null == value || value.getTime() == 0l;
     }
 }

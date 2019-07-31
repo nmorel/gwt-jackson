@@ -19,7 +19,7 @@
   <parent>
     <artifactId>gwt-jackson-parent</artifactId>
     <groupId>com.github.nmorel.gwtjackson</groupId>
-    <version>0.14.3-SNAPSHOT</version>
+    <version>0.15.5-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -57,10 +57,10 @@
 
     <!-- Plugins version -->
     <jetty.version>9.1.3.v20140225</jetty.version>
-    <gwt-maven-plugin.version>2.8.0-rc3</gwt-maven-plugin.version>
+    <gwt-maven-plugin.version>2.8.1</gwt-maven-plugin.version>
 
     <!-- Dependencies version -->
-    <gwt.version>2.8.0</gwt.version>
+    <gwt.version>2.8.2</gwt.version>
   </properties>
 
   <dependencies>

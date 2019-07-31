@@ -26,7 +26,7 @@
 
   <groupId>com.github.nmorel.gwtjackson</groupId>
   <artifactId>gwt-jackson-parent</artifactId>
-  <version>0.14.3-SNAPSHOT</version>
+  <version>0.15.5-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <modules>
@@ -48,8 +48,8 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:git://github.com/nmorel/gwt-jackson.git</connection>
-    <developerConnection>scm:git:git@github.com:nmorel/gwt-jackson.git</developerConnection>
+    <connection>scm:git:https://github.com/nmorel/gwt-jackson.git</connection>
+    <developerConnection>scm:git:https://github.com/nmorel/gwt-jackson.git</developerConnection>
     <url>https://github.com/nmorel/gwt-jackson</url>
     <tag>HEAD</tag>
   </scm>
@@ -90,7 +90,7 @@
 
     <!-- Dependencies version -->
     <gwt.version>2.7.0</gwt.version>
-    <jackson.version>2.8.4</jackson.version>
+    <jackson.version>2.9.6</jackson.version>
     <javapoet.version>1.0.0</javapoet.version>
     <junit.version>4.12</junit.version>
   </properties>
@@ -167,6 +167,10 @@
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>${maven-surefire-plugin.version}</version>
+          <configuration>
+            <!--Only required due to a GWT DateTimeFormat issue see https://github.com/gwtproject/gwt/issues/8259-->
+            <argLine>-Duser.timezone=UTC</argLine>
+          </configuration>
         </plugin>
 
         <plugin>
@@ -195,6 +199,8 @@
             <mode>htmlunit</mode>
             <userAgents>gecko1_8</userAgents>
             <testTimeOut>1000</testTimeOut>
+            <!--Only required due to a GWT DateTimeFormat issue see https://github.com/gwtproject/gwt/issues/8259-->
+            <extraJvmArgs>-Duser.timezone=UTC</extraJvmArgs>
           </configuration>
           <dependencies>
             <dependency>

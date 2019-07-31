@@ -92,7 +92,7 @@ public final class DateOptionsTester extends AbstractTester {
                 "\"date\":1345304756540," +
                 "\"onlyDate\":\"/2012/08/18/\"," +
                 "\"onlyDateTz\":\"/2012/08/18/ +0000\"," +
-                "\"sqlDate\":\"" + bean.sqlDate.toString() + "\"," +
+                "\"sqlDate\":" + bean.sqlDate.getTime() + "," +
                 "\"sqlTime\":\"" + bean.sqlTime.toString() + "\"," +
                 "\"sqlTimestamp\":1345304756543," +
                 "\"mapDate\":{\"1345304756544\":\"java.util.Date\"}," +

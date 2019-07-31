@@ -204,7 +204,7 @@ public final class PropertyProcessor {
         }
 
         final String propertyName = propertyAccessors.getPropertyName();
-        final JType type = findType( logger, propertyAccessors, typeOracle );
+        final JType type = findType( logger, propertyAccessors, typeOracle, getterAutoDetected, setterAutoDetected, fieldAutoDetected );
 
         PropertyInfoBuilder builder = new PropertyInfoBuilder( propertyName, type );
 
@@ -381,15 +381,15 @@ public final class PropertyProcessor {
         }
     }
 
-    private static JType findType( TreeLogger logger, PropertyAccessors fieldAccessors, JacksonTypeOracle typeOracle ) throws
-            UnableToCompleteException {
+    private static JType findType( TreeLogger logger, PropertyAccessors fieldAccessors, JacksonTypeOracle typeOracle,
+    		boolean getterAutoDetected, boolean setterAutoDetected, boolean fieldAutoDetected ) throws UnableToCompleteException {
         JType type;
-        if ( fieldAccessors.getField().isPresent() ) {
-            type = fieldAccessors.getField().get().getType();
-        } else if ( fieldAccessors.getGetter().isPresent() ) {
+        if ( getterAutoDetected && fieldAccessors.getGetter().isPresent() ) {
             type = fieldAccessors.getGetter().get().getReturnType();
-        } else if ( fieldAccessors.getSetter().isPresent() ) {
+        } else if ( setterAutoDetected && fieldAccessors.getSetter().isPresent() ) {
             type = fieldAccessors.getSetter().get().getParameters()[0].getType();
+        } else if ( fieldAutoDetected && fieldAccessors.getField().isPresent() ) {
+            type = fieldAccessors.getField().get().getType();
         } else if ( fieldAccessors.getParameter().isPresent() ) {
             type = fieldAccessors.getParameter().get().getType();
         } else {

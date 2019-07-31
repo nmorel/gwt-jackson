@@ -19,12 +19,11 @@ package com.github.nmorel.gwtjackson.client.deser.array.cast;
 import com.github.nmorel.gwtjackson.client.JsonDeserializationContext;
 import com.github.nmorel.gwtjackson.client.JsonDeserializer;
 import com.github.nmorel.gwtjackson.client.JsonDeserializerParameters;
+import com.github.nmorel.gwtjackson.client.arrays.FastArrayInteger;
 import com.github.nmorel.gwtjackson.client.deser.BaseNumberJsonDeserializer.IntegerJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.deser.array.AbstractArrayJsonDeserializer;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JsArrayInteger;
 
 /**
  * Default {@link JsonDeserializer} implementation for array of int.
@@ -45,10 +44,6 @@ public class PrimitiveIntegerArrayJsonDeserializer extends AbstractArrayJsonDese
         return INSTANCE;
     }
 
-    private static native int[] reinterpretCast( JsArrayInteger value ) /*-{
-        return value;
-    }-*/;
-
     private static int DEFAULT;
 
     private PrimitiveIntegerArrayJsonDeserializer() { }
@@ -56,7 +51,7 @@ public class PrimitiveIntegerArrayJsonDeserializer extends AbstractArrayJsonDese
     /** {@inheritDoc} */
     @Override
     public int[] doDeserializeArray( JsonReader reader, JsonDeserializationContext ctx, JsonDeserializerParameters params ) {
-        JsArrayInteger jsArray = JsArrayInteger.createArray().cast();
+        FastArrayInteger jsArray = new FastArrayInteger();
         reader.beginArray();
         while ( JsonToken.END_ARRAY != reader.peek() ) {
             if ( JsonToken.NULL == reader.peek() ) {
@@ -68,16 +63,7 @@ public class PrimitiveIntegerArrayJsonDeserializer extends AbstractArrayJsonDese
         }
         reader.endArray();
 
-        if ( GWT.isScript() ) {
-            return reinterpretCast( jsArray );
-        } else {
-            int length = jsArray.length();
-            int[] ret = new int[length];
-            for ( int i = 0; i < length; i++ ) {
-                ret[i] = jsArray.get( i );
-            }
-            return ret;
-        }
+        return jsArray.reinterpretCast();
     }
 
     /** {@inheritDoc} */

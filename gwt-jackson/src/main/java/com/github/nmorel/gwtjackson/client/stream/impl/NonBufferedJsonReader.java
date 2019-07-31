@@ -21,11 +21,11 @@ import java.math.BigInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.github.nmorel.gwtjackson.client.arrays.FastArrayInteger;
 import com.github.nmorel.gwtjackson.client.exception.JsonDeserializationException;
 import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 import com.github.nmorel.gwtjackson.client.stream.JsonWriter;
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.JsArrayInteger;
 import com.google.gwt.core.client.JsonUtils;
 
 /**
@@ -269,7 +269,7 @@ public class NonBufferedJsonReader implements com.github.nmorel.gwtjackson.clien
   /*
    * The nesting stack. Using a manual array rather than an ArrayList saves 20%.
    */
-  private JsArrayInteger stack = JsArrayInteger.createArray().cast();
+  private FastArrayInteger stack = new FastArrayInteger();
   private int stackSize = 0;
   {
     stack.set(stackSize++, JsonScope.EMPTY_DOCUMENT);

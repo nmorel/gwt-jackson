@@ -31,6 +31,7 @@ import com.github.nmorel.gwtjackson.shared.annotations.JsonIncludeTester.MixInIn
 import com.github.nmorel.gwtjackson.shared.annotations.JsonIncludeTester.MixInIncludeNonNull;
 import com.github.nmorel.gwtjackson.shared.annotations.JsonIncludeTester.MixInIncludeUseDefaults;
 import com.google.gwt.core.client.GWT;
+import org.junit.Ignore;
 
 /**
  * @author Nicolas Morel
@@ -71,7 +72,8 @@ public class JsonIncludeGwtTest extends GwtJacksonTestCase {
         static BeanJsonIncludeNonDefaultMapper INSTANCE = GWT.create( BeanJsonIncludeNonDefaultMapper.class );
     }
 
-    public void testSerializeNonDefault() {
+    @Ignore("Include.NON_DEFAULT is not supported for Bean")
+    public void _testSerializeNonDefault() {
         tester.testSerializeNonDefault( BeanJsonIncludeNonDefaultMapper.INSTANCE );
     }
 
@@ -97,6 +99,11 @@ public class JsonIncludeGwtTest extends GwtJacksonTestCase {
 
     public void testSerializeNonNull() {
         tester.testSerializeNonNull( BeanJsonIncludeNonNullMapper.INSTANCE );
+    }
+
+    public void testSerializeNonNullByJsonSerializationContext() {
+        tester.testSerializeNonNull( createWriter( BeanJsonIncludeDefaultMapper.INSTANCE, JsonSerializationContext.builder()
+                .serializeNulls( false ).build() ) );
     }
 
     /* ################################ */

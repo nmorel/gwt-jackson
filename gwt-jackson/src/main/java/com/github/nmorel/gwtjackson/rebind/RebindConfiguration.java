@@ -360,7 +360,8 @@ public final class RebindConfiguration {
     private JClassType findClassType( Class<?> clazz ) {
         JClassType mapperType = context.getTypeOracle().findType( clazz.getCanonicalName() );
         if ( null == mapperType ) {
-            logger.log( Type.WARN, "Cannot find the type denoted by the class " + clazz.getCanonicalName() );
+            logger.log( Type.WARN, "Cannot find the type denoted by the class " + clazz.getCanonicalName()
+                       + " or GWT compilation of that class failed. In the latter case, compile with -failOnError to discover the real error." );
             return null;
         }
         return mapperType;
@@ -450,8 +451,8 @@ public final class RebindConfiguration {
      */
     private MapperInstance getKeyInstance( JType mappedType, JClassType classType, boolean isSerializers ) {
         int nbParam = 0;
-        if ( !isSerializers && typeOracle.isEnumSupertype( mappedType ) ) {
-            nbParam = 1;
+        if ( null != mappedType.isGenericType() && (!isSerializers || !typeOracle.isEnumSupertype( mappedType )) ) {
+            nbParam = mappedType.isGenericType().getTypeParameters().length;
         }
 
         // we first look at static method

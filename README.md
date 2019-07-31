@@ -1,4 +1,4 @@
-gwt-jackson [![Build Status](https://nmorel.ci.cloudbees.com/buildStatus/icon?job=gwt-jackson)](https://nmorel.ci.cloudbees.com/job/gwt-jackson/)
+gwt-jackson [![Build Status](https://travis-ci.org/nmorel/gwt-jackson.svg?branch=master)](https://travis-ci.org/nmorel/gwt-jackson)
 =====
 gwt-jackson is a JSON parser for [GWT](http://www.gwtproject.org/). It uses [Jackson 2.x annotations](https://github.com/FasterXML/jackson-annotations) to customize the serialization/deserialization process.
 
@@ -105,7 +105,7 @@ With Maven
 <dependency>
   <groupId>com.github.nmorel.gwtjackson</groupId>
   <artifactId>gwt-jackson</artifactId>
-  <version>0.14.2</version>
+  <version>0.15.4</version>
   <scope>provided</scope>
 </dependency>
 ```
@@ -143,4 +143,3 @@ Copyright and license
 
 Copyright 2014 Nicolas Morel under the [Apache 2.0 license](LICENSE).
 
-<img alt="" class="attr__format__media_large attr__typeof__foaf:Image img__fid__7476 img__view_mode__media_large media-image" src="https://www.cloudbees.com/sites/default/files/styles/large/public/Button-Built-on-CB-1.png?itok=3Tnkun-C" style="height:61px; width:178px">

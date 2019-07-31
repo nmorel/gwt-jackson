@@ -54,6 +54,7 @@ import com.github.nmorel.gwtjackson.client.annotation.JsonPropertyOrderGwtTest;
 import com.github.nmorel.gwtjackson.client.annotation.JsonRawValueGwtTest;
 import com.github.nmorel.gwtjackson.client.annotation.JsonRootNameGwtTest;
 import com.github.nmorel.gwtjackson.client.annotation.JsonUnwrappedGwtTest;
+import com.github.nmorel.gwtjackson.client.arrays.JsListTest;
 import com.github.nmorel.gwtjackson.client.deser.BooleanJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.CharacterJsonDeserializerTest;
 import com.github.nmorel.gwtjackson.client.deser.EnumJsonDeserializerTest;
@@ -101,6 +102,7 @@ import com.github.nmorel.gwtjackson.client.mapper.AllMapsObjectMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.AutoDetectionGwtTest;
 import com.github.nmorel.gwtjackson.client.mapper.CommonJsonMapperTest;
 import com.github.nmorel.gwtjackson.client.mapper.CustomIterableGwtTest;
+import com.github.nmorel.gwtjackson.client.mapper.DifferentTypeGetterGwtTest;
 import com.github.nmorel.gwtjackson.client.mapper.EnumMapperGwtTest;
 import com.github.nmorel.gwtjackson.client.mapper.ErrorGwtTest;
 import com.github.nmorel.gwtjackson.client.mapper.IgnoreStaticGwtTest;
@@ -286,6 +288,7 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( ErrorGwtTest.class );
         suite.addTestSuite( AutoDetectionGwtTest.class );
         suite.addTestSuite( EnumMapperGwtTest.class );
+        suite.addTestSuite( DifferentTypeGetterGwtTest.class );
 
         // Annotations test
         suite.addTestSuite( JsonAutoDetectGwtTest.class );
@@ -348,6 +351,9 @@ public class GwtJacksonTestSuite extends TestCase {
         suite.addTestSuite( MixinInheritanceGwtTest.class );
         suite.addTestSuite( MixinSerForFieldsGwtTest.class );
         suite.addTestSuite( MixinSerForMethodsGwtTest.class );
+
+        // Arrays
+        suite.addTestSuite( JsListTest.class );
 
         return suite;
     }
