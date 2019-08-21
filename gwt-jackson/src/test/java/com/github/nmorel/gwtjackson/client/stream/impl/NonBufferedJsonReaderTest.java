@@ -18,6 +18,7 @@ package com.github.nmorel.gwtjackson.client.stream.impl;
 
 import com.github.nmorel.gwtjackson.client.stream.AbstractJsonReaderTest;
 import com.github.nmorel.gwtjackson.client.stream.JsonReader;
+import com.github.nmorel.gwtjackson.client.stream.JsonToken;
 
 /**
  * @author Nicolas Morel
@@ -27,5 +28,15 @@ public class NonBufferedJsonReaderTest extends AbstractJsonReaderTest {
     @Override
     public JsonReader newJsonReader( String input ) {
         return new NonBufferedJsonReader( input );
+    }
+
+    // Below test only works with NonBufferedJsonReader - would need to update
+    // DefaultJsonReader to also support this
+    public void testNextValueWithDecimalValue() {
+        JsonReader reader = newJsonReader( "[1.343423]" );
+        reader.beginArray();
+        assertEquals( "1.343423", reader.nextValue() );
+        reader.endArray();
+        assertEquals( JsonToken.END_DOCUMENT, reader.peek() );
     }
 }
