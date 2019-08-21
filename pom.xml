@@ -75,8 +75,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <!-- the api has to be compatible with minimal jdk version supported by GWT -->
-    <maven.compiler.source>1.6</maven.compiler.source>
-    <maven.compiler.target>1.6</maven.compiler.target>
+    <maven.compiler.source>1.7</maven.compiler.source>
+    <maven.compiler.target>1.7</maven.compiler.target>
 
     <!-- Plugins version -->
     <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
