@@ -44,8 +44,8 @@
   <modules>
     <module>minimal</module>
     <module>hello</module>
-    <module>profiling</module>
-    <module>benchmark</module>
+    <!-- <module>profiling</module> -->
+    <!-- <module>benchmark</module> -->
     <module>gwtp</module>
     <module>requestor</module>
     <module>restygwt</module>
