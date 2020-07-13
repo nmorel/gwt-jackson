@@ -3,7 +3,7 @@ language: java
 sudo: false
 
 jdk:
-  - oraclejdk12
-  
+  - openjdk8
+
 
 script: mvn clean install -Dgwt.compiler.skip=true
