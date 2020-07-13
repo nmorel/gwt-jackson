@@ -36,5 +36,11 @@ public class DoubleJsonDeserializerTest extends AbstractJsonDeserializerTest<Dou
         assertDeserialization( -784.15454d, "\"-784.15454\"" );
         assertDeserialization( Double.MIN_VALUE, "4.9E-324" );
         assertDeserialization( Double.MAX_VALUE, "1.7976931348623157e+308" );
+        // We cannot use assertDeserialization for \"NaN\" for a simple reason: `Double.NaN` is not equal to `Double.NaN` see following test
+        assertNotSame( Double.NaN, Double.NaN );
+        // So use Double#isNaN
+        assertTrue( Double.isNaN( deserialize( "\"NaN\"" ) ) );
+        assertDeserialization( Double.NEGATIVE_INFINITY, "\"-Infinity\"" );
+        assertDeserialization( Double.POSITIVE_INFINITY, "\"Infinity\"" );
     }
 }
