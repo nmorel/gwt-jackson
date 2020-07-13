@@ -121,43 +121,17 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
     }
 
     public void testNonFiniteDoubles() {
-        JsonWriter jsonWriter = newJsonWriter();
-        jsonWriter.beginArray();
-        try {
-            jsonWriter.value( Double.NaN );
-            fail();
-        } catch ( IllegalArgumentException expected ) {
-        }
-        try {
-            jsonWriter.value( Double.NEGATIVE_INFINITY );
-            fail();
-        } catch ( IllegalArgumentException expected ) {
-        }
-        try {
-            jsonWriter.value( Double.POSITIVE_INFINITY );
-            fail();
-        } catch ( IllegalArgumentException expected ) {
-        }
+        assertEquals( "[\"NaN\"]", newJsonWriter().beginArray().value( Double.NaN ).endArray().getOutput() );
+        assertEquals( "[\"-Infinity\"]", newJsonWriter().beginArray().value( Double.NEGATIVE_INFINITY ).endArray().getOutput() );
+        assertEquals( "[\"Infinity\"]", newJsonWriter().beginArray().value( Double.POSITIVE_INFINITY ).endArray().getOutput() );
     }
 
     public void testNonFiniteBoxedDoubles() {
-        JsonWriter jsonWriter = newJsonWriter();
-        jsonWriter.beginArray();
-        try {
-            jsonWriter.value( new Double( Double.NaN ) );
-            fail();
-        } catch ( IllegalArgumentException expected ) {
-        }
-        try {
-            jsonWriter.value( new Double( Double.NEGATIVE_INFINITY ) );
-            fail();
-        } catch ( IllegalArgumentException expected ) {
-        }
-        try {
-            jsonWriter.value( new Double( Double.POSITIVE_INFINITY ) );
-            fail();
-        } catch ( IllegalArgumentException expected ) {
-        }
+        assertEquals( "[\"NaN\"]", newJsonWriter().beginArray().value( new Double( Double.NaN ) ).endArray().getOutput() );
+        assertEquals( "[\"-Infinity\"]", newJsonWriter().beginArray().value( new Double( Double.NEGATIVE_INFINITY ) ).endArray()
+                .getOutput() );
+        assertEquals( "[\"Infinity\"]", newJsonWriter().beginArray().value( new Double( Double.POSITIVE_INFINITY ) ).endArray()
+                .getOutput() );
     }
 
     public void testDoubles() {
@@ -167,6 +141,9 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
         jsonWriter.value( 1.0 );
         jsonWriter.value( Double.MAX_VALUE );
         jsonWriter.value( Double.MIN_VALUE );
+        jsonWriter.value( Double.NaN );
+        jsonWriter.value( Double.NEGATIVE_INFINITY );
+        jsonWriter.value( Double.POSITIVE_INFINITY );
         jsonWriter.value( 0.0 );
         jsonWriter.value( -0.5 );
         jsonWriter.value( 2.2250738585072014E-308 );
@@ -177,11 +154,11 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
         if ( GWT.isProdMode() ) {
             // in compiled mode, the .0 are removed, the power is written with 'e+' instead of 'E' and 'e-' instead of 'E-' and the Double
             // .MIN_VALUE is 5e-324
-            assertEquals( "[0," + "1," + "1.7976931348623157e+308," + "5e-324," + "0," + "-0.5," + "2.2250738585072014e-308," +
-                    "" + "3.141592653589793," + "2.718281828459045]", jsonWriter.getOutput() );
+            assertEquals( "[0," + "1," + "1.7976931348623157e+308," + "5e-324," + "\"NaN\"," + "\"-Infinity\"," + "\"Infinity\"," + "0," +
+                    "-0.5," + "2.2250738585072014e-308," + "" + "3.141592653589793," + "2.718281828459045]", jsonWriter.getOutput() );
         } else {
-            assertEquals( "[-0.0," + "1.0," + "1.7976931348623157E308," + "4.9E-324," + "0.0," + "-0.5," + "2.2250738585072014E-308," +
-                    "" + "3.141592653589793," + "2.718281828459045]", jsonWriter.getOutput() );
+            assertEquals( "[-0.0," + "1.0," + "1.7976931348623157E308," + "4.9E-324," + "\"NaN\"," + "\"-Infinity\"," + "\"Infinity\"," +
+                    "0.0," + "-0.5," + "2.2250738585072014E-308," + "3.141592653589793," + "2.718281828459045]", jsonWriter.getOutput() );
         }
     }
 

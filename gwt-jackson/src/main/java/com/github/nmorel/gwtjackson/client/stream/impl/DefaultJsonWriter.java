@@ -427,12 +427,13 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
   /** {@inheritDoc} */
   @Override
   public DefaultJsonWriter value( double value ) {
-    if (Double.isNaN(value) || Double.isInfinite(value)) {
-      throw new IllegalArgumentException("Numeric values must be finite, but was " + value);
-    }
     writeDeferredName();
     beforeValue(false);
-    out.append(Double.toString(value));
+    if ( Double.isNaN(value) || Double.isInfinite(value) ) {
+      out.append('\"').append(Double.toString(value)).append('\"');
+    } else {
+      out.append(Double.toString(value));
+    }
     return this;
   }
 
@@ -454,12 +455,12 @@ public class DefaultJsonWriter implements com.github.nmorel.gwtjackson.client.st
 
     writeDeferredName();
     String string = value.toString();
-    if (!lenient
-        && (string.equals("-Infinity") || string.equals("Infinity") || string.equals("NaN"))) {
-      throw new IllegalArgumentException("Numeric values must be finite, but was " + value);
-    }
     beforeValue(false);
-    out.append(string);
+    if ( string.equals("-Infinity") || string.equals("Infinity") || string.equals("NaN") ) {
+      out.append( "\"" ).append(string).append( "\"" );
+    } else {
+      out.append(string);
+    }
     return this;
   }
 
