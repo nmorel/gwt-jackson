@@ -38,5 +38,8 @@ public class FloatJsonSerializerTest extends AbstractJsonSerializerTest<Float> {
             assertSerialization( "1.4E-45", Float.MIN_VALUE );
             assertSerialization( "3.4028235E38", Float.MAX_VALUE );
         }
+        assertSerialization( "\"NaN\"", Float.NaN );
+        assertSerialization( "\"-Infinity\"", Float.NEGATIVE_INFINITY );
+        assertSerialization( "\"Infinity\"", Float.POSITIVE_INFINITY );
     }
 }

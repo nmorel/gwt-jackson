@@ -134,6 +134,20 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
                 .getOutput() );
     }
 
+    public void testNonFiniteFloats() {
+        assertEquals( "[\"NaN\"]", newJsonWriter().beginArray().value( Float.NaN ).endArray().getOutput() );
+        assertEquals( "[\"-Infinity\"]", newJsonWriter().beginArray().value( Float.NEGATIVE_INFINITY ).endArray().getOutput() );
+        assertEquals( "[\"Infinity\"]", newJsonWriter().beginArray().value( Float.POSITIVE_INFINITY ).endArray().getOutput() );
+    }
+
+    public void testNonFiniteBoxedFloats() {
+        assertEquals( "[\"NaN\"]", newJsonWriter().beginArray().value( new Float( Float.NaN ) ).endArray().getOutput() );
+        assertEquals( "[\"-Infinity\"]", newJsonWriter().beginArray().value( new Float( Float.NEGATIVE_INFINITY ) ).endArray()
+                .getOutput() );
+        assertEquals( "[\"Infinity\"]", newJsonWriter().beginArray().value( new Float( Float.POSITIVE_INFINITY ) ).endArray()
+                .getOutput() );
+    }
+
     public void testDoubles() {
         JsonWriter jsonWriter = newJsonWriter();
         jsonWriter.beginArray();
@@ -159,6 +173,30 @@ public abstract class AbstractJsonWriterTest extends GwtJacksonTestCase {
         } else {
             assertEquals( "[-0.0," + "1.0," + "1.7976931348623157E308," + "4.9E-324," + "\"NaN\"," + "\"-Infinity\"," + "\"Infinity\"," +
                     "0.0," + "-0.5," + "2.2250738585072014E-308," + "3.141592653589793," + "2.718281828459045]", jsonWriter.getOutput() );
+        }
+    }
+
+    public void testFloats() {
+        JsonWriter jsonWriter = newJsonWriter();
+        jsonWriter.beginArray();
+        jsonWriter.value( -0.0f );
+        jsonWriter.value( 1.0f );
+        jsonWriter.value( Float.MAX_VALUE );
+        jsonWriter.value( Float.MIN_VALUE );
+        jsonWriter.value( Float.NaN );
+        jsonWriter.value( Float.NEGATIVE_INFINITY );
+        jsonWriter.value( Float.POSITIVE_INFINITY );
+        jsonWriter.value( 0.0f );
+        jsonWriter.value( -0.5f );
+        jsonWriter.endArray();
+        jsonWriter.close();
+        if ( GWT.isProdMode() ) {
+            // in compiled mode, the .0 are removed, the power is written with 'e+' instead of 'E' and 'e-' instead of 'E-'
+            assertEquals( "[0," + "1," + "3.4028234663852886e+38," + "1.401298464324817e-45," + "\"NaN\"," + "\"-Infinity\"," +
+                    "\"Infinity\"," + "0," + "-0.5]", jsonWriter.getOutput() );
+        } else {
+            assertEquals( "[-0.0," + "1.0," + "3.4028234663852886E38," + "1.401298464324817E-45," + "\"NaN\"," + "\"-Infinity\"," +
+                    "\"Infinity\"," + "0.0," + "-0.5]", jsonWriter.getOutput() );
         }
     }
 

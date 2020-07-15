@@ -39,5 +39,11 @@ public class FloatJsonDeserializerTest extends AbstractJsonDeserializerTest<Floa
             assertDeserialization( Float.MIN_VALUE, "1.4e-45" );
             assertDeserialization( Float.MAX_VALUE, "3.4028235e38" );
         }
+        // We cannot use assertDeserialization for \"NaN\" for a simple reason: `Float.NaN` is not equal to `Float.NaN` see following test
+        assertNotSame( Float.NaN, Float.NaN );
+        // So use Double#isNaN
+        assertTrue( Float.isNaN( deserialize( "\"NaN\"" ) ) );
+        assertDeserialization( Float.NEGATIVE_INFINITY, "\"-Infinity\"" );
+        assertDeserialization( Float.POSITIVE_INFINITY, "\"Infinity\"" );
     }
 }
